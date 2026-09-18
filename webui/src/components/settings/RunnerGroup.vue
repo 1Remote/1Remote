@@ -1,10 +1,10 @@
 <script setup>
 /**
  * 运行器分组（Plan 3 Task 6，spec §6；fix batch7 Task D #12 全量自动保存；
- * fix batch7 Task E #13 配置对齐 + 逐运行器字段审计）：
+ * fix batch7 Task E #13 配置对齐 + 逐运行器字段审计；#14 运行器增删）：
  * GET/PUT /api/settings/runners，改完即存（无保存按钮/dirty 提示）。
  * - 协议页签（6 个：SSH/Telnet/Serial/VNC/SFTP/FTP，键序以 GET 返回为准）× 每协议：
- *   默认运行器下拉（runner 名单）+ runner 卡片列表。
+ *   默认运行器下拉（runner 名单）+ runner 卡片列表 + "添加运行器"按钮（#14）。
  * - **PascalCase 直通**（有意简化，plan 记录在案）：runners 数组与 GET 原样往返，只字段化编辑
  *   已知属性。Name 不开放改名（重命名牵扯 SelectedRunnerName 与宏引用一致性，归桌面端）。
  * - 内置运行器（#13）：按"属性存在性"渲染配置位，不硬编码 $type 名单——
@@ -17,22 +17,30 @@
  *   ExternalRunnerSettings.xaml / ExternalSshRunnerSettings.xaml 审计补齐）：
  *   ExePath / Arguments / ArgumentsForPrivateKey（仅 SSH 族，属性存在性判断）/
  *   EnvironmentVariables / SpecialCharacters（KEY=VALUE 行编辑）/ RunWithHosting。
+ * - 增删（#14）：PUT 是全量列表保存，前端构造新行/移除行 + 保存即持久化，无需专门端点。
+ *   添加模态 = WPF CmdAddRunner 的名称校验（非空 + 协议内唯一）+ 顺带收集 WPF 创建后
+ *   要在卡片补填的 ExePath/Arguments；SSH/SFTP 协议族建 ExternalRunnerForSSH（WPF 同款
+ *   分支），其余建 ExternalRunner；宏提示用 GET 的 macros。
+ *   删除仅外部运行器（内置无删除钮，徽标 title 提示不可删）；确认后 splice +
+ *   selectedRunnerName 回退首项（WPF CmdDeleteRunner 语义）+ 保存。
  * - 环境变量与特殊字符用独立文本域编辑（数组直编输入体验差）：载入时 数组→行文本；
  *   PUT 前 行文本→数组（空行/无 = 的行丢弃）。文本域按 `${proto}:${runner.Name}`
  *   寻址（而非下标）——增删运行器时下标会漂移，Name 在协议内唯一。
  * - PUT 发送整个 protocols 对象（6 协议全量；后端全量预校验，缺失协议=保持，此处全量最稳）；
  * - 自动保存：下拉/开关立即 PUT；文本输入（ExePath/Arguments/行文本域）debounce 500ms 后 PUT；
  *   响应回读带 hasPending 守卫——PUT 飞行中用户又输入时不回填（applyState 会整体替换
- *   protocols/envTexts，防丢字），本地态即真值。
+ *   protocols/envTexts，防丢字），本地态即真值。增删走 saveNow（离散操作立即保存），
+ *   失败 toast 外不做回滚（后端 GET/PUT 语义与 WPF 内存先行一致）。
  */
 import { computed, h, inject, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useMessage } from 'naive-ui'
+import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
 import { useAutoSave } from '../../composables/useAutoSave'
 
 const { t } = useI18n()
 const message = useMessage()
+const dialog = useDialog()
 
 // 下拉展开计数（SettingsView 的 Esc 返回链序，见 SettingsView 文件头注释；与 GeneralGroup 同款）
 const escShield = inject('settingsEscShield', null)
@@ -215,6 +223,80 @@ function onFontSize(r, v) {
   r.PuttyFontSize = Math.round(n)
   saveDebounced()
 }
+
+// ---- 添加运行器（#14）：模态 → 构造最小字段集对象 push 进 runners → PUT 全量即存 ----
+const adding = ref(false)
+const addForm = reactive({ name: '', exePath: '', arguments: '' })
+
+// 打开即重置（与 DataSourceGroup.openAdd 同款）：上次未提交的草稿不带入新会话
+function openAdd() {
+  Object.assign(addForm, { name: '', exePath: '', arguments: '' })
+  adding.value = true
+}
+
+// 名称校验 = WPF CmdAddRunner 的 InputBox 规则：非空 + 协议内唯一
+const addNameError = computed(() => {
+  const n = addForm.name.trim()
+  if (!n) return t('settings.r.nameRequired')
+  if ((activeCfg.value?.runners || []).some((r) => r.Name === n)) return t('settings.r.nameExists', { name: n })
+  return ''
+})
+const addValid = computed(() => !addNameError.value)
+const activeMacros = computed(() => activeCfg.value?.macros || [])
+
+function addSave() {
+  if (!addValid.value) return
+  const isSshFamily = active.value === 'SSH' || active.value === 'SFTP'
+  // 最小字段集 = WPF ExternalRunner/ExternalRunnerForSSH 新建实例的序列化形态
+  const runner = {
+    $type: isSshFamily ? 'ExternalRunnerForSSH' : 'ExternalRunner',
+    Name: addForm.name.trim(),
+    OwnerProtocolName: active.value,
+    ExePath: addForm.exePath.trim(),
+    Arguments: addForm.arguments,
+    RunWithHosting: false,
+    EnvironmentVariables: [],
+    SpecialCharacters: [],
+  }
+  if (isSshFamily) runner.ArgumentsForPrivateKey = ''
+  activeCfg.value.runners.push(runner)
+  envTexts[active.value + ':' + runner.Name] = ''
+  specialTexts[active.value + ':' + runner.Name] = ''
+  adding.value = false
+  saveNow()
+}
+
+// ---- 删除（#14）：仅外部运行器；确认 → splice + selectedRunnerName 回退首项（WPF 同款）→ 保存 ----
+function onDeleteRunner(r) {
+  dialog.warning({
+    title: t('settings.r.deleteTitle'),
+    content: t('settings.r.deleteConfirm', { name: r.Name }),
+    positiveText: t('editor.deleteYes'),
+    negativeText: t('editor.cancel'),
+    onPositiveClick: () => {
+      const cfg = activeCfg.value
+      const idx = cfg.runners.indexOf(r)
+      if (idx < 0) return
+      cfg.runners.splice(idx, 1)
+      if (cfg.selectedRunnerName === r.Name) cfg.selectedRunnerName = cfg.runners[0]?.Name || ''
+      delete envTexts[active.value + ':' + r.Name]
+      delete specialTexts[active.value + ':' + r.Name]
+      saveNow()
+    },
+  })
+}
+
+// ---- Esc 链：添加模态开着时捕获截停（SettingsView 返回导航让位，DataSourceGroup 同款）----
+function onEscCapture(e) {
+  if (e.key !== 'Escape') return
+  if (escShield && escShield.open > 0) return
+  if (adding.value) {
+    e.stopPropagation()
+    adding.value = false
+  }
+}
+onMounted(() => window.addEventListener('keydown', onEscCapture, true))
+onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 </script>
 
 <template>
@@ -249,14 +331,33 @@ function onFontSize(r, v) {
         />
       </div>
 
+      <!-- 添加运行器（#14）：PUT 全量保存，前端构造新行即持久化 -->
+      <div class="toolbar">
+        <n-button size="small" type="primary" @click="openAdd">{{ t('settings.r.add') }}</n-button>
+      </div>
+
       <!-- runner 卡片列表 -->
       <div class="r-cards">
         <div v-for="r in activeCfg.runners" :key="r.Name || ''" class="r-card">
           <div class="r-head">
             <span class="r-name" :title="r.Name">{{ r.Name }}</span>
-            <span class="r-badge" :class="{ ext: isExternal(r) }">
+            <span
+              class="r-badge"
+              :class="{ ext: isExternal(r) }"
+              :title="isExternal(r) ? '' : t('settings.r.internalNoDelete')"
+            >
               {{ isExternal(r) ? t('settings.r.external') : t('settings.r.internal') }}
             </span>
+            <!-- 删除（#14）：仅外部运行器；内置无删除钮（徽标 title 提示不可删） -->
+            <button
+              v-if="isExternal(r)"
+              class="del"
+              type="button"
+              :title="t('settings.r.deleteTitle')"
+              @click="onDeleteRunner(r)"
+            >
+              ×
+            </button>
           </div>
 
           <!-- 内置运行器：按字段存在性渲染配置位（PuTTY/KiTTY），无可配置位则只读说明 -->
@@ -409,6 +510,66 @@ function onFontSize(r, v) {
           </template>
         </div>
       </div>
+
+      <!-- 添加运行器模态（#14）：名称校验 = WPF CmdAddRunner；SSH 族建 ExternalRunnerForSSH -->
+      <n-modal
+        v-model:show="adding"
+        preset="card"
+        :title="t('settings.r.addTitle')"
+        :bordered="false"
+        :style="{ width: 'min(520px, 92vw)' }"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div class="form">
+          <div class="f-row">
+            <label>{{ t('editor.f.Name') }}</label>
+            <div>
+              <n-input
+                size="small"
+                v-model:value="addForm.name"
+                :status="addNameError ? 'error' : undefined"
+                :input-props="{ spellcheck: false }"
+              />
+              <p v-if="addNameError" class="f-err">{{ addNameError }}</p>
+            </div>
+          </div>
+          <div class="f-row">
+            <label>{{ t('editor.f.ExePath') }}</label>
+            <n-input
+              size="small"
+              v-model:value="addForm.exePath"
+              :placeholder="t('editor.ph.exePath')"
+              :input-props="{ spellcheck: false }"
+            />
+          </div>
+          <div class="f-row">
+            <label>{{ t('settings.r.f.arguments') }}</label>
+            <n-input
+              size="small"
+              type="textarea"
+              :rows="2"
+              v-model:value="addForm.arguments"
+              :input-props="{ spellcheck: false }"
+            />
+          </div>
+          <!-- 宏提示：当前协议可用宏（GET macros，与 WPF 参数自动补全同源），title 给描述 -->
+          <p v-if="activeMacros.length" class="f-hint macro-hint">
+            {{ t('settings.r.f.macroHint') }}
+            <code v-for="m in activeMacros" :key="m.name" class="macro-chip" :title="m.description">
+              {{ m.name }}
+            </code>
+          </p>
+        </div>
+        <template #footer>
+          <div class="modal-actions">
+            <n-button size="small" @click="adding = false">{{ t('editor.cancel') }}</n-button>
+            <n-button size="small" type="primary" :disabled="!addValid" @click="addSave">
+              {{ t('editor.save') }}
+            </n-button>
+          </div>
+        </template>
+      </n-modal>
     </template>
   </div>
 </template>
@@ -460,6 +621,10 @@ function onFontSize(r, v) {
   font-size: 0.9615rem;
   color: var(--text-2);
 }
+.toolbar {
+  display: flex;
+  margin-bottom: 12px;
+}
 .r-cards {
   display: flex;
   flex-direction: column;
@@ -499,6 +664,24 @@ function onFontSize(r, v) {
 .r-badge.ext {
   border-color: var(--accent);
   color: var(--accent-text);
+}
+.r-head .del {
+  margin-left: auto;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 0.9615rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.r-head .del:hover {
+  border-color: var(--danger);
+  background: var(--bg-hover);
+  color: var(--danger);
 }
 .r-internal-hint {
   margin: 0;
@@ -555,5 +738,38 @@ function onFontSize(r, v) {
   font-family: Consolas, 'Courier New', monospace;
   font-size: 0.8462rem;
   line-height: 1.5;
+}
+
+/* ---- 添加运行器模态 ---- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.form .f-row {
+  align-items: center;
+}
+.f-err {
+  margin: 4px 0 0;
+  font-size: 0.8462rem;
+  color: var(--danger);
+}
+.macro-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.macro-chip {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 0.8077rem;
+  color: var(--text-3);
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 </style>
