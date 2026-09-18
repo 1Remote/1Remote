@@ -24,11 +24,12 @@
  *   protocols/envTexts，防丢字），本地态即真值。增删走 saveNow（离散操作立即保存），
  *   失败 toast 外不做回滚（后端 GET/PUT 语义与 WPF 内存先行一致）。
  */
-import { computed, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
 import { useAutoSave } from '../../composables/useAutoSave'
+import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import { autoArguments, isExternal } from '../../editor/runnerPresets.js'
 import HelpLink from '../HelpLink.vue'
 import RunnerCard from './RunnerCard.vue'
@@ -42,11 +43,8 @@ const { t } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
 
-// 下拉展开计数（SettingsView 的 Esc 返回链序，见 SettingsView 文件头注释；与 GeneralGroup 同款）
-const escShield = inject('settingsEscShield', null)
-function shield(show) {
-  if (escShield) escShield.open += show ? 1 : -1
-}
+// 下拉展开计数 + 模态 Esc 截停（Esc 链序见 SettingsView/useSettingsEsc 文件头注释）
+const { shield, bindModalEsc } = useSettingsEsc()
 
 const loading = ref(true)
 const loadError = ref(false)
@@ -265,18 +263,9 @@ function onDeleteRunner(r) {
   })
 }
 
-// ---- Esc 链：添加模态开着时捕获截停（SettingsView 返回导航让位，DataSourceGroup 同款）----
-function onEscCapture(e) {
-  if (e.key !== 'Escape') return
-  if (escShield && escShield.open > 0) return
-  if (adding.value) {
-    e.stopPropagation()
-    adding.value = false
-  }
-}
-onMounted(() => window.addEventListener('keydown', onEscCapture, true))
+// ---- Esc 链：添加模态开着时捕获截停（SettingsView 返回导航让位）----
+bindModalEsc([{ isOpen: () => adding.value, close: () => (adding.value = false) }])
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onEscCapture, true)
   clearTimeout(justAddedTimer)
 })
 </script>

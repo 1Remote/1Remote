@@ -11,8 +11,9 @@
  *   Fonts.SystemFontFamilies / PuttyRunner.CodePages），前端不硬编码。
  * - 环境变量/特殊字符以行文本 props 传入、改动 emit 回传（数组↔行文本的换算归 RunnerGroup）。
  */
-import { computed, h, inject, nextTick } from 'vue'
+import { computed, h, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import HelpLink from '../HelpLink.vue'
 import {
   hasArgsPrivateKey,
@@ -54,11 +55,8 @@ const emit = defineEmits([
 ])
 const { t } = useI18n()
 
-// 下拉展开计数（SettingsView 的 Esc 返回链序，见 SettingsView 文件头注释；与 GeneralGroup 同款）
-const escShield = inject('settingsEscShield', null)
-function shield(show) {
-  if (escShield) escShield.open += show ? 1 : -1
-}
+// 下拉展开计数（SettingsView 的 Esc 返回链序，见 SettingsView/useSettingsEsc 文件头注释）
+const { shield } = useSettingsEsc()
 
 // ---- 选项域（meta 提供；缺 meta（旧后端/请求失败）时下拉为空，值仍可显示与保存）----
 const themeOptions = computed(() =>

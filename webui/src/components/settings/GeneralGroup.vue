@@ -15,23 +15,21 @@
  * - 自动保存不做响应回填：差量键本地即真值，回填会在连改多个开关时用旧响应覆盖
  *   刚翻转的控件（失败 toast 已提示用户当前态与服务器的分歧）。
  */
-import { computed, inject, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { api } from '../../api'
 import { setLocale } from '../../locales'
 import { backendToWeb, languageOptions, webToBackend } from '../../locales/languages'
 import { useAutoSave } from '../../composables/useAutoSave'
+import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import HelpLink from '../HelpLink.vue'
 
 const { t } = useI18n()
 const message = useMessage()
 
-// 下拉展开计数（SettingsView 的 Esc 返回链序，见 SettingsView 文件头注释）
-const escShield = inject('settingsEscShield', null)
-function shield(show) {
-  if (escShield) escShield.open += show ? 1 : -1
-}
+// 下拉展开计数（SettingsView 的 Esc 返回链序，见 SettingsView/useSettingsEsc 文件头注释）
+const { shield } = useSettingsEsc()
 
 const loading = ref(true)
 const loadError = ref(false)
