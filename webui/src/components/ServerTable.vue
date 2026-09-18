@@ -8,9 +8,8 @@
 // - 排序：名称/地址（自然 IP）/协议/最近连接，点表头升降切换；localStorage '1r-sort' 持久化
 // - 多选：单击=单选、Ctrl/⌘=切换、Shift=范围（锚点=上次点击行）；表头三态全选
 //   （=当前视图可见服务器行，不含文件夹的隐藏子孙——要含子孙勾文件夹行复选框）；
-//   文件夹行复选框=勾选全部子孙（含子文件夹深处），勾选集合始终是服务器 id 集，
-//   「已选 N 台」与批量编辑/导出自然作用于全集；数据/过滤变化剔除已不存在的勾选，
-//   文件夹间导航不剔（进入后子孙行仍显示勾选态）
+//   勾选集合始终是服务器 id 集，「已选 N 台」与批量编辑/导出自然作用于全集。
+//   勾选/文件夹勾选/剔除的完整语义与口径见 composables/useRowChecks.js 文件头
 // - 键盘：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、Ctrl+A 全选可见、
 //   E 编辑 / Del 删除 / Ctrl+D 复制（目标行 = 恰好单选该台，否则光标行）；
 //   Esc 不在此处理——全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 统一调度（见其 onGlobalEsc）
@@ -31,6 +30,7 @@ import FolderRow from './FolderRow.vue'
 import TableToolbar from './TableToolbar.vue'
 import { api } from '../api'
 import { useColumns } from '../composables/useColumns'
+import { useRowChecks } from '../composables/useRowChecks'
 import { useServers } from '../composables/useServers'
 import { naturalIpCompare } from '../utils/compare'
 
@@ -277,114 +277,31 @@ const renderRows = computed(() => [
 ])
 const rowKey = (row) => (row.kind === 'folder' ? 'f:' + row.folder.dsName + ':' + row.folder.path : row.server.id)
 
-// ---- 多选 ----
-const checked = ref(new Set())
-let anchorIdx = -1
-const allChecked = computed(() => sorted.value.length > 0 && sorted.value.every((s) => checked.value.has(s.id)))
-const someChecked = computed(() => !allChecked.value && sorted.value.some((s) => checked.value.has(s.id)))
-const allCb = ref(null) // 三态复选框：indeterminate 需写 DOM 属性
-watchEffect(() => {
-  if (allCb.value) allCb.value.indeterminate = someChecked.value
-})
-function toggleChecked(id) {
-  const next = new Set(checked.value)
-  next.has(id) ? next.delete(id) : next.add(id)
-  checked.value = next
-}
+// ---- 多选：勾选集/表头三态全选/文件夹行勾选（含子孙）/数据变化剔除。
+// servers 域=本组件收到的过滤后列表（tags/搜索/SSE 重载），与剔除 watch 同源——被过滤
+// 掉的行不进勾选集，两端口径一致（完整语义见 useRowChecks.js 文件头）----
+const {
+  checked,
+  allChecked,
+  allCb,
+  rowClickSelect,
+  onToggleSelect,
+  addAllVisible,
+  toggleAll,
+  clearChecked,
+  folderChecks,
+  onFolderToggleCheck,
+} = useRowChecks({ sorted, servers: () => props.servers, folders: () => props.folders })
 
-// ---- 文件夹行勾选（批量操作含子孙）----
-// 文件夹全部子孙服务器 id：folderPath 等于该文件夹路径或以 '路径/' 开头（深层子文件夹
-// 一并命中），并限定同数据源（「全部数据」根虽无文件夹行，仍防跨库同名路径互串）。
-// 以 props.servers（标签/搜索过滤后的列表）为域：与下方勾选剔除 watch 同源——被过滤
-// 掉的行不进勾选集，过滤变化时也会被剔除，两端口径一致
-function folderDescendantIds(f) {
-  const prefix = f.path + '/'
-  return props.servers
-    .filter(
-      (s) => s.dataSourceName === f.dsName && (s.folderPath === f.path || (s.folderPath || '').startsWith(prefix))
-    )
-    .map((s) => s.id)
-}
-// 各文件夹行三态派生（checked=全选 / indeterminate=半选 / count=子孙数，0=空文件夹禁用）。
-// Map 键与 rowKey 同构（'f:ds:path'）；O(文件夹×服务器) 一次算全层并缓存到依赖变化——
-// 若逐行内联计算会随虚拟滚动窗口反复重算
-const folderChecks = computed(() => {
-  const m = new Map()
-  for (const f of props.folders) {
-    const ids = folderDescendantIds(f)
-    let n = 0
-    for (const id of ids) if (checked.value.has(id)) n++
-    m.set('f:' + f.dsName + ':' + f.path, {
-      checked: ids.length > 0 && n === ids.length,
-      indeterminate: n > 0 && n < ids.length,
-      count: ids.length,
-    })
-  }
-  return m
-})
-// 勾选文件夹 = 全部子孙 id 加入 checked（未选/半选态点击都补全），已全选 = 移除全部子孙。
-// checked 始终只存服务器 id，计数（checked.size）与批量编辑/导出 emit 的 ids 自然含子孙
-function onFolderToggleCheck(f) {
-  const ids = folderDescendantIds(f)
-  if (!ids.length) return
-  const uncheck = ids.every((id) => checked.value.has(id))
-  const next = new Set(checked.value)
-  for (const id of ids) uncheck ? next.delete(id) : next.add(id)
-  checked.value = next
-  anchorIdx = -1 // 文件夹勾选无行号语义，作废 Shift 范围锚点（下次点击重新锚定）
-}
 function onRowClick(server, ev, idx) {
   cursorId.value = server.id // 点击行 = 光标落位（Enter 连接光标行，↑↓ 由此起算）
-  if (ev.shiftKey && anchorIdx >= 0) {
-    const lo = Math.min(anchorIdx, idx)
-    const hi = Math.max(anchorIdx, idx)
-    checked.value = new Set(sorted.value.slice(lo, hi + 1).map((s) => s.id))
-  } else if (ev.ctrlKey || ev.metaKey) {
-    toggleChecked(server.id)
-    anchorIdx = idx
-  } else {
-    checked.value = new Set([server.id]) // 单击=单选，清空其余
-    anchorIdx = idx
-  }
+  rowClickSelect(ev, idx, server.id) // 勾选分支：单击/Ctrl/Shift（锚点语义见 useRowChecks）
 }
-function onToggleSelect(server, idx) {
-  toggleChecked(server.id)
-  anchorIdx = idx
-}
-function toggleAll() {
-  if (allChecked.value) {
-    clearChecked()
-    return
-  }
-  // 半选/未选 → 勾全部可见行：合并而非替换——保留文件夹勾选展开的隐藏子孙 id
-  //（全选语义=「当前视图可见服务器行」，见文件头；要连子孙一起选请勾文件夹行）
-  const next = new Set(checked.value)
-  for (const s of sorted.value) next.add(s.id)
-  checked.value = next
-}
-function clearChecked() {
-  checked.value = new Set()
-  anchorIdx = -1
-}
-// 视图变化作废 Shift 范围锚点与不可见的光标行（树切换/搜索过滤后旧行号已无意义，
-// Shift 选区必须重新锚定；光标是纯视觉焦点，只随可见列表存在）
+// 视图变化作废不可见的光标行（树切换/搜索过滤后旧行号已无意义；光标是纯视觉焦点，
+// 只随可见列表存在。Shift 锚点的作废归 useRowChecks，见其文件头）
 watch(sorted, (list) => {
-  anchorIdx = -1
   if (cursorId.value != null && !list.some((s) => s.id === cursorId.value)) cursorId.value = null
 })
-// 勾选剔除挂过滤后数据列表（props.servers）而非视图列表（sorted）：文件夹勾选展开的子孙
-// id 不在当前视图的直接子级列表里，按视图剔除会在进入文件夹的一瞬清光子孙勾选。改为
-// 「服务器仍在本组件收到的过滤列表（标签/搜索/SSE 重载）中即保留」——跨层级导航勾选
-// 持续存在，被删除/过滤掉的行即时剔除，批量条计数始终对着真实存在的服务器
-watch(
-  () => props.servers,
-  (list) => {
-    if (!checked.value.size) return
-    const ids = new Set(list.map((s) => s.id))
-    const kept = [...checked.value].filter((id) => ids.has(id))
-    if (kept.length !== checked.value.size) checked.value = new Set(kept)
-  }
-)
 watchEffect(() => emit('counted', sorted.value.length)) // 供面包屑「· N 台」
 
 // ---- 右键菜单（浮层；快捷键提示：Enter/E/Ctrl+D/Del 均已接线）----
@@ -493,9 +410,7 @@ function onGlobalKey(e) {
     }
   } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'a') {
     e.preventDefault() // 抢在浏览器文本全选前，全选当前视图（合并语义同 toggleAll：保留隐藏子孙勾选）
-    const next = new Set(checked.value)
-    for (const s of sorted.value) next.add(s.id)
-    checked.value = next
+    addAllVisible()
   } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'd') {
     // Ctrl+D 复制：preventDefault 阻断浏览器「添加书签」默认
     e.preventDefault()
@@ -771,7 +686,7 @@ onBeforeUnmount(() => {
               'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
               'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
             }"
-            @toggle-select="onToggleSelect(row.server, row.srvIndex)"
+            @toggle-select="onToggleSelect(row.server.id, row.srvIndex)"
             @row-click="onRowClick(row.server, $event, row.srvIndex)"
             @connect="emit('connect', row.server.id)"
             @edit="emit('edit', row.server)"
@@ -813,7 +728,7 @@ onBeforeUnmount(() => {
             'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
             'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
           }"
-          @toggle-select="onToggleSelect(row.server, row.srvIndex)"
+          @toggle-select="onToggleSelect(row.server.id, row.srvIndex)"
           @row-click="onRowClick(row.server, $event, row.srvIndex)"
           @connect="emit('connect', row.server.id)"
           @edit="emit('edit', row.server)"
