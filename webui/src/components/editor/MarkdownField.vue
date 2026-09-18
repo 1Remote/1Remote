@@ -1,6 +1,6 @@
 <script setup>
 /**
- * Markdown 备注字段（fix-batch2 Task C #4，owner 确认 marked 库）：
+ * Markdown 备注字段（marked 库）：
  * 「编辑 ⇄ 预览」二选一——编辑态 = 等宽 textarea（值原样存取，存储格式不因预览改变，
  * json 里仍是纯 Markdown 文本）；预览态 = marked.parse 渲染（gfm + breaks）。
  *
@@ -13,10 +13,9 @@
  *
  * 组件形状对齐 FormField 约定：modelValue = 字符串（null 容忍），emit update:modelValue；
  * 由 FormField 按 field.type === 'markdown' 分发（schemas.js 的 basic 组 Note 字段）。
- * 渲染管线（marked + 轻量净化）抽至 utils/markdown.js（fix-batch3 Task C #4，
- * 与列表行备注悬停弹层共用），本组件只保留排版样式。
- * fix-batch4 Task A #2（owner 反馈省垂直空间）：组件受控化——编辑/预览切换状态
- * （preview prop）与切换按钮上提到 FormField 标签列右侧，本组件不再自持 mode、
+ * 渲染管线（marked + 轻量净化）抽至 utils/markdown.js（与列表行备注悬停弹层共用），本组件只保留排版样式。
+ * 组件受控化（省垂直空间）——编辑/预览切换状态（preview prop）与切换按钮
+ * 上提到 FormField 标签列右侧，本组件不再自持 mode、
  * 不再渲染工具条；净化渲染逻辑不变。
  */
 import { computed } from 'vue'

@@ -10,7 +10,7 @@
  * AppArgument.Selections 字典）原样保留（schemas.js 的透传保真约定）。
  * 增删行之外无重排（拖拽排序归 Plan 4）。
  *
- * 行折叠（fix-batch2 Task C #6）：行默认折叠——表头只显示行名（Name 值，缺失 →
+ * 行折叠：行默认折叠——表头只显示行名（Name 值，缺失 →
  *（未命名））+ 展开箭头 + 删除；点表头切换展开整行编辑；新增行自动展开。
  *
  * 行字段可见性（评审修复）：行体渲染前按 isVisible(f, row) 过滤——subform 行字段的
@@ -47,7 +47,7 @@ const { t } = useI18n()
 const rows = computed(() => (Array.isArray(props.modelValue) ? props.modelValue : []))
 
 /**
- * 行折叠态（fix-batch2 Task C #6）：默认折叠——表头只显示行名 + 展开箭头 + 删除，
+ * 行折叠态：默认折叠——表头只显示行名 + 展开箭头 + 删除，
  * 点表头展开整行编辑器；新增行自动展开（用户刚创建，立即填写）。
  * 状态按行索引记录（keyOf 无稳定业务键时的同一口径）：删行后索引位移只影响
  * 折叠展示态（瞬态 UI 状态），不影响值；属可接受的简化。
@@ -108,7 +108,7 @@ function visibleRowFields(row) {
 <template>
   <div class="subform-list">
     <div v-for="(row, i) in rows" :key="keyOf(row, i)" class="sf-row" :class="{ collapsed: !isExpanded(i) }">
-      <!-- 表头（#6）：默认折叠只显示 行名 + 展开箭头 + 删除；点表头任意处切换展开 -->
+      <!-- 表头：默认折叠只显示 行名 + 展开箭头 + 删除；点表头任意处切换展开 -->
       <div class="sf-row-head" role="button" :aria-expanded="isExpanded(i)" @click="toggleRow(i)">
         <span class="sf-chev" aria-hidden="true">{{ isExpanded(i) ? '▾' : '▸' }}</span>
         <span class="sf-row-title" :title="rowTitle(row)">{{ rowTitle(row) }}</span>
@@ -144,7 +144,7 @@ function visibleRowFields(row) {
   background: var(--bg-elevated);
   padding: 8px 10px;
 }
-/* 折叠行（#6）：只剩表头一行，内距收紧 */
+/* 折叠行：只剩表头一行，内距收紧 */
 .sf-row.collapsed {
   padding: 4px 10px;
 }
@@ -159,7 +159,7 @@ function visibleRowFields(row) {
 .sf-row-head:hover .sf-row-title {
   color: var(--text-1);
 }
-/* 展开箭头（#6）：折叠 ▸ / 展开 ▾，随状态切换（无需 i18n 的纯方向指示） */
+/* 展开箭头：折叠 ▸ / 展开 ▾，随状态切换（无需 i18n 的纯方向指示） */
 .sf-chev {
   flex: 0 0 auto;
   color: var(--text-4);

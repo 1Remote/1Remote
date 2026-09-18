@@ -6,7 +6,7 @@
  * 数据来源（两路合并）：
  *  - 列表 DTO（camelCase 域，bulkServers prop）：dtoKey 字段的共享值逐字段计算——全同 →
  *    只读展示；不同 →「N 台各不相同」；
- *  - peek 回读（batch8 #8，挂载时 POST /api/servers/batch/peek）：dtoKey=null 且非敏感的
+ *  - peek 回读（挂载时 POST /api/servers/batch/peek）：dtoKey=null 且非敏感的
  *    五键（inheritedCredentialName/askPasswordWhenConnect/startupAutoCommand/startupPath/
  *    rdpFileAdditionalSettings）由 peek 补齐 known——同样参与共享值展示与「覆盖」初值；
  *    勾选 ≤50 台才回读（防大库风暴，>50 维持「未回读」提示），失败静默退化（字段回到
@@ -49,7 +49,7 @@ const saving = ref(false)
 const saveErrors = ref([]) // 服务端 400 的 {errors} 列表（内联展示）
 const missingRequired = ref([]) // 客户端必填快速校验（字段文案列表）
 
-// ---- peek 回读（batch8 #8）：选中 ≤50 台时拉取五键非敏感字段，>50/失败静默退化 ----
+// ---- peek 回读：选中 ≤50 台时拉取五键非敏感字段，>50/失败静默退化 ----
 // bulkDsMixed 的 ds 以 bulkServers 为准，与本表单保存口径一致；peek 也按单 ds 语义调用。
 const PEEK_LIMIT = 50
 const peekItems = ref(null) // null=未回读；Array<{id, askPasswordWhenConnect, ...}>（camelCase）

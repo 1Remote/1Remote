@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 
 /**
- * 设置项自动保存守卫（fix batch7 Task D #12：全设置去保存按钮，改完即存）。
+ * 设置项自动保存守卫（全设置去保存按钮，改完即存）。
  *
  * 消费方：GeneralGroup / LauncherGroup / RunnerGroup——各组在自己的 saveFn 里构造
  * PUT 载荷（General 为差量 patch，Launcher/Runner 为全量表单），本组合式函数只负责
@@ -10,7 +10,7 @@ import { ref } from 'vue'
  * - saveDebounced(patch)：文本/数字输入——静默 debounceMs 后保存（默认 500ms）；
  * - 并发守卫：保存进行中再来的变更合并进 pending（Object.assign，后改覆盖先改、
  *   异键共存——差量与全量载荷均安全），完成后 flush 最新合并态；
- * - 反馈策略（owner 约定）：成功不 toast（改一项弹一次会烦人），仅失败 toast——
+ * - 反馈策略：成功不 toast（改一项弹一次会烦人），仅失败 toast——
  *   失败回调 onError 由各组自带文案与 detail 提取；
  * - saving：供离散控件绑短暂 loading 态；
  * - dispose：组件卸载时冲刷仍在 debounce 里的最后一次变更（切分组不丢输入）。

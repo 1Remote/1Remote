@@ -134,7 +134,7 @@ export function countHolderServers(holder) {
   return holder.servers.length + holder.folders.reduce((n, f) => n + countHolderServers(f), 0)
 }
 
-/** holder（数据源根/文件夹）的直接子级服务器数（batch7 #9）：与资源管理器式列表口径一致——
+/** holder（数据源根/文件夹）的直接子级服务器数：与资源管理器式列表口径一致——
  *  选中该节点时列表只列直接子级服务器（ServerTable filtered 的 folderPath 全等匹配，
  *  面包屑「N 台」同源），徽标=本数即「点进去看到几台」。子文件夹的服务器不计入
  *  （由子文件夹自己的徽标承载），空（虚拟）文件夹为 0。 */

@@ -6,7 +6,7 @@
  * Esc / 「← 返回」回服务器列表：设置页是路由而非浮层，Esc 直接 router.push('/')。
  * Esc 与下拉的链序：n-select 展开时首次 Esc 只应关闭下拉（naive 在组件层消化），
  * 通过 escShield 计数（provide/inject，@update:show 维护）避免"关下拉误退设置页"。
- * 计数的两处天真行为缺陷（fix batch6 #8，键序按事件派发实际顺序）：
+ * 计数的两处天真行为缺陷（键序按事件派发实际顺序）：
  * ① naive 在元素级 Esc handler 内**同步** emit update:show(false)（Select.mjs doUpdateShow
  *   直接 call）——等事件冒泡到 window 时计数已归零，原先的 `open === 0` 守卫护不住
  *   "关下拉"这一次按键，表现为关下拉的同时整页退出；
@@ -41,12 +41,12 @@ const GROUPS = [
   { id: 'g-credentials', labelKey: 'settings.nav.credentials', component: markRaw(CredentialVaultGroup) },
   { id: 'g-appearance', labelKey: 'settings.nav.appearance', component: markRaw(AppearanceGroup) },
   { id: 'g-runners', labelKey: 'settings.nav.runners', component: markRaw(RunnerGroup) },
-  // fix batch6 Task D #7：原「语言与关于」更名「关于」（语言选择行已并入常规组），
+  // 「语言与关于」已更名「关于」（语言选择行已并入常规组），
   // 分组 id 同步 g-langabout → g-about（深链 ?g= 引用仅在本文件）
   { id: 'g-about', labelKey: 'settings.nav.about', component: markRaw(AboutGroup) },
 ]
 
-// 「关于」导航项红点（fix batch6 Task D #12）：数据源 = 进设置页时自行拉一次 /api/version
+// 「关于」导航项红点：数据源 = 进设置页时自行拉一次 /api/version
 //（简单方案：端点轻量读后端静态缓存，免去与 App.vue 共享状态的跨组件契约，见 useVersionInfo 头注释）
 const { update: updateInfo } = useVersionInfo()
 
@@ -81,7 +81,7 @@ function onKey(e) {
   leaveSettings()
 }
 
-// 「← 返回」/Esc 共用出口（#19 自愈加固，机制见 App.vue openSettings 注释）：
+// 「← 返回」/Esc 共用出口（重复导航自愈，机制见 App.vue openSettings 注释）：
 // 同目标重复导航被 vue-router 去重丢弃时带 force 重发，重新触发 router-view 渲染。
 function leaveSettings() {
   router.push('/').then(
@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
           @click="selectGroup(g.id)"
         >
           {{ t(g.labelKey) }}
-          <!-- 「关于」项红点：仅 updateAvailable（fix batch6 Task D #12） -->
+          <!-- 「关于」项红点：仅 updateAvailable -->
           <span v-if="g.id === 'g-about' && updateInfo?.available" class="s-dot"></span>
         </button>
       </nav>
@@ -160,7 +160,7 @@ onBeforeUnmount(() => {
   overflow-y: auto;
 }
 .s-back {
-  /* fix batch6 #8 醒目化：accent 容器底 + accent 描边/文字 + ← 图标（与 .s-item.active
+  /* 返回按钮醒目化：accent 容器底 + accent 描边/文字 + ← 图标（与 .s-item.active
      同一视觉语系，暗/亮基底各自有低饱和容器变体，保持克制） */
   display: flex;
   align-items: center;
@@ -186,8 +186,8 @@ onBeforeUnmount(() => {
   flex: 0 0 auto;
 }
 .s-groups {
-  /* fix-batch3 Task C #5 真根因：nav 容器此前无布局规则，button 默认 inline-block
-     横向平铺换行（表现为多项挤在一行）；flex column 承载一行一项 */
+  /* 一行一项由 flex column 承载；若无布局规则，button 默认 inline-block
+     会横向平铺换行（表现为多项挤在一行） */
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -196,7 +196,7 @@ onBeforeUnmount(() => {
   /* 一行一项由 .s-groups 的 flex column 承载（见上）；本规则的 nowrap/ellipsis 负责
      文本不折行、超宽省略。flex:none 在非 flex 父容器上无效，现父级已是 flex column，
      保留无害（占位语义：不被压缩）。160px 内 7 组中英标签均单行可容纳。
-     position:relative 为「关于」项红点（.s-dot）的定位基准（fix batch6 Task D #12） */
+     position:relative 为「关于」项红点（.s-dot）的定位基准 */
   position: relative;
   flex: none;
   height: 34px;
@@ -220,7 +220,7 @@ onBeforeUnmount(() => {
   background: var(--accent-container);
   color: var(--accent-text);
 }
-/* 「关于」导航项红点（fix batch6 Task D #12）：8px 圆点绝对定位在文字右上，
+/* 「关于」导航项红点：8px 圆点绝对定位在文字右上，
    仅 updateAvailable 时渲染（与 App.vue ⚙ 红点同一形态） */
 .s-dot {
   position: absolute;

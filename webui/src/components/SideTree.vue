@@ -4,7 +4,7 @@
 // - 数据源根（🗄 名称 · 类型 + 状态点）→ 递归文件夹树；不再渲染服务器叶（列表承担）
 // - 虚拟文件夹：tree-state expansion 键即存在（空文件夹物化，与 WPF BuildView 一致）；
 //   右键菜单 新建/重命名/删除（folderOps 统一实现，列表侧共用）
-// - 节点右侧子服务器计数与列表同口径（batch7 #9）：数据源根/文件夹 = 直接子级服务器数
+// - 节点右侧子服务器计数与列表同口径：数据源根/文件夹 = 直接子级服务器数
 //   （与点击后的列表行数/面包屑「N 台」一致）；「全部数据」= 全库服务器总数
 // - 树下方「标签」chips（置顶在前）；底部「« 收起边栏」emit update:collapsed
 // - 展开/折叠与拖拽经 /api/ui-state/tree 持久化（防抖 500ms），与 WPF 共用 .tree_view.json；
@@ -519,7 +519,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   font-size: 0.8462rem;
 }
 
-/* 标签区容器：标题行 + 滚动区拆分（fix batch6 Task E #11）——「标签」标题恒定可见，
+/* 标签区容器：标题行 + 滚动区拆分——「标签」标题恒定可见，
    只有 .tag-list 滚动；max-height 兜底防超多标签挤压树区 */
 .tags {
   flex-shrink: 0;

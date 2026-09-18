@@ -22,7 +22,7 @@ import { api } from '../../api'
 const props = defineProps({
   /** 当前图标：裸 base64 字符串（json 的 IconBase64），空串 = 无图标 */
   modelValue: { type: String, default: '' },
-  /** 预览底色（#RRGGBB，EditorDrawer 由 ColorHex 派生；fix-batch1 #6 颜色即时联动） */
+  /** 预览底色（#RRGGBB，EditorDrawer 由 ColorHex 派生；颜色随 ColorHex 即时联动） */
   tint: { type: String, default: '' },
   disabled: { type: Boolean, default: false },
 })
@@ -103,7 +103,7 @@ async function extractFromExe() {
   }
 }
 
-// exe 路径原生文件选择器（batch8 Task D #10 顺带）：与运行器设置同一 API
+// exe 路径原生文件选择器：与运行器设置同一 API
 // （POST /api/files/pick-exe，后端 WPF OpenFileDialog）。只填入路径不自动提取——
 // 提取可能失败需要 toast，选择器职责保持单一；404 = 用户取消，静默。
 async function browseExePath() {
@@ -132,7 +132,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 
 <template>
   <div class="icon-picker">
-    <!-- 48px 预览瓦片（fix-batch1 #6）：点击即开选择器；tint = 当前 ColorHex 低饱和底色，
+    <!-- 48px 预览瓦片：点击即开选择器；tint = 当前 ColorHex 低饱和底色，
          无图标时 tint 仍生效（空瓦片也即时反映所选颜色） -->
     <button
       type="button"

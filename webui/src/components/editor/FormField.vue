@@ -186,7 +186,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
       <span v-if="showLabelInColumn" class="ff-label-text"
         >{{ label }}<span v-if="field.required" class="ff-required">*</span></span
       >
-      <!-- 字段旁帮助链接（batch8 Task F #20）：WPF 表单行 (?) 的 web 落点（如 mstsc 附加
+      <!-- 字段旁帮助链接：WPF 表单行 (?) 的 web 落点（如 mstsc 附加
            设置 → 文档 #additional-settings 锚点）；URL 照抄 WPF NavigateUri -->
       <HelpLink v-if="field.helpUrl" :href="field.helpUrl" />
       <!-- MARKDOWN 的 编辑 ⇄ 预览 切换（标签列右侧；i18n 键沿用 MarkdownField 原有） -->
@@ -492,7 +492,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 /* tags：n-dynamic-tags——宽度由上方 .ff-control > :deep(*) 的 100% 规则撑满控件列
-   （与 n-input 同宽，owner 验收要求），chips 换行/删除/禁用态均组件自带，
+   （与 n-input 同宽），chips 换行/删除/禁用态均组件自带，
    不自绘 chips 样式 */
 
 /* icon 选择器自带缩略图 + 按钮样式（IconPicker.vue），此处无需行内样式 */

@@ -1,6 +1,6 @@
 <script setup>
 /**
- * 启动器分组（Plan 3 Task 6，spec §6；fix batch7 Task D #12 全量自动保存）：
+ * 启动器分组（spec §6；全量自动保存）：
  * GET/PUT /api/settings/launcher，改完即存（无保存按钮/dirty 提示）。
  * - 启用开关 + 两个行为开关（showCredentials / allowSaveInfoInQuickConnect）翻转即 PUT 全量表单。
  * - 热键录制框：点击进入录制 → window 捕获阶段 keydown（录制中吞掉一切键，防误触浏览器/页面

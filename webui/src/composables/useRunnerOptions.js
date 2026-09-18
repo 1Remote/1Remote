@@ -1,5 +1,5 @@
 /**
- * SELECT 动态选项的运行器名缓存（GET /api/settings/runners，batch8 Task C #7③）：
+ * SELECT 动态选项的运行器名缓存（GET /api/settings/runners）：
  * 模块级单例状态——SelectedRunnerName 字段按协议各有一个 FormField 实例（9 协议
  * schema 中的 6 个运行器协议），共享同一次拉取（选项源是全局运行器配置，与表单
  * 数据无关，编辑器生命周期内不需重拉；设置页改完运行器重开编辑器即见新值）。

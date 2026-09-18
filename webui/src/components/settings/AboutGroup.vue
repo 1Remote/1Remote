@@ -1,12 +1,11 @@
 <script setup>
 /**
- * 关于分组（fix batch6 Task D #7 建立；fix batch7 Task D #11 重排为 web 单列自适应；
- * fix batch8 Task E #18 排版紧凑化——内容 12 节零增删，仅布局压缩）：
+ * 关于分组（web 单列自适应 + 排版紧凑——内容 12 节零增删，仅布局压缩）：
  * 内容对齐 WPF AboutPageView.xaml（12 节零遗漏）——
  * hero（logo/应用名/标语/版本/构建日期）、Update 行（有新版本时显示新版本号链接 + 红点，
  * 破坏性更新在 tooltip 里标记）、Author 卡（头像 + Shawn(github) + 邮箱）、Support
  * （使用文档）、做出贡献（说明 + 三按钮）、包含组件（10 个链接照抄 WPF 列表）。
- * 紧凑化（#18）：hero 与 Author 卡同行左右分布；Support 标题与文档链接同行；
+ * 紧凑布局：hero 与 Author 卡同行左右分布；Support 标题与文档链接同行；
  * 贡献按钮组保持横排；组件清单两列网格。克制风格：分组小标题 + 主题变量取色，
  * 不克隆 WPF 的三色按钮/双栏形态；词条与链接零增删。
  * 语言选择行已删除——常规组（GeneralGroup）已有语言下拉，此处不再重复。
@@ -65,7 +64,7 @@ const CONTRIBUTE = [
 
 <template>
   <div class="about">
-    <!-- hero 行（#18 紧凑化）：logo+名称/标语/版本（左）与 Author 卡（右）同行左右分布 -->
+    <!-- hero 行（紧凑布局）：logo+名称/标语/版本（左）与 Author 卡（右）同行左右分布 -->
     <div class="hero-row">
       <!-- hero：logo + 应用名 + 标语 + 版本/构建日期（版本徽章 + 日期弱化，tooltip 均为 BuildDate 全文） -->
       <div class="hero">
@@ -111,7 +110,7 @@ const CONTRIBUTE = [
     </div>
 
     <!-- Support（WPF:168-180：使用文档链接，文案 = WPF about_page_how_to_use 词条）：
-         标题与链接同行（#18 横排紧凑） -->
+         标题与链接同行-->
     <div class="sec-row">
       <h3 class="sec-title">{{ t('about.support') }}</h3>
       <a class="link-btn" href="https://1remote.github.io/usage/quick-start/" target="_blank" rel="noreferrer noopener">
@@ -143,7 +142,7 @@ const CONTRIBUTE = [
   max-width: 720px;
 }
 
-/* ---- hero 行（#18）：hero（左）与 Author 块（右）同行左右分布；窄屏折行 ---- */
+/* ---- hero 行：hero（左）与 Author 块（右）同行左右分布；窄屏折行 ---- */
 .hero-row {
   display: flex;
   justify-content: space-between;
@@ -252,7 +251,7 @@ const CONTRIBUTE = [
   color: var(--accent-text);
 }
 
-/* ---- Support 行（#18）：标题与文档链接同行横排 ---- */
+/* ---- Support 行：标题与文档链接同行横排 ---- */
 .sec-row {
   display: flex;
   align-items: center;
@@ -320,7 +319,7 @@ const CONTRIBUTE = [
   gap: 8px;
 }
 
-/* ---- Included Components（#18：两列超链接网格） ---- */
+/* ---- Included Components（两列超链接网格） ---- */
 .components {
   margin: 0;
   padding: 0;

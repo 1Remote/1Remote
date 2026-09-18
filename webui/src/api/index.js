@@ -98,12 +98,12 @@ export const api = {
   // 批量补丁：patch 键为 camelCase（列表 DTO 域，与后端 allow-list 对应）；ds 省略 = Local
   batchUpdate: (ids, patch, ds) =>
     request('/api/servers/batch', { method: 'POST', body: ds ? { ids, patch, ds } : { ids, patch } }),
-  // 批量回读（batch8 #8）：只读返回逐台非敏感字段 {id, askPasswordWhenConnect,
+  // 批量回读：只读返回逐台非敏感字段 {id, askPasswordWhenConnect,
   // inheritedCredentialName, startupAutoCommand, startupPath, rdpFileAdditionalSettings}
   //（协议不适用字段为 null；不含 password 等任何加密字段）；ids 空或任一未知 id → 400/404
   batchPeek: (ids, ds) => request('/api/servers/batch/peek', { method: 'POST', body: ds ? { ids, ds } : { ids } }),
   icons: () => request('/api/icons'),
-  // exe 路径文件选择器（batch8 Task D #10）：后端弹 WPF OpenFileDialog（Filter=exe），
+  // exe 路径文件选择器：后端弹 WPF OpenFileDialog（Filter=exe），
   // path 传当前值（后端取其目录作初始目录）。成功 → {path}；用户取消 → 404（err.status=404，
   // 调用方静默）。timeout 放宽到 10 分钟：请求寿命 = 用户开着对话框的时间，30s 默认会
   // 在用户浏览文件夹期间就掐断

@@ -1,6 +1,6 @@
 <script setup>
 /**
- * 字符串字典编辑器（FIELD.KV_MAP，batch8 Task C #7⑤）：json 值是 {key: value} 对象
+ * 字符串字典编辑器（FIELD.KV_MAP）：json 值是 {key: value} 对象
  * （PascalCase 域直通，键名 = 用户数据原样），渲染为行式 [key 输入][value 输入][删行✕]
  * 小表 + 底部加行按钮——形态对齐 KeyValueLines（同款边框容器/加行按钮/等宽字体）。
  *

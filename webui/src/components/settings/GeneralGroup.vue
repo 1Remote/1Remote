@@ -1,6 +1,6 @@
 <script setup>
 /**
- * 常规分组（Plan 3 Task 4；fix batch7 Task D #12 全量自动保存）：GET/PUT /api/settings/general
+ * 常规分组（Plan 3 Task 4；全量自动保存）：GET/PUT /api/settings/general
  * 白名单字段表单，改完即存（无保存按钮/dirty 提示）。
  * - 每个 switch/select @update:value 立即差量 PUT 该键（useAutoSave 并发合并守卫；
  *   成功不 toast，仅失败 toast）；
@@ -8,7 +8,7 @@
  *   （映射后端小写码 zh-CN→zh-cn），桌面端同步生效（Task 7 前 Web 仅装配 zh-CN/en-US，
  *   其余语言只同步桌面端，见 locales/languages.js）；
  * - closeButtonBehavior/logLevel 为 int 枚举（WPF 侧语义，见 WebUiSettingsService）。
- * - requireSecondaryVerification 开关例外：点击立即生效（fix batch3 #6，WPF 平价
+ * - requireSecondaryVerification 开关例外：点击立即生效（WPF 平价
  *   GeneralSettingView.xaml.cs:31-43 同款）：翻转前先过一次 Windows 凭据/Hello 验证
  *   （POST /api/settings/verify；当前未开启验证时后端直通、无感知），验证通过才 PUT
  *   提交翻转；取消/失败 → 开关回弹不提交（不乐观更新，对齐"验证通过才翻转"）。
@@ -151,7 +151,7 @@ const SWITCHES_REST = [
             @update:show="shield"
             @update:value="onLanguageChange"
           />
-          <!-- 帮助链接（batch8 Task F #20）：WPF GeneralSettingView.xaml:41-62 语言行下方的
+          <!-- 帮助链接：WPF GeneralSettingView.xaml:41-62 语言行下方的
                "Can't find your language?" → 翻译协作文档。WPF 为字面量英文（14 语言同显英文，
                AboutPageView 硬编码英文同款先例）→ web 同值硬编码，不进 locale -->
           <HelpLink class="lang-help" href="https://1remote.github.io/usage/misc/help-translation/" badge="">

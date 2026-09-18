@@ -53,12 +53,12 @@ function onAddSelect(key) {
   else if (key === 'import') requestImport()
 }
 
-// ⚙ 设置按钮红点（fix batch6 Task D #12）：检测到新版本时右上角 8px 红点。
+// ⚙ 设置按钮红点：检测到新版本时右上角 8px 红点。
 // 数据源 = App 挂载即拉一次 /api/version（首检未完成时 30s 重拉至定论，见组合式函数头注释）；
 // 简单方案，刻意不与设置页共享状态（后端读静态缓存，请求轻量）
 const { update: updateInfo } = useVersionInfo()
 
-// ⚙ 进设置（#19 自愈加固）：router.push 同目标重复导航会被 vue-router 判为
+// ⚙ 进设置（重复导航自愈）：router.push 同目标重复导航会被 vue-router 判为
 // NAVIGATION_DUPLICATED 静默丢弃（isSameRouteLocation 去重，不重跑 finalizeNavigation，
 // 不重新赋 currentRoute）——若一次语言切换等全站重渲染中 router-view 的渲染 effect
 // 曾抛错死亡（URL/currentRoute 已推进而视图停在旧页），此后再点 ⚙ 全部落在去重分支，
@@ -165,7 +165,7 @@ function onTopbarDblClick(e) {
               1Remote
             </div>
             <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl K / Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup）。
-                 编辑抽屉打开时锁定（editorBus.editorOpen）：容器弱化 + input disabled（fix batch6 Task E #10） -->
+                 编辑抽屉打开时锁定（editorBus.editorOpen）：容器弱化 + input disabled -->
             <div
               class="searchbox"
               :class="{ disabled: editorOpen }"
@@ -186,14 +186,14 @@ function onTopbarDblClick(e) {
             </div>
             <div class="topbar-actions">
               <!-- 「+」下拉：新建服务器 / 导入服务器（经 editorBus 通知 ServerListView）；
-                   编辑抽屉打开时禁用（fix batch6 Task E #10）——disabled 的原生 button 不派发
+                   编辑抽屉打开时禁用——disabled 的原生 button 不派发
                    click，n-dropdown 不再弹出 -->
               <n-dropdown trigger="click" :options="addOptions" @select="onAddSelect">
                 <n-button quaternary size="small" :disabled="editorOpen" :title="t('topbar.addServer')">+</n-button>
               </n-dropdown>
               <span class="gear-wrap">
                 <n-button quaternary size="small" :disabled="editorOpen" @click="openSettings()">⚙</n-button>
-                <!-- 更新红点：仅 updateAvailable（fix batch6 Task D #12） -->
+                <!-- 更新红点：仅 updateAvailable -->
                 <span v-if="updateInfo?.available" class="gear-dot"></span>
               </span>
             </div>
@@ -288,7 +288,7 @@ function onTopbarDblClick(e) {
 .searchbox:focus-within {
   border-color: var(--accent);
 }
-/* 编辑器打开时的锁定态（fix batch6 Task E #10）：弱化 + 禁用光标（克制，不加边框变色等强提示） */
+/* 编辑器打开时的锁定态：弱化 + 禁用光标（克制，不加边框变色等强提示） */
 .searchbox.disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -339,7 +339,7 @@ function onTopbarDblClick(e) {
   display: flex;
   gap: 4px;
 }
-/* ⚙ 更新红点：8px 圆点绝对定位在按钮右上（fix batch6 Task D #12，与设置导航红点同形态） */
+/* ⚙ 更新红点：8px 圆点绝对定位在按钮右上（与设置导航红点同形态） */
 .gear-wrap {
   position: relative;
   display: inline-flex;

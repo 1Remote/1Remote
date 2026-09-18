@@ -1,6 +1,6 @@
 <script setup>
 /**
- * 键值行编辑器（FIELD.KEY_VALUE_LINES，批次7 Task C/D）：RDP「额外指令」
+ * 键值行编辑器（FIELD.KEY_VALUE_LINES）：RDP「额外指令」
  * （RdpControlAdditionalSettings）的行式编辑——WPF 现状是 AvalonEdit 文本域 +
  * 属性名补全（RdpFormView.xaml:525-611 + RdpFormView.xaml.cs 的 CompletionWindow），
  * web 重构为 [属性名自动补全][值输入][删行✕] 的行编辑器 + 底部加行按钮。
@@ -135,7 +135,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
           @update:value="updateRow(i, 'name', $event ?? '')"
         />
         <!-- 值：自由输入（:i: 型的整数校验留给后端/WPF 解析器，不在输入侧吞值）；
-             placeholder（batch8 #6）：与属性名框区分列语义——zh「值」/en "Value"，
+             placeholder：与属性名框区分列语义——zh「值」/en "Value"，
              其余语言回落 en（无 WPF 对应词条） -->
         <n-input
           class="kvl-value"
