@@ -1,27 +1,35 @@
 <script setup>
 /**
- * 批量编辑表单（自 EditorDrawer 拆出，仅在抽屉 mode='bulk' 时挂载）：BULK_FIELDS
- * 扁平列表 + 逐字段「保持不变 / 覆盖」切换，不含抽屉骨架/头部/底部按钮（留在 EditorDrawer）。
+ * 批量编辑表单（自 EditorDrawer 拆出，仅在抽屉 mode='bulk' 时挂载）——batch9 Task C 起
+ * 为 schema 驱动的协议感知视图（owner 需求，对齐 WPF 批量编辑语义）：
+ *  - 勾选全为同一协议 → 完整渲染该协议的 PROTOCOLS[P].groups（与单机编辑同一份 schema、
+ *    同 labelKey/placeholderKey/helpUrl，控件复用 FormField/SwitchItem——批量与非批量的
+ *    输入方式/占位/帮助链接天然一致）；混合协议 → 组/字段级交集（规则见 editor/bulkSchema.js）。
+ *  - SUBFORM 字段不渲染（后端 BatchPatchDeepFields 400 引导单机编辑）；凭据组按 credRole
+ *    拍平（「手动 ⇄ 凭据库」二选一是单台状态机，批量域每字段独立保持不变/覆盖）；
+ *    visibleWhen 忽略（N 台依赖值不同时显隐无法统一裁决，有意偏差，见 bulkSchema.js 头注释）。
+ *  - 不抽共享 SchemaForm 组件的决策：单机渲染管线（blocksOf 开关聚合/cred-mode 伪块）是
+ *    「单 json v-model」形态，批量是「逐字段保持不变/覆盖 + 共享值只读回显」形态，行结构
+ *    不同（每行带切换按钮）；真正的共享点是 schema + FormField/SwitchItem/HelpLink 与组
+ *    标题模板，强行抽组件需要大量条件槽位，两不像。组标题/描述/提示行的模板与样式按
+ *    EditorDrawer 同款复制一份（scoped 样式不跨组件，.ed-fields/.ed-banner 同理）。
  *
- * 数据来源（两路合并）：
- *  - 列表 DTO（camelCase 域，bulkServers prop）：dtoKey 字段的共享值逐字段计算——全同 →
- *    只读展示；不同 →「N 台各不相同」；
- *  - peek 回读（挂载时 POST /api/servers/batch/peek）：dtoKey=null 且非敏感的
- *    五键（inheritedCredentialName/askPasswordWhenConnect/startupAutoCommand/startupPath/
- *    rdpFileAdditionalSettings）由 peek 补齐 known——同样参与共享值展示与「覆盖」初值；
- *    勾选 ≤50 台才回读（防大库风暴，>50 维持「未回读」提示），失败静默退化（字段回到
- *    未回读占位，不阻断表单）。password 例外：敏感字段永不回读（bulkSensitive 文案不变）。
+ * 数据来源（两路合并，键均为 camelCase patch 键 = camelKey(schema key)）：
+ *  - 列表 DTO（bulkServers prop）：BULK_DTO_KEYS 覆盖的 8 键（displayName/note/tags/
+ *    colorHex/iconBase64/address/port/userName）共享值逐字段计算；
+ *  - peek 回读（挂载时 POST /api/servers/batch/peek，≤50 台防大库风暴，失败静默退化）：
+ *    其余全部非敏感键（后端从 BatchPatchFieldMap 同源派生，扣 3 个加密键与这 8 个 DTO 键）。
+ *    password/privateKey/gatewayPassword 为敏感键：列表与 peek 均不回读（bulkSensitive 文案）。
  *
- * 每字段默认「保持不变」（不进 patch），点「覆盖」后从共享值（已知且全同）或空值起编辑；
- * 保存 = diffPatch(共享初值, 当前值) 仅取被覆盖字段 → POST /api/servers/batch
- *（patch 键 camelCase，缺失 = 保持不变）。表单字段限于后端 BatchPatchFieldMap 的
- * allow-list（schemas.js BULK_FIELDS），深层/子表单字段不参与批量。
+ * 每字段默认「保持不变」（不进 patch），点「覆盖」后从共享值（已知且全同且非 null）或
+ * 类型默认值（schema defaults / 选项首项）起编辑；保存 = diffPatch(共享初值, 当前值) 仅取
+ * 被覆盖字段 → POST /api/servers/batch（缺失 = 保持不变）。
  *
- * 与抽屉的接缝（保持拆分前的事件序与按钮态）：
+ * 与抽屉的接缝（保持既有事件序与按钮态）：
  *  - 保存入口统一在抽屉（底部保存按钮 / Ctrl+S）：抽屉经模板 ref 调本组件 save()，
  *    内部含 saving 防重入、必填校验与服务端错误内联展示；
  *  - 保存成功：message.success → emit('saved', { mode:'bulk', ids }) → 抽屉转发父级并
- *    执行关闭动画（doClose 属抽屉的进出场职责；列表刷新由 SSE reload 自动完成）；
+ *    执行关闭动画（列表刷新由 SSE reload 自动完成）；
  *  - saving / dirty（有字段处于覆盖态即脏）/ dsMixed（跨数据源勾选禁存）经 defineExpose
  *    暴露，抽屉的底部按钮禁用态与 Esc 关闭的脏确认经模板 ref 响应式读取。
  */
@@ -29,8 +37,11 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import FormField from './FormField.vue'
-import { BULK_FIELDS } from '../../editor/schemas.js'
+import HelpLink from '../HelpLink.vue'
+import { bulkSchemaView, camelKey, BULK_DTO_KEYS, BULK_SENSITIVE_KEYS } from '../../editor/bulkSchema.js'
+import { FIELD } from '../../editor/fieldTypes.js'
 import { diffPatch } from '../../editor/patch.js'
+import { opaqueHex } from '../../utils/color.js'
 import { api } from '../../api'
 
 const props = defineProps({
@@ -49,10 +60,10 @@ const saving = ref(false)
 const saveErrors = ref([]) // 服务端 400 的 {errors} 列表（内联展示）
 const missingRequired = ref([]) // 客户端必填快速校验（字段文案列表）
 
-// ---- peek 回读：选中 ≤50 台时拉取五键非敏感字段，>50/失败静默退化 ----
+// ---- peek 回读：选中 ≤50 台时拉取非敏感字段，>50/失败静默退化 ----
 // bulkDsMixed 的 ds 以 bulkServers 为准，与本表单保存口径一致；peek 也按单 ds 语义调用。
 const PEEK_LIMIT = 50
-const peekItems = ref(null) // null=未回读；Array<{id, askPasswordWhenConnect, ...}>（camelCase）
+const peekItems = ref(null) // null=未回读；Array<{id, <camelKey>: value}>（camelCase）
 onMounted(() => {
   const count = props.bulkIds.length
   if (count === 0 || count > PEEK_LIMIT) return
@@ -75,72 +86,79 @@ const peekMap = computed(() => {
   return props.bulkIds.length && props.bulkIds.every((id) => map[id]) ? map : null
 })
 
-// ---- 深拷贝（JSON 往返：与共享值/patch 的序列化语义一致，reactive 代理脱钩；
-// null/undefined 原样保留——peek 的协议不适用字段以 null 占位参与共享值比较）----
+// ---- 深拷贝（JSON 往返：与共享值/patch 的序列化语义一致，reactive 代理与 schema
+// defaults 对象脱钩——绝不让表单编辑原地改写 schemas.js 的共享常量）----
 function deepClone(o) {
   return o == null ? o : JSON.parse(JSON.stringify(o))
 }
 
+// ---- schema 视图：全同协议 = 该协议完整分组；混合 = 组/字段级交集（bulkSchema.js）----
+const schemaView = computed(() => bulkSchemaView(props.bulkServers.map((s) => s?.protocol)))
+const bulkDefaults = computed(() => schemaView.value.defaults)
+/** 渲染字段平铺（{field, key=camelCase patch 键}）：共享值/覆盖态/校验的遍历基 */
+const bulkFields = computed(() => {
+  const out = []
+  for (const g of schemaView.value.groups) {
+    for (const f of g.fields) out.push({ field: f, key: camelKey(f.key) })
+  }
+  return out
+})
+
 // ---- 共享值计算 + 逐字段「保持不变/覆盖」状态 ----
-// bulkServers 是列表 DTO（camelCase）；bulkShared[key] = { known, same, value }：
-//  - dtoKey 有值 → known=true，value 为 N 台的共享值（same=false 时无意义，仅 same 参与 UI）；
-//  - dtoKey=null 且非敏感 → known 由 peek 决定（回读成功时逐台比对，键名与 patch 键一致）；
-//  - dtoKey=null 且敏感（password）或 peek 未就绪 → known=false，只提示、不展示值。
+// bulkShared[key] = { known, same, value }：
+//  - BULK_DTO_KEYS 覆盖键 → known=true，value 为 N 台列表 DTO 值（same=false 时无意义）；
+//  - 其余非敏感键 → known 由 peek 决定（回读成功时逐台比对，键名 = patch 键）；
+//  - 敏感键（password/privateKey/gatewayPassword）或 peek 未就绪 → known=false，只提示、不展示值。
 // 相等判定与 patch.js 同口径（JSON.stringify 严格比对，数组整体比较）。
-const bulkFields = computed(() =>
-  BULK_FIELDS.filter((f) => !f.protocols || props.bulkServers.every((s) => f.protocols.includes(s.protocol)))
-)
 const bulkShared = computed(() => {
   const out = {}
-  for (const f of BULK_FIELDS) {
-    // peek 回读键名 = BULK_FIELDS 的 key（camelCase patch 键，与 BatchPeekItem 序列一致）
-    if (!f.dtoKey && !f.bulkSensitive && peekMap.value) {
-      const vals = props.bulkIds.map((id) => peekMap.value[id]?.[f.key])
+  for (const { key } of bulkFields.value) {
+    const dtoKey = BULK_DTO_KEYS[key]
+    if (dtoKey) {
+      const vals = props.bulkServers.map((s) => s?.[dtoKey])
       const first = JSON.stringify(vals[0])
       const same = vals.every((v) => JSON.stringify(v) === first)
-      out[f.key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
+      out[key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
       continue
     }
-    if (!f.dtoKey) {
-      out[f.key] = { known: false, same: false, value: undefined }
+    if (!BULK_SENSITIVE_KEYS.has(key) && peekMap.value) {
+      const vals = props.bulkIds.map((id) => peekMap.value[id]?.[key])
+      const first = JSON.stringify(vals[0])
+      const same = vals.every((v) => JSON.stringify(v) === first)
+      out[key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
       continue
     }
-    const vals = props.bulkServers.map((s) => s?.[f.dtoKey])
-    const first = JSON.stringify(vals[0])
-    const same = vals.every((v) => JSON.stringify(v) === first)
-    out[f.key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
+    out[key] = { known: false, same: false, value: undefined }
   }
   return out
 })
 const bulkOverwrite = reactive({}) // key → true（已切到覆盖编辑）；缺省 = 保持不变
 const bulkValues = reactive({}) // key → 覆盖态下的当前值（仅覆盖态有意义）
 
-// 未回读字段（known=false）的占位文案分两类：敏感字段（bulkSensitive，如 password——
-// 列表接口不回读明文，安全设计，与 WPF 哨兵机制同源；peek 也不回读）用
-// bulkSensitiveHint；其余（继承凭据/连接时询问密码/协议专属键——peek 未就绪时：
-// 勾选 >50 台或回读失败）用 bulkUnknown。两者都只引导「覆盖」式设置。
-function bulkUnknownKey(f) {
-  return f.bulkSensitive ? 'editor.bulkSensitiveHint' : 'editor.bulkUnknown'
-}
-const bulkCount = computed(() => props.bulkServers.length)
-const bulkDsNames = computed(() => new Set(props.bulkServers.map((s) => s.dataSourceName || 'Local')))
-// 后端 batch 端点单 ds 语义：跨数据源勾选无法一次落库 → 明确告知并禁存（不做静默裁剪）
-const bulkDsMixed = computed(() => bulkDsNames.value.size > 1)
-const bulkDs = computed(() => props.bulkServers[0]?.dataSourceName || props.dataSourceName || 'Local')
-
+// 覆盖态的初值兜底：类型感知（int 数字/静态枚举用 schema defaults 或选项首值——空值无法
+// 进 patch 域；runners 下拉的 '' 是真实取值=跟随全局，不拦）。
 function emptyValueFor(field) {
-  if (field.type === 'tags') return []
-  if (field.type === 'switch') return false
+  if (field.type === FIELD.TAGS) return []
+  if (field.type === FIELD.SWITCH) return false
+  if (field.type === FIELD.NUMBER && !field.asString) {
+    const d = bulkDefaults.value?.[field.key]
+    return d !== undefined ? deepClone(d) : null
+  }
+  if (field.type === FIELD.SELECT && !field.optionsSource) {
+    const d = bulkDefaults.value?.[field.key]
+    return d !== undefined ? deepClone(d) : (field.options?.[0]?.value ?? '')
+  }
   return ''
 }
 function toggleOverwrite(field) {
-  const key = field.key
+  const key = camelKey(field.key)
   if (bulkOverwrite[key]) {
     bulkOverwrite[key] = false // 回到「保持不变」：该字段退出 patch
     return
   }
   const shared = bulkShared.value[key]
-  bulkValues[key] = shared.known && shared.same ? deepClone(shared.value) : emptyValueFor(field)
+  // 共享值非 null 才作初值：null 无法写入 patch 域（后端 400），以类型默认值起编
+  bulkValues[key] = shared.known && shared.same && shared.value != null ? deepClone(shared.value) : emptyValueFor(field)
   bulkOverwrite[key] = true
 }
 // 有字段处于覆盖态即脏（值变化不退出覆盖，无需更细）——抽屉的 Esc 关闭确认据此判断
@@ -149,25 +167,47 @@ const bulkDirty = computed(() => Object.values(bulkOverwrite).some(Boolean))
 function buildBulkPatch() {
   const initial = {}
   const current = {}
-  for (const f of bulkFields.value) {
-    if (!bulkOverwrite[f.key]) continue
-    const shared = bulkShared.value[f.key]
-    if (shared.known && shared.same) initial[f.key] = shared.value
-    current[f.key] = bulkValues[f.key]
+  for (const { key } of bulkFields.value) {
+    if (!bulkOverwrite[key]) continue
+    const shared = bulkShared.value[key]
+    if (shared.known && shared.same) initial[key] = shared.value
+    current[key] = bulkValues[key]
   }
   return diffPatch(initial, current)
 }
 function validateBulkRequired() {
   const missing = []
-  for (const f of bulkFields.value) {
-    if (!f.required || !bulkOverwrite[f.key]) continue
-    const v = bulkValues[f.key]
-    if (v == null || (typeof v === 'string' && v.trim() === '')) {
-      missing.push(f.labelKey ? t(f.labelKey) : f.key)
+  for (const { field, key } of bulkFields.value) {
+    if (!bulkOverwrite[key]) continue
+    const v = bulkValues[key]
+    const empty = v == null || (typeof v === 'string' && v.trim() === '')
+    if (!empty) continue
+    // 必填字段照旧；int 数字与静态枚举字段的空值无法进 patch 域（后端类型门/空值 400），
+    // 与必填同栏提示；runners 下拉的 '' 是真实取值（跟随全局），不在此列
+    if (field.required || field.type === FIELD.NUMBER || (field.type === FIELD.SELECT && !field.optionsSource)) {
+      missing.push(field.labelKey ? t(field.labelKey) : key)
     }
   }
   return missing
 }
+
+// ---- 未回读占位文案：敏感键（加密字段，列表/peek 均不回读，与 WPF 哨兵机制同源）用
+// bulkSensitiveHint；其余（peek 未就绪：>50 台或回读失败）用 bulkUnknown。两者都只引导
+// 「覆盖」式设置。「各不相同」占位复用 WPF server_editor_different_options 译文。----
+function bulkUnknownKey(field) {
+  return BULK_SENSITIVE_KEYS.has(camelKey(field.key)) ? 'editor.bulkSensitiveHint' : 'editor.bulkUnknown'
+}
+const bulkCount = computed(() => props.bulkServers.length)
+const bulkDsNames = computed(() => new Set(props.bulkServers.map((s) => s.dataSourceName || 'Local')))
+// 后端 batch 端点单 ds 语义：跨数据源勾选无法一次落库 → 明确告知并禁存（不做静默裁剪）
+const bulkDsMixed = computed(() => bulkDsNames.value.size > 1)
+const bulkDs = computed(() => props.bulkServers[0]?.dataSourceName || props.dataSourceName || 'Local')
+
+// 图标预览底色：共享 ColorHex（已知且全同）的低饱和 tint——IconPicker 只读/覆盖态即时联动
+const iconTint = computed(() => {
+  const shared = bulkShared.value[camelKey('ColorHex')]
+  return shared?.known && shared.same ? opaqueHex(shared.value) || '' : ''
+})
 
 // ---- 保存（抽屉经模板 ref 调用；成功后由抽屉转发 saved 并执行关闭）----
 async function save() {
@@ -205,52 +245,78 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
 <template>
   <div class="ed-fields">
     <div v-if="bulkDsMixed" class="ed-banner">{{ t('editor.bulkMixedDs') }}</div>
+    <!-- 混合协议提示：交集之外的选项不显示且各自保持不变（owner 需求文案） -->
+    <div v-else-if="schemaView.mixed" class="bulk-info-banner">{{ t('editor.bulkMixedProtocols') }}</div>
     <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
       {{ t('editor.missingRequired', { keys: missingRequired.join(', ') }) }}
     </div>
     <div v-if="saveErrors.length" class="ed-banner">
       <div v-for="(err, i) in saveErrors" :key="i">{{ err }}</div>
     </div>
-    <div v-for="f in bulkFields" :key="f.key" class="bulk-field">
-      <!-- 覆盖态：可编辑，值改动即时入 bulkValues -->
-      <FormField
-        v-if="bulkOverwrite[f.key]"
-        class="bulk-control"
-        :field="f"
-        :model-value="bulkValues[f.key]"
-        :data-source-name="bulkDs"
-        @update:model-value="(v) => (bulkValues[f.key] = v)"
-      />
-      <!-- 保持不变 + 共享值已知且全同：只读展示 N 台当前的共同值 -->
-      <FormField
-        v-else-if="bulkShared[f.key].known && bulkShared[f.key].same"
-        class="bulk-control"
-        :field="f"
-        :model-value="bulkShared[f.key].value"
-        disabled
-      />
-      <!-- 保持不变 + 各不相同/未回读：占位行（标签列对齐 FormField 的 148px） -->
-      <div v-else class="bulk-keep bulk-control">
-        <div class="bulk-keep-label" :title="f.labelKey ? t(f.labelKey) : f.key">
-          {{ f.labelKey ? t(f.labelKey) : f.key }}<span v-if="f.required" class="ff-required-like">*</span>
+
+    <!-- 分组铺开：与单机编辑同一份 schema（标题/描述/提示行/帮助链接同款模板；
+         字段行 = FormField（覆盖态可编辑 / 共享值已知且全同时只读）或占位行 + 右侧
+         「覆盖/保持不变」切换按钮 -->
+    <section v-for="g in schemaView.groups" :key="g.id" class="ed-group">
+      <h3 class="ed-group-title">
+        {{ g.labelKey ? t(g.labelKey) : g.id }}
+        <HelpLink v-if="g.helpUrl" :href="g.helpUrl" />
+      </h3>
+      <div v-if="g.descKey" class="ed-group-desc">{{ t(g.descKey) }}</div>
+      <p v-if="g.note" class="ed-group-note">
+        {{ g.note }}<HelpLink v-if="g.noteUrl" :href="g.noteUrl" badge="">{{ g.noteUrlLabel || '' }}</HelpLink>
+      </p>
+
+      <div v-for="f in g.fields" :key="f.key" class="bulk-field">
+        <!-- 覆盖态：可编辑，值改动即时入 bulkValues -->
+        <FormField
+          v-if="bulkOverwrite[camelKey(f.key)]"
+          class="bulk-control"
+          :field="f"
+          :model-value="bulkValues[camelKey(f.key)]"
+          :data-source-name="bulkDs"
+          :tint="iconTint"
+          @update:model-value="(v) => (bulkValues[camelKey(f.key)] = v)"
+        />
+        <!-- 保持不变 + 共享值已知且全同：只读展示 N 台当前的共同值 -->
+        <FormField
+          v-else-if="bulkShared[camelKey(f.key)].known && bulkShared[camelKey(f.key)].same"
+          class="bulk-control"
+          :field="f"
+          :model-value="bulkShared[camelKey(f.key)].value"
+          :data-source-name="bulkDs"
+          :tint="iconTint"
+          disabled
+        />
+        <!-- 保持不变 + 各不相同/未回读/敏感：占位行（标签列对齐 FormField 的 148px） -->
+        <div v-else class="bulk-keep bulk-control">
+          <div class="bulk-keep-label" :title="f.labelKey ? t(f.labelKey) : f.key">
+            {{ f.labelKey ? t(f.labelKey) : f.key }}<span v-if="f.required" class="ff-required-like">*</span>
+          </div>
+          <div
+            class="bulk-hint"
+            :title="
+              bulkShared[camelKey(f.key)].known ? t('editor.differentValues', { n: bulkCount }) : t(bulkUnknownKey(f))
+            "
+          >
+            {{
+              bulkShared[camelKey(f.key)].known ? t('editor.differentValues', { n: bulkCount }) : t(bulkUnknownKey(f))
+            }}
+          </div>
         </div>
-        <div
-          class="bulk-hint"
-          :title="bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t(bulkUnknownKey(f))"
+        <button
+          class="bulk-toggle"
+          :class="{ on: bulkOverwrite[camelKey(f.key)] }"
+          type="button"
+          :title="
+            bulkOverwrite[camelKey(f.key)] ? t('editor.keepUnchangedTip') : t('editor.overwriteTip', { n: bulkCount })
+          "
+          @click="toggleOverwrite(f)"
         >
-          {{ bulkShared[f.key].known ? t('editor.differentValues', { n: bulkCount }) : t(bulkUnknownKey(f)) }}
-        </div>
+          {{ bulkOverwrite[camelKey(f.key)] ? t('editor.keepUnchanged') : t('editor.overwrite') }}
+        </button>
       </div>
-      <button
-        class="bulk-toggle"
-        :class="{ on: bulkOverwrite[f.key] }"
-        type="button"
-        :title="bulkOverwrite[f.key] ? t('editor.keepUnchangedTip') : t('editor.overwriteTip', { n: bulkCount })"
-        @click="toggleOverwrite(f)"
-      >
-        {{ bulkOverwrite[f.key] ? t('editor.keepUnchanged') : t('editor.overwrite') }}
-      </button>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -280,6 +346,53 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
 
 .ed-banner-required {
   border-color: var(--danger);
+}
+
+/* 混合协议提示：中性色（信息性提示，非错误——跨源禁存才用红色 ed-banner） */
+.bulk-info-banner {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: var(--text-3);
+  font-size: 0.9231rem;
+  line-height: 1.6;
+  padding: 8px 10px;
+  word-break: break-word;
+}
+
+/* 分组区块与标题：与 EditorDrawer 单机表单同款（sticky 标题在滚动区贴顶） */
+.ed-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ed-group-title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 6px 0 5px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 0.9615rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ed-group-desc {
+  margin: -4px 0 0;
+  color: var(--text-4);
+  font-size: 0.8846rem;
+  line-height: 1.5;
+}
+
+.ed-group-note {
+  margin: 8px 0 0;
+  color: var(--accent-text);
+  font-size: 0.8846rem;
+  line-height: 1.5;
 }
 
 /* 批量模式字段行：FormField（或占位行） + 右侧「覆盖/保持不变」切换 */

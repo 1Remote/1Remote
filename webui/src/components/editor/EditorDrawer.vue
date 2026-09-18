@@ -397,7 +397,8 @@ onBeforeUnmount(() => {
           <div class="ed-state-detail">{{ loadError }}</div>
         </div>
         <template v-else>
-          <!-- 批量模式：BULK_FIELDS 覆盖列表 + 保存流（接缝见 BulkEditForm 文件头） -->
+          <!-- 批量模式：schema 驱动的协议感知批量表单（全同协议 = 完整分组，混合 = 交集；
+               保存流接缝见 BulkEditForm 文件头） -->
           <BulkEditForm
             v-if="isBulk"
             ref="bulkFormRef"

@@ -88,8 +88,9 @@
  *        表达）→ 跳过不实现，记录在案；
  *      Credential 选择器：CredentialPicker 自带 editor.credSelectHint（WPF 同键译文）；
  *      Domain/网关四字段/其余无 Tag 字段：WPF 无 Tag → 不加。
- *  - BULK_FIELDS（批量域）不加：字段形态与单机编辑不同（共享值/覆盖语义），WPF 批量
- *    编辑弹窗无对应 Tag。
+ *  - 批量编辑（batch9 Task C）不再有独立的 BULK_FIELDS 扁平清单：批量表单直接复用本
+ *    文件的 PROTOCOLS schema（全同协议 = 完整分组，混合协议 = 组/字段级交集，见
+ *    editor/bulkSchema.js），placeholder/帮助链接随 schema 免费一致。
  */
 import { FIELD } from './fieldTypes.js'
 import { RDP_CONTROL_ADDITIONAL_SETTING_KEYS } from './rdpProperties.js'
@@ -232,8 +233,8 @@ function basicGroup({ withAddressPort = true } = {}) {
     // 'Always open in new window'）。web 基本组 Icon/Color 在 Tags 之后 → 紧跟 ColorHex
     // 下方插入（保持"图标/颜色正下方"的 WPF 行位）。bool? 恒非 null 编辑（true/false）
     { key: 'AlwaysOpenInNewTabWindow', type: FIELD.SWITCH },
-    // 备注：MARKDOWN 特化——编辑 ⇄ 预览切换（MarkdownField）。批量编辑的 note
-    // 仍为 TEXTAREA（BULK_FIELDS，列表 DTO 域扁平字段不参与该特化）。
+    // 备注：MARKDOWN 特化——编辑 ⇄ 预览切换（MarkdownField）。批量编辑同样按本
+    // schema 渲染 MARKDOWN（batch9 Task C 起批量复用单机 schema，不再有扁平清单）。
     // placeholder（batch9 #7）：WPF Note 输入区 Tag 的 markdown 示例文本
     // （ServerEditorPageView.xaml:295，字面量英文 → 12 生成语言同值回落，zh 系手写）
     { key: 'Note', type: FIELD.MARKDOWN, placeholderKey: 'editor.ph.note' }
@@ -1068,11 +1069,11 @@ export const PROTOCOLS = {
 // ---------------------------------------------------------------------------
 // 字段 labelKey 兜底：加载时统一补齐，builder 不必逐个写。
 // 规则：字段（含 subform 行字段）缺 labelKey 时默认 'editor.f.' + key；显式提供者
-// 不覆盖。locales 的 editor.f.* 共 73 键与去重后的字段 key 集合一一对应（9 协议共享
+// 不覆盖。locales 的 editor.f.* 键集与去重后的字段 key 集合一一对应（9 协议共享
 // 基类字段，同名 key 语义一致——如各协议的 UserName 均为「用户名」；子表单行字段与
 // 顶层同名字段同键共用：Address/Port/UserName/Password/Name 两处文案相同）。
-// 仅遍历 PROTOCOLS（编辑器 json 域）；BULK_FIELDS 属列表 DTO 域，自带
-// editor.bulkField.* 键，不在此列。
+// 批量编辑（batch9 Task C）同样消费本 schema（全同协议/混合交集，见 bulkSchema.js），
+// labelKey 兜底随之共用，无独立的批量字段文案键。
 // ---------------------------------------------------------------------------
 for (const schema of Object.values(PROTOCOLS)) {
   for (const group of schema.groups) {
@@ -1084,88 +1085,3 @@ for (const schema of Object.values(PROTOCOLS)) {
     }
   }
 }
-
-// ---------------------------------------------------------------------------
-// 批量编辑字段
-// ---------------------------------------------------------------------------
-
-/**
- * 批量编辑表单的字段描述符：与后端 BatchPatchFieldMap 的 allow-list 一一对应
- * （WebUiEditorService.cs；14 键）。与单机 schema 的 PascalCase 编辑器 json 域不同，
- * 批量 patch 属列表 DTO 域——`key` 直接就是 camelCase patch 键（后端 allow-list 映射到
- * C# 属性），也是批量表单 v-model 的绑定键。控件类型复用 FIELD 体系，FormField 直接渲染。
- *
- * 扩展属性（批量专用，FormField 不读取）：
- *  - dtoKey：列表 DTO（/api/servers，camelCase）中对应字段名，用于计算 N 台共享值；
- *    null = 列表 DTO 无此字段（password/inheritedCredentialName/askPasswordWhenConnect
- *    及协议专属三键）——共享值未知，仅能以「覆盖」方式设置统一值
- *    （note 在列表 DTO 中存在，可显示共享备注值）；
- *  - bulkSensitive：未回读字段中的敏感项（password——列表接口不回读明文，安全设计）；
- *    批量表单占位文案据此分叉（bulkSensitiveHint vs bulkUnknown，见 BulkEditForm）；
- *  - protocols：协议专属字段（startupAutoCommand/startupPath/rdpFileAdditionalSettings）
- *    的适用协议集（对照 BatchPatchFieldMap 注释）；所选服务器全部适用才显示该字段，
- *    否则后端会对不适用的那台 400（属性不存在）导致整批失败。
- */
-export const BULK_FIELDS = [
-  {
-    key: 'displayName',
-    type: FIELD.TEXT,
-    required: true,
-    labelKey: 'editor.bulkField.displayName',
-    dtoKey: 'displayName',
-  },
-  { key: 'note', type: FIELD.TEXTAREA, labelKey: 'editor.bulkField.note', dtoKey: 'note' },
-  { key: 'tags', type: FIELD.TAGS, labelKey: 'editor.bulkField.tags', dtoKey: 'tags' },
-  { key: 'colorHex', type: FIELD.COLOR, labelKey: 'editor.bulkField.colorHex', dtoKey: 'color' },
-  { key: 'iconBase64', type: FIELD.ICON, labelKey: 'editor.bulkField.iconBase64', dtoKey: 'iconBase64' },
-  { key: 'address', type: FIELD.TEXT, required: true, labelKey: 'editor.bulkField.address', dtoKey: 'address' },
-  {
-    key: 'port',
-    type: FIELD.NUMBER,
-    required: true,
-    asString: true,
-    labelKey: 'editor.bulkField.port',
-    dtoKey: 'port',
-  },
-  { key: 'userName', type: FIELD.TEXT, labelKey: 'editor.bulkField.userName', dtoKey: 'userName' },
-  {
-    key: 'password',
-    type: FIELD.PASSWORD,
-    labelKey: 'editor.bulkField.password',
-    dtoKey: null,
-    bulkSensitive: true,
-  },
-  {
-    key: 'inheritedCredentialName',
-    type: FIELD.CREDENTIAL,
-    labelKey: 'editor.bulkField.inheritedCredentialName',
-    dtoKey: null,
-  },
-  {
-    key: 'askPasswordWhenConnect',
-    type: FIELD.SWITCH,
-    labelKey: 'editor.bulkField.askPasswordWhenConnect',
-    dtoKey: null,
-  },
-  {
-    key: 'startupAutoCommand',
-    type: FIELD.TEXT,
-    labelKey: 'editor.bulkField.startupAutoCommand',
-    dtoKey: null,
-    protocols: ['SSH', 'Telnet', 'Serial'],
-  },
-  {
-    key: 'startupPath',
-    type: FIELD.TEXT,
-    labelKey: 'editor.bulkField.startupPath',
-    dtoKey: null,
-    protocols: ['SFTP', 'FTP'],
-  },
-  {
-    key: 'rdpFileAdditionalSettings',
-    type: FIELD.TEXTAREA,
-    labelKey: 'editor.bulkField.rdpFileAdditionalSettings',
-    dtoKey: null,
-    protocols: ['RDP', 'RemoteApp'],
-  },
-]
