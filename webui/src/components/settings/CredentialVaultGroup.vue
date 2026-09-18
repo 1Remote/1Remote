@@ -15,9 +15,20 @@
  *   成功后行内展开明文（默认掩码，可切换）+ 30s 倒计时自动隐藏；403 → toast 验证失败；
  *   404 → 静默刷新列表（凭据已被其它端删除/改名）。列表列与 WPF 凭据库表格对齐
  *   （名称/用户名/操作），另加 web 侧引用计数列；WPF 的密码/私钥掩码列由 reveal 行承载。
- * - 编辑模态的密码/私钥路径不可预填（列表无值、reveal 有 30s 窗口与验证成本）——后端 PUT
- *   对这两个加密字段为"空=保持原值"语义（明文不回显，空提交沿用原值），
- *   输入框以 placeholder 注明（settings.ph.keepCurrent）。
+ * - 编辑模态的密码/私钥路径（batch9 Task D ⑭⑮⑯，"正常行为"对齐）：
+ *   打开即预填掩码串 MASK（列表无值、不自动 reveal——那会在打开模态时弹验证）；
+ *   点 👁 调 reveal（复用行级同一端点与 30s 免验证窗口）回填真实值后可编辑。
+ *   保存语义（后端 Update 对两字段 null=保持、空串=清除、非空=新值）：
+ *   未 reveal 且值仍为 MASK → 提交 null（保持）；reveal 后未改 → 提交原值（等价保持）；
+ *   改过/清空 → 提交新值/空串（空串=显式清除）。
+ *   密码/私钥二选一（WPF 弹窗 IsUsePrivateKey 复选框的 web 形态）：segmented 切换
+ *   仅切换展示（ed-seg 样式，EditorDrawer 凭据组同款），保存只提交可见侧——隐藏侧
+ *   编辑态提交 null（保持原值）、新建态提交空串（无）。与 WPF"保存时清空另一侧"
+ *   不同：web 列表无从预填，默认侧是猜测（密码），切换即清会把仅改名/仅换私钥的
+ *   保存变成静默清库，故取保守语义，提示行（cv.secretHint）告知如何显式清除。
+ *   reveal 成功后若密码侧为空且私钥侧非空则自动切到私钥侧（WPF 编辑打开时
+ *   org.PrivateKeyPath 非空默认勾选私钥的对齐；仅用户未手动切换过时应用）。
+ *   私钥路径行带"浏览…"按钮（api.pickFile，filter 照抄 WPF 弹窗 ppk|*.*）。
  * - 模态的 Esc：捕获阶段截停（与 IconPicker 同款）——SettingsView 的 window 级 Esc 返回链
  *   不应因"关模态"误触导航；n-select 的展开计数走 settingsEscShield（与 GeneralGroup 同款）。
  */
@@ -76,39 +87,121 @@ const showEdit = computed({
     if (!v) editing.value = null
   },
 })
+// 编辑态未 reveal 前密码/私钥路径的掩码占位（与行级 reveal 的 8 点掩码同观感）；
+// 保存时"值仍为掩码且未 reveal"映射为 null（后端语义 null=保持原值）
+const SECRET_MASK = '••••••••'
 // 表单字段集与 WPF 凭据库弹窗一致：Name/UserName/Password/PrivateKeyPath，
 // 不含 Address/Port（凭据库不使用，后端落库前本就清空）
 const form = reactive({ name: '', userName: '', password: '', privateKeyPath: '' })
 const showPwd = ref(false)
 const saving = ref(false)
+// batch9 Task D ⑭⑮⑯：密码/私钥二选一（展示切换）+ 编辑态掩码 reveal 回填 + 私钥浏览
+const authMode = ref('password') // 'password' | 'key'：仅控制展示哪一侧，保存语义见 save()
+let segTouched = false // 用户手动切换过 segmented 后，reveal 回填不再自动换侧
+const secretsLoaded = ref(false) // 编辑态是否已 reveal 回填明文（此后 👁=普通明文切换）
+const revealing = ref(false) // 模态内 reveal 在途（防连点重复弹本地验证）
+const browsing = ref(false) // 私钥浏览在途（请求寿命 = 用户开着对话框的时间）
+
+function resetSecretUi() {
+  authMode.value = 'password'
+  segTouched = false
+  secretsLoaded.value = false
+  showPwd.value = false
+}
 
 function openCreate() {
   Object.assign(form, { name: '', userName: '', password: '', privateKeyPath: '' })
-  showPwd.value = false
+  resetSecretUi()
   editing.value = { mode: 'create' }
 }
 
 function openEdit(c) {
+  // 密码/私钥路径预填掩码：列表无值（安全红线），真实值由 👁 reveal 回填
   Object.assign(form, {
     name: c.name,
     userName: c.userName,
-    password: '',
-    privateKeyPath: '',
+    password: SECRET_MASK,
+    privateKeyPath: SECRET_MASK,
   })
-  showPwd.value = false
+  resetSecretUi()
   editing.value = { mode: 'edit', name: c.name }
+}
+
+function setAuthMode(mode) {
+  if (authMode.value === mode) return
+  segTouched = true
+  authMode.value = mode
+}
+
+// 👁：编辑态未加载明文时 = reveal（本地验证门，与行级 reveal 同端点同 30s 窗口）；
+// 已加载（或新建态）= 普通明文切换（仅密码行有切换，私钥路径 reveal 后即明文可编辑）
+function onEye(field) {
+  if (editing.value?.mode === 'edit' && !secretsLoaded.value) {
+    revealSecrets(field)
+    return
+  }
+  if (field === 'password') showPwd.value = !showPwd.value
+}
+
+async function revealSecrets(field) {
+  if (revealing.value) return // 防连点重复弹本地验证
+  const target = editing.value
+  revealing.value = true
+  try {
+    const r = await api.revealCredential(target.name, ds.value)
+    if (editing.value !== target) return // 等待期间模态已关/换目标
+    // 只回填仍为掩码的字段：用户已 typed/浏览选定的新值不被旧值覆盖
+    if (form.password === SECRET_MASK) form.password = r.password || ''
+    if (form.privateKeyPath === SECRET_MASK) form.privateKeyPath = r.privateKeyPath || ''
+    secretsLoaded.value = true
+    if (field === 'password') showPwd.value = true
+    // WPF 编辑打开的对齐规则（org.PrivateKeyPath 非空 → 私钥侧）：仅当密码侧实际为空
+    // 且用户未手动切换时应用——点了密码行的 👁 却跳到私钥侧会违背当前查看意图
+    if (!segTouched && !form.password && form.privateKeyPath) authMode.value = 'key'
+  } catch (e) {
+    if (editing.value !== target) return
+    if (e?.status === 404 || e?.status === 400) {
+      editing.value = null // 凭据/数据源已不存在：关模态静默刷新（行级 reveal 同款）
+      load()
+    } else {
+      message.error(t('cv.revealFailed')) // 403=验证失败/取消；网络异常同文案（避免明文相关细节泄漏）
+    }
+  } finally {
+    revealing.value = false
+  }
+}
+
+// 私钥路径"浏览…"：后端弹 WPF 同款 OpenFileDialog（filter 照抄 WPF 凭据弹窗 ppk|*.*）；
+// 404=用户取消静默（api.pickFile 约定）
+async function pickKeyFile() {
+  if (browsing.value) return
+  browsing.value = true
+  try {
+    const resp = await api.pickFile('ppk|*.*', { path: form.privateKeyPath === SECRET_MASK ? '' : form.privateKeyPath })
+    if (resp?.path) form.privateKeyPath = resp.path
+  } catch (e) {
+    if (e?.status !== 404) message.error(t('settings.r.pickFailed'))
+  } finally {
+    browsing.value = false
+  }
 }
 
 async function save() {
   if (!form.name.trim() || saving.value) return
   saving.value = true
-  // credential 域与后端 DTO 一致（PascalCase；Password/PrivateKeyPath 明文入，服务端加密落库；
-  // 编辑态留空 = 保持原值，见文件头 #17 注释）
+  const isEdit = editing.value.mode === 'edit'
+  // 可见侧：未 reveal 且掩码未动 → null（保持原值）；其余提交现值（空串=显式清除，
+  // 非空=新值）。隐藏侧：编辑=不提交（null=保持），新建=空串（无）——二选一切换
+  // 只影响展示，不清另一侧（保守语义，见文件头注释；显式清除走"reveal 后清空再保存"）
+  const secretOut = (v) => (isEdit && !secretsLoaded.value && v === SECRET_MASK ? null : v)
+  const hidden = isEdit ? null : ''
+  // credential 域与后端 DTO 一致（PascalCase；Password/PrivateKeyPath 明文入/null 保持/
+  // 空串清除，服务端加密落库）
   const credential = {
     Name: form.name.trim(),
     UserName: form.userName.trim(),
-    Password: form.password,
-    PrivateKeyPath: form.privateKeyPath.trim(),
+    Password: authMode.value === 'password' ? secretOut(form.password) : hidden,
+    PrivateKeyPath: authMode.value === 'key' ? secretOut(form.privateKeyPath.trim()) : hidden,
   }
   try {
     if (editing.value.mode === 'create') await api.createCredential(credential, ds.value)
@@ -292,7 +385,8 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
       </div>
     </template>
 
-    <!-- 新建/编辑模态：Name 必填；密码眼睛切换；编辑态密码/私钥路径留空=保持原值（placeholder 注明） -->
+    <!-- 新建/编辑模态：Name 必填；密码/私钥二选一（segmented，仅切换展示）；
+         编辑态两字段预填掩码，👁 reveal（本地验证）回填明文；私钥行带浏览按钮 -->
     <n-modal
       v-model:show="showEdit"
       preset="card"
@@ -311,35 +405,86 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
           <label>{{ t('editor.f.UserName') }}</label>
           <n-input size="small" v-model:value="form.userName" :input-props="{ spellcheck: false }" />
         </div>
+        <!-- 密码/私钥二选一：WPF 弹窗 IsUsePrivateKey 复选框的 web 形态（ed-seg 样式，
+             EditorDrawer 凭据组同款）；仅切换展示，保存语义见 save() -->
         <div class="f-row">
+          <label>{{ t('cv.authType') }}</label>
+          <div class="cv-seg" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="authMode === 'password'"
+              :class="{ on: authMode === 'password' }"
+              @click="setAuthMode('password')"
+            >
+              {{ t('editor.f.Password') }}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="authMode === 'key'"
+              :class="{ on: authMode === 'key' }"
+              @click="setAuthMode('key')"
+            >
+              {{ t('editor.f.PrivateKeyPath') }}
+            </button>
+          </div>
+        </div>
+        <p v-if="editing?.mode === 'edit'" class="f-hint">{{ t('cv.secretHint') }}</p>
+        <div v-if="authMode === 'password'" class="f-row">
           <label>{{ t('editor.f.Password') }}</label>
           <n-input
             size="small"
             :type="showPwd ? 'text' : 'password'"
             v-model:value="form.password"
-            :placeholder="editing?.mode === 'edit' ? t('settings.ph.keepCurrent') : undefined"
             :input-props="{ spellcheck: false }"
           >
             <template #suffix>
+              <!-- 编辑态未 reveal：👁=验证后加载明文（title=cv.reveal）；此后=普通明文切换 -->
               <button
                 class="eye"
                 type="button"
-                :title="showPwd ? t('editor.hidePassword') : t('editor.showPassword')"
-                @click="showPwd = !showPwd"
+                :disabled="revealing"
+                :title="
+                  editing?.mode === 'edit' && !secretsLoaded
+                    ? t('cv.reveal')
+                    : showPwd
+                      ? t('editor.hidePassword')
+                      : t('editor.showPassword')
+                "
+                @click="onEye('password')"
               >
-                👁
+                {{ showPwd ? '🙈' : '👁' }}
               </button>
             </template>
           </n-input>
         </div>
-        <div class="f-row">
+        <div v-else class="f-row">
           <label>{{ t('editor.f.PrivateKeyPath') }}</label>
-          <n-input
-            size="small"
-            v-model:value="form.privateKeyPath"
-            :placeholder="editing?.mode === 'edit' ? t('settings.ph.keepCurrent') : undefined"
-            :input-props="{ spellcheck: false }"
-          />
+          <n-input size="small" v-model:value="form.privateKeyPath" :input-props="{ spellcheck: false }">
+            <template #suffix>
+              <!-- 编辑态未 reveal：👁=验证后加载明文（reveal 后路径即明文可编辑，WPF 同款纯文本框） -->
+              <button
+                v-if="editing?.mode === 'edit' && !secretsLoaded"
+                class="eye"
+                type="button"
+                :disabled="revealing"
+                :title="t('cv.reveal')"
+                @click="onEye('key')"
+              >
+                👁
+              </button>
+              <button
+                class="eye browse"
+                type="button"
+                :disabled="browsing"
+                :title="t('cv.browse')"
+                @click="pickKeyFile"
+              >
+                …
+              </button>
+            </template>
+          </n-input>
         </div>
       </div>
       <template #footer>
@@ -543,6 +688,41 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   font-size: 0.9615rem;
   color: var(--text-2);
 }
+.f-hint {
+  margin: -2px 0 0;
+  font-size: 0.8462rem;
+  line-height: 1.5;
+  color: var(--text-4);
+}
+/* 密码/私钥二选一 segmented（ed-seg 样式模式，EditorDrawer 凭据组同款） */
+.cv-seg {
+  display: inline-flex;
+  align-self: start;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.cv-seg button {
+  border: none;
+  background: var(--bg-elevated);
+  color: var(--text-3);
+  font-size: 0.9231rem;
+  line-height: 1;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cv-seg button + button {
+  border-left: 1px solid var(--border);
+}
+.cv-seg button:hover:not(.on) {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.cv-seg button.on {
+  background: var(--accent-container);
+  color: var(--accent-text);
+}
 .eye {
   border: none;
   background: transparent;
@@ -553,6 +733,16 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
 }
 .eye:hover {
   color: var(--text-1);
+}
+.eye:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* 私钥"浏览…"：WPF 弹窗 Select 按钮的 web 形态（"…"紧凑形态，title 注明） */
+.eye.browse {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
 }
 .modal-actions {
   display: flex;
