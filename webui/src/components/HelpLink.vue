@@ -1,6 +1,6 @@
 <script setup>
 /**
- * 帮助元素统一形态（batch8 Task F #20：WPF 帮助链接系统补齐）。
+ * 帮助元素统一形态（对齐 WPF 的帮助链接系统）。
  * WPF 侧对应物：XAML 里的 Hyperlink——外链形态（NavigateUri + IsOpenExternal）与
  * "?" / "(i)" 徽记两种用法；web 统一收敛为本组件：
  * - href：外链（target=_blank rel="noreferrer noopener"，URL 照抄 WPF NavigateUri）；

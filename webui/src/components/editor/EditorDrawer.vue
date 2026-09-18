@@ -96,7 +96,7 @@ function isCredentialGroup(g) {
 function onCredModeSwitch(mode) {
   if (mode === credentialMode.value) return
   credentialMode.value = mode
-  if (mode === 'manual') json.InheritedCredentialName = '' // 手动 = 清空库引用（owner 确认语义）
+  if (mode === 'manual') json.InheritedCredentialName = '' // 手动 = 清空库引用（有意语义）
 }
 /**
  * 组内可见字段 → 渲染块序列：visibleWhen 过滤后，连续 SWITCH 字段聚成一个 'switch-run'
@@ -412,12 +412,12 @@ onBeforeUnmount(() => {
               <section v-for="g in groups" :key="g.id" class="ed-group">
                 <h3 class="ed-group-title">
                   {{ g.labelKey ? t(g.labelKey) : g.id }}
-                  <!-- 组标题帮助链接（batch8 Task F #20）：WPF 表单组标题旁 (?)/说明的
+                  <!-- 组标题帮助链接：WPF 表单组标题旁 (?)/说明的
                        web 落点之一（如 RDP mstsc 组 → mstsc 模式文档） -->
                   <HelpLink v-if="g.helpUrl" :href="g.helpUrl" />
                 </h3>
                 <div v-if="g.descKey" class="ed-group-desc">{{ t(g.descKey) }}</div>
-                <!-- 组内提示行（#20）：WPF 表单首行说明文字 + 链接（VNC 的 RFB 专有协议
+                <!-- 组内提示行：WPF 表单首行说明文字 + 链接（VNC 的 RFB 专有协议
                      警告 + [More details]）；文字与 URL 由 schema 硬编码（WPF 同为字面量） -->
                 <p v-if="g.note" class="ed-group-note">
                   {{ g.note
@@ -650,7 +650,7 @@ onBeforeUnmount(() => {
   font-size: 0.8846rem;
   line-height: 1.5;
 }
-/* 组内提示行（#20）：WPF VncFormView 的 RFB 警告行——强调色文字（WPF AccentMidBrush 同语义） */
+/* 组内提示行：WPF VncFormView 的 RFB 警告行——强调色文字（WPF AccentMidBrush 同语义） */
 .ed-group-note {
   margin: 8px 0 0;
   color: var(--accent-text);

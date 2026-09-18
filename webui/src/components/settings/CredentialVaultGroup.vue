@@ -1,6 +1,6 @@
 <script setup>
 /**
- * 凭据库分组（Plan 3 Task 5，spec §6；fix batch8 Task E #16 表单对齐凭据库模型）：
+ * 凭据库分组（spec §6；表单对齐凭据库模型）：
  * GET /api/credentials?ds= 表格 + 新建/编辑模态 + 删除确认（引用数警告）+ 👁 明文查看（reveal 流）。
  *
  * - 表单字段集 = WPF 凭据库弹窗（CredentialVaultViewModel 以 showHost:false 复用
@@ -16,7 +16,7 @@
  *   404 → 静默刷新列表（凭据已被其它端删除/改名）。列表列与 WPF 凭据库表格对齐
  *   （名称/用户名/操作），另加 web 侧引用计数列；WPF 的密码/私钥掩码列由 reveal 行承载。
  * - 编辑模态的密码/私钥路径不可预填（列表无值、reveal 有 30s 窗口与验证成本）——后端 PUT
- *   对这两个加密字段为"空=保持原值"语义（batch8 Task E #17：明文不回显，空提交沿用原值），
+ *   对这两个加密字段为"空=保持原值"语义（明文不回显，空提交沿用原值），
  *   输入框以 placeholder 注明（settings.ph.keepCurrent）。
  * - 模态的 Esc：捕获阶段截停（与 IconPicker 同款）——SettingsView 的 window 级 Esc 返回链
  *   不应因"关模态"误触导航；n-select 的展开计数走 settingsEscShield（与 GeneralGroup 同款）。
@@ -76,7 +76,7 @@ const showEdit = computed({
     if (!v) editing.value = null
   },
 })
-// 表单字段集与 WPF 凭据库弹窗一致（#16）：Name/UserName/Password/PrivateKeyPath，
+// 表单字段集与 WPF 凭据库弹窗一致：Name/UserName/Password/PrivateKeyPath，
 // 不含 Address/Port（凭据库不使用，后端落库前本就清空）
 const form = reactive({ name: '', userName: '', password: '', privateKeyPath: '' })
 const showPwd = ref(false)

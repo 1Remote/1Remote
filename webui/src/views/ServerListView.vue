@@ -67,7 +67,7 @@ const currentFolders = computed(() => {
   const out = []
   const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
   if (holder) {
-    // 文件夹行计数与树徽标同口径（直接子级服务器数，batch7 #9）：行内数字 = 进入该文件夹
+    // 文件夹行计数与树徽标同口径（直接子级服务器数）：行内数字 = 进入该文件夹
     // 后能看到的台数（不含子文件夹内部，由子文件夹自己的行/徽标承载）
     for (const f of holder.folders)
       out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countDirectChildServers(f) })

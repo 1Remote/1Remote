@@ -253,8 +253,8 @@ bindModalEsc([
 
 <template>
   <div class="group">
-    <!-- 列表标题行（#14）：添加按钮右对齐（RunnerGroup #9 同款 grid/justify-self 模式）。
-         (?) 帮助链接（batch8 Task F #20）：WPF DataSourceView.xaml:255-260 添加菜单旁
+    <!-- 列表标题行：添加按钮右对齐（与 RunnerGroup 默认运行器行同款 grid/justify-self 模式）。
+         (?) 帮助链接：WPF DataSourceView.xaml:255-260 添加菜单旁
          (?) → 团队共享文档（url 照抄 WPF） -->
     <div class="toolbar">
       <span class="add-wrap">
@@ -322,7 +322,7 @@ bindModalEsc([
               @update:show="shield"
               @update:value="onAddTypeChange"
             />
-            <!-- 在线数据库帮助（batch8 Task F #20）：WPF 添加菜单的 MySQL/PostgreSQL 项各带
+            <!-- 在线数据库帮助：WPF 添加菜单的 MySQL/PostgreSQL 项各带
                  (?) → 在线数据库文档（DataSourceView.xaml:222-243，url 照抄）；sqlite 为本地
                  文件无此链接，WPF 同款（菜单里只有两项带 (?)） -->
             <HelpLink
@@ -447,13 +447,13 @@ bindModalEsc([
   max-width: 720px;
 }
 .toolbar {
-  /* #14：单列 1fr + 按钮 justify-self 推到行右端（与 RunnerGroup 的默认运行器行同款模式） */
+  /* 单列 1fr + 按钮 justify-self 推到行右端（与 RunnerGroup 的默认运行器行同款模式） */
   display: grid;
   grid-template-columns: 1fr;
   align-items: center;
   margin-bottom: 12px;
 }
-/* #14 + #20：添加按钮与旁侧 (?) 成组右对齐（grid 单列 + justify-self 端对齐的组形态） */
+/* 添加按钮与旁侧 (?) 成组右对齐（grid 单列 + justify-self 端对齐的组形态） */
 .add-wrap {
   justify-self: end;
   display: inline-flex;

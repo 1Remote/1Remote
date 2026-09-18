@@ -1,5 +1,5 @@
 /**
- * 版本与更新检测信息（fix batch6 Task D #12）：拉取 GET /api/version（version/buildDate/
+ * 版本与更新检测信息：拉取 GET /api/version（version/buildDate/
  * update 域——后端 WebUiUpdateService 缓存快照，首次命中幂等触发检查 + 每小时复查）。
  *
  * 消费方（App.vue ⚙ 红点 / SettingsView 导航「关于」红点 / AboutGroup 关于页）各自

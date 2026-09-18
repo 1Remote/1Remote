@@ -1,6 +1,6 @@
 <script setup>
 /**
- * 单个开关项（fix-batch5 Task A #3，从 FormField 的 SWITCH 分支拆出）：渲染
+ * 单个开关项（自 FormField 的 SWITCH 分支拆出）：渲染
  * [n-switch][6px][描述文字] 的最小单元，FormField 的单字段开关行与 EditorDrawer 的
  * 连续开关聚合行（.ed-switch-row）共用——两处的开关/文字间距、字号、颜色保持一致。
  * 纯展示组件：值由父级绑定（json 值可能为 null——显示按 false，写回真实布尔），

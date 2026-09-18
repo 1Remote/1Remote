@@ -2,7 +2,7 @@
 /**
  * 编辑抽屉头部（自 EditorDrawer 拆出）：协议瓦片 + 标题 + [协议标签 + 协议切换下拉]
  * + [数据库标签 + 数据源（新建可改选的 n-select，或只读 pill）] + 关闭按钮。标签是
- * 下拉框前的可见小前缀（批次7 #2，语义不靠 tooltip 承载）；标题 flex:1 省略让位，
+ * 下拉框前的可见小前缀（语义不靠 tooltip 承载）；标题 flex:1 省略让位，
  * 窄抽屉 560px 下拉不换行。
  *
  * 职责边界（与抽屉的接缝）：本组件只管头部展示与数据源选择器的选项拉取；编辑器状态机
@@ -74,7 +74,7 @@ const tileStyle = computed(() => {
   return rgb ? { background: rgb + '33', color: rgb } : null
 })
 const protocolOptions = Object.keys(PROTOCOLS).map((k) => ({ value: k, label: k }))
-// 协议帮助链接（batch8 Task F #20）：WPF ServerEditorPageView 协议页签旁的 "?"——仅
+// 协议帮助链接：WPF ServerEditorPageView 协议页签旁的 "?"——仅
 // HelpUrl 非空的协议显示（AppProtocol/RdpApp.GetHelpUrl，url 照抄），其余协议无此元素
 const protoHelpUrl = computed(() => PROTOCOLS[props.protocolKey]?.helpUrl || '')
 
@@ -112,7 +112,7 @@ defineExpose({ title })
   <header class="ed-head">
     <span class="ed-tile" :style="tileStyle">{{ isBulk ? '≡' : (protocolKey || '?').charAt(0) }}</span>
     <div class="ed-title" :title="title">{{ title }}</div>
-    <!-- 可见小标签（owner 验收批次7 #2：下拉框前缀说明，不用 tooltip 承载语义）：
+    <!-- 可见小标签（下拉框前缀说明，不用 tooltip 承载语义）：
          紧贴各下拉框左侧的 11px/--text-3 短标签，与标题行的克制风格一致 -->
     <template v-if="!isBulk">
       <span class="ed-head-label">{{ t('editor.headProtocolLabel') }}</span>
@@ -125,7 +125,7 @@ defineExpose({ title })
         :title="t('editor.headProtocolTip')"
         @update:value="onProtocolSwitch"
       />
-      <!-- 协议帮助（#20）：跟随当前协议（WPF 页签 "?" 同款，仅 APP/RemoteApp 有） -->
+      <!-- 协议帮助：跟随当前协议（WPF 页签 "?" 同款，仅 APP/RemoteApp 有） -->
       <HelpLink v-if="protoHelpUrl" :href="protoHelpUrl" />
     </template>
     <template v-if="showDsSelect && dsOptions.length > 1">
@@ -188,7 +188,7 @@ defineExpose({ title })
   color: var(--text-1);
 }
 
-/* 头部下拉框/只读 pill 的前缀小标签（批次7 #2）：11px/--text-3 短标签，紧贴其后
+/* 头部下拉框/只读 pill 的前缀小标签：11px/--text-3 短标签，紧贴其后
    的控件左侧（协议/数据库），不参与标题的弹性让位（flex 收缩为 0） */
 .ed-head-label {
   flex: 0 0 auto;

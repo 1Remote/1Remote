@@ -45,11 +45,11 @@
  *
  * TreeNodes（所属文件夹路径）有意不入 schema：网页端的文件夹归属由左侧树拖拽完成
  * （与 WPF 一致），编辑器对 TreeNodes 值原样透传不丢失。
- * IsAutoAlternateAddressSwitching 已接入（batch8 Task C #7④，alternateGroup 组内
+ * IsAutoAlternateAddressSwitching 已接入（alternateGroup 组内
  * 备用凭据子表单下方的开关，ProtocolBaseWithAddressPort.cs:83-90）。
  * 连接前后脚本组（scriptsGroup：CommandBeforeConnected / HideCommandBeforeConnectedWindow /
  * CommandAfterDisconnected / SelectedRunnerName）与公共组 AlwaysOpenInNewTabWindow
- * 同批接入（#7①②③），出处见各构造器注释。
+ * 出处见各构造器注释。
  *
  * placeholderKey：对齐 WPF 编辑器各表单 XAML 输入框的 Tag 属性
  * （WPF 的 placeholder 机制——Tag 即提示文本，无 Tag = 无提示）。键名 editor.ph.<字段
@@ -258,10 +258,10 @@ function pingBeforeConnectField() {
 }
 
 /**
- * 备用连接组（owner 确认独立成组）：AlternateCredentials 子表单独立成组。
+ * 备用连接组（有意独立成组）：AlternateCredentials 子表单独立成组。
  * 每行 = 备用地址和/或登录身份的组合（行字段对照 Base/Credential.cs），
  * 组描述行（descKey）向用户说明该语义。
- * 组尾开关 IsAutoAlternateAddressSwitching（batch8 #7④）：备用列表正下方的
+ * 组尾开关 IsAutoAlternateAddressSwitching：备用列表正下方的
  * 「自动切换地址」，WPF 出处 AlternativeCredentialListView.xaml:108-114
  * （CheckBox 'Automatic address switching' + 其下说明行，列表为空时禁用——
  * web 不复制该禁用态：开关对无备用行的服务器无消费方，恒可编辑为有意偏差）。
@@ -384,15 +384,15 @@ function behaviorGroup(fields) {
 const RUNNER_PROTOCOLS = ['VNC', 'SSH', 'Telnet', 'Serial', 'SFTP', 'FTP']
 
 /**
- * 连接脚本组（batch8 Task C #7②③）：WPF 公共组的脚本与运行器区段
+ * 连接脚本组：WPF 公共组的脚本与运行器区段
  * （ServerEditorPageView.xaml:162-237，位于 Tags 之后、协议表单之前）——web 独立成组
  * 置于 basic 组之后（同 WPF"公共区在前、协议专属表单在后"的行序）。
- *  - CommandBeforeConnected/CommandAfterDisconnected：TEXTAREA（owner 指定多行形态；
+ *  - CommandBeforeConnected/CommandAfterDisconnected：TEXTAREA（多行形态；
  *    WPF 是单行 TextBox——命令可含换行的长脚本，多行编辑是超集，值语义不变）。
  *    placeholder = WPF Tag 的 14 语言译文（'Run bat before connect' 等，MAPPING 移植）。
  *  - HideCommandBeforeConnectedWindow：前脚本行下方的复选框（xaml:183-193，
  *    Content 全文含"(not recommended...)"括注，WPF 文案原样移植）。
- *  - SelectedRunnerName（#7③）：仅 RUNNER_PROTOCOLS 注入（WPF Runners.Count>1 才显示
+ *  - SelectedRunnerName：仅 RUNNER_PROTOCOLS 注入（WPF Runners.Count>1 才显示
  *    该行；web 恒显示——无外部运行器时下拉仅剩「跟随全局设置」一项，为有意偏差）。
  *    选项动态（optionsSource，fieldTypes.js）：['' 跟随全局] + 该协议运行器名——
  *    C# 侧 '' 即跟随全局（ProtocolBase.cs:214-222 "Follow the global settings" ↔ ""）。
@@ -468,8 +468,8 @@ function rdpMstscGroup() {
   return {
     id: 'mstsc',
     labelKey: 'editor.group.mstsc',
-    // 组标题帮助链接（batch8 Task F #20）：WPF RdpFormView.xaml:269-281 mstsc 开关行的
-    // "Enabled (?)"→ mstsc 模式文档；web 组标题旁承载（owner 验收指定落点）
+    // 组标题帮助链接：WPF RdpFormView.xaml:269-281 mstsc 开关行的
+    // "Enabled (?)"→ mstsc 模式文档；web 组标题旁承载（指定落点）
     helpUrl: 'https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/',
     fields: [
       { key: 'MstscModeEnabled', type: FIELD.SWITCH },
@@ -477,7 +477,7 @@ function rdpMstscGroup() {
         key: 'RdpFileAdditionalSettings',
         type: FIELD.TEXTAREA,
         visibleWhen: { field: 'MstscModeEnabled', in: [true] },
-        // 字段旁帮助链接（#20）：WPF RdpFormView.xaml:349-363 附加设置编辑器旁 (?) →
+        // 字段旁帮助链接：WPF RdpFormView.xaml:349-363 附加设置编辑器旁 (?) →
         // 文档 #additional-settings 锚点（url 照抄）
         helpUrl: 'https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings',
       },
@@ -550,7 +550,7 @@ function rdpGatewayGroup() {
 /**
  * ArgumentList 子表单（LocalApp.ArgumentList: AppArgument[]，行字段对照 AppArgument.cs:36）。
  *  - Type 选项为字符串成员名（StringEnumConverter，见常量注释）。
- *  - Selections（batch8 #7⑤）：Selection/Const 型参数的取值表（Dictionary&lt;string,string&gt;，
+ *  - Selections：Selection/Const 型参数的取值表（Dictionary&lt;string,string&gt;，
  *    json 里是 {key:value} 对象），KV_MAP 行式编辑（KvMapField）——WPF 编辑形态是
  *    ArgumentEditView.xaml:144-160 的多行文本框（Selection 型每行 "key|描述"、Normal 型
  *    每行一个 key），web 以显式双列取代该行文法；可见性对齐 WPF SelectionsVisibility
@@ -719,7 +719,7 @@ export const PROTOCOLS = {
         // WPF 出处：RDP 表单 MISC 组行标题 'Additional settings'（RdpFormView.xaml:526-611，
         // AvalonEdit 文本域 + 属性名补全 + 旁注说明）；mstsc 模式下该控件高级设置不生效，
         // WPF 整组隐藏（RdpFormView.xaml:525）。
-        // KEY_VALUE_LINES 行编辑器重构（批次7）：WPF 是一行一个 `属性名:类型:值` 的自由文本
+        // KEY_VALUE_LINES 行编辑器：WPF 是一行一个 `属性名:类型:值` 的自由文本
         //（解析器 RDP.cs SplitAdditionalSettings：分隔符 :s:/:i:/:b:），web 渲染为行式
         //[属性名自动补全][值][删行]；候选 = WPF 反射生成的补全表（rdpProperties.js）；
         // 序列化格式逐字节兼容（KeyValueLines.vue 头注释）。
@@ -831,7 +831,7 @@ export const PROTOCOLS = {
       IsAutoAlternateAddressSwitching: true,
     },
     groups: [
-      // 组内提示（batch8 Task F #20）：WPF VncFormView.xaml:69-81 表单首行的 RFB 专有协议
+      // 组内提示：WPF VncFormView.xaml:69-81 表单首行的 RFB 专有协议
       // 警告 + [More details] 链接 → 运行器文档（url 照抄；WPF 为字面量英文，14 语言同显，
       // web 同值硬编码不进 locale）。挂在 basic 组标题下（VNC 表单首组）
       {
@@ -928,7 +928,7 @@ export const PROTOCOLS = {
   RemoteApp: {
     protocol: 'RemoteApp',
     classVersion: 'RemoteApp.V1',
-    // 协议帮助链接（batch8 Task F #20）：WPF ServerEditorPageView.xaml:489-493 协议页签旁
+    // 协议帮助链接：WPF ServerEditorPageView.xaml:489-493 协议页签旁
     // "?"（HelpUrl 非空才显示）→ RdpApp.GetHelpUrl() 的文档页，url 照抄
     helpUrl: 'https://1remote.github.io/usage/protocol/especial/remoteapp/',
     defaults: {
@@ -985,7 +985,7 @@ export const PROTOCOLS = {
           {
             key: 'RdpFileAdditionalSettings',
             type: FIELD.TEXTAREA,
-            // 字段旁帮助链接（batch8 Task F #20）：WPF RdpAppFormView.xaml:194-206 附加
+            // 字段旁帮助链接：WPF RdpAppFormView.xaml:194-206 附加
             // 设置编辑器旁 (?) → 文档 #additional-settings 锚点（url 照抄）
             helpUrl: 'https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings',
           },
@@ -1010,7 +1010,7 @@ export const PROTOCOLS = {
   APP: {
     protocol: 'APP',
     classVersion: 'APP.V1',
-    // 协议帮助链接（batch8 Task F #20）：WPF ServerEditorPageView 协议页签旁 "?"（AppProtocol
+    // 协议帮助链接：WPF ServerEditorPageView 协议页签旁 "?"（AppProtocol
     // .GetHelpUrl()，url 照抄）；其余协议 HelpUrl 为空 → WPF 同款不显示
     helpUrl: 'https://1remote.github.io/usage/protocol/especial/app/',
     defaults: {
