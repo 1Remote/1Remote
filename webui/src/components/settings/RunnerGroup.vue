@@ -158,13 +158,13 @@ function onExePath(r, v) {
   saveDebounced()
 }
 
-// ---- exe 路径原生文件选择器：后端弹 WPF OpenFileDialog（Filter=exe），404=取消 ----
+// ---- exe 路径原生文件选择器：后端弹 WPF OpenFileDialog（filter=exe），404=取消 ----
 const browsing = ref(false)
 async function browseExe(r) {
   if (browsing.value) return
   browsing.value = true
   try {
-    const resp = await api.pickExe(r.ExePath)
+    const resp = await api.pickFile('exe|*.exe', { path: r.ExePath })
     if (resp?.path) {
       r.ExePath = resp.path
       autoArguments(r, active.value)

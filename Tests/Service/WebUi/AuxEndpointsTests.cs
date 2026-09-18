@@ -21,8 +21,9 @@ namespace Tests.Service.WebUi
     /// - GET /api/credentials/names：凭据库名称列表（GetCredentials 缓存判定 → 读库），未知数据源 404；
     /// - POST /api/icons/extract-from-exe：exe 关联图标提取为 PNG base64（与 WPF 图标选择器同一路径），
     ///   缺失文件/非 exe → 404；
-    /// - POST /api/files/pick-exe：exe 路径文件选择器（batch8 Task D #10），经 PickExePicker
-    ///   注入点 stub 测形状（选中 200 {path} / 取消 404 / 无 body 直通），真实 STA 弹窗不在单测范围。
+    /// - POST /api/files/pick：通用文件选择器（batch9 Task B #9，泛化自 batch8 pick-exe），
+    ///   经 FilePicker 注入点 stub 测形状（选中 200 {path} / 取消 404 / filter+title+初始目录
+    ///   透传 / 无 body 直通），真实 STA 弹窗不在单测范围。
     /// </summary>
     [TestClass]
     public class AuxEndpointsTests
@@ -157,26 +158,29 @@ namespace Tests.Service.WebUi
         }
 
         // ------------------------------------------------------------------
-        // POST /api/files/pick-exe（batch8 Task D #10）：注入 stub 测形状——真实弹窗
-        // 在测试宿主无人关闭会让请求永久挂起，端点把弹窗收敛在 PickExePicker 注入点后，
-        // 这里注入确定性 stub 覆盖 200/404 两条路径（生产 STA 实现由桌面进程运行时覆盖，
-        // 对话框行为本身不在单测范围）。
+        // POST /api/files/pick（batch9 Task B #9）：注入 stub 测形状——真实弹窗
+        // 在测试宿主无人关闭会让请求永久挂起，端点把弹窗收敛在 FilePicker 注入点后，
+        // 这里注入确定性 stub 覆盖 200/404/filter+title 透传/无 body 路径（生产 STA 实现
+        // 由桌面进程运行时覆盖，对话框行为本身不在单测范围）。
         // ------------------------------------------------------------------
 
         [TestMethod]
-        public async Task PickExe_StubPicked_ReturnsPath()
+        public async Task PickFile_StubPicked_ReturnsPathAndDerivesInitialDir()
         {
             var picked = @"C:\apps\putty.exe";
-            WebUiEndpoints.PickExePicker = initialDir =>
+            WebUiEndpoints.FilePicker = (filter, title, initialDir) =>
             {
+                // 端点归一：filter 透传（exe 调用方传原值）、title 缺省 → null、
                 // body.path 的目录推导在端点内完成，stub 收到的已是 initialDirectory
+                Assert.AreEqual("exe|*.exe", filter, "filter 应原样透传（WPF SelectFileHelper 线格式）");
+                Assert.IsNull(title, "body 无 title 时应归一为 null（系统默认标题）");
                 Assert.AreEqual(@"C:\apps", initialDir, "端点应把 body.path 的目录部分作为 initialDirectory 传入");
                 return picked;
             };
             try
             {
-                var body = JsonSerializer.Serialize(new { path = @"C:\apps\old.exe" });
-                var resp = await _client.PostAsync("/api/files/pick-exe",
+                var body = JsonSerializer.Serialize(new { filter = "exe|*.exe", path = @"C:\apps\old.exe" });
+                var resp = await _client.PostAsync("/api/files/pick",
                     new StringContent(body, Encoding.UTF8, "application/json"));
                 Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
                 using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
@@ -185,14 +189,41 @@ namespace Tests.Service.WebUi
             }
             finally
             {
-                WebUiEndpoints.PickExePicker = null; // 还原生产实现（静态注入点，避免污染其它测试）
+                WebUiEndpoints.FilePicker = null; // 还原生产实现（静态注入点，避免污染其它测试）
             }
         }
 
         [TestMethod]
-        public async Task PickExe_StubCancelled_Returns404()
+        public async Task PickFile_ScriptFilterAndTitle_PassThrough()
         {
-            WebUiEndpoints.PickExePicker = _ => null; // 用户取消：SelectFileHelper 返回 null → 404
+            // 脚本选择调用方（WPF CmdSelectScript 同参）：filter 含多段 + 第二段 *|*.*，title 直传
+            var scriptFilter = "script|*.bat;*.cmd;*.ps1;*.py|*|*.*";
+            WebUiEndpoints.FilePicker = (filter, title, initialDir) =>
+            {
+                Assert.AreEqual(scriptFilter, filter, "多段 filter 应原样透传");
+                Assert.AreEqual("Select a script", title, "title 应原样透传");
+                return @"C:\scripts\run.bat";
+            };
+            try
+            {
+                var body = JsonSerializer.Serialize(new { filter = scriptFilter, title = "Select a script" });
+                var resp = await _client.PostAsync("/api/files/pick",
+                    new StringContent(body, Encoding.UTF8, "application/json"));
+                Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
+                using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+                Assert.IsTrue(doc.RootElement.TryGetProperty("path", out var p), "响应应含 path");
+                Assert.AreEqual(@"C:\scripts\run.bat", p.GetString());
+            }
+            finally
+            {
+                WebUiEndpoints.FilePicker = null;
+            }
+        }
+
+        [TestMethod]
+        public async Task PickFile_StubCancelled_Returns404()
+        {
+            WebUiEndpoints.FilePicker = (_, _, _) => null; // 用户取消：SelectFileHelper 返回 null → 404
             try
             {
                 var resp = await PostPickAsync(null);
@@ -200,35 +231,37 @@ namespace Tests.Service.WebUi
             }
             finally
             {
-                WebUiEndpoints.PickExePicker = null;
+                WebUiEndpoints.FilePicker = null;
             }
         }
 
         [TestMethod]
-        public async Task PickExe_NoBody_StillInvokesPicker()
+        public async Task PickFile_NoBody_StillInvokesPicker()
         {
-            // body 整体可省（path 仅用于初始目录）：无 body 时不 400，弹窗照常（此处 stub 直通）
-            WebUiEndpoints.PickExePicker = initialDir =>
+            // body 整体可省（filter/title/path 均仅用于对话框参数）：无 body 时不 400，弹窗照常（此处 stub 直通）
+            WebUiEndpoints.FilePicker = (filter, title, initialDir) =>
             {
+                Assert.IsNull(filter, "无 body.filter 时端点归一为 null（生产实现内回退 exe|*.exe）");
+                Assert.IsNull(title, "无 body.title 时应归一为 null");
                 Assert.IsNull(initialDir, "无 body.path 时 initialDirectory 应为 null");
                 return @"C:\apps\kitty.exe";
             };
             try
             {
-                var resp = await _client.PostAsync("/api/files/pick-exe",
+                var resp = await _client.PostAsync("/api/files/pick",
                     new StringContent(string.Empty, Encoding.UTF8, "application/json"));
                 Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
             }
             finally
             {
-                WebUiEndpoints.PickExePicker = null;
+                WebUiEndpoints.FilePicker = null;
             }
         }
 
         private static async Task<HttpResponseMessage> PostPickAsync(string? path)
         {
             var body = path == null ? "{}" : JsonSerializer.Serialize(new { path });
-            return await _client.PostAsync("/api/files/pick-exe",
+            return await _client.PostAsync("/api/files/pick",
                 new StringContent(body, Encoding.UTF8, "application/json"));
         }
 

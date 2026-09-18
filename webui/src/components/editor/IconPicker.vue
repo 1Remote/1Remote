@@ -104,13 +104,13 @@ async function extractFromExe() {
 }
 
 // exe 路径原生文件选择器：与运行器设置同一 API
-// （POST /api/files/pick-exe，后端 WPF OpenFileDialog）。只填入路径不自动提取——
+// （POST /api/files/pick，后端 WPF OpenFileDialog，filter=exe）。只填入路径不自动提取——
 // 提取可能失败需要 toast，选择器职责保持单一；404 = 用户取消，静默。
 async function browseExePath() {
   if (picking.value) return
   picking.value = true
   try {
-    const resp = await api.pickExe(exePath.value)
+    const resp = await api.pickFile('exe|*.exe', { path: exePath.value })
     if (resp?.path) exePath.value = resp.path
   } catch (e) {
     if (e?.status !== 404) message.error(t('settings.r.pickFailed'))
