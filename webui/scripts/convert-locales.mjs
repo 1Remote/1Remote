@@ -109,12 +109,21 @@ const MAPPING = {
   'editor.f.AddBlankAfterValue': 'append blank after value',
   'editor.f.Address': 'Hostname',
   'editor.f.AlternateCredentials': 'Alternative',
+  'editor.f.AlwaysOpenInNewTabWindow': 'Always open in new window',
   'editor.f.ArgumentList': 'Cmd parameter',
   'editor.f.AskPasswordWhenConnect': 'Ask for password when open connect',
   'editor.f.AudioQualityMode': 'server_editor_advantage_sound_quality',
   'editor.f.AudioRedirectionMode': 'server_editor_advantage_sounds',
   'editor.f.availabilityDetection': 'Availability detection',
   'editor.f.ColorHex': 'Color',
+  // batch8 Task C #7②①③④：连接脚本组/公共组开关/运行器/取值表（ServerEditorPageView.xaml
+  // 与 AlternativeCredentialListView.xaml 的 14 语言词条）
+  'editor.f.CommandAfterDisconnected': 'Script after disconnected',
+  'editor.f.CommandBeforeConnected': 'Script before connect',
+  'editor.f.HideCommandBeforeConnectedWindow': 'Hide script window',
+  'editor.f.SelectedRunnerName': 'Selected runner',
+  'editor.f.Selections': 'Selections',
+  'editor.f.IsAutoAlternateAddressSwitching': 'Automatic address switching',
   'editor.f.Description': 'Description',
   'editor.f.DisplayName': 'Name',
   'editor.f.DisplayPerformance': 'server_editor_display_rdp_performance',
@@ -195,6 +204,9 @@ const MAPPING = {
   'editor.o.appArgType.Const': 'Const value',
   // fix-batch4 Task A #6：IsPingBeforeConnect（可用性检测行）的控件列说明文字
   'editor.o.checkAddressAvailable': 'Check if address is available before connect',
+  // batch8 Task C #7④：备用地址自动切换开关的控件列说明（AlternativeCredentialListView.xaml:111-113）
+  'editor.o.autoAlternateAddressSwitchingHint':
+    'When the default host or port is unavailable the alternate addresses will be tried in sequence',
 
   // -- 编辑器：输入框 placeholder（editor.ph.*，fix-batch4 Task C）--
   // 仅 DynamicResource Tag（WPF 14 语言有译文）的键走映射；字面量英文 Tag 的键
@@ -205,6 +217,10 @@ const MAPPING = {
   'editor.ph.remoteAppProgram': 'server_editor_remote_app_fullname_tag',
   'editor.ph.appProtocolDisplayName': 'Optional',
   'editor.ph.externalKittySession': 'server_editor_advantage_ssh_startup_auto_kitty_session_tip',
+  // batch8 Task C #7②：连接前后脚本的 Tag（ServerEditorPageView.xaml:167/202，
+  // DynamicResource 14 语言词条；含 e.g. 示例路径）
+  'editor.ph.commandBeforeConnected': 'Run bat before connect',
+  'editor.ph.commandAfterDisconnected': 'Run bat after disconnected',
 
   // -- 编辑器：分组 / 窗口 --
   'editor.group.basic': 'server_editor_group_title_common',
