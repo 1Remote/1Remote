@@ -497,7 +497,7 @@
   "settings.r.internal": "По умолчанию",
   "settings.r.external": "External",
   "settings.r.internalHint": "Built-in runner, nothing to configure.",
-  "settings.r.f.arguments": "Параметр командной строки",
+  "settings.r.f.arguments": "Arguments (via password)",
   "settings.r.f.env": "Переменные среды",
   "settings.r.f.envHint": "One KEY=VALUE per line",
   "settings.r.loadFailed": "Failed to load runner settings",
@@ -512,8 +512,13 @@
   "settings.r.f.font": "Шрифт",
   "settings.r.f.fontSize": "Размер шрифта",
   "settings.r.f.charset": "Character set",
-  "settings.r.f.argsPrivateKey": "Войти с закрытым ключом ssh",
+  "settings.r.f.argsPrivateKey": "Arguments (via private key)",
   "settings.r.f.special": "Special Characters",
   "settings.r.f.specialHint": "Special characters (like @ in username) may have to be encoded using %XX syntax. One KEY=VALUE per line, e.g. @=%40",
-  "settings.r.f.macroHint": "Available macros:"
+  "settings.r.f.macroHint": "Available macros:",
+  "settings.r.f.browse": "Browse…",
+  "settings.r.internalExeManaged": "The built-in runner path is managed by the application.",
+  "settings.r.pickFailed": "Failed to open the file dialog.",
+  "settings.r.f.hostingHint": "Внимание: некоторые exe-файлы не могут быть размещены на 1Remote, пожалуйста, проверьте файл сами.",
+  "settings.r.f.hostingTitle": "Разместить этот exe-файл на вкладке 1Remote windowView?"
 }

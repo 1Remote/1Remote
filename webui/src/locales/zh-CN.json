@@ -530,7 +530,7 @@
   "settings.r.internal": "内置",
   "settings.r.external": "外部",
   "settings.r.internalHint": "内置运行器，无需配置。",
-  "settings.r.f.arguments": "启动参数",
+  "settings.r.f.arguments": "启动参数（通过密码）",
   "settings.r.f.env": "环境变量",
   "settings.r.f.envHint": "每行一个 KEY=VALUE",
   "settings.r.loadFailed": "加载运行器配置失败",
@@ -545,8 +545,13 @@
 "settings.r.f.font": "字体",
 "settings.r.f.fontSize": "字体大小",
 "settings.r.f.charset": "字符集",
-"settings.r.f.argsPrivateKey": "通过私钥登录",
+"settings.r.f.argsPrivateKey": "启动参数（通过私钥）",
 "settings.r.f.special": "特殊字符",
 "settings.r.f.specialHint": "特殊字符（如用户名中的 @）可能需要用 %XX 语法转义。每行一个 KEY=VALUE，如 @=%40",
-"settings.r.f.macroHint": "可用宏："
+"settings.r.f.macroHint": "可用宏：",
+"settings.r.f.browse": "浏览…",
+"settings.r.internalExeManaged": "内置运行器路径由应用管理。",
+"settings.r.pickFailed": "打开文件选择窗口失败。",
+"settings.r.f.hostingHint": "警告：某些应用程序无法被集成到 1Remote 中，请自行测试。",
+"settings.r.f.hostingTitle": "将该 exe 集成到 1Remote 的标签页视图？"
 }

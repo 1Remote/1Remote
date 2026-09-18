@@ -497,7 +497,7 @@
   "settings.r.internal": "Predefinição",
   "settings.r.external": "External",
   "settings.r.internalHint": "Built-in runner, nothing to configure.",
-  "settings.r.f.arguments": "Parâmetro CMD",
+  "settings.r.f.arguments": "Arguments (via password)",
   "settings.r.f.env": "Variáveis de ambiente",
   "settings.r.f.envHint": "One KEY=VALUE per line",
   "settings.r.loadFailed": "Failed to load runner settings",
@@ -512,8 +512,13 @@
   "settings.r.f.font": "Fonte",
   "settings.r.f.fontSize": "Tamanho da fonte",
   "settings.r.f.charset": "Character set",
-  "settings.r.f.argsPrivateKey": "Iniciar sessão com chave privada SSH",
+  "settings.r.f.argsPrivateKey": "Arguments (via private key)",
   "settings.r.f.special": "Special Characters",
   "settings.r.f.specialHint": "Special characters (like @ in username) may have to be encoded using %XX syntax. One KEY=VALUE per line, e.g. @=%40",
-  "settings.r.f.macroHint": "Available macros:"
+  "settings.r.f.macroHint": "Available macros:",
+  "settings.r.f.browse": "Browse…",
+  "settings.r.internalExeManaged": "The built-in runner path is managed by the application.",
+  "settings.r.pickFailed": "Failed to open the file dialog.",
+  "settings.r.f.hostingHint": "Atenção: alguns exe não podem ser alojados no 1Remote. Teste previamente.",
+  "settings.r.f.hostingTitle": "Alojar este exe numa aba do 1Remote?"
 }

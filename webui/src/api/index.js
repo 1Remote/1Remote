@@ -11,14 +11,14 @@ let token = ''
   }
 }
 
-async function request(path, { method = 'GET', body } = {}) {
+async function request(path, { method = 'GET', body, timeout = 30_000 } = {}) {
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`
   const resp = await fetch(path, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
-    signal: AbortSignal.timeout(30_000),
+    signal: AbortSignal.timeout(timeout),
   })
   return handleResponse(resp, path)
 }
@@ -103,6 +103,11 @@ export const api = {
   //（协议不适用字段为 null；不含 password 等任何加密字段）；ids 空或任一未知 id → 400/404
   batchPeek: (ids, ds) => request('/api/servers/batch/peek', { method: 'POST', body: ds ? { ids, ds } : { ids } }),
   icons: () => request('/api/icons'),
+  // exe 路径文件选择器（batch8 Task D #10）：后端弹 WPF OpenFileDialog（Filter=exe），
+  // path 传当前值（后端取其目录作初始目录）。成功 → {path}；用户取消 → 404（err.status=404，
+  // 调用方静默）。timeout 放宽到 10 分钟：请求寿命 = 用户开着对话框的时间，30s 默认会
+  // 在用户浏览文件夹期间就掐断
+  pickExe: (path) => request('/api/files/pick-exe', { method: 'POST', body: { path: path || '' }, timeout: 600_000 }),
   // Serial 编辑器可输入下拉建议：后端机器 COM 口 + 波特率表
   //（与 WPF SerialFormView 的 AutoCompleteComboBox 数据源同源，Serial.cs）
   serialOptions: () => request('/api/serial/options'),

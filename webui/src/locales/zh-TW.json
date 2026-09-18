@@ -497,7 +497,7 @@
   "settings.r.internal": "預設",
   "settings.r.external": "External",
   "settings.r.internalHint": "Built-in runner, nothing to configure.",
-  "settings.r.f.arguments": "命令列參數",
+  "settings.r.f.arguments": "啟動參數（透過密碼）",
   "settings.r.f.env": "環境變數",
   "settings.r.f.envHint": "One KEY=VALUE per line",
   "settings.r.loadFailed": "Failed to load runner settings",
@@ -512,8 +512,13 @@
   "settings.r.f.font": "字型",
   "settings.r.f.fontSize": "字型大小",
   "settings.r.f.charset": "字元集",
-  "settings.r.f.argsPrivateKey": "透過私密金鑰登入",
+  "settings.r.f.argsPrivateKey": "啟動參數（透過私密金鑰）",
   "settings.r.f.special": "特殊字元",
   "settings.r.f.specialHint": "特殊字元（如使用者名稱中的 @）可能需要用 %XX 語法轉義，每行一個 KEY=VALUE，例如 @=%40",
-  "settings.r.f.macroHint": "可用巨集："
+  "settings.r.f.macroHint": "可用巨集：",
+  "settings.r.f.browse": "瀏覽…",
+  "settings.r.internalExeManaged": "內建執行器路徑由應用程式管理。",
+  "settings.r.pickFailed": "開啟檔案選擇視窗失敗。",
+  "settings.r.f.hostingHint": "注意：部分exe無法被1Remote託管，請自行測試。",
+  "settings.r.f.hostingTitle": "在 1Remote 選項卡窗口中託管此 exe？"
 }
