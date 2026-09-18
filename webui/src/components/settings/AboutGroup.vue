@@ -1,12 +1,14 @@
 <script setup>
 /**
- * 关于分组（fix batch6 Task D #7 建立；fix batch7 Task D #11 重排为 web 单列自适应）：
+ * 关于分组（fix batch6 Task D #7 建立；fix batch7 Task D #11 重排为 web 单列自适应；
+ * fix batch8 Task E #18 排版紧凑化——内容 12 节零增删，仅布局压缩）：
  * 内容对齐 WPF AboutPageView.xaml（12 节零遗漏）——
  * hero（logo/应用名/标语/版本/构建日期）、Update 行（有新版本时显示新版本号链接 + 红点，
  * 破坏性更新在 tooltip 里标记）、Author 卡（头像 + Shawn(github) + 邮箱）、Support
  * （使用文档）、做出贡献（说明 + 三按钮）、包含组件（10 个链接照抄 WPF 列表）。
- * 重排仅动结构与视觉（克制风格：分组小标题 + 留白 + 主题变量取色，不再克隆 WPF 的
- * 三色按钮/双栏形态），词条与链接零增删。
+ * 紧凑化（#18）：hero 与 Author 卡同行左右分布；Support 标题与文档链接同行；
+ * 贡献按钮组保持横排；组件清单两列网格。克制风格：分组小标题 + 主题变量取色，
+ * 不克隆 WPF 的三色按钮/双栏形态；词条与链接零增删。
  * 语言选择行已删除——常规组（GeneralGroup）已有语言下拉，此处不再重复。
  * 纯技术标签（Author/Support/Make contributions/Included Components/Update/Version/标语）
  * 与 WPF 一致为硬编码英文（locale 中 14 语言同值）；howToUse/贡献说明/三按钮文案
@@ -63,16 +65,31 @@ const CONTRIBUTE = [
 
 <template>
   <div class="about">
-    <!-- hero：logo + 应用名 + 标语 + 版本/构建日期（版本徽章 + 日期弱化，tooltip 均为 BuildDate 全文） -->
-    <div class="hero">
-      <img class="hero-logo" src="/logo.png" width="72" height="72" alt="" />
-      <div class="hero-body">
-        <div class="hero-name">1Remote</div>
-        <div class="hero-tagline">{{ t('about.tagline') }}</div>
-        <div class="hero-meta">
-          <span v-if="version" class="ver-badge">{{ version }}</span>
-          <span v-else class="ver-badge soon">{{ t('common.comingSoon') }}</span>
-          <span v-if="buildDateDisplay" class="hero-build" :title="buildDate">{{ buildDateDisplay }}</span>
+    <!-- hero 行（#18 紧凑化）：logo+名称/标语/版本（左）与 Author 卡（右）同行左右分布 -->
+    <div class="hero-row">
+      <!-- hero：logo + 应用名 + 标语 + 版本/构建日期（版本徽章 + 日期弱化，tooltip 均为 BuildDate 全文） -->
+      <div class="hero">
+        <img class="hero-logo" src="/logo.png" width="72" height="72" alt="" />
+        <div class="hero-body">
+          <div class="hero-name">1Remote</div>
+          <div class="hero-tagline">{{ t('about.tagline') }}</div>
+          <div class="hero-meta">
+            <span v-if="version" class="ver-badge">{{ version }}</span>
+            <span v-else class="ver-badge soon">{{ t('common.comingSoon') }}</span>
+            <span v-if="buildDateDisplay" class="hero-build" :title="buildDate">{{ buildDateDisplay }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Author 卡（WPF:201-233：头像 + Shawn(github) + 邮箱），紧随 hero 右侧 -->
+      <div class="author-block">
+        <h3 class="sec-title">{{ t('about.author') }}</h3>
+        <div class="author-card">
+          <img class="author-avatar" src="/author-avatar.jpg" width="36" height="36" alt="" />
+          <div class="author-links">
+            <a href="https://github.com/VShawn" target="_blank" rel="noreferrer noopener">Shawn</a>
+            <a href="mailto:veckshawn@gmail.com?subject=1Remote">(veckshawn@gmail.com)</a>
+          </div>
         </div>
       </div>
     </div>
@@ -93,23 +110,16 @@ const CONTRIBUTE = [
       </a>
     </div>
 
-    <!-- Author 卡（WPF:201-233：头像 + Shawn(github) + 邮箱） -->
-    <h3 class="sec-title">{{ t('about.author') }}</h3>
-    <div class="author-card">
-      <img class="author-avatar" src="/author-avatar.jpg" width="36" height="36" alt="" />
-      <div class="author-links">
-        <a href="https://github.com/VShawn" target="_blank" rel="noreferrer noopener">Shawn</a>
-        <a href="mailto:veckshawn@gmail.com?subject=1Remote">(veckshawn@gmail.com)</a>
-      </div>
+    <!-- Support（WPF:168-180：使用文档链接，文案 = WPF about_page_how_to_use 词条）：
+         标题与链接同行（#18 横排紧凑） -->
+    <div class="sec-row">
+      <h3 class="sec-title">{{ t('about.support') }}</h3>
+      <a class="link-btn" href="https://1remote.github.io/usage/quick-start/" target="_blank" rel="noreferrer noopener">
+        {{ t('about.howToUse') }}
+      </a>
     </div>
 
-    <!-- Support（WPF:168-180：使用文档链接，文案 = WPF about_page_how_to_use 词条） -->
-    <h3 class="sec-title">{{ t('about.support') }}</h3>
-    <a class="link-btn" href="https://1remote.github.io/usage/quick-start/" target="_blank" rel="noreferrer noopener">
-      {{ t('about.howToUse') }}
-    </a>
-
-    <!-- Make contributions（WPF:183-238：说明文案 + 三按钮） -->
+    <!-- Make contributions（WPF:183-238：说明文案 + 三按钮横排） -->
     <h3 class="sec-title">{{ t('about.makeContributions') }}</h3>
     <p class="contribute-text">{{ t('about.contributeText') }}</p>
     <div class="contribute-actions">
@@ -118,7 +128,7 @@ const CONTRIBUTE = [
       </a>
     </div>
 
-    <!-- Included Components（WPF:241-293：10 个组件链接照抄） -->
+    <!-- Included Components（WPF:241-293：10 个组件链接照抄；两列网格 #18） -->
     <h3 class="sec-title">{{ t('about.includedComponents') }}</h3>
     <ul class="components">
       <li v-for="u in COMPONENTS" :key="u">
@@ -130,7 +140,24 @@ const CONTRIBUTE = [
 
 <style scoped>
 .about {
-  max-width: 640px;
+  max-width: 720px;
+}
+
+/* ---- hero 行（#18）：hero（左）与 Author 块（右）同行左右分布；窄屏折行 ---- */
+.hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 4px 0 16px;
+}
+.author-block {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+.author-block .sec-title {
+  margin: 0 0 8px;
 }
 
 /* ---- hero：logo + 名称/标语/版本元信息 ---- */
@@ -138,7 +165,6 @@ const CONTRIBUTE = [
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 4px 0 20px;
 }
 .hero-logo {
   flex: 0 0 auto;
@@ -214,15 +240,30 @@ const CONTRIBUTE = [
   background: red; /* WPF Path Fill="Red" 同值 */
 }
 
-/* ---- 分组小标题：克制样式（text-2 弱化 + 留白，不再克隆 WPF accent 色标题） ---- */
+/* ---- 分组小标题：克制样式（text-2 弱化 + 留白，不再克隆 WPF accent 色标题）；
+       #18 紧凑化：上下留白收紧 ---- */
 .sec-title {
-  margin: 24px 0 10px;
+  margin: 16px 0 8px;
   font-size: 0.9231rem;
   font-weight: 600;
   color: var(--text-3);
 }
 .about a:not(.link-btn) {
   color: var(--accent-text);
+}
+
+/* ---- Support 行（#18）：标题与文档链接同行横排 ---- */
+.sec-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sec-row .sec-title {
+  margin: 16px 0 8px;
+}
+.sec-row .link-btn {
+  margin-bottom: 8px; /* 与标题基线对齐（标题自带 8px 下留白） */
 }
 
 /* ---- Author 卡 ---- */
@@ -267,7 +308,7 @@ const CONTRIBUTE = [
   color: var(--accent-text);
 }
 .contribute-text {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   font-size: 0.9615rem;
   line-height: 1.5;
   color: var(--text-2);
@@ -279,11 +320,14 @@ const CONTRIBUTE = [
   gap: 8px;
 }
 
-/* ---- Included Components ---- */
+/* ---- Included Components（#18：两列超链接网格） ---- */
 .components {
   margin: 0;
   padding: 0;
   list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px 28px;
 }
 .components li {
   padding: 3px 0;
