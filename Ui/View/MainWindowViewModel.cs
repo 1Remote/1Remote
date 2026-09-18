@@ -480,15 +480,19 @@ namespace _1RM.View
 
             Execute.OnUIThread(() =>
             {
-                if (window.IsVisible) return;
                 lock (window)
                 {
                     if (window.WindowState == WindowState.Minimized)
                         window.WindowState = WindowState.Normal;
-                    if (window.IsVisible) return;
-                    if (isForceActivate) HideMe();
-                    window.Show();
-                    window.ShowInTaskbar = true;
+                    if (window.IsVisible == false)
+                    {
+                        if (isForceActivate) HideMe();
+                        window.Show();
+                        window.ShowInTaskbar = true;
+                    }
+                    // Bring the window to the front even if it is already visible
+                    // but covered by other windows (e.g. click on the tray icon,
+                    // or pick an action from the launcher).
                     window.Topmost = true;
                     window.Activate();
                     window.Topmost = false;
