@@ -4,7 +4,8 @@
 // - 数据源根（🗄 名称 · 类型 + 状态点）→ 递归文件夹树；不再渲染服务器叶（列表承担）
 // - 虚拟文件夹：tree-state expansion 键即存在（空文件夹物化，与 WPF BuildView 一致）；
 //   右键菜单 新建/重命名/删除（folderOps 统一实现，列表侧共用）
-// - 节点右侧子服务器计数（含全部后代）
+// - 节点右侧子服务器计数与列表同口径（batch7 #9）：数据源根/文件夹 = 直接子级服务器数
+//   （与点击后的列表行数/面包屑「N 台」一致）；「全部数据」= 全库服务器总数
 // - 树下方「标签」chips（置顶在前）；底部「« 收起边栏」emit update:collapsed
 // - 展开/折叠与拖拽经 /api/ui-state/tree 持久化（防抖 500ms），与 WPF 共用 .tree_view.json；
 //   字典状态收在 useTreeState 共享存储（列表文件夹行/新建文件夹也消费，侧栏收起不丢）
@@ -13,7 +14,7 @@ import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { api } from '../api'
 import { useServers } from '../composables/useServers'
-import { buildTree, countHolderServers, fullKey, holderAt } from '../composables/folders'
+import { buildTree, countDirectChildServers, fullKey, holderAt } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 
@@ -76,17 +77,19 @@ const allOpen = ref(true)
 
 // ---- 可见行扁平化（免递归组件；depth 控缩进）：全部数据 → 数据源根 → 文件夹（无服务器叶）
 const rows = computed(() => {
-  const out = [{ kind: 'all', key: 'all', depth: 0, count: tree.value.reduce((n, r) => n + countHolderServers(r), 0) }]
+  // 「全部数据」= 全库服务器总数（与该视图列表同口径；直接用 servers 长度——buildTree
+  // 会丢弃数据源快照错配的孤儿服务器，树内求和会把它们漏计）
+  const out = [{ kind: 'all', key: 'all', depth: 0, count: servers.value.length }]
   if (!allOpen.value) return out
   const pushLevel = (holder, dsName, depth) => {
     for (const f of levelChildren(holder)) {
       const key = fullKey(dsName, f.path)
-      out.push({ kind: 'folder', key, folder: f, dsName, depth, count: countHolderServers(f) })
+      out.push({ kind: 'folder', key, folder: f, dsName, depth, count: countDirectChildServers(f) })
       if (isExpanded(key)) pushLevel(f, dsName, depth + 1)
     }
   }
   for (const root of tree.value) {
-    out.push({ kind: 'root', key: root.name, ds: root, depth: 1, count: countHolderServers(root) })
+    out.push({ kind: 'root', key: root.name, ds: root, depth: 1, count: countDirectChildServers(root) })
     if (isExpanded(root.name)) pushLevel(root, root.name, 2)
   }
   return out
@@ -354,7 +357,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
           <span class="count">{{ row.count }}</span>
         </template>
 
-        <!-- 文件夹：📁 名称 + 子服务器计数（虚拟文件夹可为 0） -->
+        <!-- 文件夹：📁 名称 + 直接子级服务器计数（与列表同口径；虚拟文件夹可为 0） -->
         <template v-else>
           <span class="folder-icon">📁</span>
           <span class="label" :title="row.folder.path">{{ row.folder.name }}</span>
