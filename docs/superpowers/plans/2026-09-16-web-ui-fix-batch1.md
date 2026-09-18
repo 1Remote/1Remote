@@ -95,3 +95,12 @@
 - **Task D（关于页+更新红点）**：#7 "语言与关于"→"关于"，删语言选择（常规已有）；AboutGroup 内容对齐 WPF AboutPageView（logo+应用名+标语/版本+构建日期/Update 行（新版本链接+红点）/作者 Shawn+GitHub+邮箱/Support 使用文档链接/Make contributions 三按钮（issues/打赏/商店评价）/Included Components 10 组件链接/关闭即返回）；#12 更新检测——后端 WebUiUpdateService（自持 VersionHelper+同款 CustomCheckMethod，尊重 DoNotCheckNewVersion，缓存结果），GET /api/version 扩展 `{updateAvailable,newVersion,newVersionUrl,breaking}`；前端 ⚙ 按钮与设置导航"关于"项红点。
 - **Task E（列表杂项）**：#9 最近连接列 title 精确到秒（Intl.DateTimeFormat 完整格式）。#10 编辑器打开时禁用 topbar 搜索/+下拉/设置（editorBus 增 editorOpen 状态，App.vue 消费禁用）。#11 侧栏标签区："标签"标题恒定不随滚动（sticky）；tag 超长省略（阈值常量 TAG_MAX_LEN=50，title 全名）。
 - 基线：dotnet 161/5（owner WIP 固定名单）；npm build 0；i18n 473×14（预计 +若干键）。顺序 A→B→C→D→E。
+
+## 修复批次 7（owner 七次验收，14 项，2026-09-18）
+
+- **Task A（编辑器）**：#1 音频质量=对应 WPF 音质下拉（RdpFormView sound_quality，重定向到本机时可见）——确认保留；**全 schema 对照 WPF 表单逐项审计**，编造/错位选项列出修正。#2 头部下拉框**可见描述文字**（非 tooltip）：下拉框前加小标签"协议/数据库"。#3 额外指令补 placeholder（WPF Tag）+附加说明文案（WPF 附近 TextBlock）。#4 额外指令重构为**键值行编辑器**：每行 [参数名 n-auto-complete（候选=WPF AvalonEdit 补全清单移植）][值输入][删行]+添加行；加载解析 `xxx:value\n`、保存序列化回字符串（字段类型 RDP_CONTROL_SETTINGS 或等价）。
+- **Task B（状态+计数一致性，live 调查）**：#6 变绿仍不实时（变灰已好）——web connect 走 GlobalEventHelper.OnRequestServerConnect 事件路径（非直连），追踪该 handler→SessionControlService 时序 vs BuildActiveServerIdSet 读点；live 调试同批次6-B 方法论。#9 计数一致性：树徽标 countHolderServers=递归 vs 列表 Explorer=直接子级（12vs4 根因）；"全部数据 26" vs 列表 16 谜团（疑：断线数据源缓存/DTO ServerCount 与列表数据源不一致）——统一为 Explorer 语义（徽标=直接子级数？或徽标递归+列表也含子孙？设计定夺：**徽标与列表同口径**，全部数据根保持全库递归）。
+- **Task C（搜索/批量）**：#7 placeholder 去"标签"声称+加"Ctrl+F"提示（键值改）。#8 勾选=1 时按钮显"编辑"进单台编辑；≥2 显"批量编辑"。#5 "未读取"文案澄清：密码等敏感字段列表 DTO 不回读（设计使然）——文案改为"此项不回读当前值，选择覆盖后设置"（i18n），报告向 owner 解释原因。
+- **Task D（设置）**：#12 全设置页自动保存（改即存，去保存按钮/dirty 提示；文本类 debounce 500ms；验证开关/语言已是即存模式统一化）。#10 切日文报错 language resource missing（Interface engine…）——疑后端 WPF LanguageService.SetLanguage 对 ja 资源缺键抛错→PUT 500；修：补 WPF 14 语言缺失键（ja 等缺的 Interface engine desktop/web 键）或后端容错降级警告；查清键来源。#11 关于页排版按 web 风格重排（内容不变，WPF 双栏→web 单列或自适应）。
+- **Task E（运行器）**：#13 Built-in PuTTY 对齐 WPF：主题选择（putty-color-themes，含预览）+字体+字号（读 WPF RunnerSettings/ProtocolConfig VM 结构；ConverterExternalRunner2Vm.cs 是 owner WIP 禁改只读）；其他运行器审计（kitty 等）。#14 运行器添加/删除 UI（内置不可删，外部可增删；后端 /api/settings/runners 全量保存形状核实）。
+- 基线：dotnet 172/2（RdpConfigTests）；npm build 0；i18n 481×14。顺序 A→B→C→D→E，B 可与 A 并行（文件不相交时）。
