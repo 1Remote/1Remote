@@ -4,7 +4,7 @@
   "common.username": "用户名",
   "common.ok": "确定",
 
-  "search.placeholder": "搜索服务器、标签…",
+  "search.placeholder": "搜索服务器（Ctrl+F）",
   "search.title": "Ctrl+K 聚焦 · Esc 清空",
   "search.searching": "搜索中…",
 
@@ -59,7 +59,8 @@
   "batch.connect": "连接",
   "batch.connectTitle": "连接全部已选",
   "batch.edit": "批量编辑",
-  "batch.editTitle": "批量编辑全部已选",
+  "batch.editTitle": "批量编辑 {n} 台",
+  "batch.editSingleTitle": "编辑已选服务器",
   "batch.export": "导出",
   "batch.exportTitle": "导出全部已选（明文 JSON，需本地验证）",
   "batch.clear": "取消选择",
@@ -231,7 +232,8 @@
 
   "editor.bulkTitle": "批量编辑（{n} 台）",
   "editor.differentValues": "‹{n} 台各不相同›",
-  "editor.bulkUnknown": "‹未读取›",
+  "editor.bulkUnknown": "当前值未随列表提供；选择「覆盖」后设置",
+  "editor.bulkSensitiveHint": "此项不回读当前值；选择「覆盖」后可设置统一值",
   "editor.keepUnchanged": "保持不变",
   "editor.keepUnchangedTip": "退出覆盖：该字段不修改，各台保留原值",
   "editor.overwrite": "覆盖",

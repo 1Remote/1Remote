@@ -43,8 +43,15 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
       <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect')">
         ▶ {{ t('batch.connect') }}
       </button>
-      <!-- 批量编辑：emit 勾选 id 数组，抽屉批量模式由 ServerListView 打开 -->
-      <button class="bb-btn" :title="t('batch.editTitle')" @click="emit('bulk-edit')">✎ {{ t('batch.edit') }}</button>
+      <!-- 批量编辑：emit 勾选 id 数组；恰勾 1 台时按钮显「编辑」（ctx.edit，14 语言有译），
+           抽屉转单台编辑由 ServerListView.openBulkEdit 判 1 台分流，>1 台才进 bulk 模式 -->
+      <button
+        class="bb-btn"
+        :title="checkedCount === 1 ? t('batch.editSingleTitle') : t('batch.editTitle', { n: checkedCount })"
+        @click="emit('bulk-edit')"
+      >
+        ✎ {{ checkedCount === 1 ? t('ctx.edit') : t('batch.edit') }}
+      </button>
       <!-- 导出：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
       <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export')">⤓ {{ t('batch.export') }}</button>
       <button class="bb-x" :title="t('batch.clear')" @click="emit('clear-checked')">✕</button>
