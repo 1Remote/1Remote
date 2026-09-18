@@ -27,6 +27,11 @@ import DataSourceGroup from '../components/settings/DataSourceGroup.vue'
 import CredentialVaultGroup from '../components/settings/CredentialVaultGroup.vue'
 import RunnerGroup from '../components/settings/RunnerGroup.vue'
 import { useVersionInfo } from '../composables/useVersionInfo'
+import { useUiLockWhileMounted } from '../composables/editorBus'
+
+// 设置页存在期间持有通用 UI 锁：App.vue 顶栏（搜索/「+」/⚙）随之禁用（batch9 #2）——
+// 设置页是路由整屏界面，与编辑抽屉同属"上下文切换中"状态
+useUiLockWhileMounted()
 
 const route = useRoute()
 const router = useRouter()

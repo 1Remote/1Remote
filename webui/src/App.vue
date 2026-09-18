@@ -9,7 +9,10 @@ import { useEditorBus } from './composables/editorBus'
 import { useVersionInfo } from './composables/useVersionInfo'
 const naive = useNaiveTheme()
 const { t, locale } = useI18n()
-const { requestNewServer, requestImport, editorOpen } = useEditorBus()
+const { requestNewServer, requestImport, editorOpen, uiLock } = useEditorBus()
+// 顶栏占用态：编辑抽屉或任一整屏/模态界面（设置页/标签管理/导入，见 editorBus.uiLock）
+// 打开时顶栏整体禁用——两层状态在此合并供模板与快捷键统一消费
+const overlayActive = computed(() => editorOpen.value || uiLock.value)
 // naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）。
 // Input/Select 的默认 placeholder（enUS "Please Input"/"Please Select"、zhCN "请输入"/"请选择"）
 // 清空为 ''：WPF 表单无 Tag 的输入框不显示任何提示文本，web 未提供 placeholderKey 的字段
@@ -25,15 +28,15 @@ const naiveLocale = computed(() => {
 const { searchQuery, searching } = useServers()
 const searchInput = ref(null)
 
-// Ctrl+K / Cmd+K 与 Ctrl+F / Cmd+F 全局聚焦搜索框：
+// Ctrl+F / Cmd+F 全局聚焦搜索框（Ctrl+K 已随 batch9 #1 移除，仅保留 Ctrl+F）：
 // keydown 于 window（冒泡），preventDefault 让位浏览器默认（如地址栏搜索 / 页内查找栏）；
 // 再次按下全选已有内容，方便直接覆盖输入。
 // Esc 不在此处理（输入框元素级 handler 焦点在表格时不触发，无法参与统一链序）——
 // 全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 的 window 级 handler 统一调度。
 function onGlobalKey(e) {
   const key = e.key?.toLowerCase()
-  if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (key === 'k' || key === 'f')) {
-    if (editorOpen.value) return // 编辑抽屉打开：搜索框已锁定，不抢焦点（也不吞浏览器默认行为）
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && key === 'f') {
+    if (overlayActive.value) return // 编辑抽屉/设置页/模态打开：搜索框已锁定，不抢焦点（也不吞浏览器默认行为）
     e.preventDefault()
     searchInput.value?.focus()
     searchInput.value?.select()
@@ -95,10 +98,10 @@ window.__setWinState = (s) => {
 }
 // WPF 壳 Ctrl+F 转发入口（ExecuteScriptAsync 调用）：焦点不在 WebView2
 //（如启动后未点进页面）时，WPF 窗口级 KeyBinding 抢先把命令派给 CommandFocusFilter，
-// MainWindowView 转而调用本函数——聚焦并全选搜索框，与页面内 Ctrl+K/Ctrl+F handler
+// MainWindowView 转而调用本函数——聚焦并全选搜索框，与页面内 Ctrl+F handler
 //（onGlobalKey）等效；焦点在网页内时网页自己的 handler 生效，不走此路径
 window.__focusSearch = () => {
-  if (editorOpen.value) return // 编辑抽屉打开时与页内 Ctrl+K/F 一致：不抢焦点
+  if (overlayActive.value) return // 抽屉/设置页/模态打开时与页内 Ctrl+F 一致：不抢焦点
   searchInput.value?.focus()
   searchInput.value?.select()
 }
@@ -164,11 +167,11 @@ function onTopbarDblClick(e) {
               <img class="logo-mark" src="/logo.png" width="16" height="16" alt="" />
               1Remote
             </div>
-            <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl K / Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup）。
-                 编辑抽屉打开时锁定（editorBus.editorOpen）：容器弱化 + input disabled -->
+            <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup）。
+                 编辑抽屉/设置页/模态打开时锁定（overlayActive）：容器弱化 + input disabled -->
             <div
               class="searchbox"
-              :class="{ disabled: editorOpen }"
+              :class="{ disabled: overlayActive }"
               :title="t('search.title')"
               @click="searchInput?.focus()"
             >
@@ -178,7 +181,7 @@ function onTopbarDblClick(e) {
                 v-model="searchQuery"
                 class="sb-input"
                 type="text"
-                :disabled="editorOpen"
+                :disabled="overlayActive"
                 :placeholder="t('search.placeholder')"
               />
               <!-- 常驻占位仅切 visibility（不 v-if）：避免 spinner 出现/消失时输入框宽度跳动 -->
@@ -186,13 +189,13 @@ function onTopbarDblClick(e) {
             </div>
             <div class="topbar-actions">
               <!-- 「+」下拉：新建服务器 / 导入服务器（经 editorBus 通知 ServerListView）；
-                   编辑抽屉打开时禁用——disabled 的原生 button 不派发
+                   抽屉/设置页/模态打开时禁用——disabled 的原生 button 不派发
                    click，n-dropdown 不再弹出 -->
               <n-dropdown trigger="click" :options="addOptions" @select="onAddSelect">
-                <n-button quaternary size="small" :disabled="editorOpen" :title="t('topbar.addServer')">+</n-button>
+                <n-button quaternary size="small" :disabled="overlayActive" :title="t('topbar.addServer')">+</n-button>
               </n-dropdown>
               <span class="gear-wrap">
-                <n-button quaternary size="small" :disabled="editorOpen" @click="openSettings()">⚙</n-button>
+                <n-button quaternary size="small" :disabled="overlayActive" @click="openSettings()">⚙</n-button>
                 <!-- 更新红点：仅 updateAvailable -->
                 <span v-if="updateInfo?.available" class="gear-dot"></span>
               </span>
@@ -288,7 +291,7 @@ function onTopbarDblClick(e) {
 .searchbox:focus-within {
   border-color: var(--accent);
 }
-/* 编辑器打开时的锁定态：弱化 + 禁用光标（克制，不加边框变色等强提示） */
+/* 抽屉/设置页/模态打开时的锁定态：弱化 + 禁用光标（克制，不加边框变色等强提示） */
 .searchbox.disabled {
   opacity: 0.5;
   cursor: not-allowed;

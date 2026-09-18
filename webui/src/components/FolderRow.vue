@@ -1,9 +1,9 @@
 <script setup>
 // 文件夹行（列表内子文件夹入口）：36px flex 行，列宽消费父级 ServerTable 下发的 --c-* CSS
 // 变量（.cell 样式 scoped 于本组件，与 ServerRow 各自持一份，兜底值同源）。
-// 交互：双击=进入；右键=在该文件夹内新建子文件夹（菜单浮层归 ServerTable）；
-// 拖服务器入内=移动进去——是否接受 drop 由父级判定（dragover/drop 原事件透传，
-// preventDefault 在父级命中判定内完成）。
+// 交互：双击=进入；右键=新建子文件夹/重命名/删除（菜单浮层归 ServerTable，与 SideTree
+// 树右键同一菜单集）；拖服务器入内=移动进去——是否接受 drop 由父级判定（dragover/drop
+// 原事件透传，preventDefault 在父级命中判定内完成）。
 // 勾选复选框=选中该文件夹全部子孙服务器（含子文件夹深处）：三态（全选/半选/未选）由
 // 父级按「子孙 id ∩ checked」派生传入，本组件只渲染与上抛 toggle——勾选集合始终是服务器
 // id 集（父级 checked），文件夹不占 id。
