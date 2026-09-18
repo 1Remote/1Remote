@@ -35,8 +35,10 @@ const tileStyle = (s) => {
   const rgb = opaqueHex(s.color)
   return rgb ? { background: rgb + '26', color: rgb } : null
 }
-// 地址列：Serial 等无地址协议回退显示协议名；有端口拼 ':port'
-const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.protocol)
+// 地址列：有地址拼 ':port'；无地址协议回退 SubTitle（WPF 列表地址列绑定 Server.SubTitle，
+// Serial 即 "COM1(9600)"——串口号(波特率)，搜索命中高亮 addrSegs 对该文本自动生效），
+// 旧后端无该字段时再退协议名
+const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.subTitle || s.protocol)
 // 文件夹列：「全部数据」根视图无文件夹行，此列是
 // 唯一来源上下文——「数据源 / 路径」定位信息（额外前缀数据源名，同名路径跨数据源区分）；
 // 进入文件夹后列隐藏（面包屑承载路径）

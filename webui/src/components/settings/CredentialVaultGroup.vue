@@ -121,6 +121,15 @@ async function save() {
   }
 }
 
+// 模态表单回车=保存（与保存按钮同守卫：名称空/保存中不动作）：输入框聚焦回车提交；
+// 按钮（密码眼睛）/textarea/下拉聚焦的回车留给原生行为；IME 组合中的回车（选字）不触发
+function onFormEnter(e) {
+  if (e.key !== 'Enter' || e.isComposing) return
+  if (e.target?.closest?.('button, textarea, .n-select')) return
+  e.preventDefault()
+  save()
+}
+
 // ---- 删除（引用数警告 + 404 静默刷新）----
 function onDelete(c) {
   dialog.warning({
@@ -306,7 +315,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
       role="dialog"
       aria-modal="true"
     >
-      <div class="form">
+      <div class="form" @keydown="onFormEnter">
         <div class="f-row">
           <label>{{ t('editor.f.Name') }} *</label>
           <n-input size="small" v-model:value="form.name" :input-props="{ spellcheck: false }" />

@@ -50,6 +50,9 @@ namespace _1RM.Service.WebUi
                 Address = address,
                 Port = port,
                 UserName = userName,
+                // SubTitle 原文（WPF ServerLineItem 地址列绑定 Server.SubTitle）。地址列回退显示用：
+                // Serial 等无 Address 层级的协议由此携带 "COM1(9600)"（前端无地址时回退 SubTitle）
+                SubTitle = server.SubTitle ?? string.Empty,
                 Note = server.Note ?? string.Empty,
                 Tags = server.Tags?.ToList() ?? new List<string>(),
                 Color = server.ColorHex ?? string.Empty,

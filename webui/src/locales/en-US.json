@@ -5,7 +5,7 @@
   "common.ok": "OK",
 
   "search.placeholder": "Search servers (Ctrl+F)",
-  "search.title": "Ctrl+K to focus · Esc to clear",
+  "search.title": "Search servers (Ctrl+F)",
   "search.searching": "Searching…",
 
   "crumb.allDataSources": "All data",
@@ -92,6 +92,7 @@
   "ctx.delete": "Delete",
 
   "row.select": "Select",
+  "row.selectFolder": "Select all servers in this folder (including subfolders)",
   "row.connect": "Connect",
   "row.edit": "Edit",
   "row.note": "Note",

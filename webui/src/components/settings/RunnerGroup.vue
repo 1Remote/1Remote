@@ -266,6 +266,15 @@ function addSave() {
   saveNow()
 }
 
+// 添加模态表单回车=保存（与保存按钮同守卫：名称校验未过不动作）：输入框聚焦回车提交；
+// textarea（参数）回车=换行、按钮回车=原生 click，均不代提交；IME 组合中的回车不触发
+function onFormEnter(e) {
+  if (e.key !== 'Enter' || e.isComposing) return
+  if (e.target?.closest?.('button, textarea, .n-select')) return
+  e.preventDefault()
+  addSave()
+}
+
 // ---- 删除（#14）：仅外部运行器；确认 → splice + selectedRunnerName 回退首项（WPF 同款）→ 保存 ----
 function onDeleteRunner(r) {
   dialog.warning({
@@ -521,7 +530,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
         role="dialog"
         aria-modal="true"
       >
-        <div class="form">
+        <div class="form" @keydown="onFormEnter">
           <div class="f-row">
             <label>{{ t('editor.f.Name') }}</label>
             <div>

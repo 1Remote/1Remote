@@ -4,15 +4,29 @@
 // 交互：双击=进入；右键=在该文件夹内新建子文件夹（菜单浮层归 ServerTable）；
 // 拖服务器入内=移动进去——是否接受 drop 由父级判定（dragover/drop 原事件透传，
 // preventDefault 在父级命中判定内完成）。
+// 勾选复选框=选中该文件夹全部子孙服务器（含子文件夹深处）：三态（全选/半选/未选）由
+// 父级按「子孙 id ∩ checked」派生传入，本组件只渲染与上抛 toggle——勾选集合始终是服务器
+// id 集（父级 checked），文件夹不占 id。
+import { ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-defineProps({
+const props = defineProps({
   folder: { type: Object, required: true }, // { name, path, dsName, count }
   showDs: { type: Boolean, default: false }, // 「全部数据」根视图：名称旁前缀数据源名（跨库同名文件夹区分）
   dropActive: { type: Boolean, default: false }, // 拖拽悬停高亮（父级 dropFolder 命中本行时置真）
+  checkState: { type: Object, default: null }, // { checked, indeterminate, count } | null（无子孙=禁用未选）
 })
-const emit = defineEmits(['open', 'context', 'dragover', 'dragleave', 'drop'])
+const emit = defineEmits(['open', 'context', 'dragover', 'dragleave', 'drop', 'toggle-check'])
 const { t } = useI18n()
+
+// 三态复选框：indeterminate 无对应 HTML 属性、须写 DOM 属性（与 ServerTable 表头全选同款）；
+// 虚拟滚动下本组件逐行实例化，ref 只指向本行复选框
+const cbEl = ref(null)
+watchEffect(() => {
+  if (cbEl.value) cbEl.value.indeterminate = !!props.checkState?.indeterminate
+})
+// 空（虚拟）文件夹无子孙可勾：禁用置灰（勾选空集无意义）
+const disabled = () => !props.checkState?.count
 </script>
 
 <template>
@@ -26,7 +40,19 @@ const { t } = useI18n()
     @dragleave="emit('dragleave')"
     @drop="emit('drop', $event)"
   >
-    <div class="cell cell-check"></div>
+    <div class="cell cell-check">
+      <input
+        ref="cbEl"
+        type="checkbox"
+        class="cb"
+        :checked="!!checkState?.checked"
+        :disabled="disabled()"
+        :title="t('row.selectFolder')"
+        @click.stop
+        @dblclick.stop
+        @change="emit('toggle-check')"
+      />
+    </div>
     <div class="cell cell-status"></div>
     <div class="cell cell-name f-name">
       <span class="f-icon">📁</span>
@@ -68,6 +94,8 @@ const { t } = useI18n()
 
 .frow .cell-check {
   flex: 0 0 var(--c-check, 30px);
+  justify-content: center; /* 复选框居中于列内（与 ServerRow .cell-check 同款） */
+  padding-right: 0;
 }
 
 .frow .cell-status {
@@ -109,5 +137,14 @@ const { t } = useI18n()
   color: var(--text-4);
   font-size: 0.8846rem;
   white-space: nowrap;
+}
+
+/* 文件夹勾选复选框：强调色随主题；空（虚拟）文件夹禁用置灰 */
+.cb {
+  accent-color: var(--accent);
+}
+.cb:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 </style>
