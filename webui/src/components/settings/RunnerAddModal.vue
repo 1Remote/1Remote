@@ -8,6 +8,7 @@
  */
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { onFormEnter } from '../../utils/formEnter'
 
 const props = defineProps({
   /** 模态显隐（v-model:show） */
@@ -42,14 +43,7 @@ function save() {
   emit('save', name.value.trim())
 }
 
-// 模态表单回车=保存（与保存按钮同守卫：名称校验未过不动作）：输入框聚焦回车提交；
-// 按钮/textarea/下拉聚焦的回车留给原生行为；IME 组合中的回车（选字）不触发
-function onFormEnter(e) {
-  if (e.key !== 'Enter' || e.isComposing) return
-  if (e.target?.closest?.('button, textarea, .n-select')) return
-  e.preventDefault()
-  save()
-}
+// 模态表单回车=保存：共通语义见 utils/formEnter.js（与保存按钮同守卫：名称校验未过不动作）
 </script>
 
 <template>
@@ -63,7 +57,7 @@ function onFormEnter(e) {
     aria-modal="true"
     @update:show="emit('update:show', $event)"
   >
-    <div class="form" @keydown="onFormEnter">
+    <div class="form" @keydown="onFormEnter($event, save)">
       <div class="f-row">
         <label>{{ t('editor.f.Name') }}</label>
         <div>

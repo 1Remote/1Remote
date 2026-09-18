@@ -15,11 +15,13 @@
  * - 删除 409 {serverCount}：二段确认——首段普通确认；409 后二段显示仍有的服务器数与
  *   keepServers 语义（服务器留在库文件，重新添加即可找回），确认后带 keepServers=true 重试。
  */
-import { computed, inject, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
 import { useServers } from '../../composables/useServers'
+import { useSettingsEsc } from '../../composables/useSettingsEsc'
+import { onFormEnter } from '../../utils/formEnter'
 import HelpLink from '../HelpLink.vue'
 
 const { t } = useI18n()
@@ -27,11 +29,8 @@ const message = useMessage()
 const dialog = useDialog()
 const { datasources, reload } = useServers()
 
-// 下拉展开计数（SettingsView 的 Esc 返回链序，见 SettingsView 文件头注释；与 GeneralGroup 同款）
-const escShield = inject('settingsEscShield', null)
-function shield(show) {
-  if (escShield) escShield.open += show ? 1 : -1
-}
+// 下拉展开计数 + 模态 Esc 截停（Esc 链序见 SettingsView/useSettingsEsc 文件头注释）
+const { shield, bindModalEsc } = useSettingsEsc()
 
 // ---- 展示辅助 ----
 const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
@@ -193,15 +192,8 @@ async function editSave() {
   }
 }
 
-// 模态表单回车=保存（添加/编辑模态各自传保存函数；与保存按钮同守卫——校验未过/保存中
-// 不动作）：输入框聚焦回车提交；按钮/textarea/下拉（类型下拉的回车=选中选项）留给原生
-// 行为；IME 组合中的回车（选字）不触发
-function onFormEnter(e, fn) {
-  if (e.key !== 'Enter' || e.isComposing) return
-  if (e.target?.closest?.('button, textarea, .n-select')) return
-  e.preventDefault()
-  fn()
-}
+// 模态表单回车=保存：共通语义见 utils/formEnter.js（添加/编辑模态各自传保存函数；
+// 与保存按钮同守卫——校验未过/保存中不动作）
 
 // ---- 删除：二段确认（409 keepServers 重试）----
 function onDelete(d) {
@@ -252,21 +244,11 @@ function confirmKeepServers(d, serverCount) {
   })
 }
 
-// ---- Esc 链：模态开着时捕获截停（SettingsView 返回导航让位）----
-// 下拉开着（shield>0）时让位：Esc 先由 naive 组件层消化关下拉，不动模态
-function onEscCapture(e) {
-  if (e.key !== 'Escape') return
-  if (escShield && escShield.open > 0) return
-  if (adding.value) {
-    e.stopPropagation()
-    adding.value = false
-  } else if (editing.value) {
-    e.stopPropagation()
-    editing.value = null
-  }
-}
-onMounted(() => window.addEventListener('keydown', onEscCapture, true))
-onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
+// ---- Esc 链：模态开着时捕获截停只关模态（SettingsView 返回导航让位）----
+bindModalEsc([
+  { isOpen: () => adding.value, close: () => (adding.value = false) },
+  { isOpen: () => !!editing.value, close: () => (editing.value = null) },
+])
 </script>
 
 <template>
