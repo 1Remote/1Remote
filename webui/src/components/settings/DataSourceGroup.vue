@@ -270,8 +270,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 
 <template>
   <div class="group">
+    <!-- 列表标题行（#14）：添加按钮右对齐（RunnerGroup #9 同款 grid/justify-self 模式） -->
     <div class="toolbar">
-      <n-button size="small" type="primary" @click="openAdd">{{ t('settings.d.add') }}</n-button>
+      <n-button class="add-btn" size="small" type="primary" @click="openAdd">{{ t('settings.d.add') }}</n-button>
     </div>
 
     <div v-if="!datasources.length" class="empty">{{ t('tree.noDatasources') }}</div>
@@ -449,8 +450,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   max-width: 720px;
 }
 .toolbar {
-  display: flex;
+  /* #14：单列 1fr + 按钮 justify-self 推到行右端（与 RunnerGroup 的默认运行器行同款模式） */
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
   margin-bottom: 12px;
+}
+.add-btn {
+  justify-self: end;
 }
 .empty {
   padding: 24px 0;

@@ -1,14 +1,20 @@
 <script setup>
 /**
- * 凭据库分组（Plan 3 Task 5，spec §6）：GET /api/credentials?ds= 表格 + 新建/编辑模态 +
- * 删除确认（引用数警告）+ 👁 明文查看（reveal 流）。
+ * 凭据库分组（Plan 3 Task 5，spec §6；fix batch8 Task E #16 表单对齐凭据库模型）：
+ * GET /api/credentials?ds= 表格 + 新建/编辑模态 + 删除确认（引用数警告）+ 👁 明文查看（reveal 流）。
  *
+ * - 表单字段集 = WPF 凭据库弹窗（CredentialVaultViewModel 以 showHost:false 复用
+ *   AlternativeCredentialEditView）：Name/UserName/Password/PrivateKeyPath 四项，
+ *   顺序同 WPF（Name → UserName → Password → 私钥路径）。Address/Port 两项已去掉——
+ *   凭据库不使用这两个字段（Dapper UpdateCredential 落库前强制清空），web 表单原先
+ *   复用备用凭据子表单的这两项属多余；后端 DTO 字段保留仅为 API 兼容，前端不再提交。
  * - 数据源过滤：n-select（useServers 共享态），切换即重载列表；只读数据源禁用 CRUD 按钮
  *   （后端也会前置拦截，这里只做 UI 预防）。
  * - 列表 DTO 不含密码/私钥路径（后端安全红线）——明文只能走 reveal：
  *   点 👁 → 行内「请在桌面端完成验证…」等待态（服务端在桌面端弹本地验证，未开启则直通）→
  *   成功后行内展开明文（默认掩码，可切换）+ 30s 倒计时自动隐藏；403 → toast 验证失败；
- *   404 → 静默刷新列表（凭据已被其它端删除/改名）。
+ *   404 → 静默刷新列表（凭据已被其它端删除/改名）。列表列与 WPF 凭据库表格对齐
+ *   （名称/用户名/操作），另加 web 侧引用计数列；WPF 的密码/私钥掩码列由 reveal 行承载。
  * - 编辑模态的密码/私钥路径不可预填（列表无值、reveal 有 30s 窗口与验证成本）——后端 PUT
  *   对这两个加密字段为"空=保持原值"语义（batch8 Task E #17：明文不回显，空提交沿用原值），
  *   输入框以 placeholder 注明（settings.ph.keepCurrent）。
@@ -63,8 +69,6 @@ watch(ds, () => {
   load()
 })
 
-const addrText = (c) => (c.address ? c.address + (c.port ? ':' + c.port : '') : '')
-
 // ---- 新建/编辑模态 ----
 const editing = ref(null) // null=关 | { mode: 'create' } | { mode: 'edit', name }
 const showEdit = computed({
@@ -73,12 +77,14 @@ const showEdit = computed({
     if (!v) editing.value = null
   },
 })
-const form = reactive({ name: '', address: '', port: '', userName: '', password: '', privateKeyPath: '' })
+// 表单字段集与 WPF 凭据库弹窗一致（#16）：Name/UserName/Password/PrivateKeyPath，
+// 不含 Address/Port（凭据库不使用，后端落库前本就清空）
+const form = reactive({ name: '', userName: '', password: '', privateKeyPath: '' })
 const showPwd = ref(false)
 const saving = ref(false)
 
 function openCreate() {
-  Object.assign(form, { name: '', address: '', port: '', userName: '', password: '', privateKeyPath: '' })
+  Object.assign(form, { name: '', userName: '', password: '', privateKeyPath: '' })
   showPwd.value = false
   editing.value = { mode: 'create' }
 }
@@ -86,8 +92,6 @@ function openCreate() {
 function openEdit(c) {
   Object.assign(form, {
     name: c.name,
-    address: c.address,
-    port: c.port,
     userName: c.userName,
     password: '',
     privateKeyPath: '',
@@ -99,11 +103,10 @@ function openEdit(c) {
 async function save() {
   if (!form.name.trim() || saving.value) return
   saving.value = true
-  // credential 域与后端 DTO 一致（PascalCase；Password/PrivateKeyPath 明文入，服务端加密落库）
+  // credential 域与后端 DTO 一致（PascalCase；Password/PrivateKeyPath 明文入，服务端加密落库；
+  // 编辑态留空 = 保持原值，见文件头 #17 注释）
   const credential = {
     Name: form.name.trim(),
-    Address: form.address.trim(),
-    Port: String(form.port ?? '').trim(),
     UserName: form.userName.trim(),
     Password: form.password,
     PrivateKeyPath: form.privateKeyPath.trim(),
@@ -238,7 +241,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
         <div class="cv-row head">
           <span class="c-name">{{ t('col.name') }}</span>
           <span class="c-user">{{ t('common.username') }}</span>
-          <span class="c-addr">{{ t('col.address') }}</span>
           <span class="c-refs">{{ t('cv.col.refCount') }}</span>
           <span class="c-actions">{{ t('col.actions') }}</span>
         </div>
@@ -246,7 +248,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
           <div class="cv-row" :class="{ revealing: revealState?.name === c.name }">
             <span class="c-name" :title="c.name">{{ c.name }}</span>
             <span class="c-user" :title="c.userName">{{ c.userName || '—' }}</span>
-            <span class="c-addr" :title="addrText(c)">{{ addrText(c) || '—' }}</span>
             <span class="c-refs" :class="{ hot: c.refCount > 0 }">{{ c.refCount }}</span>
             <span class="c-actions">
               <!-- 明文已展开：掩码切换 + 手动隐藏；未展开：👁 发起 reveal -->
@@ -320,14 +321,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
         <div class="f-row">
           <label>{{ t('editor.f.Name') }} *</label>
           <n-input size="small" v-model:value="form.name" :input-props="{ spellcheck: false }" />
-        </div>
-        <div class="f-row">
-          <label>{{ t('editor.f.Address') }}</label>
-          <n-input size="small" v-model:value="form.address" :input-props="{ spellcheck: false }" />
-        </div>
-        <div class="f-row">
-          <label>{{ t('editor.f.Port') }}</label>
-          <n-input size="small" v-model:value="form.port" :input-props="{ spellcheck: false }" />
         </div>
         <div class="f-row">
           <label>{{ t('editor.f.UserName') }}</label>
@@ -417,7 +410,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   color: var(--text-4);
 }
 
-/* ---- 表格：5 列网格（名称/用户名/地址/被引用/操作），主题变量取色 ---- */
+/* ---- 表格：4 列网格（名称/用户名/被引用/操作，对齐 WPF 凭据库列集），主题变量取色 ---- */
 .cv-table {
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -425,7 +418,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .cv-row {
   display: grid;
-  grid-template-columns: minmax(120px, 1.4fr) minmax(100px, 1fr) minmax(140px, 1.4fr) 56px 110px;
+  grid-template-columns: minmax(120px, 1.6fr) minmax(100px, 1fr) 56px 110px;
   gap: 6px;
   align-items: center;
   min-height: 32px;
@@ -452,8 +445,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   white-space: nowrap;
   color: var(--text-1);
 }
-.c-user,
-.c-addr {
+.c-user {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
