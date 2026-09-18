@@ -17,11 +17,12 @@ using _1RM.View;
 namespace Tests.Service.WebUi
 {
     /// <summary>
-    /// POST /api/servers/batch/peek 集成测试（fix batch8 #8）：批量编辑的共享值回读。
-    /// 响应为逐台固定 6 键（camelCase 列表 DTO 域）的非敏感载荷——id +
-    /// askPasswordWhenConnect/inheritedCredentialName/startupAutoCommand/startupPath/
-    /// rdpFileAdditionalSettings；协议不适用字段为 null（如 RDP 无 StartupPath）。
-    /// 安全断言：键集精确相等（无 password/privateKey 等加密键）且响应不含创建口令明文。
+    /// POST /api/servers/batch/peek 集成测试（fix batch8 #8；batch9 Task C 键集扩展）：
+    /// 批量编辑的共享值回读。响应为逐台 {id, ...camelCase: value}——键集从 BatchPatchFieldMap
+    /// 同源派生（全部 schema 标量键，扣 3 个加密键 password/privateKey/gatewayPassword 与
+    /// 8 个列表 DTO 已覆盖键 displayName/note/tags/colorHex/iconBase64/address/port/userName）；
+    /// 协议不适用字段为 null（如 RDP 无 StartupPath）。
+    /// 安全断言：键集不含任何加密键且响应不含创建口令明文。
     /// 错误语义与 batch 补丁对齐：ids 空/缺失 400；任一 id 未知 404。
     /// 用例经 POST /api/servers 造独立种子，不触碰其它测试类的夹具种子。
     /// </summary>
@@ -67,7 +68,7 @@ namespace Tests.Service.WebUi
         }
 
         [TestMethod]
-        public async Task Peek_ReturnsFixedNonSensitiveShape_ValuesMatch()
+        public async Task Peek_ReturnsDerivedNonSensitiveShape_ValuesMatch()
         {
             var ids = new List<string>
             {
@@ -86,18 +87,32 @@ namespace Tests.Service.WebUi
             var items = doc.RootElement;
             Assert.AreEqual(JsonValueKind.Array, items.ValueKind, "响应应为数组");
             Assert.AreEqual(2, items.GetArrayLength(), "两台各一条记录");
-            var expectedKeys = new HashSet<string>
+
+            // 安全断言二（键集派生规则）：加密键与列表 DTO 已覆盖键绝不出现，schema 扩展键必须出现
+            var forbiddenKeys = new HashSet<string>
+            {
+                // 加密键（BatchPeekSensitiveKeys）
+                "password", "privateKey", "gatewayPassword",
+                // 列表 DTO 已覆盖键（前端从 /api/servers 取共享值，peek 不重传）
+                "displayName", "note", "tags", "colorHex", "iconBase64", "address", "port", "userName",
+            };
+            var requiredKeys = new HashSet<string>
             {
                 "id", "askPasswordWhenConnect", "inheritedCredentialName",
                 "startupAutoCommand", "startupPath", "rdpFileAdditionalSettings",
+                // batch9 Task C 扩展：协议 schema 标量键（RDP 侧代表集）
+                "rdpWidth", "rdpHeight", "enableClipboard", "rdpFullScreenFlag",
+                "displayPerformance", "gatewayMode", "mstscModeEnabled",
+                "commandBeforeConnected", "selectedRunnerName", "alwaysOpenInNewTabWindow",
             };
             foreach (var item in items.EnumerateArray())
             {
-                // 安全断言二：键集精确相等（无 password/privateKey 等任何额外键，防字段漂移）
                 var keys = new HashSet<string>();
                 foreach (var p in item.EnumerateObject()) keys.Add(p.Name);
-                Assert.IsTrue(keys.SetEquals(expectedKeys),
-                    "逐台载荷键集必须恰为 6 个非敏感键，实际: " + string.Join(", ", keys));
+                foreach (var forbidden in forbiddenKeys)
+                    Assert.IsFalse(keys.Contains(forbidden), $"peek 不得包含键 '{forbidden}'（实际: {string.Join(", ", keys)}）");
+                foreach (var required in requiredKeys)
+                    Assert.IsTrue(keys.Contains(required), $"peek 应包含扩展键 '{required}'（实际: {string.Join(", ", keys)}）");
 
                 Assert.IsTrue(item.GetProperty("id").GetString() == ids[0] || item.GetProperty("id").GetString() == ids[1],
                     "记录 id 必须属于请求的 ids");
@@ -105,6 +120,9 @@ namespace Tests.Service.WebUi
                 Assert.IsTrue(item.GetProperty("askPasswordWhenConnect").GetBoolean(), "AskPasswordWhenConnect 应回读 true");
                 Assert.AreEqual("cred-peek", item.GetProperty("inheritedCredentialName").GetString());
                 Assert.AreEqual("redirectclipboard:i:0", item.GetProperty("rdpFileAdditionalSettings").GetString());
+                // 扩展键值断言：RDP ctor 默认（RdpWidth=800/EnableClipboard=true）应原样回读
+                Assert.AreEqual(800, item.GetProperty("rdpWidth").GetInt32(), "RdpWidth 应回读 RDP ctor 默认 800");
+                Assert.IsTrue(item.GetProperty("enableClipboard").GetBoolean(), "EnableClipboard 应回读默认 true");
                 // 协议不适用字段：RDP 无 StartupAutoCommand/StartupPath → null 占位
                 Assert.AreEqual(JsonValueKind.Null, item.GetProperty("startupAutoCommand").ValueKind,
                     "RDP 无 StartupAutoCommand，应以 null 占位而非缺键");

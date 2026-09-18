@@ -20,6 +20,8 @@ namespace Tests.Service.WebUi
     /// POST /api/servers/batch 集成测试：补丁式批量编辑（patch 中缺失的字段 = 保持不变）。
     /// casing 域约定：patch 键属列表 DTO（camelCase）域，服务端经显式 allow-list 映射到
     /// C# PascalCase 属性；未知键 400 列出（防静默丢弃）。password 为明文（保存时加密）。
+    /// batch9 Task C 起 allow-list 覆盖编辑器 schema 的全部标量字段（枚举/文本/数字/开关），
+    /// 值经反射类型门校验（bool←Boolean、int/枚举←Integer、string←String）。
     /// 原子性=预校验原子性（任一 id 缺失/任一台校验失败 → 整批不执行、零写入）。
     /// 改动型测试各自经 POST /api/servers 造独立种子，不触碰夹具种子（batch-1/2/3），
     /// 避免用例执行顺序影响断言。
@@ -256,6 +258,74 @@ namespace Tests.Service.WebUi
             StringAssert.Contains(body, "startupPath", "错误消息应点名该字段");
             var cfg = await GetConfigAsync("batch-3");
             StringAssert.Contains(cfg, "\"Port\":\"3383\"", "拒绝后不得有任何写入");
+        }
+
+        /// <summary>
+        /// batch9 Task C：allow-list 扩展后的协议感知键写入往返——RDP 专属的数字
+        /// （RdpWidth）、开关（EnableClipboard）、枚举（RdpFullScreenFlag/GatewayMode）经
+        /// 反射类型门转换并落到全部所选服务器；未 patch 的字段保持原值。
+        /// </summary>
+        [TestMethod]
+        public async Task BatchPatch_ProtocolAwareKeys_AppliedToAll()
+        {
+            var ids = await CreateThreeViaPostAsync("bproto");
+            var resp = await PostBatchAsync(
+                $"{{\"ids\":[\"{ids[0]}\",\"{ids[1]}\",\"{ids[2]}\"]," +
+                "\"patch\":{\"rdpWidth\":1024,\"enableClipboard\":false,\"rdpFullScreenFlag\":0,\"gatewayMode\":1,\"gatewayHostName\":\"gw.example.com\"}}");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode,
+                $"批量补丁失败: {await resp.Content.ReadAsStringAsync()}");
+            StringAssert.Contains(await resp.Content.ReadAsStringAsync(), "\"updated\":3");
+
+            foreach (var id in ids)
+            {
+                var cfg = await GetConfigAsync(id);
+                StringAssert.Contains(cfg, "\"RdpWidth\":1024", "int? 键应写入");
+                StringAssert.Contains(cfg, "\"EnableClipboard\":false", "bool? 键应写入");
+                StringAssert.Contains(cfg, "\"RdpFullScreenFlag\":0", "枚举键应按整数值写入");
+                StringAssert.Contains(cfg, "\"GatewayMode\":1", "网关模式枚举应写入");
+                StringAssert.Contains(cfg, "\"GatewayHostName\":\"gw.example.com");
+                // 未 patch 的字段保持原值
+                StringAssert.Contains(cfg, "\"Port\":\"339");
+            }
+        }
+
+        /// <summary>
+        /// batch9 Task C：反射类型门——bool 键收字符串、int? 键收浮点均 400 且零写入
+        /// （防 Newtonsoft ToObject 的隐式转换静默改值）。
+        /// </summary>
+        [TestMethod]
+        public async Task BatchPatch_WrongJsonType_Returns400_NothingSaved()
+        {
+            var resp = await PostBatchAsync(
+                "{\"ids\":[\"batch-1\"],\"patch\":{\"enableClipboard\":\"yes\"}}");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode, "bool 键的字符串值必须拒绝");
+            StringAssert.Contains(await resp.Content.ReadAsStringAsync(), "enableClipboard", "错误消息应点名该字段");
+
+            var resp2 = await PostBatchAsync(
+                "{\"ids\":[\"batch-2\"],\"patch\":{\"rdpWidth\":12.5}}");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp2.StatusCode, "int? 键的浮点值必须拒绝");
+
+            // 预校验原子性：两次拒绝都零写入
+            var cfg1 = await GetConfigAsync("batch-1");
+            StringAssert.Contains(cfg1, "\"Port\":\"3381\"", "拒绝后不得有任何写入");
+            var cfg2 = await GetConfigAsync("batch-2");
+            StringAssert.Contains(cfg2, "\"Port\":\"3382\"");
+        }
+
+        /// <summary>
+        /// batch9 Task C：扩展键同样受「属性不在该协议类型上 → 按台 400」约束——
+        /// openSftpOnConnected 仅 SSH 有，对 RDP 批量 patch → 400 且零写入。
+        /// </summary>
+        [TestMethod]
+        public async Task BatchPatch_ExtendedKeyMissingOnProtocol_Returns400()
+        {
+            var resp = await PostBatchAsync(
+                "{\"ids\":[\"batch-1\"],\"patch\":{\"openSftpOnConnected\":true}}");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode, "协议上不存在的扩展键必须拒绝");
+            var body = await resp.Content.ReadAsStringAsync();
+            StringAssert.Contains(body, "openSftpOnConnected", "错误消息应点名该字段");
+            var cfg = await GetConfigAsync("batch-1");
+            StringAssert.Contains(cfg, "\"Port\":\"3381\"", "拒绝后不得有任何写入");
         }
     }
 }

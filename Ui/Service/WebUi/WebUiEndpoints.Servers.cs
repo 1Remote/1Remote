@@ -216,10 +216,11 @@ namespace _1RM.Service.WebUi
 
         internal static void MapServersBatchPeek(WebApplication app)
         {
-            // 批量回读（fix batch8 #8）：POST /api/servers/batch/peek，body {ids, ds?}。
-            // 批量编辑表单打开时回读 5 个非敏感字段（askPasswordWhenConnect 等——列表 DTO
-            // 不携带、历来只能以「覆盖」方式设置的字段），供前端计算 N 台共享值；
-            // 不含任何加密字段（安全论证见 WebUiEditorService.PeekBatch）。只读端点：
+            // 批量回读（fix batch8 #8；batch9 Task C 键集扩展）：POST /api/servers/batch/peek，
+            // body {ids, ds?}。批量编辑表单打开时回读列表 DTO 不携带的全部非敏感标量键
+            // （askPasswordWhenConnect/rdpWidth 等协议 schema 字段——键集与 batch 补丁的
+            // allow-list 同源派生，扣 3 个加密键与 8 个列表 DTO 已覆盖键），供前端计算 N 台
+            // 共享值；不含任何加密字段（安全论证见 WebUiEditorService.PeekBatch）。只读端点：
             // ids 空 → 400；任一 id 未知 → 404（与 batch 补丁的整批拒绝语义对齐）。
             app.MapPost("/api/servers/batch/peek", (BatchPeekRequest? body) =>
             {
