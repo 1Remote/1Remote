@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -260,6 +261,87 @@ namespace Tests.Service.WebUi
             var (code, _) = await PutAsync("/api/settings/general", "{\"language\":\"xx-yy\"}");
             Assert.AreEqual(HttpStatusCode.BadRequest, code);
             Assert.AreEqual(original, cs.General.CurrentLanguageCode, "非法 language 不得写入");
+        }
+
+        // fix batch7 #10：owner 切日文报 "language resource missing: Interface engine ..."——
+        // 根因是 Interface engine/desktop/web 三键只进了 en-us 与 zh-cn，其余 12 语言缺失，
+        // LanguageService.SetLanguage 的 DEBUG 分支弹窗报错（正式行为本就是缺键回退英文）。
+        // 修复 = 补齐 12 语言键；本用例回归 owner 报障路径（ja-jp 切换 200 且落库）。
+        [TestMethod]
+        public async Task PutGeneral_Language_SwitchToJapanese_Ok()
+        {
+            var cs = _1RM.IoC.Get<ConfigurationService>();
+            var original = cs.General.CurrentLanguageCode;
+            try
+            {
+                var (code, body) = await PutAsync("/api/settings/general", "{\"language\":\"ja-jp\"}");
+                Assert.AreEqual(HttpStatusCode.OK, code, body);
+                Assert.AreEqual("ja-jp", cs.General.CurrentLanguageCode);
+                var root = await GetJsonAsync("/api/settings/general");
+                Assert.AreEqual("ja-jp", root.GetProperty("language").GetString());
+            }
+            finally
+            {
+                cs.General.CurrentLanguageCode = original;
+                cs.Save();
+            }
+        }
+
+        // fix batch7 #10 回归门禁：14 个语言 xaml 键集必须与 en-us 完全一致——任何"只加进
+        // 部分语言"的新键都会让桌面/Debug web 切语言触发缺键提示（SetLanguage 的
+        // FindMissingFields → DEBUG MessageBox 阻塞请求线程）。LanguageService 构造依赖
+        // pack URI（测试宿主不可用），故直接解析源码树 xaml 比对键集；非源码布局（CI 发布
+        // 目录）下 Inconclusive。
+        [TestMethod]
+        public void AllLanguageXamlResources_KeyParityWithEnUs()
+        {
+            var marker = FindSourceFile(Path.Combine("Ui", "Resources", "Languages", "en-us.xaml"));
+            if (marker == null)
+            {
+                Assert.Inconclusive(
+                    $"源码树不可达（非 repo 布局，base={AppContext.BaseDirectory}），跳过 xaml 键集平价校验");
+            }
+            var dir = Path.GetDirectoryName(marker)!;
+            var enKeys = ReadXamlKeys(Path.Combine(dir, "en-us.xaml"));
+            Assert.IsTrue(enKeys.Count > 0, "en-us.xaml 解析失败");
+
+            foreach (var file in Directory.GetFiles(dir, "*.xaml"))
+            {
+                var keys = ReadXamlKeys(file);
+                var missing = enKeys.Except(keys).ToList();
+                var extra = keys.Except(enKeys).ToList();
+                Assert.IsFalse(missing.Count > 0,
+                    $"{Path.GetFileName(file)} 缺少 en-us 已有键: {string.Join(", ", missing)}");
+                Assert.IsFalse(extra.Count > 0,
+                    $"{Path.GetFileName(file)} 含 en-us 没有的键: {string.Join(", ", extra)}");
+            }
+        }
+
+        /// <summary>向上逐级查找含 <paramref name="relativeFilePath"/> 的祖先目录（最多 6 级），返回文件完整路径；找不到返回 null。</summary>
+        private static string? FindSourceFile(string relativeFilePath)
+        {
+            var probe = new DirectoryInfo(AppContext.BaseDirectory);
+            for (var i = 0; i < 6 && probe != null; i++, probe = probe.Parent)
+            {
+                var candidate = Path.Combine(probe.FullName, relativeFilePath);
+                if (File.Exists(candidate)) return candidate;
+            }
+            return null;
+        }
+
+        private static HashSet<string> ReadXamlKeys(string file)
+        {
+            var keys = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var line in File.ReadAllLines(file))
+            {
+                const string marker = "x:Key=\"";
+                var start = line.IndexOf(marker, StringComparison.Ordinal);
+                if (start < 0) continue;
+                start += marker.Length;
+                var end = line.IndexOf('"', start);
+                if (end > start) keys.Add(line[start..end]);
+            }
+            return keys;
         }
 
         [TestMethod]
