@@ -44,6 +44,10 @@ export const FIELD = {
    *  解析器 RDP.cs SplitAdditionalSettings）。渲染为行数组编辑器（每行 [属性名自动补全]
    *  [值输入][删行]），序列化回 WPF 存储格式（详见 KeyValueLines.vue 头注释）。 */
   KEY_VALUE_LINES: 'key-value-lines',
+  /** KV_MAP：字符串字典编辑器——json 值是 {key: value} 对象（PascalCase 域直通，
+   *  键名即用户数据原样保留，如 AppArgument.Selections）。渲染为行式
+   *  [key 输入][value 输入][删行] 的小表（KvMapField），增删行就地编辑对象。 */
+  KV_MAP: 'kv-map',
 }
 
 /**
@@ -71,7 +75,13 @@ export const FIELD = {
  * @property {string} key json 字段名 = C# 属性名逐字拷贝（PascalCase，勿手拼/猜测）。
  * @property {string} type FIELD 常量之一。
  * @property {string} [labelKey] 字段文案 i18n 键（editor.*），缺失时回退显示 key 原样。
- * @property {FieldOption[]} [options] SELECT 必填且非空。
+ * @property {FieldOption[]} [options] SELECT 必填且非空（静态选项）。
+ * @property {string} [optionsSource]
+ *   仅 SELECT 使用：动态选项源标识，与 options 二选一（optionsSource 优先）。当前取值
+ *   'runners:<ProtocolKey>'（该协议已配置的运行器名列表，如 'runners:SSH'）——数据经
+ *   GET /api/settings/runners 模块级缓存拉取一次（composables/useRunnerOptions.js），
+ *   失败静默退化为空列表。用于 SelectedRunnerName（值为运行器名字符串，'' = 跟随全局），
+ *   schema 静态 options 无法表达"选项随用户配置变化"的场景。
  * @property {FieldCondition|FieldCondition[]} [visibleWhen]
  *   单条件对象或条件数组（数组 = 全部满足，AND）。值域见各枚举定义。
  * @property {boolean} [required] 必填校验（红框 + i18n 消息，语义对齐 WPF IDataErrorInfo：

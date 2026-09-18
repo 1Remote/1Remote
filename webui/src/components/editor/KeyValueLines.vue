@@ -134,11 +134,14 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
           :get-show="() => true"
           @update:value="updateRow(i, 'name', $event ?? '')"
         />
-        <!-- 值：自由输入（:i: 型的整数校验留给后端/WPF 解析器，不在输入侧吞值） -->
+        <!-- 值：自由输入（:i: 型的整数校验留给后端/WPF 解析器，不在输入侧吞值）；
+             placeholder（batch8 #6）：与属性名框区分列语义——zh「值」/en "Value"，
+             其余语言回落 en（无 WPF 对应词条） -->
         <n-input
           class="kvl-value"
           size="small"
           :value="row.value"
+          :placeholder="t('editor.kvValue')"
           :disabled="disabled"
           :input-props="{ spellcheck: false }"
           @update:value="updateRow(i, 'value', $event)"

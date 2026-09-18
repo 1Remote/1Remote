@@ -45,9 +45,11 @@
  *
  * TreeNodes（所属文件夹路径）有意不入 schema：网页端的文件夹归属由左侧树拖拽完成
  * （与 WPF 一致），编辑器对 TreeNodes 值原样透传不丢失。
- * IsAutoAlternateAddressSwitching（ProtocolBaseWithAddressPort.cs:83-90，备用地址自动切换）
- * 同样有意不入 schema：WPF 在备用地址 UI 暴露该开关，web 子表单暂未等价实现，
- * 值原样透传不丢失；待后续任务补备用地址 UI 时一并接入。
+ * IsAutoAlternateAddressSwitching 已接入（batch8 Task C #7④，alternateGroup 组内
+ * 备用凭据子表单下方的开关，ProtocolBaseWithAddressPort.cs:83-90）。
+ * 连接前后脚本组（scriptsGroup：CommandBeforeConnected / HideCommandBeforeConnectedWindow /
+ * CommandAfterDisconnected / SelectedRunnerName）与公共组 AlwaysOpenInNewTabWindow
+ * 同批接入（#7①②③），出处见各构造器注释。
  *
  * placeholderKey：对齐 WPF 编辑器各表单 XAML 输入框的 Tag 属性
  * （WPF 的 placeholder 机制——Tag 即提示文本，无 Tag = 无提示）。键名 editor.ph.<字段
@@ -224,6 +226,10 @@ function basicGroup({ withAddressPort = true } = {}) {
     { key: 'Tags', type: FIELD.TAGS },
     { key: 'IconBase64', type: FIELD.ICON },
     { key: 'ColorHex', type: FIELD.COLOR },
+    // WPF 公共组：Icon/Color 行与 Tags 行之间的复选框行（ServerEditorPageView.xaml:139，
+    // 'Always open in new window'）。web 基本组 Icon/Color 在 Tags 之后 → 紧跟 ColorHex
+    // 下方插入（保持"图标/颜色正下方"的 WPF 行位）。bool? 恒非 null 编辑（true/false）
+    { key: 'AlwaysOpenInNewTabWindow', type: FIELD.SWITCH },
     // 备注：MARKDOWN 特化——编辑 ⇄ 预览切换（MarkdownField）。批量编辑的 note
     // 仍为 TEXTAREA（BULK_FIELDS，列表 DTO 域扁平字段不参与该特化）
     { key: 'Note', type: FIELD.MARKDOWN }
@@ -255,13 +261,26 @@ function pingBeforeConnectField() {
  * 备用连接组（owner 确认独立成组）：AlternateCredentials 子表单独立成组。
  * 每行 = 备用地址和/或登录身份的组合（行字段对照 Base/Credential.cs），
  * 组描述行（descKey）向用户说明该语义。
+ * 组尾开关 IsAutoAlternateAddressSwitching（batch8 #7④）：备用列表正下方的
+ * 「自动切换地址」，WPF 出处 AlternativeCredentialListView.xaml:108-114
+ * （CheckBox 'Automatic address switching' + 其下说明行，列表为空时禁用——
+ * web 不复制该禁用态：开关对无备用行的服务器无消费方，恒可编辑为有意偏差）。
  */
 function alternateGroup() {
   return {
     id: 'alternate',
     labelKey: 'editor.group.alternate',
     descKey: 'editor.group.alternateDesc',
-    fields: [alternateCredentialsField()],
+    fields: [
+      alternateCredentialsField(),
+      {
+        key: 'IsAutoAlternateAddressSwitching',
+        type: FIELD.SWITCH,
+        switchWithLabel: true,
+        labelKey: 'editor.f.IsAutoAlternateAddressSwitching',
+        switchTextKey: 'editor.o.autoAlternateAddressSwitchingHint',
+      },
+    ],
   }
 }
 
@@ -354,6 +373,48 @@ function miscGroup(extraFields = []) {
 /** 行为组（SSH/SFTP/FTP 专属行为字段的容器）。 */
 function behaviorGroup(fields) {
   return { id: 'behavior', labelKey: 'editor.group.behavior', fields }
+}
+
+/**
+ * 有运行器配置的协议（ProtocolConfigurationService.Load 的 ProtocolConfigs 键，
+ * ProtocolConfigurationService.cs:60-65）：VNC/SSH/Telnet/Serial/SFTP/FTP。
+ * RDP/RemoteApp/APP 无 ProtocolConfigs——WPF 编辑器对它们不渲染运行器行
+ * （UpdateRunners 清空 Runners → ComboBox 折叠），web 同样不注入 SelectedRunnerName。
+ */
+const RUNNER_PROTOCOLS = ['VNC', 'SSH', 'Telnet', 'Serial', 'SFTP', 'FTP']
+
+/**
+ * 连接脚本组（batch8 Task C #7②③）：WPF 公共组的脚本与运行器区段
+ * （ServerEditorPageView.xaml:162-237，位于 Tags 之后、协议表单之前）——web 独立成组
+ * 置于 basic 组之后（同 WPF"公共区在前、协议专属表单在后"的行序）。
+ *  - CommandBeforeConnected/CommandAfterDisconnected：TEXTAREA（owner 指定多行形态；
+ *    WPF 是单行 TextBox——命令可含换行的长脚本，多行编辑是超集，值语义不变）。
+ *    placeholder = WPF Tag 的 14 语言译文（'Run bat before connect' 等，MAPPING 移植）。
+ *  - HideCommandBeforeConnectedWindow：前脚本行下方的复选框（xaml:183-193，
+ *    Content 全文含"(not recommended...)"括注，WPF 文案原样移植）。
+ *  - SelectedRunnerName（#7③）：仅 RUNNER_PROTOCOLS 注入（WPF Runners.Count>1 才显示
+ *    该行；web 恒显示——无外部运行器时下拉仅剩「跟随全局设置」一项，为有意偏差）。
+ *    选项动态（optionsSource，fieldTypes.js）：['' 跟随全局] + 该协议运行器名——
+ *    C# 侧 '' 即跟随全局（ProtocolBase.cs:214-222 "Follow the global settings" ↔ ""）。
+ */
+function scriptsGroup(protocolKey) {
+  const fields = [
+    {
+      key: 'CommandBeforeConnected',
+      type: FIELD.TEXTAREA,
+      placeholderKey: 'editor.ph.commandBeforeConnected',
+    },
+    { key: 'HideCommandBeforeConnectedWindow', type: FIELD.SWITCH },
+    {
+      key: 'CommandAfterDisconnected',
+      type: FIELD.TEXTAREA,
+      placeholderKey: 'editor.ph.commandAfterDisconnected',
+    },
+  ]
+  if (RUNNER_PROTOCOLS.includes(protocolKey)) {
+    fields.push({ key: 'SelectedRunnerName', type: FIELD.SELECT, optionsSource: 'runners:' + protocolKey })
+  }
+  return { id: 'scripts', labelKey: 'editor.group.scripts', fields }
 }
 
 // ---------------------------------------------------------------------------
@@ -483,15 +544,19 @@ function rdpGatewayGroup() {
 /**
  * ArgumentList 子表单（LocalApp.ArgumentList: AppArgument[]，行字段对照 AppArgument.cs:36）。
  *  - Type 选项为字符串成员名（StringEnumConverter，见常量注释）。
- *  - 行内未列字段（Selections: Dictionary<string,string>，Selection/Const 型参数的取值表）
- *    无法用静态字段描述符表达 → 由 SubformList 行编辑原样保留（约定：行对象原地
- *    修改，不重建），本 schema 只列出可安全编辑的标量字段。
+ *  - Selections（batch8 #7⑤）：Selection/Const 型参数的取值表（Dictionary&lt;string,string&gt;，
+ *    json 里是 {key:value} 对象），KV_MAP 行式编辑（KvMapField）——WPF 编辑形态是
+ *    ArgumentEditView.xaml:144-160 的多行文本框（Selection 型每行 "key|描述"、Normal 型
+ *    每行一个 key），web 以显式双列取代该行文法；可见性对齐 WPF SelectionsVisibility
+ *    （Type ∈ Normal/Selection 显示，ArgumentEditViewModel.cs:66-80）。空 value 落库时
+ *    由 C# setter 归一为 value=key（AppArgument.cs:152-184），前端原样提交。
  *  - Value 在 WPF 里按 Type 切换渲染（Secret=密码框/Flag=勾选/Selection=下拉，见
  *    ArgumentListControl.xaml:126-145）；静态描述符无法按行内另一字段的值切换控件类型，
  *    web 统一按 TEXT 渲染（可由 SubformList 按 row.Type==='Secret' 特判加掩码），
  *    值语义（Flag 存 "1"/"" 等）不受影响。
  *  - rowDefaults：SubformList 新增行初值，对照 AppArgument 字段初始化器；
  *    AddBlankAfterKey 显式 false —— [DefaultValue(true)]+Populate 陷阱（见文件头审计②）。
+ *    Selections 不设初值：json 缺失该键时 C# 字段初始化器（new Dictionary）兜底。
  */
 function appArgumentListField() {
   return {
@@ -513,6 +578,12 @@ function appArgumentListField() {
         { key: 'AddBlankAfterKey', type: FIELD.SWITCH },
         { key: 'AddBlankAfterValue', type: FIELD.SWITCH },
         { key: 'Description', type: FIELD.TEXT },
+        // 取值表（WPF ArgumentEditView 的最后一行区段，Selections 键同文案 'Selections'）
+        {
+          key: 'Selections',
+          type: FIELD.KV_MAP,
+          visibleWhen: { field: 'Type', in: ['Normal', 'Selection'] },
+        },
       ],
     },
   }
@@ -618,9 +689,13 @@ export const PROTOCOLS = {
       EnableRedirectCameras: false,
       GatewayMode: 2,
       GatewayLogonMethod: 0,
+      // 备用地址自动切换（C# 初始化器 true + [DefaultValue(true)] Populate，两口径一致；
+      // 显式列出遵守 defaults「true 开关入表」约定）
+      IsAutoAlternateAddressSwitching: true,
     },
     groups: [
       basicGroup(),
+      scriptsGroup('RDP'),
       credentialGroup({
         // Domain/LoadBalanceInfo（RDP.cs:129/137）位于 WPF Connection 组的凭据区之前。
         // placeholder：LoadBalanceInfo 的 tsv:// 前缀 Tag（RdpFormView.xaml:58）；Domain 无 Tag
@@ -664,9 +739,11 @@ export const PROTOCOLS = {
       UserName: 'root',
       IsPingBeforeConnect: true,
       SshVersion: 2,
+      IsAutoAlternateAddressSwitching: true,
     },
     groups: [
       basicGroup(),
+      scriptsGroup('SSH'),
       credentialGroup({ withPrivateKey: true }),
       alternateGroup(),
       behaviorGroup([
@@ -701,9 +778,11 @@ export const PROTOCOLS = {
       UserName: 'root',
       IsPingBeforeConnect: true,
       StartupPath: '/',
+      IsAutoAlternateAddressSwitching: true,
     },
     groups: [
       basicGroup(),
+      scriptsGroup('SFTP'),
       credentialGroup({ withPrivateKey: true }),
       alternateGroup(),
       // placeholder：StartupPath Tag "e.g. /home/user/Desktop"（SftpFormView:24，文件头清单）
@@ -720,9 +799,11 @@ export const PROTOCOLS = {
       Port: '21',
       IsPingBeforeConnect: true,
       StartupPath: '/',
+      IsAutoAlternateAddressSwitching: true,
     },
     groups: [
       basicGroup(),
+      scriptsGroup('FTP'),
       // FTP 未覆写 ShowPrivateKeyInput()（基类默认 false），无私钥两件套
       credentialGroup(),
       alternateGroup(),
@@ -741,9 +822,11 @@ export const PROTOCOLS = {
       Port: '5900',
       IsPingBeforeConnect: true,
       VncWindowResizeMode: 0,
+      IsAutoAlternateAddressSwitching: true,
     },
     groups: [
       basicGroup(),
+      scriptsGroup('VNC'),
       // WPF CredentialView 对 VNC 同样渲染 UserName 行（CredentialView.xaml:123 无条件，
       // VNC.ShowUserNameInput()=false 只影响凭据库新增弹窗的必填项，Vnc.cs:55）；
       // ShowPrivateKeyInput()=false（Vnc.cs:65）→ 无私钥两件套，与 FTP 同构
@@ -775,9 +858,11 @@ export const PROTOCOLS = {
       ColorHex: '#00000000',
       Port: '23',
       IsPingBeforeConnect: true,
+      IsAutoAlternateAddressSwitching: true,
     },
     groups: [
       basicGroup(),
+      scriptsGroup('Telnet'),
       alternateGroup(),
       // WPF 优势组只有 StartupAutoCommand（TelnetFormView.xaml:39-50）；
       // ExternalKittySessionConfigPath/ExternalSessionConfigPath 模型存在但表单未暴露 → 透传。
@@ -808,6 +893,9 @@ export const PROTOCOLS = {
     },
     groups: [
       basicGroup({ withAddressPort: false }),
+      // Serial 基类是 ProtocolBase：无备用凭据组（IsAutoAlternateAddressSwitching 也不在
+      // 该类型上，透传不编辑）；KiTTY/SSH 系运行器存在 → 有运行器行
+      scriptsGroup('Serial'),
       serialGroup(),
       // KiTTY 会话配置（Serial.cs:159，WPF SerialFormView.xaml:91-102 展示）；
       // placeholder = kitty session tip（SerialFormView:97，14 语言 DynamicResource）
@@ -833,9 +921,11 @@ export const PROTOCOLS = {
       IsPingBeforeConnect: true,
       AudioRedirectionMode: 0,
       AudioQualityMode: 0,
+      IsAutoAlternateAddressSwitching: true,
     },
     groups: [
       basicGroup(),
+      scriptsGroup('RemoteApp'),
       // WPF RdpAppFormView 挂 CredentialView + 备用凭据列表；ShowPrivateKeyInput 基类默认 false
       credentialGroup(),
       alternateGroup(),
@@ -901,9 +991,11 @@ export const PROTOCOLS = {
       // 该属性挂 [DefaultValue(true)]+Populate（ProtocolBaseWithAddressPort.cs:74）——
       // json 缺失该字段时会被 Populate 成 true，与 WPF 新建（false）相悖（文件头审计①）
       IsPingBeforeConnect: false,
+      IsAutoAlternateAddressSwitching: true,
     },
     groups: [
       basicGroup({ withAddressPort: false }),
+      scriptsGroup('APP'),
       {
         id: 'exe',
         labelKey: 'editor.group.exe',

@@ -2,7 +2,7 @@
 /**
  * 通用字段渲染器：按 field.type 分发到具体控件（text / number / select / switch /
  * tags / password / textarea / markdown / icon / color / credential / autocomplete /
- * key-value-lines / subform，未知类型兜底只读呈现），纯展示组件——
+ * key-value-lines / kv-map / subform，未知类型兜底只读呈现），纯展示组件——
  *  - 不读 visibleWhen（可见性由父级抽屉用 editor/visibility.js 的 isVisible 求值并隐藏整行）；
  *  - 不直接改 json：父级按字段 v-model 绑定到 json 对象属性，本组件只 emit update:modelValue；
  *  - 隐藏字段值保留透传的约定同样由父级保证（隐藏≠删值）。
@@ -13,7 +13,8 @@
  * dataSourceName 由父级（EditorDrawer）逐层传入（SubformList 透传，保持行内同数据源）；
  * icon 额外接收 tint（当前 ColorHex 的低饱和底色，即时联动图标预览）。
  * AUTOCOMPLETE 的远程建议（Serial 端口/波特率）经 composables/useSerialOptions.js
- * 的模块级缓存拉取一次，两字段共享。
+ * 的模块级缓存拉取一次，两字段共享；SELECT 的动态选项（optionsSource 'runners:*'，
+ * SelectedRunnerName）同样经 composables/useRunnerOptions.js 模块级缓存共享。
  */
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -23,9 +24,11 @@ import CredentialPicker from './CredentialPicker.vue'
 import MarkdownField from './MarkdownField.vue'
 import SwitchItem from './SwitchItem.vue'
 import KeyValueLines from './KeyValueLines.vue'
+import KvMapField from './KvMapField.vue'
 import { FIELD } from '../../editor/fieldTypes.js'
 import { opaqueHex } from '../../utils/color.js'
 import { useSerialOptions } from '../../composables/useSerialOptions.js'
+import { useRunnerOptions } from '../../composables/useRunnerOptions.js'
 
 const props = defineProps({
   /** @type {FieldDescriptor} 字段描述符（fieldTypes.js） */
@@ -41,6 +44,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
 const { serialSuggestions } = useSerialOptions()
+const { runnerNames } = useRunnerOptions()
 
 const label = computed(() => (props.field.labelKey ? t(props.field.labelKey) : props.field.key))
 const placeholder = computed(() => (props.field.placeholderKey ? t(props.field.placeholderKey) : undefined))
@@ -91,12 +95,27 @@ function onNumberInput(v) {
 }
 
 // ---- select：选项 label 回退 String(value)；值缺失时传 undefined 交由 n-select 置空 ----
-const selectOptions = computed(() =>
-  (props.field.options || []).map((o) => ({ value: o.value, label: o.labelKey ? t(o.labelKey) : String(o.value) }))
-)
-const selectValue = computed(() =>
-  props.modelValue === null || props.modelValue === undefined || props.modelValue === '' ? undefined : props.modelValue
-)
+// optionsSource（动态选项，fieldTypes.js）：当前唯一源 'runners:<ProtocolKey>'——
+// [''(跟随全局)] + 该协议运行器名（useRunnerOptions 模块级缓存，失败静默退化空列表）。
+// 该源的 '' 是真实选项值（C# 侧空串 = 跟随全局，ProtocolBase.cs:214-222），不走下方
+// selectValue 的空值→undefined 置空分支。
+const selectOptions = computed(() => {
+  const src = props.field.optionsSource
+  if (typeof src === 'string' && src.startsWith('runners:')) {
+    const names = runnerNames(src.slice('runners:'.length))
+    return [{ value: '', label: t('editor.o.followGlobalSettings') }, ...names.map((n) => ({ value: n, label: n }))]
+  }
+  return (props.field.options || []).map((o) => ({
+    value: o.value,
+    label: o.labelKey ? t(o.labelKey) : String(o.value),
+  }))
+})
+const selectValue = computed(() => {
+  if (props.field.optionsSource) return props.modelValue == null ? '' : props.modelValue
+  return props.modelValue === null || props.modelValue === undefined || props.modelValue === ''
+    ? undefined
+    : props.modelValue
+})
 
 // ---- autocomplete：可输入下拉 = n-auto-complete。naive 默认空输入不弹菜单
 //（getShow 缺省 = !!value）——get-show 恒 true 让聚焦即显示。下拉恒展示全部建议
@@ -353,6 +372,16 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         :field="field"
         :model-value="modelValue"
         :placeholder="placeholder"
+        :disabled="disabled"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
+
+      <!-- kv-map：字符串字典行编辑器（KvMapField；{key:value} 对象 ↔ [key][value] 行，
+           当前唯一消费方 AppArgument.Selections） -->
+      <KvMapField
+        v-else-if="field.type === FIELD_TYPE.KV_MAP"
+        :field="field"
+        :model-value="modelValue"
         :disabled="disabled"
         @update:model-value="emit('update:modelValue', $event)"
       />
