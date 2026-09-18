@@ -45,6 +45,9 @@ const props = defineProps({
   dataSourceName: { type: String, default: 'Local' },
   /** create 模式初始协议（PROTOCOLS key），缺省 RDP */
   protocol: { type: String, default: '' },
+  /** create 模式初始文件夹路径（"a/b"，当前树选中）：注入 defaults.TreeNodes，
+   *  新建服务器直接落在该文件夹内（batch9 #6；复制 duplicateFrom 不消费——随来源路径） */
+  initialFolder: { type: String, default: '' },
   /** 列表 DTO 摘要（编辑头部展示名等兜底） */
   initialServer: { type: Object, default: null },
   /** 复制来源服务器 id（create 语义预填） */
@@ -181,6 +184,10 @@ async function load() {
       } else {
         const s = PROTOCOLS[props.protocol] || PROTOCOLS.RDP
         raw = { Protocol: s.protocol, ClassVersion: s.classVersion, ...deepClone(s.defaults) }
+        // 文件夹内新建（batch9 #6）：TreeNodes 预置当前树选中文件夹路径——保存后服务器
+        // 落在该文件夹（WPF 在文件夹上新建服务器同语义）；协议切换时 TreeNodes 由
+        // PASSTHROUGH_KEEP 保留（protocolSwitch.js），不会因切换丢归属
+        if (props.initialFolder) raw.TreeNodes = props.initialFolder.split('/')
       }
     } else {
       const cfg = await api.getServerConfig(props.serverId, props.dataSourceName)

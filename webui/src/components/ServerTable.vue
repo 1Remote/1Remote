@@ -51,11 +51,13 @@ const emit = defineEmits([
   'counted',
   'open-folder',
   'create-folder',
+  'rename-folder',
+  'delete-folder',
   'move-to-folder',
 ])
 const { t } = useI18n()
 const message = useMessage()
-const { datasources, searchedIds } = useServers() // 文件夹新建菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）
+const { datasources, searchedIds } = useServers() // 文件夹右键菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）
 
 // ---- 过滤 ----
 const filtered = computed(() => {
@@ -222,9 +224,13 @@ function onFolderDrop(f, e) {
   if (s) emit('move-to-folder', { server: s, dsName: f.dsName, path: f.path })
 }
 
-// ---- 新建文件夹菜单：文件夹行右键（在该文件夹内新建）/ 空白处右键（在当前层级新建；
-// 全部数据源根无确定数据源 → 禁用并提示先选数据源）----
-const nfMenu = ref(null) // { x, y, target: { dsName, parentPath } | null }
+// ---- 文件夹右键菜单（nf-menu）：
+// - 文件夹行右键 = 新建子文件夹 / 重命名 / 删除——与 SideTree 树右键同一菜单集
+//   （batch9 #3 左右统一；对齐 WPF 树右键能力，动作经 emit 由 ServerListView 的
+//   folderOps 执行）；
+// - 空白处右键 = 在当前层级新建文件夹（无重命名/删除——空白无目标对象；
+//   全部数据源根无确定数据源 → 禁用并提示先选数据源）----
+const nfMenu = ref(null) // { x, y, target: { dsName, parentPath, folderPath? } | null } —— folderPath 有值=来自文件夹行
 const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
 const nfMenuOk = computed(() => !!nfMenu.value?.target && dsWritable(nfMenu.value.target.dsName))
 const nfMenuTip = computed(() => {
@@ -243,14 +249,25 @@ function onBlankContext(e) {
   const sel = props.selection
   openNfMenu(sel?.dataSourceName ? { dsName: sel.dataSourceName, parentPath: sel.folderPath || '' } : null, e)
 }
-// FolderRow context emit：{ folder, x, y }（clientX/Y 已在子组件取好，此处适配 openNfMenu 的事件形状）
+// FolderRow context emit：{ folder, x, y }（clientX/Y 已在子组件取好，此处适配 openNfMenu 的事件形状）；
+// parentPath=文件夹自身路径（子文件夹建在其内），folderPath 供 重命名/删除 定位目标
 function onFolderContext({ folder, x, y }) {
-  openNfMenu({ dsName: folder.dsName, parentPath: folder.path }, { clientX: x, clientY: y })
+  openNfMenu({ dsName: folder.dsName, parentPath: folder.path, folderPath: folder.path }, { clientX: x, clientY: y })
 }
 function nfCreate() {
   const m = nfMenu.value
   nfMenu.value = null
   if (m?.target) emit('create-folder', m.target)
+}
+function nfRename() {
+  const m = nfMenu.value
+  nfMenu.value = null
+  if (m?.target?.folderPath) emit('rename-folder', m.target)
+}
+function nfDelete() {
+  const m = nfMenu.value
+  nfMenu.value = null
+  if (m?.target?.folderPath) emit('delete-folder', m.target)
 }
 
 // ---- 渲染序列 ----
@@ -744,11 +761,19 @@ onBeforeUnmount(() => {
       </slot>
     </div>
 
-    <!-- 新建文件夹菜单：空白处/文件夹行右键 -->
+    <!-- 文件夹右键菜单：文件夹行=新建子文件夹/重命名/删除（与树右键同集）；空白处=仅新建文件夹 -->
     <div v-if="nfMenu" class="ctx-menu nf-menu" :style="{ left: nfMenu.x + 'px', top: nfMenu.y + 'px' }">
       <button class="ctx-item" :disabled="!nfMenuOk" :title="nfMenuTip" @click="nfCreate">
         <span class="ctx-label">{{ t('tree.newFolder') }}</span>
       </button>
+      <template v-if="nfMenu.target?.folderPath">
+        <button class="ctx-item" :disabled="!nfMenuOk" :title="nfMenuTip" @click="nfRename">
+          <span class="ctx-label">{{ t('tree.renameFolder') }}</span>
+        </button>
+        <button class="ctx-item" :disabled="!nfMenuOk" :title="nfMenuTip" @click="nfDelete">
+          <span class="ctx-label">{{ t('tree.deleteFolder') }}</span>
+        </button>
+      </template>
     </div>
 
     <div v-if="menu" class="ctx-menu" :style="{ left: menu.x + 'px', top: menu.y + 'px' }">

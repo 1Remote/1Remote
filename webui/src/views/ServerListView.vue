@@ -82,6 +82,13 @@ function onOpenFolder(f) {
 function onCreateFolder(target) {
   folderOps.createFolder(target.dsName, target.parentPath)
 }
+// 列表文件夹行右键的 重命名/删除（batch9 #3）：与树右键共用 folderOps 实现
+function onRenameFolder(target) {
+  folderOps.renameFolder(target.dsName, target.folderPath)
+}
+function onDeleteFolder(target) {
+  folderOps.deleteFolder(target.dsName, target.folderPath)
+}
 function onMoveToFolder({ server, dsName, path }) {
   folderOps.moveServersToFolder([server], dsName, path)
 }
@@ -285,8 +292,16 @@ watch(importRequest, () => {
 })
 
 function openCreate() {
-  // 归属数据源 = 当前树选中（根/文件夹/叶）的数据源；未选 = Local
-  editor.value = { mode: 'create', ds: selection.value?.dataSourceName || 'Local', protocol: 'RDP' }
+  // 归属数据源 = 当前树选中（根/文件夹/叶）的数据源；未选 = Local。
+  // 文件夹归属（batch9 #6）：选中根/文件夹时其 folderPath 随 initialFolder 传入，
+  // EditorDrawer create 模式把 TreeNodes 预置为该路径——「全部数据」根（selection=null）
+  // 不注入（无确定归属，落数据源根）；数据源根 folderPath='' 同样不注入
+  editor.value = {
+    mode: 'create',
+    ds: selection.value?.dataSourceName || 'Local',
+    protocol: 'RDP',
+    initialFolder: selection.value?.folderPath || '',
+  }
 }
 
 function openEdit(server) {
@@ -452,6 +467,8 @@ const importModal = ref(false)
         @delete="onDelete"
         @open-folder="onOpenFolder"
         @create-folder="onCreateFolder"
+        @rename-folder="onRenameFolder"
+        @delete-folder="onDeleteFolder"
         @move-to-folder="onMoveToFolder"
       />
 
@@ -479,6 +496,7 @@ const importModal = ref(false)
         :data-source-name="editor.ds"
         :protocol="editor.protocol || ''"
         :initial-server="editor.initial || null"
+        :initial-folder="editor.initialFolder || ''"
         :duplicate-from="editor.duplicateFrom || ''"
         :bulk-ids="editor.bulkIds || []"
         :bulk-servers="editor.bulkServers || []"
