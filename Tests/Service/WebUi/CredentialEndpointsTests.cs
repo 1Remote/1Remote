@@ -26,7 +26,10 @@ namespace Tests.Service.WebUi
     /// /api/credentials CRUD + reveal 集成测试。
     /// 关键约定：
     /// - 写入路径传明文，加密由 DataSourceBase.Database_Insert/UpdateCredential 在内部克隆上完成
-    ///   （EncryptToDatabaseLevel）——GetCredentials 读回的缓存/库内必须是密文；
+    ///   （EncryptToDatabaseLevel：Password 与 PrivateKeyPath 非空即加密）——GetCredentials
+    ///   读回的缓存/库内必须是密文；
+    /// - PUT 加密字段三态（batch9 Task D ⑯）：null（JSON 键缺失）=保持原值、空串=显式清除、
+    ///   非空=新值（PutCredentialAsync 传 null 即省略该键）；
     /// - reveal = SecondaryVerificationHelper.VerifyAsyncUi（未开启验证时直通 true）→
     ///   CloneMe + DecryptToConnectLevel 返回明文，缓存保持密文（不得原地解密）；
     /// - 重名判定与 WPF 编辑器一致：CurrentCultureIgnoreCase；
@@ -80,11 +83,18 @@ namespace Tests.Service.WebUi
             return await _client.PostAsync("/api/credentials", JsonBody(body));
         }
 
+        /// <summary>
+        /// PUT /api/credentials/{name}：Password/PrivateKeyPath 传 null（默认）= 字段不提交（JSON 键缺失），
+        /// 传空串 = 显式提交空值——Update 三态语义（null=保持 / 空串=清除 / 非空=新值）的测试基建。
+        /// </summary>
         private static async Task<HttpResponseMessage> PutCredentialAsync(string routeName, string newName,
-            string userName, string password = "", string privateKeyPath = "")
+            string userName, string? password = null, string? privateKeyPath = null)
         {
             var body = $"{{\"credential\":{{\"Name\":\"{newName}\",\"Address\":\"\",\"Port\":\"\","
-                       + $"\"UserName\":\"{userName}\",\"Password\":\"{password}\",\"PrivateKeyPath\":\"{privateKeyPath}\"}}}}";
+                       + $"\"UserName\":\"{userName}\"";
+            if (password != null) body += $",\"Password\":\"{password}\"";
+            if (privateKeyPath != null) body += $",\"PrivateKeyPath\":\"{privateKeyPath}\"";
+            body += "}}";
             return await _client.PutAsync($"/api/credentials/{Uri.EscapeDataString(routeName)}?ds=Local", JsonBody(body));
         }
 
@@ -289,13 +299,15 @@ namespace Tests.Service.WebUi
         }
 
         /// <summary>
-        /// fix batch8 Task E #17：空密码=保持原值。列表/编辑 API 不回显 Password/PrivateKeyPath
-        /// 明文（安全红线），web 编辑表单无从预填——空提交必须沿用原值，否则任何一次不改密的
-        /// 编辑都会静默清空密钥。对照：非空密码 PUT 正常更新。校验走 GetCredentials(true)
-        /// 强制重读库（密文态）后克隆解密比对明文（与 reveal 同款），缓存不落明文。
+        /// batch9 Task D ⑯：PUT 加密字段三态语义——null（未提交）=保持原值、空串=显式清除、
+        /// 非空=新值。null=保持接替 batch8 Task E #17 的"空=保持"（列表/编辑 API 不回显明文，
+        /// web 表单掩码占位，未改动掩码的字段不提交）；空串=清除给"reveal 后清空再保存"
+        /// 提供落库路径（WPF 表单预填明文直接清空保存的 web 等价）。校验走
+        /// GetCredentials(true) 强制重读库（密文态）后克隆解密比对明文（与 reveal 同款），
+        /// 缓存不落明文。
         /// </summary>
         [TestMethod]
-        public async Task Update_EmptyPasswordAndKey_KeepOriginals_NonEmptyUpdates()
+        public async Task Update_SecretFields_NullKeeps_EmptyClears_NonEmptyUpdates()
         {
             var name = NewName("cred-keep");
             var pw1 = "pw-keep-" + Guid.NewGuid().ToString("N").Substring(0, 6);
@@ -303,32 +315,44 @@ namespace Tests.Service.WebUi
             Assert.AreEqual(HttpStatusCode.OK,
                 (await PostCredentialAsync(name, password: pw1, privateKeyPath: key1)).StatusCode);
 
-            // 空密码/空私钥 PUT：非加密字段正常更新，加密字段保持原值
-            var resp = await PutCredentialAsync(name, name, userName: "user-keep", password: "", privateKeyPath: "");
-            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode, await resp.Content.ReadAsStringAsync());
-
             var local = _1RM.IoC.Get<DataSourceService>().LocalDataSource;
             Assert.IsNotNull(local);
+
+            // ① 字段未提交（null）：非加密字段正常更新，加密字段保持原值
+            var resp = await PutCredentialAsync(name, name, userName: "user-keep");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode, await resp.Content.ReadAsStringAsync());
+
             var cached = local.GetCredentials(true).First(x => x.Name == name);
             Assert.AreNotEqual(pw1, cached.Password, "库内/缓存必须保持加密态");
             var clone = cached.CloneMe();
             clone.DecryptToConnectLevel();
-            Assert.AreEqual(pw1, clone.Password, "空密码 PUT 必须保持原密码");
-            Assert.AreEqual(key1, clone.PrivateKeyPath, "空私钥路径 PUT 必须保持原路径（表单同样不回显）");
+            Assert.AreEqual(pw1, clone.Password, "未提交（null）的密码必须保持原值");
+            Assert.AreEqual(key1, clone.PrivateKeyPath, "未提交（null）的私钥路径必须保持原值");
             Assert.AreEqual("user-keep", cached.UserName, "非加密字段应正常更新");
 
-            // 对照：非空密码 PUT 更新（私钥留空仍保持）
-            var pw2 = "pw-new-" + Guid.NewGuid().ToString("N").Substring(0, 6);
-            resp = await PutCredentialAsync(name, name, userName: "user-keep2", password: pw2);
+            // ② 空串=显式清除：密码清空，未提交的私钥仍保持
+            resp = await PutCredentialAsync(name, name, userName: "user-keep2", password: "");
             Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode, await resp.Content.ReadAsStringAsync());
 
             cached = local.GetCredentials(true).First(x => x.Name == name);
-            Assert.AreNotEqual(pw2, cached.Password, "更新后库内仍须为密文");
             var clone2 = cached.CloneMe();
             clone2.DecryptToConnectLevel();
-            Assert.AreEqual(pw2, clone2.Password, "非空密码 PUT 应更新密码");
-            Assert.AreEqual(key1, clone2.PrivateKeyPath, "未提及的私钥路径保持原值");
+            Assert.AreEqual("", clone2.Password, "空串密码 PUT 应清除密码（显式清除语义）");
+            Assert.AreEqual(key1, clone2.PrivateKeyPath, "未提交（null）的私钥路径保持原值");
             Assert.AreEqual("user-keep2", cached.UserName);
+
+            // ③ 非空=更新（已清空的密码保持为空，私钥换新值）
+            var key2 = "C:/keys/new-" + Guid.NewGuid().ToString("N").Substring(0, 6);
+            resp = await PutCredentialAsync(name, name, userName: "user-keep3", privateKeyPath: key2);
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode, await resp.Content.ReadAsStringAsync());
+
+            cached = local.GetCredentials(true).First(x => x.Name == name);
+            Assert.AreNotEqual(key2, cached.PrivateKeyPath, "更新后库内仍须为密文");
+            var clone3 = cached.CloneMe();
+            clone3.DecryptToConnectLevel();
+            Assert.AreEqual("", clone3.Password, "未提交（null）的密码保持为空（②已清除）");
+            Assert.AreEqual(key2, clone3.PrivateKeyPath, "非空私钥路径 PUT 应更新私钥路径");
+            Assert.AreEqual("user-keep3", cached.UserName);
         }
 
         // ------------------------------------------------------------------
