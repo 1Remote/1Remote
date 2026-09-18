@@ -117,3 +117,15 @@
 - **Task B（i18n 语料）**：#4 ja placeholder 英文根因=web 专有键 12 生成语言回落 en——**全量翻译 web 专有键**（以 zh-CN+en-US 为基准译 12 语言，登记 OVERRIDES/直接生成）；映射键（源自 WPF）抽查核对。
 - **Task G（重构轮）**：#21 前端再审查+重构（零功能变化；重点：本两批新增代码——RunnerGroup/BulkEditForm/AboutGroup/文件夹勾选逻辑——清晰度、重复、注释）。
 - 基线：dotnet 181/2；npm build 0；i18n 503×14。
+
+## 修复批次 9（owner 九次验收，~19 项，2026-09-18）
+
+答疑（不改码）：生产=进程内 Kestrel 单端口（API+静态同源）；仅 dev 双端口（Vite 5173→代理 17321）。占用：DEBUG 被占→捕获日志照常启动（Web 无数据）；Release 随机端口极低概率。待办：失败自动换端口重试。
+
+- **Task A（主界面 5 项）**：①删 Ctrl+K 只留 Ctrl+F（App.vue+WPF 转发注释）；②UI 锁定扩展：设置页/标签管理/导入模态打开时同样禁用搜索/+/⚙（editorBus 扩展为 uiLock：editorOpen/settingsOpen/overlayOpen 三源或路由感知）；③文件夹右键菜单统一（树+列表均含 重命名/删除——现状列表文件夹右键只有新建？核实两处菜单项差异补齐）；④删除文件夹有内容时弹选择：一起删除/移到上级（folderOps.deleteFolder 改对话框；WPF 语义核实）；⑤**新建文件夹回车仍不确认（重复反馈！）**——复查全部文件夹命名入口（树右键/列表空白右键/面包屑?）逐一实测逻辑，上批修复可能只覆盖一条路径或 owner 是旧构建；⑥文件夹内新建服务器→TreeNodes=当前选中文件夹（EditorDrawer create 模式注入）。
+- **Task B（编辑器 5 项）**：⑦备注 placeholder（WPF ServerEditorPageView:295 示例文本移植）；⑧前后脚本 textarea 默认 1 行高（=名称框高）可手动拉高（resize:vertical）；⑨脚本 选择/测试 按钮补回（**pick-file 端点泛化**（filter 参数化，复用 pick-exe STA 模式）；测试按钮=WPF 行为核实（执行命令返回输出?）后端 test-script 端点+安全论证（回环+token 同暴露面））；⑩标签输入可选取已有标签（候选=api/tags，n-dynamic-tags 附加建议下拉或 chips 行）；⑪mstsc (?) 移到开关后（HelpLink 位置从组标题移至开关行）。
+- **Task C（批量编辑协议感知——大项）**：⑫全同协议→渲染该协议完整 schema 表单（复用单机渲染路径）；混合→共有字段（按所选协议集求 schema 交集——组/字段级过滤）；后端 BatchPatchFieldMap allow-list 大幅扩展（全 schema 字段或动态校验）；保存语义=覆盖态字段进 patch（既有"保持不变"语义不变）；⑬控件/placeholder/tooltip 与单机一致（schema 驱动天然达成+核查 BULK 特有占位文案对齐）。
+- **Task D（凭据库 3 项）**：⑭编辑密码显示 ****、点眼睛经 reveal（验证门）取明文回填；⑮私钥路径明文显示+pick-file 按钮；⑯密码/私钥二选一（segmented 切换，对齐服务器凭据组模式）。
+- **Task E（帮助视觉+全面补齐 sweep）**：⑰HelpLink 徽标重做（更大更醒目、圆圈包住问号、hover 明显）；⑱**全面审核**：路径输入框缺文件选择按钮（ExePath/私钥/KiTTY 会话/脚本等全部路径字段）、placeholder 缺失（对照 WPF Tag 全表）、(?)/帮助链接缺失——三类遗漏系统 sweep（WPF 表单枚举 vs web 现状清单）逐项补齐。
+- **Task F（重构第三轮）**：⑲零功能变化审查+重构（重点本批新增：批量 schema 渲染/凭据编辑器/pick-file 接线）。
+- 基线：dotnet 188/2（RdpConfigTests）；npm build 0；i18n 522×14。顺序 A→B→C→D→E→F（locales 单任务独占）。
