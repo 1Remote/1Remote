@@ -19,7 +19,7 @@ import EditorDrawer from '../components/editor/EditorDrawer.vue'
 import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
 import { applyServerFilters, BATCH_CONNECT_THRESHOLD, useServers } from '../composables/useServers'
-import { buildTree, countHolderServers, holderAt } from '../composables/folders'
+import { buildTree, countDirectChildServers, holderAt } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import { useEditorBus } from '../composables/editorBus'
@@ -67,8 +67,10 @@ const currentFolders = computed(() => {
   const out = []
   const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
   if (holder) {
+    // 文件夹行计数与树徽标同口径（直接子级服务器数，batch7 #9）：行内数字 = 进入该文件夹
+    // 后能看到的台数（不含子文件夹内部，由子文件夹自己的行/徽标承载）
     for (const f of holder.folders)
-      out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
+      out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countDirectChildServers(f) })
   }
   return out
 })
@@ -324,6 +326,12 @@ function onDelete(server) {
 function openBulkEdit(ids) {
   const list = (ids || []).map((id) => servers.value.find((s) => s.id === id)).filter(Boolean)
   if (!list.length) return
+  // 恰勾 1 台：工具栏按钮已显「编辑」，转单台编辑抽屉（与右键「编辑」/E 键同走 openEdit），
+  // 不进 bulk 模式——单台能看到全量字段，不必受批量 allow-list 限制
+  if (list.length === 1) {
+    openEdit(list[0])
+    return
+  }
   editor.value = {
     mode: 'bulk',
     ds: list[0].dataSourceName || 'Local', // 后端 batch 端点单 ds；跨源勾选由抽屉内提示拦下
