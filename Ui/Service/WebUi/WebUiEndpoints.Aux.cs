@@ -283,7 +283,9 @@ namespace _1RM.Service.WebUi
                     catch (OperationCanceledException)
                     {
                         timedOut = true;
-                        try { pro.Kill(); } catch { /* 竞态：进程恰已退出 / Kill 失败按超时呈现 */ }
+                        // Kill(true) 连同脚本派生的子进程一起结束（bat 内启动的程序不残留；
+                        // 项目实际编译 TFM 为 net9/net6，entireProcessTree 重载可用）
+                        try { pro.Kill(entireProcessTree: true); } catch { /* 竞态：进程恰已退出 / Kill 失败按超时呈现 */ }
                     }
                     // Kill 后管道随进程关闭，两个无 token 的读取任务随即完成；2s 兜底等待
                     // 防御 Kill 未竟的极端场景（结果按已完成部分取）
