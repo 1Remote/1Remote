@@ -86,11 +86,63 @@
  *      LocalApp 连接组 Address/Port/UserName/Password/PrivateKey：WPF Tag 是 {Binding
  *        HintHostName} 等动态宏推导提示（依赖 ArgumentList 里的宏引用，静态 schema 无法
  *        表达）→ 跳过不实现，记录在案；
+ *      ArgumentList 行 Selections（KvMapField）：WPF Tag 是 {Binding SelectionsTag}
+ *        （ArgumentEditView.xaml:159，按行 Type 切换文案的动态推导，同上无法静态表达）
+ *        → 跳过不实现，记录在案（⑱B 复核补记）；
  *      Credential 选择器：CredentialPicker 自带 editor.credSelectHint（WPF 同键译文）；
  *      Domain/网关四字段/其余无 Tag 字段：WPF 无 Tag → 不加。
+ *      （⑱B 全集复核结论：Ui/View 下输入控件 Tag= 71 处逐一对照——其余均在 editor.ph.*
+ *      已覆盖清单内，或为 {Binding} 数据挂接/搜索框（web search.placeholder 已覆盖）/
+ *      设置页运行器环境变量逐行输入（web 为整块 textarea + envHint，编辑形态不同），
+ *      无新增补齐项。）
  *  - 批量编辑（batch9 Task C）不再有独立的 BULK_FIELDS 扁平清单：批量表单直接复用本
  *    文件的 PROTOCOLS schema（全同协议 = 完整分组，混合协议 = 组/字段级交集，见
  *    editor/bulkSchema.js），placeholder/帮助链接随 schema 免费一致。
+ *
+ * filePick（batch9 Task E ⑱A，"浏览…"按钮 = WPF SelectFileHelper.OpenFile 按钮的
+ * web 平价，按钮渲染见 FormField）：以 WPF 全部 OpenFile 调用点为清单源的全集审计
+ * （Ui/ 下 grep "SelectFileHelper." 共 25 处，管理 UI 域内逐条处置）：
+ *  - 补齐（本文件标注 filePick，filter 照抄 WPF 调用点字面量）：
+ *      PrivateKey（credentialGroup withPrivateKey，WPF CredentialView.xaml:174 经
+ *        CredentialViewModel.cs:169，ppk|*.*；SSH/SFTP 两协议）
+ *      PrivateKey（APP connection 组，LocalAppFormView.xaml:154 → cs:18，ppk|*.*）
+ *      PrivateKeyPath（AlternateCredentials 行，AlternativeCredentialEditView.xaml:208
+ *        → VM:259，ppk|*.*）
+ *      ExternalKittySessionConfigPath（SSH behavior 组，SshFormView.xaml:172 → cs:65；
+ *        Serial behavior 组，SerialFormView.xaml:91-102 → cs:23；均 KiTTY Session|*.*）
+ *      ExePath（APP exe 组，LocalAppFormView.xaml:35 → VM:409，Exe|*.exe）
+ *      ArgumentList 行 Value（ArgumentListControl.xaml:103 → AppArgument.cs:270，
+ *        仅 File 型行——filePickWhen；WPF 调用无 filter（对话框默认全部文件）→ web
+ *        传 "all files|*.*"（端点空 filter 会回退 exe|*.exe，不能空））
+ *  - 已有（前批落点，勿重复标注）：脚本行 actions:['select','test']（ServerEditorPage
+ *    ViewModel.cs:720）、运行器 ExePath（RunnerCard 浏览按钮，ExternalRunnerSettings
+ *    ViewModel.cs:182）、凭据库私钥（CredentialVaultGroup，CredentialViewModel 同名
+ *    ppk 调用的 vault 弹窗侧 PasswordPopupDialogView.xaml.cs:58 不在 web 域）、图标
+ *    本地上传/exe 提取（IconPicker，IconPopupDialogViewModel.cs:60 的浏览器侧等价）、
+ *    导入（ImportModal input[type=file]，ServerPageViewModelBase.cs:337/359）
+ *  - 不在本文件域（另行落点/记录）：数据源 sqlite 路径（SqliteSettingViewModel.cs:103
+ *    → DataSourceGroup 模态的浏览按钮；WPF checkFileExists:false 而端点恒 true——
+ *    只能选已存在的 .db，新建库文件仍走手输，偏差记录在案）
+ *  - 不适用（连接时/桌面域或无 web 对应功能，不为 WPF 没有的东西发明）：
+ *      PasswordPopupDialogView（连接时问密码弹窗）、KittyRunner/PuttyRunner（连接时
+ *      定位 exe）、VmFileTransmitHost / ErrorReportWindow（宿主/错误报告窗口）、
+ *      ProtocolActionHelper.cs:178（导出 .rdp 的 SaveFile——web 列表无该操作）、
+ *      LogoSelector.xaml.cs:382（控件未挂接任何管理视图）、PRemoteMTransferHelper
+ *      （导入导出传输，web ImportModal 已覆盖用户入口）
+ *  - 平价偏差记录：WPF KiTTY 会话选择后会 KittyConfig.Read 校验、非法文件清空并
+ *    警告（SshFormView.xaml.cs:65-77）——web 无该解析端点，选中即回填路径，校验
+ *    留给连接时（与后端平价校验原则一致）。
+ *
+ * 帮助链接（⑱C 查漏复核，以 Ui/View 的 Hyperlink 全集为清单源）：编辑器/设置域内
+ * WPF 共 20 处——本批新增补齐 1 处（RemoteApp remote 组说明 + "check how to config."
+ * 链接，RdpAppFormView.xaml:82-95）；其余 19 处均已有 web 落点：RDP mstsc 开关 (?)/
+ * 附加设置 (?)（MstscModeEnabled/RdpFileAdditionalSettings 的 helpUrl）、VNC [More
+ * details]（basic 组 note）、协议页签 (?)（EditorHead 的 RemoteApp/APP helpUrl）、
+ * 数据源 (?)×3 与翻译文字链（DataSourceGroup/GeneralGroup）、运行器全家族 (?)
+ *（RunnerGroup 添加行 + RunnerCard 主题/字符集/参数/私钥参数/特殊字符，(i) 宏说明
+ * 弹窗由宏 chips title 承载为既有记录的偏差）、About 页链接群（AboutGroup）。
+ * 有意不加：RdpFormView.xaml:593 misc 附加设置旁 (?) 在 WPF 处于 TODO 注释块内
+ * （未生效）→ 对照为准不加。
  */
 import { FIELD } from './fieldTypes.js'
 import { RDP_CONTROL_ADDITIONAL_SETTING_KEYS } from './rdpProperties.js'
@@ -307,7 +359,14 @@ function alternateCredentialsField() {
         { key: 'Port', type: FIELD.TEXT, placeholderKey: 'editor.ph.inheritDefault' },
         { key: 'UserName', type: FIELD.TEXT, placeholderKey: 'editor.ph.inheritDefault' },
         { key: 'Password', type: FIELD.PASSWORD, placeholderKey: 'editor.ph.inheritDefault' },
-        { key: 'PrivateKeyPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.inheritDefault' },
+        // "浏览…"按钮（⑱A）：WPF 备用凭据弹窗私钥行的 Select（AlternativeCredentialEditView
+        // .xaml:208 → VM:259，ppk|*.*）
+        {
+          key: 'PrivateKeyPath',
+          type: FIELD.TEXT,
+          placeholderKey: 'editor.ph.inheritDefault',
+          filePick: { filter: 'ppk|*.*' },
+        },
       ],
     },
   }
@@ -356,6 +415,9 @@ function credentialGroup({ withPrivateKey = false, prepend = [] } = {}) {
         type: FIELD.TEXT,
         credRole: 'identity',
         visibleWhen: { field: 'UsePrivateKeyForConnect', in: [true] },
+        // "浏览…"按钮（⑱A）：WPF 凭据区私钥行的 Select（CredentialView.xaml:174 →
+        // CredentialViewModel.cs:169，ppk|*.*）——SSH/SFTP 走本构造器
+        filePick: { filter: 'ppk|*.*' },
       }
     )
   }
@@ -575,8 +637,8 @@ function rdpGatewayGroup() {
  *    由 C# setter 归一为 value=key（AppArgument.cs:152-184），前端原样提交。
  *  - Value 在 WPF 里按 Type 切换渲染（Secret=密码框/Flag=勾选/Selection=下拉，见
  *    ArgumentListControl.xaml:126-145）；静态描述符无法按行内另一字段的值切换控件类型，
- *    web 统一按 TEXT 渲染（可由 SubformList 按 row.Type==='Secret' 特判加掩码），
- *    值语义（Flag 存 "1"/"" 等）不受影响。
+ *    web 统一按 TEXT 渲染（File 型行经 filePickWhen 加"浏览…"按钮，⑱A；掩码等
+ *    控件特化仍留作后续润色），值语义（Flag 存 "1"/"" 等）不受影响。
  *  - rowDefaults：SubformList 新增行初值，对照 AppArgument 字段初始化器；
  *    AddBlankAfterKey 显式 false —— [DefaultValue(true)]+Populate 陷阱（见文件头审计②）。
  *    Selections 不设初值：json 缺失该键时 C# 字段初始化器（new Dictionary）兜底。
@@ -596,7 +658,16 @@ function appArgumentListField() {
         { key: 'Type', type: FIELD.SELECT, options: APP_ARGUMENT_TYPE_OPTIONS },
         { key: 'Name', type: FIELD.TEXT },
         { key: 'Key', type: FIELD.TEXT },
-        { key: 'Value', type: FIELD.TEXT },
+        // "浏览…"按钮（⑱A）：仅 File 型行显示（filePickWhen，SubformList 求值）——对齐
+        // WPF ArgumentFile 模板才有的 Select 按钮（ArgumentListControl.xaml:90-106 →
+        // AppArgument.cs:270）。WPF 调用不带 filter（对话框默认全部文件）→ 传
+        // "all files|*.*"（端点空 filter 会回退 exe|*.exe，不能空）
+        {
+          key: 'Value',
+          type: FIELD.TEXT,
+          filePick: { filter: 'all files|*.*' },
+          filePickWhen: { field: 'Type', in: ['File'] },
+        },
         { key: 'IsNullable', type: FIELD.SWITCH },
         { key: 'AddBlankAfterKey', type: FIELD.SWITCH },
         { key: 'AddBlankAfterValue', type: FIELD.SWITCH },
@@ -672,7 +743,9 @@ function localAppConnectionGroup() {
       pingBeforeConnectField(),
       { key: 'UserName', type: FIELD.TEXT },
       { key: 'Password', type: FIELD.PASSWORD },
-      { key: 'PrivateKey', type: FIELD.TEXT },
+      // "浏览…"按钮（⑱A）：WPF 私钥行的 Select（LocalAppFormView.xaml:154-160 → cs:18，
+      // ppk|*.*；WPF 仅宏引用时显示该行——web 恒显的既有简化下按钮随行常在）
+      { key: 'PrivateKey', type: FIELD.TEXT, filePick: { filter: 'ppk|*.*' } },
     ],
   }
 }
@@ -782,10 +855,17 @@ export const PROTOCOLS = {
         },
         // placeholder：SSH 的 StartupAutoCommand Tag 带 ";./build.sh;" 示例（SshFormView:158，
         // 与 Telnet 文案不同 → 独立键）；ExternalKittySessionConfigPath 的 Tag =
-        // kitty session tip（SshFormView:169，14 语言 DynamicResource）
+        // kitty session tip（SshFormView:169，14 语言 DynamicResource）。
+        // ExternalKittySessionConfigPath 的"浏览…"按钮（⑱A）：WPF 该行的 Select
+        //（SshFormView.xaml:172 → cs:65，KiTTY Session|*.*）
         { key: 'StartupAutoCommand', type: FIELD.TEXT, placeholderKey: 'editor.ph.sshStartupAutoCommand' },
         { key: 'OpenSftpOnConnected', type: FIELD.SWITCH },
-        { key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.externalKittySession' },
+        {
+          key: 'ExternalKittySessionConfigPath',
+          type: FIELD.TEXT,
+          placeholderKey: 'editor.ph.externalKittySession',
+          filePick: { filter: 'KiTTY Session|*.*' },
+        },
       ]),
       // ExternalSessionConfigPath（ExternalKitty 的回退取值属性）透传不编辑
       //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
@@ -929,9 +1009,15 @@ export const PROTOCOLS = {
       scriptsGroup('Serial'),
       serialGroup(),
       // KiTTY 会话配置（Serial.cs:159，WPF SerialFormView.xaml:91-102 展示）；
-      // placeholder = kitty session tip（SerialFormView:97，14 语言 DynamicResource）
+      // placeholder = kitty session tip（SerialFormView:97，14 语言 DynamicResource）；
+      // "浏览…"按钮（⑱A）：WPF 该行的 Select（SerialFormView.xaml → cs:23，KiTTY Session|*.*）
       behaviorGroup([
-        { key: 'ExternalKittySessionConfigPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.externalKittySession' },
+        {
+          key: 'ExternalKittySessionConfigPath',
+          type: FIELD.TEXT,
+          placeholderKey: 'editor.ph.externalKittySession',
+          filePick: { filter: 'KiTTY Session|*.*' },
+        },
       ]),
     ],
   },
@@ -966,8 +1052,15 @@ export const PROTOCOLS = {
       {
         // IDataErrorInfo：RemoteApplicationName/RemoteApplicationProgram 必填（RdpApp.cs:140-153）；
         // placeholder = WPF 两键 Tag 的 14 语言译文（RdpAppFormView:65/77，文件头清单）
+        // 组内提示行（⑱C 帮助链接查漏补齐）：WPF 两个字段下方的说明 + "check how to
+        // config." 链接（RdpAppFormView.xaml:82-95 → RemoteApp 文档，url/文案照抄；
+        // WPF 为字面量英文 14 语言同显 → web 同值硬编码不进 locale）。web 落点为组
+        // 提示行（字段前而非字段后，VNC 组提示同款机制）
         id: 'remote',
         labelKey: 'editor.group.remote',
+        note: "Note: You can not register a RemoteApp directly, you have to config it on the server side first, or you will get the error 'The following RemoteApp program is not in the list of authorized programs'.",
+        noteUrl: 'https://1remote.github.io/usage/protocol/especial/remoteapp/',
+        noteUrlLabel: 'check how to config.',
         fields: [
           { key: 'RemoteApplicationName', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.remoteAppName' },
           {
@@ -1046,8 +1139,15 @@ export const PROTOCOLS = {
         labelKey: 'editor.group.exe',
         fields: [
           // IDataErrorInfo：ExePath 必填（AppProtocol.cs:206-211）；
-          // placeholder：Tag "e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"（LocalAppFormView:30）
-          { key: 'ExePath', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.exePath' },
+          // placeholder：Tag "e.g. C:/vnc/viewer.exe or %VNC%/viewer.exe"（LocalAppFormView:30）；
+          // "浏览…"按钮（⑱A）：WPF 该行的 Select（LocalAppFormView.xaml:35-38 → VM:409，Exe|*.exe）
+          {
+            key: 'ExePath',
+            type: FIELD.TEXT,
+            required: true,
+            placeholderKey: 'editor.ph.exePath',
+            filePick: { filter: 'Exe|*.exe' },
+          },
           { key: 'RunWithHosting', type: FIELD.SWITCH },
           // 自定义协议显示名（LocalAppFormView.xaml:52-60，可选项）；
           // placeholder = DynamicResource Optional（LocalAppFormView:56，14 语言译文）

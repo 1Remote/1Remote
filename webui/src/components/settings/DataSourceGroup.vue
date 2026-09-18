@@ -12,6 +12,11 @@
  * - Local 卡片只读：测试可用；编辑/删除不开放（后端 PUT/DELETE Local 均为 400，SQLite 路径
  *   属安全域外）。
  * - 编辑模态：密码留空 = 保持原密码（后端 PUT 语义：空串跳过赋值），placeholder 注明。
+ * - sqlite 路径"浏览…"（batch9 Task E ⑱A）：WPF SqliteSettingView 的 Select 按钮
+ *   （SqliteSettingViewModel.cs:103，filter "SqliteSource Database|*.db" 照抄）的 web
+ *   平价——添加/编辑两模态的路径行均带按钮，调 /api/files/pick 弹后端原生对话框。
+ *   偏差：WPF checkFileExists:false（可选不存在的库文件），端点恒 true——只能选已
+ *   存在的 .db，新建库文件仍走手输（schemas.js filePick 审计同记录）。
  * - 删除 409 {serverCount}：二段确认——首段普通确认；409 后二段显示仍有的服务器数与
  *   keepServers 语义（服务器留在库文件，重新添加即可找回），确认后带 keepServers=true 重试。
  */
@@ -195,6 +200,23 @@ async function editSave() {
 // 模态表单回车=保存：共通语义见 utils/formEnter.js（添加/编辑模态各自传保存函数；
 // 与保存按钮同守卫——校验未过/保存中不动作）
 
+// ---- sqlite 路径"浏览…"（⑱A）：添加/编辑两模态共用（写目标由调用方传入） ----
+// filter 照抄 WPF SqliteSettingViewModel.cs:103；404=用户取消静默；
+// 请求寿命 = 用户开着对话框的时间（browsing 期间两模态的按钮同禁用，全局单飞）
+const sqliteBrowsing = ref(false)
+async function pickSqlitePath(form) {
+  if (sqliteBrowsing.value) return
+  sqliteBrowsing.value = true
+  try {
+    const resp = await api.pickFile('SqliteSource Database|*.db', { path: form.path })
+    if (resp?.path) form.path = resp.path
+  } catch (e) {
+    if (e?.status !== 404) message.error(t('settings.r.pickFailed'))
+  } finally {
+    sqliteBrowsing.value = false
+  }
+}
+
 // ---- 删除：二段确认（409 keepServers 重试）----
 function onDelete(d) {
   dialog.warning({
@@ -340,7 +362,13 @@ bindModalEsc([
         </div>
         <div v-if="addForm.type === 'sqlite'" class="f-row">
           <label>{{ t('settings.d.f.path') }}</label>
-          <n-input size="small" v-model:value="addForm.path" :input-props="{ spellcheck: false }" />
+          <!-- 路径 + "浏览…"（⑱A：WPF SqliteSettingView Select 按钮的 web 平价） -->
+          <div class="path-wrap">
+            <n-input size="small" v-model:value="addForm.path" :input-props="{ spellcheck: false }" />
+            <button class="act-btn" type="button" :disabled="sqliteBrowsing" @click="pickSqlitePath(addForm)">
+              {{ t('settings.r.f.browse') }}
+            </button>
+          </div>
         </div>
         <template v-else>
           <div class="f-row">
@@ -395,7 +423,13 @@ bindModalEsc([
       <div class="form" @keydown="onFormEnter($event, editSave)">
         <div v-if="editing?.type === 'sqlite'" class="f-row">
           <label>{{ t('settings.d.f.path') }}</label>
-          <n-input size="small" v-model:value="editForm.path" :input-props="{ spellcheck: false }" />
+          <!-- 路径 + "浏览…"（⑱A，同添加模态） -->
+          <div class="path-wrap">
+            <n-input size="small" v-model:value="editForm.path" :input-props="{ spellcheck: false }" />
+            <button class="act-btn" type="button" :disabled="sqliteBrowsing" @click="pickSqlitePath(editForm)">
+              {{ t('settings.r.f.browse') }}
+            </button>
+          </div>
         </div>
         <template v-else>
           <div class="f-row">
@@ -589,6 +623,39 @@ bindModalEsc([
 .f-row label {
   font-size: 0.9615rem;
   color: var(--text-2);
+}
+/* sqlite 路径行：输入框 + "浏览…"按钮（⑱A；RunnerCard exe 行同款形态） */
+.path-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.path-wrap .n-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.act-btn {
+  flex: 0 0 auto;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  color: var(--text-2);
+  font-size: 0.8846rem;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.act-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-text);
+  background: var(--bg-hover);
+}
+.act-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 .f-hint {
   margin: 4px 0 0;
