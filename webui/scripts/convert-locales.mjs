@@ -221,6 +221,10 @@ const MAPPING = {
   // DynamicResource 14 语言词条；含 e.g. 示例路径）
   'editor.ph.commandBeforeConnected': 'Run bat before connect',
   'editor.ph.commandAfterDisconnected': 'Run bat after disconnected',
+  // batch9 Task B #9：脚本行内两按钮（ServerEditorPageView.xaml:173/179 的
+  // Content={DynamicResource Select}/{DynamicResource Test}，14 语言词条）
+  'editor.scriptSelect': 'Select',
+  'editor.scriptTest': 'Test',
 
   // -- 编辑器：分组 / 窗口 --
   'editor.group.basic': 'server_editor_group_title_common',
@@ -565,6 +569,25 @@ const OVERRIDES = {
     'editor.o.appArgType.Flag': '\u65d7\u6a19',
     'editor.kvAddParam': '\u65b0\u589e\u53c3\u6578',
     'editor.kvValue': '\u503c',
+    // batch9 Task B #9\uff1a\u811a\u672c\u9009\u62e9/\u6d4b\u8bd5\u7684 web \u4e13\u6709\u952e\uff08WPF \u65e0\u5bf9\u5e94\u8bcd\u6761\u2014\u2014\u5bf9\u8bdd\u6846\u6807\u9898\u4e0e\u6d4b\u8bd5
+    // \u7ed3\u679c\u6587\u6848\u5728 WPF \u662f\u786c\u7f16\u7801\u82f1\u6587\uff09\u3002\u672f\u8bed\u5bf9\u9f50\u8be5\u8bed\u8a00 XAML\uff08Select=\u9078\u64c7\u3001Test=\u6e2c\u8a66\u3001
+    // scripts=\u6307\u4ee4\u78bc\uff09\uff1beditor.ph.note \u7684 markdown \u793a\u4f8b\uff08ServerEditorPageView.xaml:295
+    // \u786c\u7f16\u7801\uff09\u540c\u5c5e web \u4e13\u6709\u8865\u7ffb\u3002\u53ef\u8bfb\u5f62\u5f0f\uff1a
+    //   scriptPickTitle=\u9078\u64c7\u6307\u4ee4\u78bc / scriptTestTitle=\u6e2c\u8a66\u6307\u4ee4\u78bc / scriptTestCmd=\u547d\u4ee4\uff1a{cmd}
+    //   scriptTestExit=\u9000\u51fa\u78bc\uff1a{code}\u3002
+    //   scriptTestExitAbort=\u9000\u51fa\u78bc\uff1a{code}\u3002\u975e 0 \u6642\u9023\u7dda\u8acb\u6c42\u5c07\u88ab\u4e2d\u6b62\u3002
+    //   scriptTestTimeout=\u6307\u4ee4\u78bc\u903e\u6642\u672a\u7d50\u675f\uff0c\u5df2\u88ab\u7d42\u6b62\u3002 / scriptTestStartFailed=\u7121\u6cd5\u57f7\u884c\u6307\u4ee4\u78bc
+    //   ph.note=# \u652f\u63f4 Markdown / - \u5728\u9019\u88e1\u5beb\u5099\u8a3b / ![\u5716\u7247](...) / [\u9023\u7d50](...)
+    'editor.scriptPickTitle': '\u9078\u64c7\u6307\u4ee4\u78bc',
+    'editor.scriptTestTitle': '\u6e2c\u8a66\u6307\u4ee4\u78bc',
+    'editor.scriptTestCmd': '\u547d\u4ee4\uff1a{cmd}',
+    'editor.scriptTestExit': '\u9000\u51fa\u78bc\uff1a{code}\u3002',
+    'editor.scriptTestExitAbort':
+      '\u9000\u51fa\u78bc\uff1a{code}\u3002\u975e 0 \u6642\u9023\u7dda\u8acb\u6c42\u5c07\u88ab\u4e2d\u6b62\u3002',
+    'editor.scriptTestTimeout': '\u6307\u4ee4\u78bc\u903e\u6642\u672a\u7d50\u675f\uff0c\u5df2\u88ab\u7d42\u6b62\u3002',
+    'editor.scriptTestStartFailed': '\u7121\u6cd5\u57f7\u884c\u6307\u4ee4\u78bc',
+    'editor.ph.note':
+      '# \u652f\u63f4 Markdown\n\n- \u5728\u9019\u88e1\u5beb\u5099\u8a3b\n- foo\n\n![\u5716\u7247](http://x/structure.png)\n\n[\u9023\u7d50](http://x/readme.md)',
     'editor.group.alternate': '\u5099\u7528\u9023\u7dda',
     'editor.group.alternateDesc':
       '\u6bcf\u500b\u9805\u76ee\u53ef\u6307\u5b9a\u5099\u7528\u4f4d\u5740\u8207\u767b\u5165\u8eab\u5206\u7684\u7d44\u5408\uff0c\u9023\u7dda\u6642\u4f9d\u9805\u76ee\u9078\u7528\u3002',

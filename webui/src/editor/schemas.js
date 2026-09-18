@@ -69,6 +69,8 @@
  *      RdpControlAdditionalSettings（KEY_VALUE_LINES 行编辑器的属性名框；WPF 出处
  *        RdpFormView.xaml:570 的 HelpBrush "e.g. EnableAutoReconnect:i:0"）→
  *        editor.ph.rdpControlKey
+ *      Note（batch9 #7：ServerEditorPageView.xaml:295 的 markdown 示例多行 Tag，字面量
+ *        英文 → 12 生成语言同值回落，zh-CN/zh-TW 手写）→ editor.ph.note
  *  - DynamicResource（WPF 14 语言有译文 → convert-locales.mjs MAPPING 移植）：
  *      RemoteApplicationName/Program（RdpAppFormView:65/77）→ editor.ph.remoteAppName /
  *        editor.ph.remoteAppProgram（WPF 键 server_editor_remote_app_name_tag /
@@ -231,8 +233,10 @@ function basicGroup({ withAddressPort = true } = {}) {
     // 下方插入（保持"图标/颜色正下方"的 WPF 行位）。bool? 恒非 null 编辑（true/false）
     { key: 'AlwaysOpenInNewTabWindow', type: FIELD.SWITCH },
     // 备注：MARKDOWN 特化——编辑 ⇄ 预览切换（MarkdownField）。批量编辑的 note
-    // 仍为 TEXTAREA（BULK_FIELDS，列表 DTO 域扁平字段不参与该特化）
-    { key: 'Note', type: FIELD.MARKDOWN }
+    // 仍为 TEXTAREA（BULK_FIELDS，列表 DTO 域扁平字段不参与该特化）。
+    // placeholder（batch9 #7）：WPF Note 输入区 Tag 的 markdown 示例文本
+    // （ServerEditorPageView.xaml:295，字面量英文 → 12 生成语言同值回落，zh 系手写）
+    { key: 'Note', type: FIELD.MARKDOWN, placeholderKey: 'editor.ph.note' }
   )
   return {
     id: 'basic',
@@ -389,6 +393,10 @@ const RUNNER_PROTOCOLS = ['VNC', 'SSH', 'Telnet', 'Serial', 'SFTP', 'FTP']
  * 置于 basic 组之后（同 WPF"公共区在前、协议专属表单在后"的行序）。
  *  - CommandBeforeConnected/CommandAfterDisconnected：TEXTAREA（多行形态；
  *    WPF 是单行 TextBox——命令可含换行的长脚本，多行编辑是超集，值语义不变）。
+ *    rows=1（batch9 #8）：默认渲染为单行输入框高（28px）可纵向拉高（WPF 单行同观）。
+ *    actions: ['select','test']（batch9 #9）：行内两按钮对齐 WPF 脚本行的
+ *    Select/Test（xaml:168-180/203-215）——选择 = 后端原生文件对话框回填裸路径，
+ *    测试 = 后端执行该命令弹窗显示输出/退出码（见 FormField 的按钮实现）。
  *    placeholder = WPF Tag 的 14 语言译文（'Run bat before connect' 等，MAPPING 移植）。
  *  - HideCommandBeforeConnectedWindow：前脚本行下方的复选框（xaml:183-193，
  *    Content 全文含"(not recommended...)"括注，WPF 文案原样移植）。
@@ -402,12 +410,16 @@ function scriptsGroup(protocolKey) {
     {
       key: 'CommandBeforeConnected',
       type: FIELD.TEXTAREA,
+      rows: 1,
+      actions: ['select', 'test'],
       placeholderKey: 'editor.ph.commandBeforeConnected',
     },
     { key: 'HideCommandBeforeConnectedWindow', type: FIELD.SWITCH },
     {
       key: 'CommandAfterDisconnected',
       type: FIELD.TEXTAREA,
+      rows: 1,
+      actions: ['select', 'test'],
       placeholderKey: 'editor.ph.commandAfterDisconnected',
     },
   ]
@@ -468,11 +480,15 @@ function rdpMstscGroup() {
   return {
     id: 'mstsc',
     labelKey: 'editor.group.mstsc',
-    // 组标题帮助链接：WPF RdpFormView.xaml:269-281 mstsc 开关行的
-    // "Enabled (?)"→ mstsc 模式文档；web 组标题旁承载（指定落点）
-    helpUrl: 'https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/',
     fields: [
-      { key: 'MstscModeEnabled', type: FIELD.SWITCH },
+      // 开关行帮助链接（batch9 #11 迁移）：WPF RdpFormView.xaml:269-281 mstsc 开关行的
+      // "Enabled (?)"→ mstsc 模式文档；(?) 挂开关文字后（SwitchItem 渲染，
+      // 此前挂组标题旁属过渡落点）；url 照抄
+      {
+        key: 'MstscModeEnabled',
+        type: FIELD.SWITCH,
+        helpUrl: 'https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/',
+      },
       {
         key: 'RdpFileAdditionalSettings',
         type: FIELD.TEXTAREA,
