@@ -514,7 +514,7 @@
   "settings.r.f.charset": "字元集",
   "settings.r.f.argsPrivateKey": "啟動參數（透過私密金鑰）",
   "settings.r.f.special": "特殊字元",
-  "settings.r.f.specialHint": "特殊字元（如使用者名稱中的 @）可能需要用 %XX 語法轉義，每行一個 KEY=VALUE，例如 @=%40",
+  "settings.r.f.specialHint": "特殊字元（如使用者名稱中的 {'@'}）可能需要用 %XX 語法轉義，每行一個 KEY=VALUE，例如 {'@'}=%40",
   "settings.r.f.macroHint": "可用巨集：",
   "settings.r.f.browse": "瀏覽…",
   "settings.r.internalExeManaged": "內建執行器路徑由應用程式管理。",

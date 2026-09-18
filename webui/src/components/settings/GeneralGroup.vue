@@ -22,6 +22,7 @@ import { api } from '../../api'
 import { setLocale } from '../../locales'
 import { backendToWeb, languageOptions, webToBackend } from '../../locales/languages'
 import { useAutoSave } from '../../composables/useAutoSave'
+import HelpLink from '../HelpLink.vue'
 
 const { t } = useI18n()
 const message = useMessage()
@@ -152,6 +153,12 @@ const SWITCHES_REST = [
             @update:show="shield"
             @update:value="onLanguageChange"
           />
+          <!-- 帮助链接（batch8 Task F #20）：WPF GeneralSettingView.xaml:41-62 语言行下方的
+               "Can't find your language?" → 翻译协作文档。WPF 为字面量英文（14 语言同显英文，
+               AboutPageView 硬编码英文同款先例）→ web 同值硬编码，不进 locale -->
+          <HelpLink class="lang-help" href="https://1remote.github.io/usage/misc/help-translation/" badge="">
+            Can't find your language?
+          </HelpLink>
         </div>
       </div>
 
@@ -235,5 +242,9 @@ const SWITCHES_REST = [
 }
 .row-control.slim {
   max-width: 280px;
+}
+/* 语言行帮助链接：跟在下拉框下方（WPF 语言行下一行同款位置） */
+.lang-help {
+  margin-top: 4px;
 }
 </style>

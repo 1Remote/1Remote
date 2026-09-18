@@ -28,6 +28,7 @@ import FormField from './FormField.vue'
 import SwitchItem from './SwitchItem.vue'
 import EditorHead from './EditorHead.vue'
 import BulkEditForm from './BulkEditForm.vue'
+import HelpLink from '../HelpLink.vue'
 import { PROTOCOLS } from '../../editor/schemas.js'
 import { isVisible } from '../../editor/visibility.js'
 import { switchProtocol } from '../../editor/protocolSwitch.js'
@@ -409,8 +410,19 @@ onBeforeUnmount(() => {
                 <div v-for="(err, i) in saveErrors" :key="i">{{ err }}</div>
               </div>
               <section v-for="g in groups" :key="g.id" class="ed-group">
-                <h3 class="ed-group-title">{{ g.labelKey ? t(g.labelKey) : g.id }}</h3>
+                <h3 class="ed-group-title">
+                  {{ g.labelKey ? t(g.labelKey) : g.id }}
+                  <!-- 组标题帮助链接（batch8 Task F #20）：WPF 表单组标题旁 (?)/说明的
+                       web 落点之一（如 RDP mstsc 组 → mstsc 模式文档） -->
+                  <HelpLink v-if="g.helpUrl" :href="g.helpUrl" />
+                </h3>
                 <div v-if="g.descKey" class="ed-group-desc">{{ t(g.descKey) }}</div>
+                <!-- 组内提示行（#20）：WPF 表单首行说明文字 + 链接（VNC 的 RFB 专有协议
+                     警告 + [More details]）；文字与 URL 由 schema 硬编码（WPF 同为字面量） -->
+                <p v-if="g.note" class="ed-group-note">
+                  {{ g.note
+                  }}<HelpLink v-if="g.noteUrl" :href="g.noteUrl" badge="">{{ g.noteUrlLabel || '' }}</HelpLink>
+                </p>
 
                 <!-- 渲染块循环：switch-run 聚合行 / 整行字段 + 凭据组的 cred-mode /
                      cred-hint 伪块（分段顺序见 groupBlocks） -->
@@ -635,6 +647,13 @@ onBeforeUnmount(() => {
 .ed-group-desc {
   margin: -4px 0 0;
   color: var(--text-4);
+  font-size: 0.8846rem;
+  line-height: 1.5;
+}
+/* 组内提示行（#20）：WPF VncFormView 的 RFB 警告行——强调色文字（WPF AccentMidBrush 同语义） */
+.ed-group-note {
+  margin: 8px 0 0;
+  color: var(--accent-text);
   font-size: 0.8846rem;
   line-height: 1.5;
 }

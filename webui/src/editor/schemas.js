@@ -468,12 +468,18 @@ function rdpMstscGroup() {
   return {
     id: 'mstsc',
     labelKey: 'editor.group.mstsc',
+    // 组标题帮助链接（batch8 Task F #20）：WPF RdpFormView.xaml:269-281 mstsc 开关行的
+    // "Enabled (?)"→ mstsc 模式文档；web 组标题旁承载（owner 验收指定落点）
+    helpUrl: 'https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/',
     fields: [
       { key: 'MstscModeEnabled', type: FIELD.SWITCH },
       {
         key: 'RdpFileAdditionalSettings',
         type: FIELD.TEXTAREA,
         visibleWhen: { field: 'MstscModeEnabled', in: [true] },
+        // 字段旁帮助链接（#20）：WPF RdpFormView.xaml:349-363 附加设置编辑器旁 (?) →
+        // 文档 #additional-settings 锚点（url 照抄）
+        helpUrl: 'https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings',
       },
     ],
   }
@@ -825,7 +831,15 @@ export const PROTOCOLS = {
       IsAutoAlternateAddressSwitching: true,
     },
     groups: [
-      basicGroup(),
+      // 组内提示（batch8 Task F #20）：WPF VncFormView.xaml:69-81 表单首行的 RFB 专有协议
+      // 警告 + [More details] 链接 → 运行器文档（url 照抄；WPF 为字面量英文，14 语言同显，
+      // web 同值硬编码不进 locale）。挂在 basic 组标题下（VNC 表单首组）
+      {
+        ...basicGroup(),
+        note: 'Caution: RFB protocol over 3.8 are proprietary. If you would like using RFB 3.8+, you have to try your own VNC runner:',
+        noteUrl: 'https://1remote.github.io/usage/protocol/runner/',
+        noteUrlLabel: '[More details]',
+      },
       scriptsGroup('VNC'),
       // WPF CredentialView 对 VNC 同样渲染 UserName 行（CredentialView.xaml:123 无条件，
       // VNC.ShowUserNameInput()=false 只影响凭据库新增弹窗的必填项，Vnc.cs:55）；
@@ -914,6 +928,9 @@ export const PROTOCOLS = {
   RemoteApp: {
     protocol: 'RemoteApp',
     classVersion: 'RemoteApp.V1',
+    // 协议帮助链接（batch8 Task F #20）：WPF ServerEditorPageView.xaml:489-493 协议页签旁
+    // "?"（HelpUrl 非空才显示）→ RdpApp.GetHelpUrl() 的文档页，url 照抄
+    helpUrl: 'https://1remote.github.io/usage/protocol/especial/remoteapp/',
     defaults: {
       ColorHex: '#00000000',
       Port: '3389',
@@ -964,7 +981,15 @@ export const PROTOCOLS = {
         // 保持 TEXTAREA（勿改 KEY_VALUE_LINES）：RdpFileAdditionalSettings 是喂给
         // mstsc.exe 的 .rdp 文件附加行（自由 rdp 文本，RdpAppFormView:136-218 与 RDP
         // 表单的 mstsc 组同款），语义/校验均非 AxMsRdpClient 属性键值——不做行式重构
-        fields: [{ key: 'RdpFileAdditionalSettings', type: FIELD.TEXTAREA }],
+        fields: [
+          {
+            key: 'RdpFileAdditionalSettings',
+            type: FIELD.TEXTAREA,
+            // 字段旁帮助链接（batch8 Task F #20）：WPF RdpAppFormView.xaml:194-206 附加
+            // 设置编辑器旁 (?) → 文档 #additional-settings 锚点（url 照抄）
+            helpUrl: 'https://1remote.github.io/usage/protocol/especial/rdp-in-mstsc-mode/#additional-settings',
+          },
+        ],
       },
       //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）
     ],
@@ -985,6 +1010,9 @@ export const PROTOCOLS = {
   APP: {
     protocol: 'APP',
     classVersion: 'APP.V1',
+    // 协议帮助链接（batch8 Task F #20）：WPF ServerEditorPageView 协议页签旁 "?"（AppProtocol
+    // .GetHelpUrl()，url 照抄）；其余协议 HelpUrl 为空 → WPF 同款不显示
+    helpUrl: 'https://1remote.github.io/usage/protocol/especial/app/',
     defaults: {
       ColorHex: '#00000000',
       // 显式 false（勿按"省略 false"约定删）：ctor 置 false（AppProtocol.cs:24），而基类

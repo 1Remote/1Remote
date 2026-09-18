@@ -24,6 +24,7 @@ import CredentialPicker from './CredentialPicker.vue'
 import MarkdownField from './MarkdownField.vue'
 import SwitchItem from './SwitchItem.vue'
 import KeyValueLines from './KeyValueLines.vue'
+import HelpLink from '../HelpLink.vue'
 import KvMapField from './KvMapField.vue'
 import { FIELD } from '../../editor/fieldTypes.js'
 import { opaqueHex } from '../../utils/color.js'
@@ -185,6 +186,9 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
       <span v-if="showLabelInColumn" class="ff-label-text"
         >{{ label }}<span v-if="field.required" class="ff-required">*</span></span
       >
+      <!-- 字段旁帮助链接（batch8 Task F #20）：WPF 表单行 (?) 的 web 落点（如 mstsc 附加
+           设置 → 文档 #additional-settings 锚点）；URL 照抄 WPF NavigateUri -->
+      <HelpLink v-if="field.helpUrl" :href="field.helpUrl" />
       <!-- MARKDOWN 的 编辑 ⇄ 预览 切换（标签列右侧；i18n 键沿用 MarkdownField 原有） -->
       <button
         v-if="field.type === FIELD_TYPE.MARKDOWN"

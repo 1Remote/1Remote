@@ -20,6 +20,7 @@ import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
 import { useServers } from '../../composables/useServers'
+import HelpLink from '../HelpLink.vue'
 
 const { t } = useI18n()
 const message = useMessage()
@@ -270,9 +271,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 
 <template>
   <div class="group">
-    <!-- 列表标题行（#14）：添加按钮右对齐（RunnerGroup #9 同款 grid/justify-self 模式） -->
+    <!-- 列表标题行（#14）：添加按钮右对齐（RunnerGroup #9 同款 grid/justify-self 模式）。
+         (?) 帮助链接（batch8 Task F #20）：WPF DataSourceView.xaml:255-260 添加菜单旁
+         (?) → 团队共享文档（url 照抄 WPF） -->
     <div class="toolbar">
-      <n-button class="add-btn" size="small" type="primary" @click="openAdd">{{ t('settings.d.add') }}</n-button>
+      <span class="add-wrap">
+        <n-button size="small" type="primary" @click="openAdd">{{ t('settings.d.add') }}</n-button>
+        <HelpLink href="https://1remote.github.io/usage/team/team-sharing/" />
+      </span>
     </div>
 
     <div v-if="!datasources.length" class="empty">{{ t('tree.noDatasources') }}</div>
@@ -326,13 +332,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
       <div class="form" @keydown="onFormEnter($event, addSave)">
         <div class="f-row">
           <label>{{ t('settings.d.type') }}</label>
-          <n-select
-            size="small"
-            :value="addForm.type"
-            :options="typeOptions.map((o) => ({ value: o.value, label: o.label.value }))"
-            @update:show="shield"
-            @update:value="onAddTypeChange"
-          />
+          <div class="type-wrap">
+            <n-select
+              size="small"
+              :value="addForm.type"
+              :options="typeOptions.map((o) => ({ value: o.value, label: o.label.value }))"
+              @update:show="shield"
+              @update:value="onAddTypeChange"
+            />
+            <!-- 在线数据库帮助（batch8 Task F #20）：WPF 添加菜单的 MySQL/PostgreSQL 项各带
+                 (?) → 在线数据库文档（DataSourceView.xaml:222-243，url 照抄）；sqlite 为本地
+                 文件无此链接，WPF 同款（菜单里只有两项带 (?)） -->
+            <HelpLink
+              v-if="addForm.type === 'mysql' || addForm.type === 'pgsql'"
+              href="https://1remote.github.io/usage/database/use-online-database/"
+            />
+          </div>
         </div>
         <div class="f-row">
           <label>{{ t('settings.d.name') }}</label>
@@ -456,8 +471,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   align-items: center;
   margin-bottom: 12px;
 }
-.add-btn {
+/* #14 + #20：添加按钮与旁侧 (?) 成组右对齐（grid 单列 + justify-self 端对齐的组形态） */
+.add-wrap {
   justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* 添加模态类型行：下拉 + (?) 帮助并排（f-row 的控件列原为裸控件） */
+.type-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.type-wrap .n-select {
+  flex: 1 1 auto;
 }
 .empty {
   padding: 24px 0;
