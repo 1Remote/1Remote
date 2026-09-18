@@ -64,6 +64,9 @@
  *        editor.ph.sshStartupAutoCommand；Serial 表单该行 WPF 已注释隐藏（字段透传不编辑）
  *      ExePath（LocalAppFormView:30）→ editor.ph.exePath
  *      SerialPort/BitRate（"e.g. COM1"/"e.g. 9600"）
+ *      RdpControlAdditionalSettings（KEY_VALUE_LINES 行编辑器的属性名框；WPF 出处
+ *        RdpFormView.xaml:570 的 HelpBrush "e.g. EnableAutoReconnect:i:0"）→
+ *        editor.ph.rdpControlKey
  *  - DynamicResource（WPF 14 语言有译文 → convert-locales.mjs MAPPING 移植）：
  *      RemoteApplicationName/Program（RdpAppFormView:65/77）→ editor.ph.remoteAppName /
  *        editor.ph.remoteAppProgram（WPF 键 server_editor_remote_app_name_tag /
@@ -85,6 +88,7 @@
  *    编辑弹窗无对应 Tag。
  */
 import { FIELD } from './fieldTypes.js'
+import { RDP_CONTROL_ADDITIONAL_SETTING_KEYS } from './rdpProperties.js'
 
 // ---------------------------------------------------------------------------
 // SELECT 选项表（value = C# 枚举成员整数值，labelKey → editor.o.*
@@ -631,12 +635,20 @@ export const PROTOCOLS = {
       rdpAdvancedGroup(),
       rdpGatewayGroup(),
       miscGroup([
-        // WPF 出处：RDP 表单 MISC 组行标题 'Additional settings'（RdpFormView.xaml:526-532，
-        // 带 AvalonEdit 键名补全的文本域）；mstsc 模式下该控件高级设置不生效，
-        // WPF 整组隐藏（RdpFormView.xaml:525）
+        // WPF 出处：RDP 表单 MISC 组行标题 'Additional settings'（RdpFormView.xaml:526-611，
+        // AvalonEdit 文本域 + 属性名补全 + 旁注说明）；mstsc 模式下该控件高级设置不生效，
+        // WPF 整组隐藏（RdpFormView.xaml:525）。
+        // KEY_VALUE_LINES 行编辑器重构（批次7）：WPF 是一行一个 `属性名:类型:值` 的自由文本
+        //（解析器 RDP.cs SplitAdditionalSettings：分隔符 :s:/:i:/:b:），web 渲染为行式
+        //[属性名自动补全][值][删行]；候选 = WPF 反射生成的补全表（rdpProperties.js）；
+        // 序列化格式逐字节兼容（KeyValueLines.vue 头注释）。
+        // placeholder = WPF HelpBrush 提示原文（"e.g. EnableAutoReconnect:i:0"，
+        // RdpFormView.xaml:570，WPF 为字面量英文 → 14 locale 同值）。
         {
           key: 'RdpControlAdditionalSettings',
-          type: FIELD.TEXTAREA,
+          type: FIELD.KEY_VALUE_LINES,
+          kvSuggestions: RDP_CONTROL_ADDITIONAL_SETTING_KEYS,
+          placeholderKey: 'editor.ph.rdpControlKey',
           visibleWhen: { field: 'MstscModeEnabled', notIn: [true] },
         },
       ]),
@@ -859,6 +871,9 @@ export const PROTOCOLS = {
       {
         id: 'mstsc',
         labelKey: 'editor.group.mstsc',
+        // 保持 TEXTAREA（勿改 KEY_VALUE_LINES）：RdpFileAdditionalSettings 是喂给
+        // mstsc.exe 的 .rdp 文件附加行（自由 rdp 文本，RdpAppFormView:136-218 与 RDP
+        // 表单的 mstsc 组同款），语义/校验均非 AxMsRdpClient 属性键值——不做行式重构
         fields: [{ key: 'RdpFileAdditionalSettings', type: FIELD.TEXTAREA }],
       },
       //（misc 组已删：IsPingBeforeConnect 移入 basic 组后无剩余字段）

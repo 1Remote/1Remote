@@ -1,8 +1,9 @@
 <script setup>
 /**
- * 编辑抽屉头部（自 EditorDrawer 拆出）：协议瓦片 + 标题 + 协议切换下拉 + 数据源
- *（新建可改选的 n-select，或只读 pill）+ 关闭按钮，五个元素一行（标题 flex:1 省略
- * 让位，窄抽屉 560px 下拉不换行）。
+ * 编辑抽屉头部（自 EditorDrawer 拆出）：协议瓦片 + 标题 + [协议标签 + 协议切换下拉]
+ * + [数据库标签 + 数据源（新建可改选的 n-select，或只读 pill）] + 关闭按钮。标签是
+ * 下拉框前的可见小前缀（批次7 #2，语义不靠 tooltip 承载）；标题 flex:1 省略让位，
+ * 窄抽屉 560px 下拉不换行。
  *
  * 职责边界（与抽屉的接缝）：本组件只管头部展示与数据源选择器的选项拉取；编辑器状态机
  * 留在抽屉——
@@ -107,27 +108,37 @@ defineExpose({ title })
   <header class="ed-head">
     <span class="ed-tile" :style="tileStyle">{{ isBulk ? '≡' : (protocolKey || '?').charAt(0) }}</span>
     <div class="ed-title" :title="title">{{ title }}</div>
-    <n-select
-      v-if="!isBulk"
-      class="ed-proto"
-      size="small"
-      :value="protocolKey || undefined"
-      :options="protocolOptions"
-      :disabled="loading || !!loadError"
-      :title="t('editor.headProtocolTip')"
-      @update:value="onProtocolSwitch"
-    />
-    <n-select
-      v-if="showDsSelect && dsOptions.length > 1"
-      v-model:value="ds"
-      class="ed-ds-select"
-      size="small"
-      :options="dsOptions"
-      :title="t('editor.headDsTip')"
-    />
-    <div v-else class="ed-ds" :title="t('editor.headDsTip') + ': ' + (isBulk ? bulkDs : ds)">
-      {{ isBulk ? bulkDs : ds }}
-    </div>
+    <!-- 可见小标签（owner 验收批次7 #2：下拉框前缀说明，不用 tooltip 承载语义）：
+         紧贴各下拉框左侧的 11px/--text-3 短标签，与标题行的克制风格一致 -->
+    <template v-if="!isBulk">
+      <span class="ed-head-label">{{ t('editor.headProtocolLabel') }}</span>
+      <n-select
+        class="ed-proto"
+        size="small"
+        :value="protocolKey || undefined"
+        :options="protocolOptions"
+        :disabled="loading || !!loadError"
+        :title="t('editor.headProtocolTip')"
+        @update:value="onProtocolSwitch"
+      />
+    </template>
+    <template v-if="showDsSelect && dsOptions.length > 1">
+      <span class="ed-head-label">{{ t('editor.headDsLabel') }}</span>
+      <n-select
+        v-model:value="ds"
+        class="ed-ds-select"
+        size="small"
+        :options="dsOptions"
+        :title="t('editor.headDsTip')"
+      />
+    </template>
+    <!-- 只读 pill（编辑/复制/批量）同样带「数据库」前缀标签 -->
+    <template v-else>
+      <span class="ed-head-label">{{ t('editor.headDsLabel') }}</span>
+      <div class="ed-ds" :title="t('editor.headDsTip') + ': ' + (isBulk ? bulkDs : ds)">
+        {{ isBulk ? bulkDs : ds }}
+      </div>
+    </template>
     <button class="ed-close" type="button" :title="t('editor.close')" @click="emit('close')">✕</button>
   </header>
 </template>
@@ -169,6 +180,16 @@ defineExpose({ title })
   font-size: 1.0769rem;
   font-weight: 600;
   color: var(--text-1);
+}
+
+/* 头部下拉框/只读 pill 的前缀小标签（批次7 #2）：11px/--text-3 短标签，紧贴其后
+   的控件左侧（协议/数据库），不参与标题的弹性让位（flex 收缩为 0） */
+.ed-head-label {
+  flex: 0 0 auto;
+  color: var(--text-3);
+  font-size: 0.8462rem;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* 数据源只读 pill（编辑/复制/批量）：行内元素（不堆叠于标题下方第二行）——固定 170px

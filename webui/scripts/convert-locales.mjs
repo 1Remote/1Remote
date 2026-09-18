@@ -216,6 +216,10 @@ const MAPPING = {
   'editor.group.connection': 'Connection Settings',
   'editor.dataSource': 'Data Source name',
   'editor.protocol': 'Protocol',
+  // 批次7 #2：头部下拉框前缀标签（协议/数据库）。'Protocol' 与
+  // system_options_data_security_database 在 WPF 14 语言均有译文 → 走映射
+  'editor.headProtocolLabel': 'Protocol',
+  'editor.headDsLabel': 'system_options_data_security_database',
   'editor.close': 'Close',
   'editor.cancel': 'Cancel',
   'editor.save': 'Save',
