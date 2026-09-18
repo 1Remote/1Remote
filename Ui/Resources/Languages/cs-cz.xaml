@@ -333,4 +333,7 @@
     <s:String x:Key="ListViewMode_Card">Karta</s:String>
     <s:String x:Key="ListViewMode_Tree">Strom</s:String>
     <s:String x:Key="Do not check for new version">Nekontrolujte novou verzi</s:String>
+    <s:String x:Key="Interface engine">Jádro rozhraní</s:String>
+    <s:String x:Key="Interface engine desktop">Desktop</s:String>
+    <s:String x:Key="Interface engine web">Web</s:String>
 </ResourceDictionary>

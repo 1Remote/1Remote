@@ -333,4 +333,7 @@
     <s:String x:Key="ListViewMode_Card">Karte</s:String>
     <s:String x:Key="ListViewMode_Tree">Baum</s:String>
     <s:String x:Key="Do not check for new version">Suchen Sie nicht nach einer neuen Version</s:String>
+    <s:String x:Key="Interface engine">Interface-Engine</s:String>
+    <s:String x:Key="Interface engine desktop">Desktop</s:String>
+    <s:String x:Key="Interface engine web">Web</s:String>
 </ResourceDictionary>
