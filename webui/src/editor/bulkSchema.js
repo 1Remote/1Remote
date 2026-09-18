@@ -60,6 +60,21 @@ export const BULK_DTO_KEYS = {
  */
 export const BULK_SENSITIVE_KEYS = new Set(['password', 'privateKey', 'gatewayPassword'])
 
+/**
+ * N 台同键取值的「共享值」三元组（批量表单逐字段的展示口径）：
+ *  - known=true：值域已知（列表 DTO 键或 peek 回读）；same = N 台 JSON 严格全等
+ *    （与 patch.js 同口径，数组整体比较）；same 时 value 为首台深拷贝（以已序列化的
+ *    首台串反解——与响应式源/schema 常量脱钩），各不相同 → value=undefined（无意义）；
+ *  - 敏感键/未回读键不进本函数，由调用方直接给 {known:false, same:false, value:undefined}。
+ * @param {Array} values N 台同键取值（列表 DTO 域或 peek 回读域）
+ */
+export function sharedValueOf(values) {
+  const first = JSON.stringify(values[0])
+  const same = values.every((v) => JSON.stringify(v) === first)
+  // 全 undefined 的 same 是合法结果（值本就缺失），first 为 undefined 时无法反解 → undefined
+  return { known: true, same, value: same && first !== undefined ? JSON.parse(first) : undefined }
+}
+
 /** 凭据组拍平的字段顺序（credRole 四段，对齐 EditorDrawer.groupBlocks 的分段序）。 */
 const CRED_ROLE_ORDER = ['pre', 'identity', 'picker', 'option']
 

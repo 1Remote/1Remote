@@ -38,7 +38,7 @@ import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import FormField from './FormField.vue'
 import HelpLink from '../HelpLink.vue'
-import { bulkSchemaView, camelKey, BULK_DTO_KEYS, BULK_SENSITIVE_KEYS } from '../../editor/bulkSchema.js'
+import { bulkSchemaView, camelKey, sharedValueOf, BULK_DTO_KEYS, BULK_SENSITIVE_KEYS } from '../../editor/bulkSchema.js'
 import { FIELD } from '../../editor/fieldTypes.js'
 import { diffPatch } from '../../editor/patch.js'
 import { opaqueHex } from '../../utils/color.js'
@@ -105,27 +105,20 @@ const bulkFields = computed(() => {
 })
 
 // ---- 共享值计算 + 逐字段「保持不变/覆盖」状态 ----
-// bulkShared[key] = { known, same, value }：
+// bulkShared[key] = { known, same, value }（sharedValueOf 的三元组，bulkSchema.js）：
 //  - BULK_DTO_KEYS 覆盖键 → known=true，value 为 N 台列表 DTO 值（same=false 时无意义）；
 //  - 其余非敏感键 → known 由 peek 决定（回读成功时逐台比对，键名 = patch 键）；
 //  - 敏感键（password/privateKey/gatewayPassword）或 peek 未就绪 → known=false，只提示、不展示值。
-// 相等判定与 patch.js 同口径（JSON.stringify 严格比对，数组整体比较）。
 const bulkShared = computed(() => {
   const out = {}
   for (const { key } of bulkFields.value) {
     const dtoKey = BULK_DTO_KEYS[key]
     if (dtoKey) {
-      const vals = props.bulkServers.map((s) => s?.[dtoKey])
-      const first = JSON.stringify(vals[0])
-      const same = vals.every((v) => JSON.stringify(v) === first)
-      out[key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
+      out[key] = sharedValueOf(props.bulkServers.map((s) => s?.[dtoKey]))
       continue
     }
     if (!BULK_SENSITIVE_KEYS.has(key) && peekMap.value) {
-      const vals = props.bulkIds.map((id) => peekMap.value[id]?.[key])
-      const first = JSON.stringify(vals[0])
-      const same = vals.every((v) => JSON.stringify(v) === first)
-      out[key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
+      out[key] = sharedValueOf(props.bulkIds.map((id) => peekMap.value[id]?.[key]))
       continue
     }
     out[key] = { known: false, same: false, value: undefined }
