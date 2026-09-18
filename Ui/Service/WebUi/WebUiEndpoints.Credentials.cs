@@ -78,8 +78,10 @@ namespace _1RM.Service.WebUi
                 return MapCredentialSaveResult(WebUiCredentialService.Create(dataSourceName, body?.Credential));
             });
 
-            // 更新凭据（按名寻址，与 WPF 凭据编辑一致）：整体替换语义；nameBefore=路由名驱动
-            // 引用服务器联动改名/字段同步（Dapper 事务）；重命名目标名做与新建相同的唯一校验。
+            // 更新凭据（按名寻址，与 WPF 凭据编辑一致）：整体替换语义；Password/PrivateKeyPath
+            // 空=保持原值（batch8 #17：编辑 API 不回显明文，空提交不得清空密钥）；
+            // nameBefore=路由名驱动引用服务器联动改名/字段同步（Dapper 事务）；
+            // 重命名目标名做与新建相同的唯一校验。
             app.MapPut("/api/credentials/{name}", (string name, string? ds, CredentialSaveRequest? body) =>
             {
                 var dataSourceName = string.IsNullOrWhiteSpace(ds)

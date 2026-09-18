@@ -424,6 +424,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
                 type="password"
                 show-password-on="click"
                 v-model:value="editForm.password"
+                :placeholder="t('settings.ph.keepCurrent')"
                 :input-props="{ spellcheck: false }"
               />
               <p class="f-hint">{{ t('settings.d.f.passwordKeep') }}</p>
