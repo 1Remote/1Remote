@@ -1,28 +1,31 @@
 <script setup>
 /**
- * 启动器分组（Plan 3 Task 6，spec §6）：GET/PUT /api/settings/launcher。
- * - 启用开关 + 三个行为开关（showCredentials / allowSaveInfoInQuickConnect）。
+ * 启动器分组（Plan 3 Task 6，spec §6；fix batch7 Task D #12 全量自动保存）：
+ * GET/PUT /api/settings/launcher，改完即存（无保存按钮/dirty 提示）。
+ * - 启用开关 + 两个行为开关（showCredentials / allowSaveInfoInQuickConnect）翻转即 PUT 全量表单。
  * - 热键录制框：点击进入录制 → window 捕获阶段 keydown（录制中吞掉一切键，防误触浏览器/页面
- *   快捷键与 SettingsView 的 Esc 返回）→ 显示 "Ctrl+Alt+M" 形态。
+ *   快捷键与 SettingsView 的 Esc 返回）→ 显示 "Ctrl+Alt+M" 形态，录制成功即保存。
  *   接受：修饰键（Ctrl/Alt/Shift/Win，至少一个）+ 主键（字母 / 数字 / F1-F12，映射为 Key 枚举
  *   成员名——数字键转 D0..D9 与 WPF Key 枚举一致）；其余按键视为无效（提示后继续录制）。
  * - PUT 线格式：hotKeyModifiers 直接发送显示形态（"Ctrl+Alt"——后端同时接受枚举成员名与显示
- *   形态，见 WebUiSettingsService.TryParseHotKeyModifiers，显示形态即所见即所发最简）；
+ *   形态，见 WebUiSettingsService.TryParseHotkeyModifiers，显示形态即所见即所发最简）；
  *   hotKeyKey 发送 Key 成员名（"M"/"F1"/"D2"）。
- * - 409 = 热键注册冲突：后端语义是"配置已保存但没注册上"——表单按响应回显已保存值并内联
+ * - 409 = 热键注册冲突：后端语义是"配置已保存但没注册上"——按响应回显已保存值并内联
  *   显示冲突提示（不算保存失败，不出错误 toast）。
+ * - 响应回填带 hasPending 守卫：PUT 飞行中用户又翻转了开关时跳过回填，防旧响应把
+ *   刚翻转的控件弹回（pending 里的全量载荷随后会带上最新态再发）。
  */
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { api } from '../../api'
+import { useAutoSave } from '../../composables/useAutoSave'
 
 const { t } = useI18n()
 const message = useMessage()
 
 const loading = ref(true)
 const loadError = ref(false)
-const saving = ref(false)
 const conflict = ref(false) // 409：热键注册冲突（配置已保存）
 
 // 本地形态：modifiersDisplay="Ctrl+Alt"（显示形态，保存时原样发送）；keyName="M"（Key 成员名）
@@ -33,7 +36,6 @@ const form = reactive({
   showCredentials: false,
   allowSaveInfoInQuickConnect: false,
 })
-let snapshot = null
 
 // 枚举成员名 → 显示形态（"ControlAlt" → "Ctrl+Alt"；成员名组合词逐段探测）
 function modifiersToDisplay(member) {
@@ -54,13 +56,6 @@ function applyDto(l) {
   form.keyName = l.hotKeyKey || ''
   form.showCredentials = !!l.showCredentials
   form.allowSaveInfoInQuickConnect = !!l.allowSaveInfoInQuickConnect
-  snapshot = {
-    launcherEnabled: form.launcherEnabled,
-    modifiersDisplay: form.modifiersDisplay,
-    keyName: form.keyName,
-    showCredentials: form.showCredentials,
-    allowSaveInfoInQuickConnect: form.allowSaveInfoInQuickConnect,
-  }
 }
 
 onMounted(async () => {
@@ -73,15 +68,43 @@ onMounted(async () => {
   }
 })
 
-const dirty = computed(
-  () =>
-    !!snapshot &&
-    (form.launcherEnabled !== snapshot.launcherEnabled ||
-      form.modifiersDisplay !== snapshot.modifiersDisplay ||
-      form.keyName !== snapshot.keyName ||
-      form.showCredentials !== snapshot.showCredentials ||
-      form.allowSaveInfoInQuickConnect !== snapshot.allowSaveInfoInQuickConnect)
+// ---- 自动保存：全量表单 PUT（每次发送时读 form 构造，天然最新），成功静默、失败 toast ----
+const {
+  saving: autoSaving,
+  dispose: disposeAutoSave,
+  saveNow,
+  hasPending,
+} = useAutoSave(
+  async () => {
+    const l = await api.saveLauncherSettings({
+      launcherEnabled: form.launcherEnabled,
+      hotKeyModifiers: form.modifiersDisplay, // 显示形态直发（后端两种形态都接受）
+      hotKeyKey: form.keyName,
+      showCredentials: form.showCredentials,
+      allowSaveInfoInQuickConnect: form.allowSaveInfoInQuickConnect,
+    })
+    if (!hasPending()) applyDto(l) // 归一化回显；飞行中又有变更则跳过（防回弹，见文件头）
+  },
+  {
+    onError: (e) => {
+      if (e?.status === 409) {
+        // 后端语义：配置已保存、热键注册失败——按响应回显已保存值，内联提示冲突
+        conflict.value = true
+        if (e.body?.settings) applyDto(e.body.settings)
+      } else {
+        const detail = e?.body?.errors?.join('; ')
+        message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
+      }
+    },
+  }
 )
+onBeforeUnmount(disposeAutoSave)
+
+// 开关翻转：写表单 + 立即保存全量
+function onSwitch(field, value) {
+  form[field] = value
+  saveNow()
+}
 
 // ---- 热键录制 ----
 const recording = ref(false)
@@ -123,6 +146,8 @@ function onRecordKeydown(e) {
   form.keyName = name
   recording.value = false
   recordInvalid.value = false
+  conflict.value = false
+  saveNow() // 录制成功即保存（写后重注册热键）
 }
 
 function toggleRecording() {
@@ -132,36 +157,6 @@ function toggleRecording() {
 }
 onMounted(() => window.addEventListener('keydown', onRecordKeydown, true))
 onBeforeUnmount(() => window.removeEventListener('keydown', onRecordKeydown, true))
-
-// ---- 保存 ----
-async function save() {
-  if (!dirty.value || saving.value) return
-  saving.value = true
-  conflict.value = false
-  try {
-    applyDto(
-      await api.saveLauncherSettings({
-        launcherEnabled: form.launcherEnabled,
-        hotKeyModifiers: form.modifiersDisplay, // 显示形态直发（后端两种形态都接受）
-        hotKeyKey: form.keyName,
-        showCredentials: form.showCredentials,
-        allowSaveInfoInQuickConnect: form.allowSaveInfoInQuickConnect,
-      })
-    )
-    message.success(t('settings.saved'))
-  } catch (e) {
-    if (e?.status === 409) {
-      // 后端语义：配置已保存、热键注册失败——按响应回显已保存值，内联提示冲突
-      conflict.value = true
-      if (e.body?.settings) applyDto(e.body.settings)
-    } else {
-      const detail = e?.body?.errors?.join('; ')
-      message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
-    }
-  } finally {
-    saving.value = false
-  }
-}
 
 // key = 标签词条后缀（settings.l.*），field = 表单/PUT 载荷字段名（后端域是
 // allowSaveInfoInQuickConnect，而词条键简写为 allowSaveInfo——两者不同，分开声明）
@@ -179,7 +174,12 @@ const SWITCHES = [
       <div class="row">
         <label class="row-label">{{ t('settings.l.enabled') }}</label>
         <div class="row-control">
-          <n-switch size="small" :value="form.launcherEnabled" @update:value="form.launcherEnabled = $event" />
+          <n-switch
+            size="small"
+            :value="form.launcherEnabled"
+            :loading="autoSaving"
+            @update:value="onSwitch('launcherEnabled', $event)"
+          />
         </div>
       </div>
 
@@ -201,15 +201,13 @@ const SWITCHES = [
       <div class="row" v-for="s in SWITCHES" :key="s.key">
         <label class="row-label">{{ t('settings.l.' + s.key) }}</label>
         <div class="row-control">
-          <n-switch size="small" :value="form[s.field]" @update:value="form[s.field] = $event" />
+          <n-switch
+            size="small"
+            :value="form[s.field]"
+            :loading="autoSaving"
+            @update:value="onSwitch(s.field, $event)"
+          />
         </div>
-      </div>
-
-      <div class="actions">
-        <span v-if="dirty" class="dirty">{{ t('settings.dirtyHint') }}</span>
-        <n-button size="small" type="primary" :disabled="!dirty" :loading="saving" @click="save">
-          {{ t('settings.save') }}
-        </n-button>
       </div>
     </template>
   </div>
@@ -285,18 +283,6 @@ const SWITCHES = [
 .hk-conflict {
   margin: 6px 0 0;
   font-size: 0.8846rem;
-  color: var(--warning);
-}
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-}
-.dirty {
-  font-size: 0.9231rem;
   color: var(--warning);
 }
 </style>

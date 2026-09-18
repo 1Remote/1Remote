@@ -132,7 +132,6 @@
   "settings.saved": "Settings saved",
   "settings.saveFailed": "Failed to save settings",
   "settings.verifyCancelled": "Verification cancelled or failed, setting unchanged",
-  "settings.dirtyHint": "Unsaved changes",
   "settings.nav.general": "一般",
   "settings.nav.launcher": "啟動器",
   "settings.nav.data": "資料庫",

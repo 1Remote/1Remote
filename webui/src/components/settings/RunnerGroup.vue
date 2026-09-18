@@ -1,6 +1,7 @@
 <script setup>
 /**
- * 运行器分组（Plan 3 Task 6，spec §6）：GET/PUT /api/settings/runners。
+ * 运行器分组（Plan 3 Task 6，spec §6；fix batch7 Task D #12 全量自动保存）：
+ * GET/PUT /api/settings/runners，改完即存（无保存按钮/dirty 提示）。
  * - 协议页签（6 个：SSH/Telnet/Serial/VNC/SFTP/FTP，键序以 GET 返回为准）× 每协议：
  *   默认运行器下拉（runner 名单）+ runner 卡片列表。
  * - **PascalCase 直通**（有意简化，plan 记录在案）：runners 数组与 GET 原样往返，只字段化编辑
@@ -8,15 +9,18 @@
  *   EnvironmentVariables（KEY=VALUE 行编辑）/ RunWithHosting；内置运行器（InternalDefaultRunner/
  *   PuttyRunner/KittyRunner/Runner）只读展示说明。Name 不开放改名（重命名牵扯 SelectedRunnerName
  *   与宏引用一致性，归桌面端）。
- * - 环境变量用独立文本域编辑（数组直编输入体验差）：载入时 数组→行文本，保存时 行文本→数组
- *   （空行/无 = 的行丢弃）；dirty 判定把两份状态一起序列化比较。
+ * - 环境变量用独立文本域编辑（数组直编输入体验差）：载入时 数组→行文本；PUT 前 行文本→数组
+ *   （空行/无 = 的行丢弃）。
  * - PUT 发送整个 protocols 对象（6 协议全量；后端全量预校验，缺失协议=保持，此处全量最稳）；
- *   响应回读替换本地态，保证 GET→PUT→GET 逐字节稳定。
+ * - 自动保存：下拉/开关立即 PUT；文本输入（ExePath/Arguments/环境变量）debounce 500ms 后 PUT；
+ *   响应回读带 hasPending 守卫——PUT 飞行中用户又输入时不回填（applyState 会整体替换
+ *   protocols/envTexts，防丢字），本地态即真值。
  */
-import { computed, inject, onMounted, reactive, ref } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { api } from '../../api'
+import { useAutoSave } from '../../composables/useAutoSave'
 
 const { t } = useI18n()
 const message = useMessage()
@@ -29,13 +33,9 @@ function shield(show) {
 
 const loading = ref(true)
 const loadError = ref(false)
-const saving = ref(false)
-const protocols = ref(null) // 深拷贝的 GET 状态：{ SSH: { selectedRunnerName, runners: [...] } }
+const protocols = ref(null) // GET 状态：{ SSH: { selectedRunnerName, runners: [...] } }
 const active = ref('') // 当前页签协议键
 const envTexts = reactive({}) // `${proto}:${index}` → 'KEY=VALUE\n…'（外部运行器环境变量行文本）
-
-const stateJson = () => JSON.stringify([protocols.value, envTexts])
-let snapshotJson = ''
 
 const isExternal = (r) => !!r && String(r.$type || '').includes('ExternalRunner')
 
@@ -55,7 +55,6 @@ function applyState(p) {
   const keys = Object.keys(p || {})
   if (!active.value || !keys.includes(active.value)) active.value = keys[0] || ''
   initEnvTexts()
-  snapshotJson = stateJson()
 }
 
 onMounted(async () => {
@@ -71,11 +70,10 @@ onMounted(async () => {
 
 const protocolKeys = computed(() => Object.keys(protocols.value || {}))
 const activeCfg = computed(() => protocols.value?.[active.value] || null)
-const dirty = computed(() => !!protocols.value && stateJson() !== snapshotJson)
 
 const runnerOptions = computed(() => (activeCfg.value?.runners || []).map((r) => ({ value: r.Name, label: r.Name })))
 
-// 行文本 → 数组（保存时同步回 runner 对象）：空行与无 = 的行丢弃；= 后可空
+// 行文本 → 数组（发送前同步回 runner 对象）：空行与无 = 的行丢弃；= 后可空
 function parseEnvText(text) {
   return String(text || '')
     .split(/\r?\n/)
@@ -88,25 +86,54 @@ function parseEnvText(text) {
     .filter(Boolean)
 }
 
-async function save() {
-  if (!dirty.value || saving.value) return
-  saving.value = true
-  try {
-    // 环境变量文本域 → 数组（保存前同步，仅在文本非空或原有条目时写入）
+// ---- 自动保存：PUT 全量 protocols（发送前同步环境变量文本域），成功静默、失败 toast ----
+const {
+  saving: autoSaving,
+  dispose: disposeAutoSave,
+  saveNow,
+  saveDebounced,
+  hasPending,
+} = useAutoSave(
+  async () => {
+    // 环境变量文本域 → 数组（发送前同步，仅在文本非空或原有条目时写入）
     for (const [p, cfg] of Object.entries(protocols.value)) {
       ;(cfg.runners || []).forEach((r, i) => {
         if (isExternal(r)) r.EnvironmentVariables = parseEnvText(envTexts[p + ':' + i])
       })
     }
     const r = await api.saveRunners(protocols.value)
-    applyState(r.protocols || {})
-    message.success(t('settings.saved'))
-  } catch (e) {
-    const detail = e?.body?.errors?.join('; ')
-    message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
-  } finally {
-    saving.value = false
+    // 回读替换本地态保证 GET→PUT→GET 稳定；飞行中又有输入则跳过（防丢字，见文件头）
+    if (!hasPending()) applyState(r.protocols || {})
+  },
+  {
+    onError: (e) => {
+      const detail = e?.body?.errors?.join('; ')
+      message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
+    },
   }
+)
+onBeforeUnmount(disposeAutoSave)
+
+// ---- 控件 handler（写值 + 触发保存；不用模板内联多语句，prettier 折行会破坏表达式） ----
+function onRunnerSelect(name) {
+  activeCfg.value.selectedRunnerName = name
+  saveNow()
+}
+function onExePath(r, v) {
+  r.ExePath = v
+  saveDebounced()
+}
+function onArguments(r, v) {
+  r.Arguments = v
+  saveDebounced()
+}
+function onEnvText(p, i, v) {
+  envTexts[p + ':' + i] = v
+  saveDebounced()
+}
+function onHosting(r, v) {
+  r.RunWithHosting = v
+  saveNow()
 }
 </script>
 
@@ -129,7 +156,7 @@ async function save() {
         </button>
       </div>
 
-      <!-- 默认运行器 -->
+      <!-- 默认运行器：切换即保存 -->
       <div class="sel-row">
         <label>{{ t('settings.r.selected') }}</label>
         <n-select
@@ -138,7 +165,7 @@ async function save() {
           :value="activeCfg.selectedRunnerName"
           :options="runnerOptions"
           @update:show="shield"
-          @update:value="activeCfg.selectedRunnerName = $event"
+          @update:value="onRunnerSelect"
         />
       </div>
 
@@ -159,7 +186,12 @@ async function save() {
           <template v-else>
             <div class="f-row">
               <label>{{ t('editor.f.ExePath') }}</label>
-              <n-input size="small" v-model:value="r.ExePath" :input-props="{ spellcheck: false }" />
+              <n-input
+                size="small"
+                :value="r.ExePath"
+                :input-props="{ spellcheck: false }"
+                @update:value="onExePath(r, $event)"
+              />
             </div>
             <div class="f-row">
               <label>{{ t('settings.r.f.arguments') }}</label>
@@ -167,8 +199,9 @@ async function save() {
                 size="small"
                 type="textarea"
                 :rows="2"
-                v-model:value="r.Arguments"
+                :value="r.Arguments"
                 :input-props="{ spellcheck: false }"
+                @update:value="onArguments(r, $event)"
               />
             </div>
             <div class="f-row">
@@ -181,24 +214,22 @@ async function save() {
                   :value="envTexts[active + ':' + i] ?? ''"
                   :input-props="{ spellcheck: false }"
                   :placeholder="t('settings.r.f.envHint')"
-                  @update:value="envTexts[active + ':' + i] = $event"
+                  @update:value="onEnvText(active, i, $event)"
                 />
                 <p class="f-hint">{{ t('settings.r.f.envHint') }}</p>
               </div>
             </div>
             <div class="f-row">
               <label>{{ t('editor.f.RunWithHosting') }}</label>
-              <n-switch size="small" :value="!!r.RunWithHosting" @update:value="r.RunWithHosting = $event" />
+              <n-switch
+                size="small"
+                :value="!!r.RunWithHosting"
+                :loading="autoSaving"
+                @update:value="onHosting(r, $event)"
+              />
             </div>
           </template>
         </div>
-      </div>
-
-      <div class="actions">
-        <span v-if="dirty" class="dirty">{{ t('settings.dirtyHint') }}</span>
-        <n-button size="small" type="primary" :disabled="!dirty" :loading="saving" @click="save">
-          {{ t('settings.save') }}
-        </n-button>
       </div>
     </template>
   </div>
@@ -310,17 +341,5 @@ async function save() {
   margin: 4px 0 0;
   font-size: 0.8462rem;
   color: var(--text-4);
-}
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-}
-.dirty {
-  font-size: 0.9231rem;
-  color: var(--warning);
 }
 </style>
