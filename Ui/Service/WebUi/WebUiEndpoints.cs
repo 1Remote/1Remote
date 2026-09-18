@@ -37,6 +37,7 @@ namespace _1RM.Service.WebUi
     /// ─ WebUiEndpoints.Settings.cs    —— /api/settings/*（general/verify/launcher/runners/appearance）
     /// ─ WebUiEndpoints.Tags.cs        —— /api/tags*（聚合列表/manage 置顶/rename/delete）
     /// ─ WebUiEndpoints.Aux.cs         —— /api/version、/api/icons*（内置列表/exe 提取）、
+    ///                                     /api/files/pick-exe（exe 路径文件选择器）、
     ///                                     /api/serial/options、/api/ui-state/*（tree/list-order）
     /// </summary>
     public static partial class WebUiEndpoints
@@ -170,6 +171,7 @@ namespace _1RM.Service.WebUi
                                            // POST   /api/tags/rename
                                            // DELETE /api/tags/{name}
             MapIconsExtractFromExe(app); // POST   /api/icons/extract-from-exe
+            MapFilesPickExe(app);        // POST   /api/files/pick-exe（exe 路径文件选择器，batch8 Task D #10）
             MapServersEvents(app);       // GET    /api/events（SSE）
             MapSettingsAppearance(app);  // GET    /api/settings/appearance
                                            // PUT    /api/settings/appearance

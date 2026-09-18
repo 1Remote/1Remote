@@ -10,6 +10,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
 using _1RM.Model;
 using _1RM.Model.Protocol;
@@ -27,6 +28,7 @@ namespace _1RM.Service.WebUi
     /// ─ GET  /api/version               应用与 API 版本 + 构建日期 + 新版本检测状态（update 域）
     /// ─ GET  /api/icons                 内置图标列表（ServerIcons 单例快照）
     /// ─ POST /api/icons/extract-from-exe 从 .exe 提取图标（与 WPF 图标选择器同路径）
+    /// ─ POST /api/files/pick-exe        exe 路径文件选择器（WPF OpenFileDialog，取消 → 404）
     /// ─ GET  /api/serial/options        Serial 编辑器下拉建议（端口/波特率）
     /// ─ GET/PUT /api/ui-state/tree      服务器树状态（展开/排序，本地缓存代理）
     /// ─ GET/POST /api/ui-state/list-order 列表自定义顺序（本地缓存代理）
@@ -128,6 +130,75 @@ namespace _1RM.Service.WebUi
                     return Results.Json(new { error = "failed to extract icon from exe" }, statusCode: 500);
                 }
             });
+        }
+
+        /// <summary>
+        /// pick-exe 弹窗注入点（batch8 Task D #10）：null = 生产实现（STA 线程弹 WPF 文件对话框）；
+        /// 测试注入 stub 以避免真实弹窗（MSTest 宿主弹了也没人关，请求会永久挂起）。
+        /// 须保持 public：Tests 程序集无 InternalsVisibleTo（与 IsConnectable/DeriveConnectionState 同理）。
+        /// 签名 = 现有 ExePath（可为 null/空/无效）→ 选中的 exe 全路径或 null（取消）。
+        /// </summary>
+        public static Func<string?, string?>? PickExePicker = null;
+
+        internal static void MapFilesPickExe(WebApplication app)
+        {
+            // exe 路径文件选择器（batch8 Task D #10）：与 WPF ExternalRunnerSettingsViewModel
+            // .CmdSelectExePath 同一路径——SelectFileHelper.OpenFile(filter:"exe|*.exe",
+            // checkFileExists:true, initialDirectory:现有 ExePath 的目录)。对话框要求 STA
+            // 线程（OpenFileDialog 在 Kestrel 的 MTA 线程上会抛 ThreadStateException），
+            // 故开一次性 STA 线程弹出并同步等待。用户取消 → 404（SelectFileHelper 返回 null，
+            // 与 /api/icons/extract-from-exe 的"未选中/未命中"语义一致）；成功 → {path}。
+            // body.path 可选：仅用于推导初始目录，无效值（空串/无目录部分）静默忽略。
+            app.MapPost("/api/files/pick-exe", (PickExeRequest? body) =>
+            {
+                string? initialDirectory = null;
+                try
+                {
+                    var p = body?.Path?.Trim();
+                    if (!string.IsNullOrEmpty(p))
+                        initialDirectory = Path.GetDirectoryName(p); // 无目录部分（裸文件名）→ null
+                }
+                catch
+                {
+                    // invalid path chars：对话框回退系统默认位置
+                }
+
+                string? picked;
+                var picker = PickExePicker ?? ShowPickExeDialogOnSta;
+                try
+                {
+                    picked = picker(initialDirectory);
+                }
+                catch
+                {
+                    return Results.NotFound(); // 对话框构造失败等：按取消语义 404（SelectFileHelper 内部同款吞异常）
+                }
+                return picked == null
+                    ? Results.NotFound()
+                    : Results.Json(new { path = picked });
+            });
+        }
+
+        /// <summary>
+        /// 生产实现：一次性 STA 线程上弹 OpenFileDialog（Shawn.Utils 的 SelectFileHelper 与
+        /// WPF CmdSelectExePath 完全同参——含 DereferenceLinks/ValidateNames 与 try-catch 吞异常），
+        /// Join 同步等待用户选择后返回。
+        /// </summary>
+        private static string? ShowPickExeDialogOnSta(string? initialDirectory)
+        {
+            string? result = null;
+            var thread = new Thread(() =>
+            {
+                result = SelectFileHelper.OpenFile(
+                    filter: "exe|*.exe",
+                    checkFileExists: true,
+                    initialDirectory: initialDirectory);
+            });
+            thread.IsBackground = true; // 进程退出不被挂起的对话框卡死
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+            return result;
         }
 
         internal static void MapUiStateTree(WebApplication app)
