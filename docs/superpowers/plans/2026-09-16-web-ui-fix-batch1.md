@@ -104,3 +104,16 @@
 - **Task D（设置）**：#12 全设置页自动保存（改即存，去保存按钮/dirty 提示；文本类 debounce 500ms；验证开关/语言已是即存模式统一化）。#10 切日文报错 language resource missing（Interface engine…）——疑后端 WPF LanguageService.SetLanguage 对 ja 资源缺键抛错→PUT 500；修：补 WPF 14 语言缺失键（ja 等缺的 Interface engine desktop/web 键）或后端容错降级警告；查清键来源。#11 关于页排版按 web 风格重排（内容不变，WPF 双栏→web 单列或自适应）。
 - **Task E（运行器）**：#13 Built-in PuTTY 对齐 WPF：主题选择（putty-color-themes，含预览）+字体+字号（读 WPF RunnerSettings/ProtocolConfig VM 结构；ConverterExternalRunner2Vm.cs 是 owner WIP 禁改只读）；其他运行器审计（kitty 等）。#14 运行器添加/删除 UI（内置不可删，外部可增删；后端 /api/settings/runners 全量保存形状核实）。
 - 基线：dotnet 172/2（RdpConfigTests）；npm build 0；i18n 481×14。顺序 A→B→C→D→E，B 可与 A 并行（文件不相交时）。
+
+## 修复批次 8（owner 八次验收，~21 项，2026-09-18）
+
+**纪律新增：locales 是全局争抢点——同一时间只允许一个任务触碰 locale 文件**；顺序串行 A→C→D→E→F→B→G。
+
+- **Task A（主界面）**：#1 Serial 地址列=串口号·波特率（对齐 WPF SubTitle；后端搜索匹配 SubTitle 已有）；#2 **文件夹可勾选**（三态；勾选=含全部子孙服务器；批量导出/编辑按展开集合；"已选 N 台"含子孙数）；#3 搜索 tooltip 与 placeholder 一致（去 Ctrl+K 表述）；#5 全局回车确认审计（新建文件夹/凭据/数据源/运行器/重命名等所有模态输入）。
+- **Task C（编辑器）**：#6 键值行值列 placeholder；#7 补 5 项（AlwaysOpenInNewTabWindow 公共组/连接前后脚本三件/每连接运行器 SelectedRunnerName（选项=该协议运行器清单）/IsAutoAlternateAddressSwitching 入备用连接组/AppArgument Selections 字典编辑器），位置对齐 WPF；#8 批量回读非敏感字段（后端新端点批量返回 askPasswordWhenConnect/inheritedCredentialName/startup 系/rdpFileAdditionalSettings——不含密码；前端共享值变 known）。
+- **Task D（运行器）**：#9 添加按钮移"默认运行器"行右；#10 添加=仅输名称→选项卡内配置；exe 路径文件选择器（原生对话框 API——无则新增后端端点）；选预设程序自动填启动参数/私钥参数；标签改"启动参数（通过密码）/（通过私钥）"；#11 内置运行器 ExePath 只读；#12 RunWithHosting 对齐+补 WPF 解释文本；#13 宏输入 UX（%1RM_*% 宏 chips 点击插入光标处+说明）。
+- **Task E（数据源/凭据库/关于）**：#14 添加按钮移数据源行右对齐；#15 mysql 编辑密码空→后端 PUT 空密码=保持原值语义（不回显明文，sentinel/跳空）；#16 凭据表单去掉 Address/Port（对齐凭据模型 Name/UserName/Password/PrivateKeyPath）；#17 凭据编辑密码空同 #15 语义；#18 关于排版紧凑（logo 与作者同行等）。
+- **Task F（路由 bug+帮助链接）**：#19 设置→改语言→返回→再进设置失效（右键刷新才见）——路由/视图状态调查修复；#20 **WPF 帮助链接全面补齐**：can't find your language?/数据源 ?/mstsc (?) /runner (?)(i) 等——系统 grep WPF xaml 的 Hyperlink 与 (?)/(i) 标记在 webui 覆盖域的清单，逐一移植为可见帮助链接（样式一眼可辨），i18n 从 WPF 移植。
+- **Task B（i18n 语料）**：#4 ja placeholder 英文根因=web 专有键 12 生成语言回落 en——**全量翻译 web 专有键**（以 zh-CN+en-US 为基准译 12 语言，登记 OVERRIDES/直接生成）；映射键（源自 WPF）抽查核对。
+- **Task G（重构轮）**：#21 前端再审查+重构（零功能变化；重点：本两批新增代码——RunnerGroup/BulkEditForm/AboutGroup/文件夹勾选逻辑——清晰度、重复、注释）。
+- 基线：dotnet 181/2；npm build 0；i18n 503×14。
