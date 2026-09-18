@@ -519,5 +519,20 @@
   "settings.r.f.arguments": "Arguments",
   "settings.r.f.env": "Environment variables",
   "settings.r.f.envHint": "One KEY=VALUE per line",
-  "settings.r.loadFailed": "Failed to load runner settings"
+  "settings.r.loadFailed": "Failed to load runner settings",
+"settings.r.add": "Add runner",
+"settings.r.addTitle": "New runner name",
+"settings.r.nameRequired": "Can not be empty!",
+"settings.r.nameExists": "`{name}` is already existed!",
+"settings.r.deleteTitle": "Delete runner",
+"settings.r.deleteConfirm": "Delete runner \"{name}\"? This cannot be undone.",
+"settings.r.internalNoDelete": "Built-in runners can not be deleted.",
+"settings.r.f.theme": "Themes",
+"settings.r.f.font": "Font",
+"settings.r.f.fontSize": "Font size",
+"settings.r.f.charset": "Character set",
+"settings.r.f.argsPrivateKey": "Login with ssh private key",
+"settings.r.f.special": "Special Characters",
+"settings.r.f.specialHint": "Special characters (like @ in username) may have to be encoded using %XX syntax. One KEY=VALUE per line, e.g. @=%40",
+"settings.r.f.macroHint": "Available macros:"
 }

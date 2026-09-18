@@ -49,10 +49,16 @@ namespace _1RM.Service.WebUi
             // 运行器配置（Plan 3 Task 3）：整体往返 ProtocolSettings（含 SelectedRunnerName），
             // runners 数组 PascalCase + $type 直通（与 ProtocolConfigurationService 的 Newtonsoft
             // 持久化同一路径）。GET 6 协议；PUT 缺失协议 = 保持，未知协议键/runners 空 → 400 零写入。
+            // fix batch7 Task E：响应增补 meta（主题/字体/字符集选项域，见 ReadRunnersMeta）——
+            // PUT 请求体忽略该键（RunnersSaveRequest 只取 protocols），响应携带供保存后回填。
             app.MapGet("/api/settings/runners", () =>
             {
                 var pcs = IoC.Get<ProtocolConfigurationService>();
-                return Results.Json(new { protocols = WebUiDataSourceService.ReadRunners(pcs) });
+                return Results.Json(new
+                {
+                    protocols = WebUiDataSourceService.ReadRunners(pcs),
+                    meta = WebUiDataSourceService.ReadRunnersMeta(pcs),
+                });
             });
 
             app.MapPut("/api/settings/runners", (RunnersSaveRequest? body) =>
@@ -61,7 +67,11 @@ namespace _1RM.Service.WebUi
                 var result = WebUiDataSourceService.ApplyRunners(pcs, body?.Protocols);
                 if (!result.IsOk)
                     return Results.BadRequest(new { errors = result.Errors });
-                return Results.Json(new { protocols = WebUiDataSourceService.ReadRunners(pcs) });
+                return Results.Json(new
+                {
+                    protocols = WebUiDataSourceService.ReadRunners(pcs),
+                    meta = WebUiDataSourceService.ReadRunnersMeta(pcs),
+                });
             });
         }
 
