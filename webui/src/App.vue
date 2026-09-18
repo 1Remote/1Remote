@@ -28,7 +28,7 @@ const naiveLocale = computed(() => {
 const { searchQuery, searching } = useServers()
 const searchInput = ref(null)
 
-// Ctrl+F / Cmd+F 全局聚焦搜索框（Ctrl+K 已随 batch9 #1 移除，仅保留 Ctrl+F）：
+// Ctrl+F / Cmd+F 全局聚焦搜索框（快捷键仅此一条，无 Ctrl+K）：
 // keydown 于 window（冒泡），preventDefault 让位浏览器默认（如地址栏搜索 / 页内查找栏）；
 // 再次按下全选已有内容，方便直接覆盖输入。
 // Esc 不在此处理（输入框元素级 handler 焦点在表格时不触发，无法参与统一链序）——

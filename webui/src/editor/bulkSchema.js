@@ -1,5 +1,5 @@
 /**
- * 批量编辑的 schema 视图（batch9 Task C，协议感知批量编辑）——纯函数模块，无 Vue 依赖。
+ * 批量编辑的 schema 视图（协议感知批量编辑）——纯函数模块，无 Vue 依赖。
  *
  * 语义（owner 需求，对齐 WPF 批量编辑）：
  *  - 勾选全为同一协议 P → 批量表单 = PROTOCOLS[P].groups 完整视图（与单机编辑同 schema、

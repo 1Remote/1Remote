@@ -15,7 +15,7 @@
  *   成功后行内展开明文（默认掩码，可切换）+ 30s 倒计时自动隐藏；403 → toast 验证失败；
  *   404 → 静默刷新列表（凭据已被其它端删除/改名）。列表列与 WPF 凭据库表格对齐
  *   （名称/用户名/操作），另加 web 侧引用计数列；WPF 的密码/私钥掩码列由 reveal 行承载。
- * - 编辑模态的密码/私钥路径（batch9 Task D ⑭⑮⑯，"正常行为"对齐）：
+ * - 编辑模态的密码/私钥路径（"正常行为"对齐）：
  *   打开即预填掩码串 MASK（列表无值、不自动 reveal——那会在打开模态时弹验证）；
  *   点 👁 调 reveal（复用行级同一端点与 30s 免验证窗口）回填真实值后可编辑。
  *   保存语义（后端 Update 对两字段 null=保持、空串=清除、非空=新值）：
@@ -95,7 +95,7 @@ const SECRET_MASK = '••••••••'
 const form = reactive({ name: '', userName: '', password: '', privateKeyPath: '' })
 const showPwd = ref(false)
 const saving = ref(false)
-// batch9 Task D ⑭⑮⑯：密码/私钥二选一（展示切换）+ 编辑态掩码 reveal 回填 + 私钥浏览
+// 密码/私钥二选一（展示切换）+ 编辑态掩码 reveal 回填 + 私钥浏览
 const authMode = ref('password') // 'password' | 'key'：仅控制展示哪一侧，保存语义见 save()
 let segTouched = false // 用户手动切换过 segmented 后，reveal 回填不再自动换侧
 const secretsLoaded = ref(false) // 编辑态是否已 reveal 回填明文（此后 👁=普通明文切换）

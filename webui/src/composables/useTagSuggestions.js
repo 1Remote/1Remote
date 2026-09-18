@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { api } from '../api'
 
 /**
- * 标签候选（batch9 #10）：已有标签名列表，供编辑器 Tags 字段的建议 chips。
+ * 标签候选：已有标签名列表，供编辑器 Tags 字段的建议 chips。
  * 对齐 WPF TagsEditor 的 TagsForSelect（ServerEditorPageViewModel.TagSelections =
  * GlobalData.TagList 的名字）——数据源即 GET /api/tags（跨数据源聚合的 TagDto 列表）。
  *

@@ -226,7 +226,7 @@ function onFolderDrop(f, e) {
 
 // ---- 文件夹右键菜单（nf-menu）：
 // - 文件夹行右键 = 新建子文件夹 / 重命名 / 删除——与 SideTree 树右键同一菜单集
-//   （batch9 #3 左右统一；对齐 WPF 树右键能力，动作经 emit 由 ServerListView 的
+//   （列表/树两侧统一；对齐 WPF 树右键能力，动作经 emit 由 ServerListView 的
 //   folderOps 执行）；
 // - 空白处右键 = 在当前层级新建文件夹（无重命名/删除——空白无目标对象；
 //   全部数据源根无确定数据源 → 禁用并提示先选数据源）----
