@@ -45,29 +45,17 @@ namespace _1RM.Service.WebUi
     public sealed class BatchPeekResult
     {
         public EditorSaveStatus Status { get; private init; }
-        /// <summary>Ok 时的逐台回读载荷（camelCase 列表 DTO 域）。</summary>
-        public List<BatchPeekItem> Items { get; private init; } = new();
+        /// <summary>
+        /// Ok 时的逐台回读载荷：{id} + 非 allow-list 敏感/DTO 覆盖键的 camelCase 值表
+        /// （键 = patch 键，与 BatchPatchFieldMap 同源派生，见 WebUiEditorService.PeekBatch）。
+        /// </summary>
+        public List<Dictionary<string, object?>> Items { get; private init; } = new();
         /// <summary>BadRequest 时的错误列表。</summary>
         public List<string> Errors { get; private init; } = new();
 
-        public static BatchPeekResult Ok(List<BatchPeekItem> items) => new() { Status = EditorSaveStatus.Ok, Items = items };
+        public static BatchPeekResult Ok(List<Dictionary<string, object?>> items) => new() { Status = EditorSaveStatus.Ok, Items = items };
         public static BatchPeekResult BadRequest(List<string> errors) => new() { Status = EditorSaveStatus.BadRequest, Errors = errors };
         public static BatchPeekResult NotFound() => new() { Status = EditorSaveStatus.NotFound };
-    }
-
-    /// <summary>
-    /// 批量回读的单台载荷：仅非敏感字段（安全论证见 WebUiEditorService.PeekBatch 注释——
-    /// 不含 password/privateKey 等任何加密属性；协议不适用字段为 null）。
-    /// 属性名 PascalCase（C# 惯例），端点经 Results.Json 的 Web 默认 camelCase 策略输出。
-    /// </summary>
-    public sealed class BatchPeekItem
-    {
-        public string Id { get; set; } = string.Empty;
-        public bool? AskPasswordWhenConnect { get; set; }
-        public string? InheritedCredentialName { get; set; }
-        public string? StartupAutoCommand { get; set; }
-        public string? StartupPath { get; set; }
-        public string? RdpFileAdditionalSettings { get; set; }
     }
 
     /// <summary>
@@ -194,34 +182,106 @@ namespace _1RM.Service.WebUi
         /// 批量 patch 的字段 allow-list：camelCase patch 键（列表 DTO 域）→ C# PascalCase 属性名。
         /// 显式枚举、逐项核对过真实属性名——不盲目反射任意键（未知键 400 列出，防静默丢弃）。
         /// 键匹配大小写不敏感（camelCase 为规范形式，PascalCase 亦接受）。
-        /// 注意 startupAutoCommand（SSH/Telnet/Serial）、startupPath（FTP/SFTP）、
-        /// rdpFileAdditionalSettings（RDP/RdpApp）并非所有协议都有——属性不存在时按台 400（见 ApplyBatchPatch）。
+        ///
+        /// 覆盖范围（batch9 Task C，协议感知批量编辑）：编辑器 json 域可安全批量写的全部
+        /// <b>标量</b>字段——对照 webui/src/editor/schemas.js 的字段清单逐层展开（枚举/文本/
+        /// 数字/开关均可批量写，值经 ApplyPatchToServer 的反射类型门校验）。协议差异由
+        /// 「属性不在该协议类型上 → 按台 400」兜底（见 ApplyBatchPatch），前端按所选协议的
+        /// schema 交集渲染、不会发出不适用键。
+        /// 有意不进 allow-list 的（与 WPF 批量编辑哨兵机制同类限制，子表单/深层结构无法用
+        /// 单值表达）：alternateCredentials/argumentList/treeNodes（BatchPatchDeepFields
+        /// 400 引导单机编辑）。
         /// </summary>
         private static readonly Dictionary<string, string> BatchPatchFieldMap = new(System.StringComparer.OrdinalIgnoreCase)
         {
-            // ProtocolBase 层
+            // ---- ProtocolBase 层（全协议共有）----
             ["displayName"] = nameof(ProtocolBase.DisplayName),
             ["note"] = nameof(ProtocolBase.Note),
             ["tags"] = nameof(ProtocolBase.Tags),                       // List<string>，显式覆盖语义（非 WPF 交集合并，Plan 2 有意偏差）
             ["colorHex"] = nameof(ProtocolBase.ColorHex),
             ["iconBase64"] = nameof(ProtocolBase.IconBase64),
-            // ProtocolBaseWithAddressPort 层
+            ["alwaysOpenInNewTabWindow"] = nameof(ProtocolBase.AlwaysOpenInNewTabWindow), // bool?
+            ["commandBeforeConnected"] = nameof(ProtocolBase.CommandBeforeConnected),
+            ["hideCommandBeforeConnectedWindow"] = nameof(ProtocolBase.HideCommandBeforeConnectedWindow), // bool
+            ["commandAfterDisconnected"] = nameof(ProtocolBase.CommandAfterDisconnected),
+            ["selectedRunnerName"] = nameof(ProtocolBase.SelectedRunnerName), // ''=跟随全局；运行器名按协议解析
+            // ---- ProtocolBaseWithAddressPort 层（Serial 只继承 ProtocolBase，不含这些键）----
             ["address"] = nameof(ProtocolBaseWithAddressPort.Address),
             ["port"] = nameof(ProtocolBaseWithAddressPort.Port),
-            // ProtocolBaseWithAddressPortUserPwd 层；password 为明文，加密由 DataSourceBase 保存时完成
+            ["isPingBeforeConnect"] = nameof(ProtocolBaseWithAddressPort.IsPingBeforeConnect), // bool?
+            ["isAutoAlternateAddressSwitching"] = nameof(ProtocolBaseWithAddressPort.IsAutoAlternateAddressSwitching), // bool?
+            // ---- ProtocolBaseWithAddressPortUserPwd 层（Telnet/Serial 不含）；password/gatewayPassword/privateKey
+            //      为明文，加密由 DataSourceBase 保存时完成（EncryptToDatabaseLevel：Password 全系、
+            //      SSH.PrivateKey、RDP.GatewayPassword）----
             ["userName"] = nameof(ProtocolBaseWithAddressPortUserPwd.UserName),
             ["password"] = nameof(ProtocolBaseWithAddressPortUserPwd.Password),
             ["inheritedCredentialName"] = nameof(ProtocolBaseWithAddressPortUserPwd.InheritedCredentialName),
             ["askPasswordWhenConnect"] = nameof(ProtocolBaseWithAddressPortUserPwd.AskPasswordWhenConnect), // bool?
-            // 协议专属（见上方注释：非全协议共有）
-            ["startupAutoCommand"] = nameof(SSH.StartupAutoCommand),
-            ["startupPath"] = nameof(SFTP.StartupPath),
+            ["usePrivateKeyForConnect"] = nameof(ProtocolBaseWithAddressPortUserPwd.UsePrivateKeyForConnect), // bool?
+            ["privateKey"] = nameof(ProtocolBaseWithAddressPortUserPwd.PrivateKey),
+            // ---- RDP（RdpApp 无这些键）----
+            ["isAdministrativePurposes"] = nameof(RDP.IsAdministrativePurposes),       // bool?
+            ["domain"] = nameof(RDP.Domain),
+            ["loadBalanceInfo"] = nameof(RDP.LoadBalanceInfo),
+            ["rdpFullScreenFlag"] = nameof(RDP.RdpFullScreenFlag),                     // ERdpFullScreenFlag?
+            ["isConnWithFullScreen"] = nameof(RDP.IsConnWithFullScreen),               // bool?
+            ["isFullScreenWithConnectionBar"] = nameof(RDP.IsFullScreenWithConnectionBar), // bool?
+            ["isPinTheConnectionBarByDefault"] = nameof(RDP.IsPinTheConnectionBarByDefault), // bool?
+            ["rdpWindowResizeMode"] = nameof(RDP.RdpWindowResizeMode),                 // ERdpWindowResizeMode?
+            ["rdpWidth"] = nameof(RDP.RdpWidth),                                       // int?
+            ["rdpHeight"] = nameof(RDP.RdpHeight),                                     // int?
+            ["isScaleFactorFollowSystem"] = nameof(RDP.IsScaleFactorFollowSystem),     // bool?
+            ["scaleFactorCustomValue"] = nameof(RDP.ScaleFactorCustomValue),           // uint?（setter 钳制 100-300）
+            ["displayPerformance"] = nameof(RDP.DisplayPerformance),                   // EDisplayPerformance?
+            ["enableClipboard"] = nameof(RDP.EnableClipboard),                         // bool?
+            ["enableKeyCombinations"] = nameof(RDP.EnableKeyCombinations),             // bool?
+            ["enableAudioCapture"] = nameof(RDP.EnableAudioCapture),                   // bool?
+            ["enablePorts"] = nameof(RDP.EnablePorts),                                 // bool?
+            ["enablePrinters"] = nameof(RDP.EnablePrinters),                           // bool?
+            ["enableSmartCardsAndWinHello"] = nameof(RDP.EnableSmartCardsAndWinHello), // bool?
+            ["enableDiskDrives"] = nameof(RDP.EnableDiskDrives),                       // bool?
+            ["enableRedirectDrivesPlugIn"] = nameof(RDP.EnableRedirectDrivesPlugIn),   // bool?
+            ["enableRedirectCameras"] = nameof(RDP.EnableRedirectCameras),             // bool?
+            ["mstscModeEnabled"] = nameof(RDP.MstscModeEnabled),                       // bool
+            ["rdpControlAdditionalSettings"] = nameof(RDP.RdpControlAdditionalSettings), // WPF 行式 "key:type:value" 文本
+            ["gatewayMode"] = nameof(RDP.GatewayMode),                                 // EGatewayMode?
+            ["gatewayHostName"] = nameof(RDP.GatewayHostName),
+            ["gatewayLogonMethod"] = nameof(RDP.GatewayLogonMethod),                   // EGatewayLogonMethod?
+            ["gatewayUserName"] = nameof(RDP.GatewayUserName),
+            ["gatewayPassword"] = nameof(RDP.GatewayPassword),
+            // ---- RDP + RdpApp 共有（音频两枚举复用 RDP.cs 的同一类型）----
+            ["audioRedirectionMode"] = nameof(RDP.AudioRedirectionMode),              // EAudioRedirectionMode?
+            ["audioQualityMode"] = nameof(RDP.AudioQualityMode),                      // EAudioQualityMode?
             ["rdpFileAdditionalSettings"] = nameof(RDP.RdpFileAdditionalSettings),
+            // ---- SSH / Telnet / Serial ----
+            ["sshVersion"] = nameof(SSH.SshVersion),                                   // int?（仅 SSH）
+            ["startupAutoCommand"] = nameof(SSH.StartupAutoCommand),                  // SSH/Telnet/Serial
+            ["openSftpOnConnected"] = nameof(SSH.OpenSftpOnConnected),                // bool（仅 SSH）
+            ["externalKittySessionConfigPath"] = nameof(SSH.ExternalKittySessionConfigPath), // SSH/Serial
+            // ---- SFTP / FTP ----
+            ["startupPath"] = nameof(SFTP.StartupPath),
+            // ---- VNC ----
+            ["vncWindowResizeMode"] = nameof(VNC.VncWindowResizeMode),                 // EVncWindowResizeMode?
+            // ---- Serial（C# string 属性，非枚举：值 = 集合字符串原文）----
+            ["serialPort"] = nameof(Serial.SerialPort),
+            ["bitRate"] = nameof(Serial.BitRate),
+            ["dataBits"] = nameof(Serial.DataBits),
+            ["stopBits"] = nameof(Serial.StopBits),
+            ["parity"] = nameof(Serial.Parity),
+            ["flowControl"] = nameof(Serial.FlowControl),
+            // ---- RemoteApp（RdpApp）----
+            ["remoteApplicationName"] = nameof(RdpApp.RemoteApplicationName),
+            ["remoteApplicationProgram"] = nameof(RdpApp.RemoteApplicationProgram),
+            // ---- APP（LocalApp）----
+            ["exePath"] = nameof(LocalApp.ExePath),
+            ["runWithHosting"] = nameof(LocalApp.RunWithHosting),                      // bool
+            ["appProtocolDisplayName"] = nameof(LocalApp.AppProtocolDisplayName),
         };
 
         /// <summary>
-        /// 有意不进 allow-list 的深层/子表单字段（Plan 2 简化）：批量编辑只支持扁平字段，
-        /// 子表单（备用凭据、参数表）走单机编辑 PUT /api/servers/{id}。命中即 400 并附引导消息。
+        /// 有意不进 allow-list 的深层/子表单字段（与 WPF 批量编辑哨兵机制同类限制）：
+        /// 批量编辑只支持扁平标量字段，子表单（备用凭据、参数表）与文件夹归属走单机编辑
+        /// PUT /api/servers/{id}。命中即 400 并附引导消息。
         /// </summary>
         private static readonly HashSet<string> BatchPatchDeepFields = new(System.StringComparer.OrdinalIgnoreCase)
         {
@@ -322,8 +382,10 @@ namespace _1RM.Service.WebUi
         /// <summary>
         /// 将 patch 的各字段应用到克隆对象：经 allow-list 取 PascalCase 属性名 → 反射定位
         /// （属性可能不在该协议类型上，如 RDP 无 StartupPath → 报错由调用方聚合）→
-        /// Newtonsoft 按属性类型转换 JSON 值（string/bool?/List&lt;string&gt;）→ 走 C# 属性 setter
-        /// （与 WPF 编辑器同一语义：含 Password/PrivateKey 互斥清空、Tags 去重排序等副作用）。
+        /// JSON 类型门（bool←Boolean、int/枚举←Integer、string←String、List&lt;string&gt;←Array，
+        /// 见 ExpectedJsonType；防字符串数字/浮点等隐式转换静默改值）→ Newtonsoft 按属性
+        /// 类型转换 → 走 C# 属性 setter（与 WPF 编辑器同一语义：含 Password/PrivateKey
+        /// 互斥清空、Tags 去重排序等副作用）。
         /// 返回该台的错误列表（空=全部应用成功）。
         /// </summary>
         private static List<string> ApplyPatchToServer(ProtocolBase server, JObject patch)
@@ -348,6 +410,17 @@ namespace _1RM.Service.WebUi
                     continue;
                 }
 
+                // 反射类型门（batch9 Task C）：allow-list 扩到全 schema 标量后，值类型必须与
+                // 属性声明的 CLR 类型严格同形——bool 字段收 Boolean、int/枚举收 Integer、
+                // string 收 String。 Newtonsoft 的 ToObject 本可隐式转换（"true"→bool、12.5→int?），
+                // 静默改值违背「所见即所写」，这里先行拒绝并给出可读错误。
+                var expected = ExpectedJsonType(property.PropertyType);
+                if (expected != null && prop.Value.Type != expected)
+                {
+                    errors.Add($"patch field '{prop.Name}' expects a {expected} value (property '{propertyName}' is {property.PropertyType.Name}), got {prop.Value.Type}");
+                    continue;
+                }
+
                 object? converted;
                 try
                 {
@@ -364,19 +437,53 @@ namespace _1RM.Service.WebUi
         }
 
         /// <summary>
-        /// POST /api/servers/batch/peek：批量编辑的共享值回读（fix batch8 #8）。
-        /// 出参逐台固定 6 键（camelCase 列表 DTO 域）：id + 批量表单中列表 DTO 不携带、
-        /// 历来只能「覆盖」的 5 个非敏感字段（askPasswordWhenConnect / inheritedCredentialName /
-        /// startupAutoCommand / startupPath / rdpFileAdditionalSettings；属性不存在于该协议
-        /// 类型时为 null，如 RDP 无 StartupPath）。
+        /// 属性 CLR 类型 → patch 值应使用的 JSON 类型（类型门的映射表）。
+        /// Nullable 先解包；allow-list 内的类型全覆盖（string/bool/int/uint/枚举/List&lt;string&gt;），
+        /// 未来出现未收录类型返回 null（门放行、交给 ToObject 的转换异常兜底）。
+        /// </summary>
+        private static JTokenType? ExpectedJsonType(Type propertyType)
+        {
+            var t = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+            if (t == typeof(bool)) return JTokenType.Boolean;
+            if (t == typeof(int) || t == typeof(uint) || t == typeof(long) || t == typeof(short) || t == typeof(byte)) return JTokenType.Integer;
+            if (t == typeof(string)) return JTokenType.String;
+            if (t.IsEnum) return JTokenType.Integer; // 编辑器 json 域惯例：Newtonsoft 把枚举序列化为整数
+            if (t == typeof(List<string>)) return JTokenType.Array;
+            return null;
+        }
+
+        /// <summary>批量回读绝不输出的加密/敏感键（patch 键域）：列表接口同样不回读。</summary>
+        private static readonly HashSet<string> BatchPeekSensitiveKeys = new(System.StringComparer.OrdinalIgnoreCase)
+        {
+            "password",
+            "privateKey",   // SSH.PrivateKey 是密文（EncryptToDatabaseLevel），且明文也属敏感
+            "gatewayPassword", // RDP.GatewayPassword 同上
+        };
+
+        /// <summary>
+        /// 批量回读跳过的列表 DTO 已覆盖键（patch 键域）：displayName/note/tags/colorHex/
+        /// iconBase64/address/port/userName 已由 GET /api/servers 的 ServerDto 携带——前端
+        /// 优先用列表 DTO 计算共享值，peek 不重复传输（iconBase64 尤其重，50 台会显著放大载荷）。
+        /// </summary>
+        private static readonly HashSet<string> BatchPeekListDtoCoveredKeys = new(System.StringComparer.OrdinalIgnoreCase)
+        {
+            "displayName", "note", "tags", "colorHex", "iconBase64", "address", "port", "userName",
+        };
+
+        /// <summary>
+        /// POST /api/servers/batch/peek：批量编辑的共享值回读（fix batch8 #8；batch9 Task C
+        /// 随 allow-list 扩展为全 schema 标量键）。出参逐台 {id, ...camelCase: value}——键集
+        /// 从 BatchPatchFieldMap 同源派生（扣敏感键与列表 DTO 已覆盖键），前端批量表单按
+        /// 协议 schema 渲染后逐字段比对共享值；协议不适用字段为 null（如 RDP 无 StartupPath）。
         ///
         /// 安全论证（本端点绝不返回加密字段）：
-        ///  - 六个键中无 password/privateKey 类加密属性——AskPasswordWhenConnect 是 bool?、
-        ///    InheritedCredentialName 是凭据库条目名引用（非机密，列表编辑器本就展示）、
-        ///    其余三个是纯文本命令/路径/rdp 附加行；
+        ///  - BatchPeekSensitiveKeys 三键（password/privateKey/gatewayPassword）是全部加密点
+        ///    （DataService.EncryptToDatabaseLevel：Password 全系 + SSH.PrivateKey +
+        ///    RDP.GatewayPassword；AlternateCredentials/ArgumentList 属子表单不在 allow-list），
+        ///    派生时即剔除——键都不出现，而非值置空；
+        ///  - 其余键均非机密（枚举/开关/命令文本/路径/凭据库条目名引用——列表编辑器本就展示）；
         ///  - 因此无需克隆+解密（GetEditableConfig 的明文纪律是为 password 类字段设立的），
-        ///    直接读 VmItemList 缓存对象即可——缓存是加密态，但本方法不触碰任何加密属性，
-        ///    也不存在"读出即解密"的属性（解密只发生在 DecryptToConnectLevel 显式调用）；
+        ///    直接读 VmItemList 缓存对象即可——缓存是加密态，但本方法不触碰任何加密属性；
         ///  - 只读端点：无任何写入路径，不克隆不落库（反射只 GetProperty+GetValue）。
         /// 错误语义与 batch 补丁对齐：ids 空/缺失 → BadRequest；未知数据源 → BadRequest；
         /// 任一 id 不存在/不可编辑 → NotFound（整批拒绝，前端回退到「未回读」占位）。
@@ -404,14 +511,16 @@ namespace _1RM.Service.WebUi
                 }
             }
 
-            var items = vms.Select(vm => new BatchPeekItem
+            var items = vms.Select(vm =>
             {
-                Id = vm.Server.Id,
-                AskPasswordWhenConnect = (bool?)ReadProperty(vm.Server, nameof(ProtocolBaseWithAddressPortUserPwd.AskPasswordWhenConnect)),
-                InheritedCredentialName = (string?)ReadProperty(vm.Server, nameof(ProtocolBaseWithAddressPortUserPwd.InheritedCredentialName)),
-                StartupAutoCommand = (string?)ReadProperty(vm.Server, nameof(SSH.StartupAutoCommand)),
-                StartupPath = (string?)ReadProperty(vm.Server, nameof(SFTP.StartupPath)),
-                RdpFileAdditionalSettings = (string?)ReadProperty(vm.Server, nameof(RDP.RdpFileAdditionalSettings)),
+                var item = new Dictionary<string, object?> { ["id"] = vm.Server.Id };
+                foreach (var (patchKey, propertyName) in BatchPatchFieldMap)
+                {
+                    if (BatchPeekSensitiveKeys.Contains(patchKey) || BatchPeekListDtoCoveredKeys.Contains(patchKey))
+                        continue;
+                    item[patchKey] = ReadProperty(vm.Server, propertyName);
+                }
+                return item;
             }).ToList();
             return BatchPeekResult.Ok(items);
         }
