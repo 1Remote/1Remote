@@ -288,6 +288,49 @@ namespace Tests.Service.WebUi
                 "凭据更新后引用服务器的 UserName 应被事务联动刷新");
         }
 
+        /// <summary>
+        /// fix batch8 Task E #17：空密码=保持原值。列表/编辑 API 不回显 Password/PrivateKeyPath
+        /// 明文（安全红线），web 编辑表单无从预填——空提交必须沿用原值，否则任何一次不改密的
+        /// 编辑都会静默清空密钥。对照：非空密码 PUT 正常更新。校验走 GetCredentials(true)
+        /// 强制重读库（密文态）后克隆解密比对明文（与 reveal 同款），缓存不落明文。
+        /// </summary>
+        [TestMethod]
+        public async Task Update_EmptyPasswordAndKey_KeepOriginals_NonEmptyUpdates()
+        {
+            var name = NewName("cred-keep");
+            var pw1 = "pw-keep-" + Guid.NewGuid().ToString("N").Substring(0, 6);
+            var key1 = "C:/keys/keep-" + Guid.NewGuid().ToString("N").Substring(0, 6);
+            Assert.AreEqual(HttpStatusCode.OK,
+                (await PostCredentialAsync(name, password: pw1, privateKeyPath: key1)).StatusCode);
+
+            // 空密码/空私钥 PUT：非加密字段正常更新，加密字段保持原值
+            var resp = await PutCredentialAsync(name, name, userName: "user-keep", password: "", privateKeyPath: "");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode, await resp.Content.ReadAsStringAsync());
+
+            var local = _1RM.IoC.Get<DataSourceService>().LocalDataSource;
+            Assert.IsNotNull(local);
+            var cached = local.GetCredentials(true).First(x => x.Name == name);
+            Assert.AreNotEqual(pw1, cached.Password, "库内/缓存必须保持加密态");
+            var clone = cached.CloneMe();
+            clone.DecryptToConnectLevel();
+            Assert.AreEqual(pw1, clone.Password, "空密码 PUT 必须保持原密码");
+            Assert.AreEqual(key1, clone.PrivateKeyPath, "空私钥路径 PUT 必须保持原路径（表单同样不回显）");
+            Assert.AreEqual("user-keep", cached.UserName, "非加密字段应正常更新");
+
+            // 对照：非空密码 PUT 更新（私钥留空仍保持）
+            var pw2 = "pw-new-" + Guid.NewGuid().ToString("N").Substring(0, 6);
+            resp = await PutCredentialAsync(name, name, userName: "user-keep2", password: pw2);
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode, await resp.Content.ReadAsStringAsync());
+
+            cached = local.GetCredentials(true).First(x => x.Name == name);
+            Assert.AreNotEqual(pw2, cached.Password, "更新后库内仍须为密文");
+            var clone2 = cached.CloneMe();
+            clone2.DecryptToConnectLevel();
+            Assert.AreEqual(pw2, clone2.Password, "非空密码 PUT 应更新密码");
+            Assert.AreEqual(key1, clone2.PrivateKeyPath, "未提及的私钥路径保持原值");
+            Assert.AreEqual("user-keep2", cached.UserName);
+        }
+
         // ------------------------------------------------------------------
         // DELETE 联动
         // ------------------------------------------------------------------

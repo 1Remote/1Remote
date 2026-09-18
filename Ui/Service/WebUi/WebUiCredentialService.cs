@@ -121,9 +121,16 @@ namespace _1RM.Service.WebUi
         }
 
         /// <summary>
-        /// PUT /api/credentials/{name}：按名寻址整体替换（与 WPF 凭据编辑一致；空字段=清空，非“保持不变”）。
+        /// PUT /api/credentials/{name}：按名寻址整体替换（与 WPF 凭据编辑一致）。
         /// nameBefore=路由名驱动引用服务器的联动改名/字段同步（Dapper 事务内完成）。
         /// 重命名目标名做与新建相同的非空/长度/唯一校验（排除自身原名）。
+        /// Password/PrivateKeyPath 空=保持原值（fix batch8 Task E #17）：两者为加密字段，
+        /// 列表/编辑 API 均不回显明文（安全红线），web 编辑表单无从预填——空提交必须沿用
+        /// 原值，否则任何一次不改密的编辑都会静默清空密钥（与 reveal 并存不冲突：reveal
+        /// 是显式验证后的明文查看，编辑空=保持）。原缓存为加密态，先克隆再解密取明文
+        /// （与 reveal 同款，不原地解密污染缓存）；Database_UpdateCredential 内部会再次
+        /// 克隆+加密，明文入参与调用方直传语义一致。Address/Port 无需同款处理：凭据库
+        /// 不使用这两个字段（Dapper UpdateCredential 落库前本就强制清空）。
         /// </summary>
         public static EditorSaveResult Update(string dataSourceName, string nameBefore, CredentialInputDto? input)
         {
@@ -143,14 +150,19 @@ namespace _1RM.Service.WebUi
             if (errors.Count > 0)
                 return EditorSaveResult.BadRequest(errors);
 
+            // 空=保持的明文回退源（加密缓存 → 克隆解密，不污染缓存）
+            var orgPlaintext = org.CloneMe();
+            orgPlaintext.DecryptToConnectLevel();
+
             var updated = new Credential
             {
                 Name = name,
                 Address = input?.Address?.Trim() ?? string.Empty,
                 Port = input?.Port?.Trim() ?? string.Empty,
                 UserName = input?.UserName?.Trim() ?? string.Empty,
-                Password = input?.Password ?? string.Empty,           // 明文入，方法内加密
-                PrivateKeyPath = input?.PrivateKeyPath?.Trim() ?? string.Empty,
+                // 空=保持原值（见方法注释）；非空明文入，方法内加密落库
+                Password = string.IsNullOrEmpty(input?.Password) ? orgPlaintext.Password : input!.Password!,
+                PrivateKeyPath = string.IsNullOrEmpty(input?.PrivateKeyPath) ? orgPlaintext.PrivateKeyPath : input!.PrivateKeyPath!.Trim(),
             };
             // Dapper 按 Id 定位更新行（WHERE Id=@Id），须沿用原凭据的 DatabaseId
             updated.DatabaseId = org.DatabaseId;

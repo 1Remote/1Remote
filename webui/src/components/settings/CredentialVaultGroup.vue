@@ -10,7 +10,8 @@
  *   成功后行内展开明文（默认掩码，可切换）+ 30s 倒计时自动隐藏；403 → toast 验证失败；
  *   404 → 静默刷新列表（凭据已被其它端删除/改名）。
  * - 编辑模态的密码/私钥路径不可预填（列表无值、reveal 有 30s 窗口与验证成本）——后端 PUT
- *   是整体替换语义（空=清空，与 WPF 编辑器一致），表单显式提示这一点（cv.passwordClearHint）。
+ *   对这两个加密字段为"空=保持原值"语义（batch8 Task E #17：明文不回显，空提交沿用原值），
+ *   输入框以 placeholder 注明（settings.ph.keepCurrent）。
  * - 模态的 Esc：捕获阶段截停（与 IconPicker 同款）——SettingsView 的 window 级 Esc 返回链
  *   不应因"关模态"误触导航；n-select 的展开计数走 settingsEscShield（与 GeneralGroup 同款）。
  */
@@ -305,7 +306,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
       </div>
     </template>
 
-    <!-- 新建/编辑模态：Name 必填；密码眼睛切换；编辑态提示“空=清空”整体替换语义 -->
+    <!-- 新建/编辑模态：Name 必填；密码眼睛切换；编辑态密码/私钥路径留空=保持原值（placeholder 注明） -->
     <n-modal
       v-model:show="showEdit"
       preset="card"
@@ -338,6 +339,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
             size="small"
             :type="showPwd ? 'text' : 'password'"
             v-model:value="form.password"
+            :placeholder="editing?.mode === 'edit' ? t('settings.ph.keepCurrent') : undefined"
             :input-props="{ spellcheck: false }"
           >
             <template #suffix>
@@ -354,9 +356,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
         </div>
         <div class="f-row">
           <label>{{ t('editor.f.PrivateKeyPath') }}</label>
-          <n-input size="small" v-model:value="form.privateKeyPath" :input-props="{ spellcheck: false }" />
+          <n-input
+            size="small"
+            v-model:value="form.privateKeyPath"
+            :placeholder="editing?.mode === 'edit' ? t('settings.ph.keepCurrent') : undefined"
+            :input-props="{ spellcheck: false }"
+          />
         </div>
-        <p v-if="editing?.mode === 'edit'" class="clear-hint">{{ t('cv.passwordClearHint') }}</p>
       </div>
       <template #footer>
         <div class="modal-actions">
@@ -559,11 +565,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 .f-row label {
   font-size: 0.9615rem;
   color: var(--text-2);
-}
-.clear-hint {
-  margin: 2px 0 0;
-  font-size: 0.8846rem;
-  color: var(--warning);
 }
 .eye {
   border: none;

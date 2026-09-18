@@ -264,7 +264,10 @@ namespace _1RM.Service.WebUi
     /// POST/PUT /api/credentials 请求体。ds 仅 POST 使用（PUT/DELETE/reveal 经 ?ds= 查询参数）。
     /// credential 域字段与 WPF Credential 模型一致（PascalCase，绑定大小写不敏感）；
     /// Password/PrivateKeyPath 为明文——加密由 DataSourceBase.Database_Insert/UpdateCredential
-    /// 在内部克隆上完成；PUT 为整体替换语义（空字段=清空，与 WPF 编辑弹窗一致，非“保持不变”）。
+    /// 在内部克隆上完成。PUT 语义（fix batch8 Task E #17）：Password/PrivateKeyPath 空=保持
+    /// 原值（列表/编辑 API 不回显明文，web 表单无从预填）；其余字段整体替换（空=清空）。
+    /// Address/Port 为 API 兼容保留——凭据库表单已对齐 WPF 凭据库弹窗（showHost:false）
+    /// 不再提交这两项，且 Dapper UpdateCredential 落库前本就强制清空（vault 不使用）。
     /// </summary>
     public class CredentialSaveRequest
     {
@@ -275,8 +278,8 @@ namespace _1RM.Service.WebUi
     public class CredentialInputDto
     {
         public string? Name { get; set; }
-        public string? Address { get; set; }
-        public string? Port { get; set; }
+        public string? Address { get; set; }        // API 兼容保留（web 表单不提交，落库前被清空）
+        public string? Port { get; set; }           // 同上
         public string? UserName { get; set; }
         public string? Password { get; set; }
         public string? PrivateKeyPath { get; set; }
