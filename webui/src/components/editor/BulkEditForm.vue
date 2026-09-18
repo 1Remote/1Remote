@@ -3,11 +3,17 @@
  * 批量编辑表单（自 EditorDrawer 拆出，仅在抽屉 mode='bulk' 时挂载）：BULK_FIELDS
  * 扁平列表 + 逐字段「保持不变 / 覆盖」切换，不含抽屉骨架/头部/底部按钮（留在 EditorDrawer）。
  *
- * 数据来源（不加载单台 config）：共享值由父级传入的列表 DTO（camelCase 域，bulkServers）
- * 逐字段计算——全同 → 只读展示；不同 →「N 台各不相同」；列表 DTO 无此字段 → 未回读
- * 提示（敏感字段与普通未携带字段文案分叉，见 bulkUnknownKey）。每字段默认「保持不变」
- *（不进 patch），点「覆盖」后从共享值（已知且全同）或空值起编辑；保存 =
- * diffPatch(共享初值, 当前值) 仅取被覆盖字段 → POST /api/servers/batch
+ * 数据来源（两路合并）：
+ *  - 列表 DTO（camelCase 域，bulkServers prop）：dtoKey 字段的共享值逐字段计算——全同 →
+ *    只读展示；不同 →「N 台各不相同」；
+ *  - peek 回读（batch8 #8，挂载时 POST /api/servers/batch/peek）：dtoKey=null 且非敏感的
+ *    五键（inheritedCredentialName/askPasswordWhenConnect/startupAutoCommand/startupPath/
+ *    rdpFileAdditionalSettings）由 peek 补齐 known——同样参与共享值展示与「覆盖」初值；
+ *    勾选 ≤50 台才回读（防大库风暴，>50 维持「未回读」提示），失败静默退化（字段回到
+ *    未回读占位，不阻断表单）。password 例外：敏感字段永不回读（bulkSensitive 文案不变）。
+ *
+ * 每字段默认「保持不变」（不进 patch），点「覆盖」后从共享值（已知且全同）或空值起编辑；
+ * 保存 = diffPatch(共享初值, 当前值) 仅取被覆盖字段 → POST /api/servers/batch
  *（patch 键 camelCase，缺失 = 保持不变）。表单字段限于后端 BatchPatchFieldMap 的
  * allow-list（schemas.js BULK_FIELDS），深层/子表单字段不参与批量。
  *
@@ -19,7 +25,7 @@
  *  - saving / dirty（有字段处于覆盖态即脏）/ dsMixed（跨数据源勾选禁存）经 defineExpose
  *    暴露，抽屉的底部按钮禁用态与 Esc 关闭的脏确认经模板 ref 响应式读取。
  */
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import FormField from './FormField.vue'
@@ -43,15 +49,43 @@ const saving = ref(false)
 const saveErrors = ref([]) // 服务端 400 的 {errors} 列表（内联展示）
 const missingRequired = ref([]) // 客户端必填快速校验（字段文案列表）
 
-// ---- 深拷贝（JSON 往返：与共享值/patch 的序列化语义一致，reactive 代理脱钩）----
+// ---- peek 回读（batch8 #8）：选中 ≤50 台时拉取五键非敏感字段，>50/失败静默退化 ----
+// bulkDsMixed 的 ds 以 bulkServers 为准，与本表单保存口径一致；peek 也按单 ds 语义调用。
+const PEEK_LIMIT = 50
+const peekItems = ref(null) // null=未回读；Array<{id, askPasswordWhenConnect, ...}>（camelCase）
+onMounted(() => {
+  const count = props.bulkIds.length
+  if (count === 0 || count > PEEK_LIMIT) return
+  api
+    .batchPeek(props.bulkIds, bulkDs.value)
+    .then((items) => {
+      peekItems.value = Array.isArray(items) ? items : null
+    })
+    .catch(() => {
+      /* 静默退化：字段维持「未回读」占位与覆盖式设置，功能完整（只读展示是增强） */
+    })
+})
+/** peek 数据按 id 建查；全部选中 id 都有记录才算就绪（否则退化，防半截数据误判共享值） */
+const peekMap = computed(() => {
+  if (!Array.isArray(peekItems.value)) return null
+  const map = {}
+  for (const it of peekItems.value) {
+    if (it && typeof it.id === 'string') map[it.id] = it
+  }
+  return props.bulkIds.length && props.bulkIds.every((id) => map[id]) ? map : null
+})
+
+// ---- 深拷贝（JSON 往返：与共享值/patch 的序列化语义一致，reactive 代理脱钩；
+// null/undefined 原样保留——peek 的协议不适用字段以 null 占位参与共享值比较）----
 function deepClone(o) {
-  return JSON.parse(JSON.stringify(o ?? {}))
+  return o == null ? o : JSON.parse(JSON.stringify(o))
 }
 
 // ---- 共享值计算 + 逐字段「保持不变/覆盖」状态 ----
 // bulkServers 是列表 DTO（camelCase）；bulkShared[key] = { known, same, value }：
 //  - dtoKey 有值 → known=true，value 为 N 台的共享值（same=false 时无意义，仅 same 参与 UI）；
-//  - dtoKey=null（password 等列表 DTO 不携带）→ known=false，只提示、不展示值。
+//  - dtoKey=null 且非敏感 → known 由 peek 决定（回读成功时逐台比对，键名与 patch 键一致）；
+//  - dtoKey=null 且敏感（password）或 peek 未就绪 → known=false，只提示、不展示值。
 // 相等判定与 patch.js 同口径（JSON.stringify 严格比对，数组整体比较）。
 const bulkFields = computed(() =>
   BULK_FIELDS.filter((f) => !f.protocols || props.bulkServers.every((s) => f.protocols.includes(s.protocol)))
@@ -59,6 +93,14 @@ const bulkFields = computed(() =>
 const bulkShared = computed(() => {
   const out = {}
   for (const f of BULK_FIELDS) {
+    // peek 回读键名 = BULK_FIELDS 的 key（camelCase patch 键，与 BatchPeekItem 序列一致）
+    if (!f.dtoKey && !f.bulkSensitive && peekMap.value) {
+      const vals = props.bulkIds.map((id) => peekMap.value[id]?.[f.key])
+      const first = JSON.stringify(vals[0])
+      const same = vals.every((v) => JSON.stringify(v) === first)
+      out[f.key] = { known: true, same, value: same ? deepClone(vals[0]) : undefined }
+      continue
+    }
     if (!f.dtoKey) {
       out[f.key] = { known: false, same: false, value: undefined }
       continue
@@ -73,10 +115,10 @@ const bulkShared = computed(() => {
 const bulkOverwrite = reactive({}) // key → true（已切到覆盖编辑）；缺省 = 保持不变
 const bulkValues = reactive({}) // key → 覆盖态下的当前值（仅覆盖态有意义）
 
-// 未回读字段（dtoKey=null）的占位文案分两类：敏感字段（bulkSensitive，如 password——
-// 列表接口不回读明文，安全设计，与 WPF 哨兵机制同源）用 bulkSensitiveHint；其余
-//（继承凭据/连接时询问密码/协议专属键——列表 DTO 出于体积不携带）用 bulkUnknown。
-// 两者都只引导「覆盖」式设置，不能回读展示当前值。
+// 未回读字段（known=false）的占位文案分两类：敏感字段（bulkSensitive，如 password——
+// 列表接口不回读明文，安全设计，与 WPF 哨兵机制同源；peek 也不回读）用
+// bulkSensitiveHint；其余（继承凭据/连接时询问密码/协议专属键——peek 未就绪时：
+// 勾选 >50 台或回读失败）用 bulkUnknown。两者都只引导「覆盖」式设置。
 function bulkUnknownKey(f) {
   return f.bulkSensitive ? 'editor.bulkSensitiveHint' : 'editor.bulkUnknown'
 }

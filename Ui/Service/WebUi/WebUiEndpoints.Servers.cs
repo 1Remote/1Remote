@@ -32,6 +32,7 @@ namespace _1RM.Service.WebUi
     /// ─ PUT    /api/servers/{id}        更新（整体替换）
     /// ─ DELETE /api/servers/{id}        删除
     /// ─ POST   /api/servers/batch       批量补丁编辑
+    /// ─ POST   /api/servers/batch/peek  批量回读非敏感字段（共享值计算，只读）
     /// ─ POST   /api/servers/import      导入（json/csv/rdp/db）
     /// ─ GET    /api/servers/export      导出（解密 JSON 下载）
     /// ─ GET    /api/events              SSE 数据版本推送（服务器/标签重载通知）
@@ -209,6 +210,29 @@ namespace _1RM.Service.WebUi
                     EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
                     EditorSaveStatus.NotFound => Results.NotFound(),
                     _ => Results.Json(new { error = result.DbErrorInfo }, statusCode: 500),
+                };
+            });
+        }
+
+        internal static void MapServersBatchPeek(WebApplication app)
+        {
+            // 批量回读（fix batch8 #8）：POST /api/servers/batch/peek，body {ids, ds?}。
+            // 批量编辑表单打开时回读 5 个非敏感字段（askPasswordWhenConnect 等——列表 DTO
+            // 不携带、历来只能以「覆盖」方式设置的字段），供前端计算 N 台共享值；
+            // 不含任何加密字段（安全论证见 WebUiEditorService.PeekBatch）。只读端点：
+            // ids 空 → 400；任一 id 未知 → 404（与 batch 补丁的整批拒绝语义对齐）。
+            app.MapPost("/api/servers/batch/peek", (BatchPeekRequest? body) =>
+            {
+                var dataSourceName = string.IsNullOrWhiteSpace(body?.Ds)
+                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                    : body!.Ds;
+                var result = WebUiEditorService.PeekBatch(dataSourceName, body?.Ids);
+                return result.Status switch
+                {
+                    EditorSaveStatus.Ok => Results.Json(result.Items),
+                    EditorSaveStatus.BadRequest => Results.BadRequest(new { errors = result.Errors }),
+                    EditorSaveStatus.NotFound => Results.NotFound(),
+                    _ => Results.StatusCode(500), // DbError 等不可达分支（只读操作），防御性映射
                 };
             });
         }

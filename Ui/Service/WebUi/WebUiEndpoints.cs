@@ -149,6 +149,7 @@ namespace _1RM.Service.WebUi
                                            // PUT    /api/servers/{id}
                                            // DELETE /api/servers/{id}
             MapServersBatch(app);        // POST   /api/servers/batch
+            MapServersBatchPeek(app);    // POST   /api/servers/batch/peek（批量回读非敏感字段，batch8 #8）
             MapServersImportExport(app); // POST   /api/servers/import
                                            // GET    /api/servers/export
             MapIcons(app);               // GET    /api/icons
