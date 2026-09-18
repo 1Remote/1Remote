@@ -2,10 +2,17 @@
 /**
  * 通用字段渲染器：按 field.type 分发到具体控件（text / number / select / switch /
  * tags / password / textarea / markdown / icon / color / credential / autocomplete /
- * key-value-lines / kv-map / subform，未知类型兜底只读呈现），纯展示组件——
+ * key-value-lines / kv-map / subform，未知类型兜底只读呈现），值层面保持纯受控——
  *  - 不读 visibleWhen（可见性由父级抽屉用 editor/visibility.js 的 isVisible 求值并隐藏整行）；
  *  - 不直接改 json：父级按字段 v-model 绑定到 json 对象属性，本组件只 emit update:modelValue；
  *  - 隐藏字段值保留透传的约定同样由父级保证（隐藏≠删值）。
+ * 三个字段类型带远程交互（其余仍为纯展示）：
+ *  - TEXTAREA 的脚本字段（actions: ['select','test']，batch9 #9）：行内 [选择][测试]
+ *    两按钮——选择 = POST /api/files/pick 弹后端原生文件对话框回填路径；测试 =
+ *    POST /api/scripts/test 执行命令并把命令/输出/退出码弹 naive dialog 呈现
+ *    （对齐 WPF 脚本行两按钮，见 onScriptSelect/onScriptTest）；
+ *  - TAGS（batch9 #10）：输入框下常驻已有标签候选 chips（点击即加，对齐 WPF TagsEditor
+ *    的 TagsForSelect），数据经 composables/useTagSuggestions.js 模块级缓存。
  * 字段描述符形状见 editor/fieldTypes.js；i18n：字段 labelKey 由 schemas.js 兜底注入
  *（editor.f.*）；SELECT 选项 labelKey 缺失显示 String(value)——Serial 的
  * 技术字面量选项（'8'/'NONE'…）依赖该回退（有意不译）。
@@ -16,8 +23,9 @@
  * 的模块级缓存拉取一次，两字段共享；SELECT 的动态选项（optionsSource 'runners:*'，
  * SelectedRunnerName）同样经 composables/useRunnerOptions.js 模块级缓存共享。
  */
-import { computed, ref, watch } from 'vue'
+import { computed, h, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDialog, useMessage } from 'naive-ui'
 import SubformList from './SubformList.vue'
 import IconPicker from './IconPicker.vue'
 import CredentialPicker from './CredentialPicker.vue'
@@ -27,9 +35,11 @@ import KeyValueLines from './KeyValueLines.vue'
 import HelpLink from '../HelpLink.vue'
 import KvMapField from './KvMapField.vue'
 import { FIELD } from '../../editor/fieldTypes.js'
+import { api } from '../../api'
 import { opaqueHex } from '../../utils/color.js'
 import { useSerialOptions } from '../../composables/useSerialOptions.js'
 import { useRunnerOptions } from '../../composables/useRunnerOptions.js'
+import { useTagSuggestions } from '../../composables/useTagSuggestions.js'
 
 const props = defineProps({
   /** @type {FieldDescriptor} 字段描述符（fieldTypes.js） */
@@ -44,6 +54,8 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
+const message = useMessage()
+const dialog = useDialog()
 const { serialSuggestions } = useSerialOptions()
 const { runnerNames } = useRunnerOptions()
 
@@ -140,11 +152,106 @@ const showPassword = ref(false)
 // ---- tags：n-dynamic-tags（chips 的添加/删除/回车确认由组件自带）。
 // 值归一不依赖后端静默处理（C# Tags setter 自带 Distinct+Trim+去空格，ProtocolBase.cs:115）：
 // update handler 里 Trim + 去空串 + 去重后回传，防 n-dynamic-tags 允许的重复输入原样入 json。
-function onTagsUpdate(v) {
-  const arr = (Array.isArray(v) ? v : [])
+function normalizeTags(arr) {
+  return (Array.isArray(arr) ? arr : [])
     .map((s) => String(s).trim())
     .filter((s, i, a) => s !== '' && a.indexOf(s) === i)
-  emit('update:modelValue', arr)
+}
+function onTagsUpdate(v) {
+  emit('update:modelValue', normalizeTags(v))
+}
+
+// ---- tags 候选 chips（batch9 #10）：已有标签名（useTagSuggestions 模块级缓存，
+// stale-while-revalidate——TAGS 字段组件创建时拉一次）。已选中的不再展示，最多 12 个
+//（克制：候选是"快速点选"，不是完整列表，长列表交给输入）；点击 = 追加回 json。
+const { tags: allTags, refresh: refreshTagSuggestions } = useTagSuggestions()
+if (props.field.type === FIELD.TAGS) refreshTagSuggestions()
+const tagSuggestions = computed(() => {
+  const current = normalizeTags(props.modelValue)
+  return allTags.value.filter((s) => !current.includes(s)).slice(0, 12)
+})
+function addTag(tag) {
+  onTagsUpdate([...normalizeTags(props.modelValue), tag])
+}
+
+// ---- 脚本字段行内按钮（batch9 #9，对齐 WPF 脚本行的 Select/Test 两按钮，
+// ServerEditorPageView.xaml:162-216）：schemas.js 给 CommandBeforeConnected/
+// CommandAfterDisconnected 挂 actions: ['select','test']。
+//  - 选择：后端弹 WPF 同款原生文件对话框（filter script|*.bat;*.cmd;*.ps1;*.py|*|.*，
+//    title 同 WPF "Select a script"），选中回填裸路径（WPF 直接 Server 属性赋值，无引号）；
+//  - 测试：后端复用 WPF 的 DisassembleOneLineScriptCmd 拆解并执行，回传
+//    {file, arguments, exitCode, timedOut, output, error}——弹窗呈现命令/输出/退出码
+//    （WPF 的 "We will run..." 提示 + 控制台窗口 + "The exit code..." 消息盒的 web 等价）。
+const actionSelect = computed(() => Array.isArray(props.field.actions) && props.field.actions.includes('select'))
+const actionTest = computed(() => Array.isArray(props.field.actions) && props.field.actions.includes('test'))
+const scriptBusy = ref(false) // 两按钮互斥占用（选择请求寿命 = 用户开着对话框的时间）
+async function onScriptSelect() {
+  if (scriptBusy.value) return
+  scriptBusy.value = true
+  try {
+    const resp = await api.pickFile('script|*.bat;*.cmd;*.ps1;*.py|*|*.*', {
+      path: String(props.modelValue ?? ''),
+      title: t('editor.scriptPickTitle'),
+    })
+    if (resp?.path) emit('update:modelValue', resp.path)
+  } catch (e) {
+    if (e?.status !== 404) message.error(t('settings.r.pickFailed')) // 404=用户取消，静默
+  } finally {
+    scriptBusy.value = false
+  }
+}
+async function onScriptTest() {
+  if (scriptBusy.value) return
+  const command = String(props.modelValue ?? '').trim()
+  if (!command) return
+  scriptBusy.value = true
+  try {
+    showScriptTestResult(command, await api.testScript(command))
+  } catch (e) {
+    message.error(t('editor.scriptTestStartFailed') + ': ' + (e?.message || e))
+  } finally {
+    scriptBusy.value = false
+  }
+}
+// 测试结果弹窗：命令行 + 输出（pre 滚动区）+ 退出码行（连接前脚本带"非 0 中止连接"括注，
+// WPF RunScriptBeforeConnect 的 isTestRun 消息盒文案同语义；dialog 内容经 h() 组装，
+// inline style——弹窗 teleport 到 body，scoped 样式作用不到）
+function showScriptTestResult(command, resp) {
+  const line = (text) =>
+    h('div', { style: 'font-size:13px;line-height:1.6;color:var(--text-2);word-break:break-all;' }, text)
+  const rows = [line(t('editor.scriptTestCmd', { cmd: command }))]
+  if (resp?.error) {
+    rows.push(line(`${t('editor.scriptTestStartFailed')}: ${resp.error}`))
+  } else {
+    rows.push(
+      h(
+        'pre',
+        {
+          style:
+            'margin:8px 0;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-all;' +
+            'border:1px solid var(--border);border-radius:4px;background:var(--bg-hover);padding:8px;font-size:12px;',
+        },
+        resp?.output || ' '
+      )
+    )
+  }
+  if (resp?.timedOut) {
+    rows.push(line(t('editor.scriptTestTimeout')))
+  } else if (!resp?.error) {
+    const code = resp?.exitCode ?? -1
+    rows.push(
+      line(
+        props.field.key === 'CommandBeforeConnected'
+          ? t('editor.scriptTestExitAbort', { code })
+          : t('editor.scriptTestExit', { code })
+      )
+    )
+  }
+  dialog.info({
+    title: t('editor.scriptTestTitle'),
+    content: () => h('div', null, rows),
+    positiveText: t('common.ok'),
+  })
 }
 
 // ---- color：8 色固定色板 + 原始 hex 文本（WPF 为 ColorPickerWPF 全功能拾色器，
@@ -187,8 +294,10 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         >{{ label }}<span v-if="field.required" class="ff-required">*</span></span
       >
       <!-- 字段旁帮助链接：WPF 表单行 (?) 的 web 落点（如 mstsc 附加
-           设置 → 文档 #additional-settings 锚点）；URL 照抄 WPF NavigateUri -->
-      <HelpLink v-if="field.helpUrl" :href="field.helpUrl" />
+           设置 → 文档 #additional-settings 锚点）；URL 照抄 WPF NavigateUri。
+           普通开关行例外（batch9 #11）：标签列留空 → (?) 挂到开关文字后（SwitchItem 内渲染，
+           如 mstsc 开关行的 "Enabled (?)" 形态） -->
+      <HelpLink v-if="field.helpUrl && showLabelInColumn" :href="field.helpUrl" />
       <!-- MARKDOWN 的 编辑 ⇄ 预览 切换（标签列右侧；i18n 键沿用 MarkdownField 原有） -->
       <button
         v-if="field.type === FIELD_TYPE.MARKDOWN"
@@ -284,30 +393,67 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         </template>
       </n-input>
 
-      <!-- tags：n-dynamic-tags（chips 添加/删除/回车确认由组件自带；值经 onTagsUpdate 归一回传） -->
-      <n-dynamic-tags
-        v-else-if="field.type === FIELD_TYPE.TAGS"
-        size="small"
-        :value="Array.isArray(modelValue) ? modelValue : []"
-        :disabled="disabled"
-        @update:value="onTagsUpdate"
-      />
+      <!-- tags：n-dynamic-tags（chips 添加/删除/回车确认由组件自带；值经 onTagsUpdate 归一回传）
+           + 已有标签候选 chips（batch9 #10，点击即加——对齐 WPF TagsEditor 的 TagsForSelect） -->
+      <div v-else-if="field.type === FIELD_TYPE.TAGS" class="ff-tags">
+        <n-dynamic-tags
+          size="small"
+          :value="Array.isArray(modelValue) ? modelValue : []"
+          :disabled="disabled"
+          @update:value="onTagsUpdate"
+        />
+        <div v-if="tagSuggestions.length" class="ff-tag-sug">
+          <button
+            v-for="s in tagSuggestions"
+            :key="s"
+            type="button"
+            class="ff-tag-sug-chip"
+            :disabled="disabled"
+            @click="addTag(s)"
+          >
+            + {{ s }}
+          </button>
+        </div>
+      </div>
 
-      <!-- textarea -->
-      <n-input
-        v-else-if="field.type === FIELD_TYPE.TEXTAREA"
-        type="textarea"
-        size="small"
-        :rows="3"
-        :value="modelValue ?? ''"
-        :placeholder="placeholder"
-        :disabled="disabled"
-        @update:value="emit('update:modelValue', $event)"
-      />
+      <!-- textarea：rows 字段描述符缺省 3；脚本字段 rows=1（默认单行输入框高，batch9 #8）
+           + 行内 [选择][测试] 按钮（actions，batch9 #9） -->
+      <div v-else-if="field.type === FIELD_TYPE.TEXTAREA" class="ff-ta" :class="{ onerow: (field.rows ?? 3) === 1 }">
+        <n-input
+          class="ff-ta-input"
+          type="textarea"
+          size="small"
+          :rows="field.rows ?? 3"
+          :value="modelValue ?? ''"
+          :placeholder="placeholder"
+          :disabled="disabled"
+          @update:value="emit('update:modelValue', $event)"
+        />
+        <div v-if="actionSelect || actionTest" class="ff-ta-actions">
+          <button
+            v-if="actionSelect"
+            class="ff-mini-btn"
+            type="button"
+            :disabled="disabled || scriptBusy"
+            @click="onScriptSelect"
+          >
+            {{ t('editor.scriptSelect') }}
+          </button>
+          <button
+            v-if="actionTest"
+            class="ff-mini-btn"
+            type="button"
+            :disabled="disabled || scriptBusy"
+            @click="onScriptTest"
+          >
+            {{ t('editor.scriptTest') }}
+          </button>
+        </div>
+      </div>
 
       <!-- markdown：编辑 ⇄ 预览（MarkdownField，值域同 textarea；受控：preview 状态由
-           本组件持有，切换按钮在标签列右侧）；placeholder 透传编辑态 textarea（同
-           placeholderKey，当前 Note 字段无键 → 空） -->
+           本组件持有，切换按钮在标签列右侧）；placeholder 透传编辑态 textarea（batch9 #7：
+           Note 挂 editor.ph.note = WPF 输入区 Tag 的 markdown 示例文本，多行占位） -->
       <MarkdownField
         v-else-if="field.type === FIELD_TYPE.MARKDOWN"
         :model-value="String(modelValue ?? '')"
@@ -491,9 +637,103 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   color: var(--text-1);
 }
 
-/* tags：n-dynamic-tags——宽度由上方 .ff-control > :deep(*) 的 100% 规则撑满控件列
-   （与 n-input 同宽），chips 换行/删除/禁用态均组件自带，
+/* tags：输入 + 候选 chips 两行（batch9 #10）。容器由上方 .ff-control > :deep(*) 的
+   100% 规则撑满控件列；n-dynamic-tags 的 chips 换行/删除/禁用态均组件自带，
    不自绘 chips 样式 */
+.ff-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
+
+.ff-tags :deep(.n-dynamic-tags) {
+  width: 100%;
+}
+
+/* 候选 chips：虚线小标签（视觉从属"可点选的候选"，与已选实心 chips 区分），最多 12 个
+   （tagSuggestions 截断），无候选/全部已选时整行不渲染 */
+.ff-tag-sug {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ff-tag-sug-chip {
+  border: 1px dashed var(--border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 0.8462rem;
+  line-height: 1;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.ff-tag-sug-chip:hover:not(:disabled) {
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+
+.ff-tag-sug-chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* textarea 行（batch9 #8/#9）：textarea 占主列、行内按钮贴右。rows=1 的脚本字段默认
+   单行输入框高（28px，与 n-input small 文本框同观），CSS 覆写允许纵向拉高——naive 的
+   textarea 默认 resize:none，必须显式覆写；拉高后按钮保持顶部对齐（WPF 按钮随行拉伸，
+   web 顶部对齐观感更稳，有意偏差） */
+.ff-ta {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.ff-ta-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ff-ta.onerow :deep(textarea) {
+  height: 28px;
+  min-height: 28px;
+  resize: vertical;
+}
+
+/* 行内 [选择][测试] 按钮（batch9 #9）：与 n-input small 同高的小按钮 */
+.ff-ta-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+}
+
+.ff-mini-btn {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  color: var(--text-2);
+  font-size: 0.8846rem;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ff-mini-btn:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.ff-mini-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 
 /* icon 选择器自带缩略图 + 按钮样式（IconPicker.vue），此处无需行内样式 */
 

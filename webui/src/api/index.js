@@ -117,8 +117,7 @@ export const api = {
   // 脚本测试（编辑器脚本行 Test 按钮，batch9 #9）：{command} = 字段当前的单行命令文本，
   // 后端复用 WPF 的 DisassembleOneLineScriptCmd 拆解 + 执行，回传
   // {file, arguments, exitCode, timedOut, output, error}（output 截断 4KB；15s 超时杀进程）
-  testScript: (command) =>
-    request('/api/scripts/test', { method: 'POST', body: { command }, timeout: 30_000 }),
+  testScript: (command) => request('/api/scripts/test', { method: 'POST', body: { command }, timeout: 30_000 }),
   // Serial 编辑器可输入下拉建议：后端机器 COM 口 + 波特率表
   //（与 WPF SerialFormView 的 AutoCompleteComboBox 数据源同源，Serial.cs）
   serialOptions: () => request('/api/serial/options'),

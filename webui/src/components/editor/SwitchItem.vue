@@ -10,9 +10,10 @@
  */
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import HelpLink from '../HelpLink.vue'
 
 const props = defineProps({
-  /** @type {FieldDescriptor} 字段描述符（fieldTypes.js；只消费 key/labelKey/switchTextKey） */
+  /** @type {FieldDescriptor} 字段描述符（fieldTypes.js；只消费 key/labelKey/switchTextKey/helpUrl） */
   field: { type: Object, required: true },
   /** json 中 field.key 处的当前值（布尔或 null：null 显示按 false） */
   modelValue: { type: null, default: null },
@@ -34,6 +35,10 @@ const switchText = computed(() => (props.field.switchTextKey ? t(props.field.swi
       @update:value="emit('update:modelValue', $event)"
     />
     <span class="sw-item-text">{{ switchText }}</span>
+    <!-- 开关文字后的帮助链接（batch9 #11）：普通开关行标签列留空，(?) 挂控件列——
+         对齐 WPF "Enabled (?)" 形态（RdpFormView.xaml:269-281 的 mstsc 开关行；
+         此前挂组标题旁属过渡落点）。URL 照抄 WPF NavigateUri -->
+    <HelpLink v-if="field.helpUrl" :href="field.helpUrl" />
   </div>
 </template>
 

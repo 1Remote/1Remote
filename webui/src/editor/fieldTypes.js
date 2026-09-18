@@ -87,6 +87,15 @@ export const FIELD = {
  * @property {boolean} [required] 必填校验（红框 + i18n 消息，语义对齐 WPF IDataErrorInfo：
  *   DisplayName / Address / Port 等）。
  * @property {string} [placeholderKey] 占位文案 i18n 键，缺失则无占位。
+ * @property {number} [rows]
+ *   仅 TEXTAREA 使用：textarea 的默认行数，缺省 3。脚本字段（CommandBeforeConnected/
+ *   CommandAfterDisconnected）设 1——渲染为单行输入框高（28px）、CSS 允许纵向拉高
+ *   （batch9 #8，对齐 WPF 单行 TextBox 的观感；拉高后多行编辑仍是超集）。
+ * @property {Array<'select'|'test'>} [actions]
+ *   仅 TEXTAREA 使用：行内按钮（batch9 #9，对齐 WPF 脚本行的 Select/Test 两按钮，
+ *   ServerEditorPageView.xaml:168-215）——'select' = 后端原生文件对话框选脚本回填裸
+ *   路径（POST /api/files/pick）；'test' = 后端执行该命令并弹窗显示输出/退出码
+ *   （POST /api/scripts/test）。当前仅脚本字段使用。
  * @property {{fields: FieldDescriptor[]}} [subform]
  *   SUBFORM 行字段描述（行内字段递归使用同一描述符形状，渲染深度限 2，见 SubformList）。
  *   字段本身对应 json 中的数组（如 AlternateCredentials: Credential[]）。
