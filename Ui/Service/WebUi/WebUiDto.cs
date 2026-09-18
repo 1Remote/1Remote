@@ -157,6 +157,16 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
+    /// POST /api/scripts/test 请求体（batch9 Task B #9）：{command}。command 为编辑器中
+    /// 「连接前/断开后脚本」的单行命令文本（与 WPF CmdTestScript 直传 Server 属性一致，
+    /// 不做任何改写）。响应 {file, arguments, exitCode, timedOut, output, error}（见端点注释）。
+    /// </summary>
+    public class ScriptTestRequest
+    {
+        public string? Command { get; set; }
+    }
+
+    /// <summary>
     /// GET /api/settings/general 响应（camelCase 序列化）。
     /// 安全白名单域：只暴露非破坏性字段——开机自启（注册表）、便携模式、SQLite 路径不在此列。
     /// requireSecondaryVerification 不在 GeneralConfig（那是 XAML 控件名）：真实状态在
