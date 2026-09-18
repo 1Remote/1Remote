@@ -1,28 +1,42 @@
 <script setup>
 /**
  * 运行器分组（Plan 3 Task 6，spec §6；fix batch7 Task D #12 全量自动保存；
- * fix batch7 Task E #13 配置对齐 + 逐运行器字段审计；#14 运行器增删）：
+ * fix batch7 Task E #13 配置对齐 + 逐运行器字段审计；#14 运行器增删；
+ * batch8 Task D 五项：#9 添加按钮并入默认运行器行右侧 / #10 添加流程对齐 WPF（只输名称，
+ * 创建后选中）+ exe 路径原生文件选择器（POST /api/files/pick-exe）+ 预设自动填充 + 参数
+ * 标签改名 / #11 内置运行器 ExePath 只读 / #12 RunWithHosting 解释文本 / #13 宏 chips）：
  * GET/PUT /api/settings/runners，改完即存（无保存按钮/dirty 提示）。
  * - 协议页签（6 个：SSH/Telnet/Serial/VNC/SFTP/FTP，键序以 GET 返回为准）× 每协议：
- *   默认运行器下拉（runner 名单）+ runner 卡片列表 + "添加运行器"按钮（#14）。
+ *   默认运行器下拉（runner 名单）+ runner 卡片列表；"+ 添加运行器"在默认运行器行右端（#9）。
  * - **PascalCase 直通**（有意简化，plan 记录在案）：runners 数组与 GET 原样往返，只字段化编辑
  *   已知属性。Name 不开放改名（重命名牵扯 SelectedRunnerName 与宏引用一致性，归桌面端）。
  * - 内置运行器（#13）：按"属性存在性"渲染配置位，不硬编码 $type 名单——
- *   PuttyRunner：ExePath / 主题下拉（含色块预览）/ 字体 / 字号 / 字符集（对照 WPF
+ *   PuttyRunner：ExePath（只读 #11：内置运行器随应用分发，路径由应用管理，WPF 侧可改是
+ *   便携部署的历史遗留）/ 主题下拉（含色块预览）/ 字体 / 字号 / 字符集（对照 WPF
  *   PuttyRunnerSettings.xaml 全量字段）；KittyRunner[Obsolete]：同上但无字体位；
  *   InternalDefaultRunner（VNC/SFTP/FTP）：无可配置字段 → 只读说明。
  *   主题/字体/字符集选项域来自 GET 的 meta（后端同源 PuttyThemes.Themes /
  *   Fonts.SystemFontFamilies / PuttyRunner.CodePages），前端不硬编码。
  * - 外部运行器（$type=ExternalRunner/ExternalRunnerForSSH）字段化编辑（对照 WPF
  *   ExternalRunnerSettings.xaml / ExternalSshRunnerSettings.xaml 审计补齐）：
- *   ExePath / Arguments / ArgumentsForPrivateKey（仅 SSH 族，属性存在性判断）/
- *   EnvironmentVariables / SpecialCharacters（KEY=VALUE 行编辑）/ RunWithHosting。
- * - 增删（#14）：PUT 是全量列表保存，前端构造新行/移除行 + 保存即持久化，无需专门端点。
- *   添加模态 = WPF CmdAddRunner 的名称校验（非空 + 协议内唯一）+ 顺带收集 WPF 创建后
- *   要在卡片补填的 ExePath/Arguments；SSH/SFTP 协议族建 ExternalRunnerForSSH（WPF 同款
- *   分支），其余建 ExternalRunner；宏提示用 GET 的 macros。
+ *   ExePath（+ 浏览按钮 → 原生文件对话框）/ Arguments / ArgumentsForPrivateKey（仅 SSH 族，
+ *   属性存在性判断）/ EnvironmentVariables / SpecialCharacters（KEY=VALUE 行编辑）/
+ *   RunWithHosting（含 WPF 的 Caution 解释文本与行 ToolTip，#12）。
+ * - 预设自动填充（#10）：ExePath 变化（手输/选择器）时移植 WPF
+ *   ExternalRunnerSettingsViewModel.AutoArguments——仅当 Arguments 为空才填（不覆盖用户
+ *   已填参数），文件名命中 winscp/filezilla/kitty/putty/wt/VpxClient/tvnviewer/vncviewer
+ *   时按协议写入 Arguments/ArgumentsForPrivateKey（SSH 族）+ RunWithHosting。预设表在 WPF
+ *   是 VM 层逻辑（非后端常量），故前端移植而非经 meta 下发（最小改动，owner 指示核实后的结论）。
+ * - 增删（#14 + #10 对齐）：PUT 是全量列表保存，前端构造新行/移除行 + 保存即持久化。
+ *   添加模态只输入名称（WPF CmdAddRunner 的 InputBox 同款：非空 + 协议内唯一），确认后建
+ *   默认值运行器并选中新卡（默认运行器下拉指向它 + 滚动入视野 + 短暂高亮——WPF 里用户在
+ *   ListBox 点选新卡后同样会写 SelectedRunnerName）；其余参数（exe 路径/启动参数）在卡片
+ *   内继续配置。SSH/SFTP 协议族建 ExternalRunnerForSSH（WPF 同款分支），其余建 ExternalRunner。
  *   删除仅外部运行器（内置无删除钮，徽标 title 提示不可删）；确认后 splice +
  *   selectedRunnerName 回退首项（WPF CmdDeleteRunner 语义）+ 保存。
+ * - 宏 chips（#13）：两处启动参数 textarea 下方渲染当前协议 macros（GET 下发
+ *   [{name,description}]）为可点胶囊（title=description），点击插入光标位置
+ *   （selectionStart 前插 + 光标移到宏尾 + 聚焦）。
  * - 环境变量与特殊字符用独立文本域编辑（数组直编输入体验差）：载入时 数组→行文本；
  *   PUT 前 行文本→数组（空行/无 = 的行丢弃）。文本域按 `${proto}:${runner.Name}`
  *   寻址（而非下标）——增删运行器时下标会漂移，Name 在协议内唯一。
@@ -32,7 +46,7 @@
  *   protocols/envTexts，防丢字），本地态即真值。增删走 saveNow（离散操作立即保存），
  *   失败 toast 外不做回滚（后端 GET/PUT 语义与 WPF 内存先行一致）。
  */
-import { computed, h, inject, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, h, inject, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
@@ -189,16 +203,133 @@ function onRunnerSelect(name) {
 }
 function onExePath(r, v) {
   r.ExePath = v
+  autoArguments(r) // WPF：ExePath PropertyChanged → AutoArguments（Arguments 为空才填）
   saveDebounced()
 }
-function onArguments(r, v) {
-  r.Arguments = v
+
+// ---- 预设自动填充（#10）：WPF ExternalRunnerSettingsViewModel.AutoArguments 前端移植 ----
+// 触发条件与 WPF 一致：Arguments 为空才填（用户已填参数不覆盖）；文件名（含目录的完整
+// 路径取最后一段）忽略大小写子串命中——WPF 用 FileInfo(path).Name.IndexOf(...)，此处
+// split 等价。命中分支按 WPF 顺序互斥（WPF 靠"Arguments 已非空"短路后续分支，此处 return）。
+// ArgumentsForPrivateKey 仅 SSH 族 runner 有该属性（hasArgsPrivateKey 探针）。
+function autoArguments(r) {
+  if (String(r.Arguments || '') !== '') return
+  const p = r.OwnerProtocolName || active.value
+  const name =
+    String(r.ExePath || '')
+      .split(/[\\/]/)
+      .pop() || ''
+  const lower = name.toLowerCase()
+  const setPk = (v) => {
+    if (hasArgsPrivateKey(r)) r.ArgumentsForPrivateKey = v
+  }
+  if (lower.includes('winscp')) {
+    if (p === 'FTP') r.Arguments = 'ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%'
+    else if (p === 'SFTP') {
+      r.Arguments = 'sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%:%1RM_PORT%'
+      setPk('sftp://%1RM_USERNAME%@%1RM_HOSTNAME%:%1RM_PORT% /privatekey=%1RM_PRIVATE_KEY_PATH%')
+    }
+    r.RunWithHosting = true
+    return
+  }
+  if (lower.includes('filezilla')) {
+    if (p === 'FTP') r.Arguments = 'ftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%'
+    else if (p === 'SFTP') r.Arguments = 'sftp://%1RM_USERNAME%:%1RM_PASSWORD%@%1RM_HOSTNAME%'
+    r.RunWithHosting = false
+    return
+  }
+  if (p === 'SSH' && lower.includes('kitty')) {
+    r.Arguments =
+      '-ssh %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd "%STARTUP_AUTO_COMMAND%"'
+    setPk('') // WPF：kitty 私钥参数 NOT SUPPORTED
+    r.RunWithHosting = true
+    return
+  }
+  if (p === 'SSH' && lower.includes('putty')) {
+    r.Arguments = '-ssh %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION%'
+    setPk('') // WPF：putty 私钥参数 NOT SUPPORTED
+    r.RunWithHosting = true
+    return
+  }
+  if (lower === 'wt.exe' || lower === 'wt') {
+    if (p === 'SSH') {
+      r.Arguments =
+        '-w 1 new-tab --title "%1RM_HOSTNAME%" --suppressApplicationTitle plink -ssh %1RM_HOSTNAME% -P %1RM_PORT% -%SSH_VERSION% -C -X -no-antispoof -l %1RM_USERNAME% -pw %1RM_PASSWORD%'
+      if (String(r.ArgumentsForPrivateKey || '') === '')
+        setPk(
+          '-w 1 new-tab --title "%1RM_HOSTNAME%" --suppressApplicationTitle plink -ssh %1RM_HOSTNAME% -P %1RM_PORT% -%SSH_VERSION% -C -X -no-antispoof -l %1RM_USERNAME% -i %1RM_PRIVATE_KEY_PATH%'
+        )
+    }
+    r.RunWithHosting = false
+    return
+  }
+  if (p === 'VNC' && lower.includes('vpxclient')) {
+    r.Arguments = '-s %1RM_HOSTNAME% -u %1RM_USERNAME% -p %1RM_PASSWORD%'
+    r.RunWithHosting = true
+    return
+  }
+  if (p === 'VNC' && lower.includes('tvnviewer')) {
+    r.Arguments = '%1RM_HOSTNAME%::%1RM_PORT% -password=%1RM_PASSWORD% -scale=auto'
+    r.RunWithHosting = true
+    return
+  }
+  if (p === 'VNC' && (lower.includes('vncviewer') || lower.includes('uvnc'))) {
+    r.Arguments = '%1RM_HOSTNAME%:%1RM_PORT% -password=%1RM_PASSWORD%'
+    r.RunWithHosting = false
+  }
+}
+
+// ---- exe 路径原生文件选择器（#10）：后端弹 WPF OpenFileDialog（Filter=exe），404=取消 ----
+const browsing = ref(false)
+async function browseExe(r) {
+  if (browsing.value) return
+  browsing.value = true
+  try {
+    const resp = await api.pickExe(r.ExePath)
+    if (resp?.path) {
+      r.ExePath = resp.path
+      autoArguments(r)
+      saveNow() // 离散选择：立即保存
+    }
+  } catch (e) {
+    if (e?.status !== 404) message.error(t('settings.r.pickFailed')) // 404=用户取消，静默
+  } finally {
+    browsing.value = false
+  }
+}
+
+// 启动参数（Arguments/ArgumentsForPrivateKey 共用）：写值 + debounce 保存
+function setRunnerArg(r, field, v) {
+  r[field] = v
   saveDebounced()
 }
-function onArgsPrivateKey(r, v) {
-  r.ArgumentsForPrivateKey = v
-  saveDebounced()
+
+// ---- 宏 chips（#13）：点击插入光标位置（textarea selectionStart 前插、光标移宏尾、聚焦） ----
+// n-input 组件实例按 `${proto}:${name}:${field}` 收集（v-for 函数 ref）；$el 是外层 div，
+// textarea 在其内。取不到 DOM（理论不可达）时退化为尾部追加。
+const argAreaRefs = {}
+function setArgRef(comp, key) {
+  if (comp) argAreaRefs[key] = comp
+  else delete argAreaRefs[key]
 }
+function insertMacro(r, field, macro) {
+  const cur = String(r[field] ?? '')
+  const comp = argAreaRefs[active.value + ':' + r.Name + ':' + field]
+  const el = comp?.$el?.querySelector?.('textarea')
+  if (!el) {
+    setRunnerArg(r, field, cur + macro.name)
+    return
+  }
+  const s = el.selectionStart ?? cur.length
+  const e = el.selectionEnd ?? s
+  setRunnerArg(r, field, cur.slice(0, s) + macro.name + cur.slice(e))
+  nextTick(() => {
+    el.focus()
+    const pos = s + macro.name.length
+    el.setSelectionRange(pos, pos)
+  })
+}
+
 function onEnvText(p, r, v) {
   envTexts[p + ':' + r.Name] = v
   saveDebounced()
@@ -224,13 +355,17 @@ function onFontSize(r, v) {
   saveDebounced()
 }
 
-// ---- 添加运行器（#14）：模态 → 构造最小字段集对象 push 进 runners → PUT 全量即存 ----
+// ---- 添加运行器（#14 + batch8 #10 对齐 WPF CmdAddRunner）：模态只输入名称 →
+// 建默认值运行器进列表 → 选中新卡（下拉指向 + 滚动入视野 + 短暂高亮）→ PUT 全量即存 ----
 const adding = ref(false)
-const addForm = reactive({ name: '', exePath: '', arguments: '' })
+const addForm = reactive({ name: '' })
+const rootEl = ref(null) // 组件根（滚动新卡入视野的查询域）
+const justAdded = ref('') // 新建 runner 名：卡片短暂高亮（3s）
+let justAddedTimer = null
 
 // 打开即重置（与 DataSourceGroup.openAdd 同款）：上次未提交的草稿不带入新会话
 function openAdd() {
-  Object.assign(addForm, { name: '', exePath: '', arguments: '' })
+  addForm.name = ''
   adding.value = true
 }
 
@@ -247,13 +382,14 @@ const activeMacros = computed(() => activeCfg.value?.macros || [])
 function addSave() {
   if (!addValid.value) return
   const isSshFamily = active.value === 'SSH' || active.value === 'SFTP'
-  // 最小字段集 = WPF ExternalRunner/ExternalRunnerForSSH 新建实例的序列化形态
+  // 默认值字段集 = WPF new ExternalRunner/ExternalRunnerForSSH 的序列化形态（ExePath/
+  // Arguments 留空，在卡片里配置——含 exe 选择器与预设自动填充）
   const runner = {
     $type: isSshFamily ? 'ExternalRunnerForSSH' : 'ExternalRunner',
     Name: addForm.name.trim(),
     OwnerProtocolName: active.value,
-    ExePath: addForm.exePath.trim(),
-    Arguments: addForm.arguments,
+    ExePath: '',
+    Arguments: '',
     RunWithHosting: false,
     EnvironmentVariables: [],
     SpecialCharacters: [],
@@ -262,7 +398,14 @@ function addSave() {
   activeCfg.value.runners.push(runner)
   envTexts[active.value + ':' + runner.Name] = ''
   specialTexts[active.value + ':' + runner.Name] = ''
+  // 选中新运行器：WPF 里用户在 ListBox 点选新卡后 SelectedRunner 会写回
+  // c.SelectedRunnerName——web 无卡片单选态，以默认运行器下拉指向新卡为等效"选中"
+  activeCfg.value.selectedRunnerName = runner.Name
   adding.value = false
+  justAdded.value = runner.Name
+  clearTimeout(justAddedTimer)
+  justAddedTimer = setTimeout(() => (justAdded.value = ''), 3000)
+  nextTick(() => rootEl.value?.querySelector('.r-card.flash')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
   saveNow()
 }
 
@@ -305,11 +448,14 @@ function onEscCapture(e) {
   }
 }
 onMounted(() => window.addEventListener('keydown', onEscCapture, true))
-onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onEscCapture, true)
+  clearTimeout(justAddedTimer)
+})
 </script>
 
 <template>
-  <div class="group">
+  <div ref="rootEl" class="group">
     <p v-if="loading" class="hint">{{ t('settings.loading') }}</p>
     <p v-else-if="loadError" class="hint err">{{ t('settings.r.loadFailed') }}</p>
     <template v-else-if="activeCfg">
@@ -327,7 +473,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
         </button>
       </div>
 
-      <!-- 默认运行器：切换即保存 -->
+      <!-- 默认运行器行（#9）：切换即保存；"+ 添加运行器"并入本行右端（原独立工具条） -->
       <div class="sel-row">
         <label>{{ t('settings.r.selected') }}</label>
         <n-select
@@ -338,16 +484,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
           @update:show="shield"
           @update:value="onRunnerSelect"
         />
+        <n-button class="sel-add" size="small" type="primary" @click="openAdd">
+          {{ t('settings.r.add') }}
+        </n-button>
       </div>
 
-      <!-- 添加运行器（#14）：PUT 全量保存，前端构造新行即持久化 -->
-      <div class="toolbar">
-        <n-button size="small" type="primary" @click="openAdd">{{ t('settings.r.add') }}</n-button>
-      </div>
-
-      <!-- runner 卡片列表 -->
+      <!-- runner 卡片列表（新建卡短暂高亮 flash，3s 后熄灭） -->
       <div class="r-cards">
-        <div v-for="r in activeCfg.runners" :key="r.Name || ''" class="r-card">
+        <div v-for="r in activeCfg.runners" :key="r.Name || ''" class="r-card" :class="{ flash: r.Name === justAdded }">
           <div class="r-head">
             <span class="r-name" :title="r.Name">{{ r.Name }}</span>
             <span
@@ -372,14 +516,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
           <!-- 内置运行器：按字段存在性渲染配置位（PuTTY/KiTTY），无可配置位则只读说明 -->
           <template v-if="!isExternal(r)">
             <template v-if="hasInternalConfig(r)">
-              <div v-if="hasExePath(r)" class="f-row">
+              <!-- 内置运行器 ExePath 只读（#11）：路径由应用管理（随应用分发/部署），WPF 侧
+                   可改是历史遗留，web 端按 owner 验收决定收为只读展示（title 说明悬停可见） -->
+              <div v-if="hasExePath(r)" class="f-row exe-readonly" :title="t('settings.r.internalExeManaged')">
                 <label>{{ t('editor.f.ExePath') }}</label>
-                <n-input
-                  size="small"
-                  :value="r.ExePath"
-                  :input-props="{ spellcheck: false }"
-                  @update:value="onExePath(r, $event)"
-                />
+                <n-input size="small" :value="r.ExePath" disabled :input-props="{ spellcheck: false }" />
               </div>
               <div v-if="hasTheme(r)" class="f-row">
                 <label>{{ t('settings.r.f.theme') }}</label>
@@ -446,35 +587,75 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
           <template v-else>
             <div class="f-row">
               <label>{{ t('editor.f.ExePath') }}</label>
-              <n-input
-                size="small"
-                :value="r.ExePath"
-                :input-props="{ spellcheck: false }"
-                @update:value="onExePath(r, $event)"
-              />
+              <div class="exe-wrap">
+                <n-input
+                  size="small"
+                  :value="r.ExePath"
+                  :input-props="{ spellcheck: false }"
+                  @update:value="onExePath(r, $event)"
+                />
+                <!-- 原生文件选择器（#10）：后端 WPF OpenFileDialog（Filter=exe），WPF
+                     CmdSelectExePath 同款交互；选中后触发预设自动填充 -->
+                <button class="act-btn" type="button" :disabled="browsing" @click="browseExe(r)">
+                  {{ t('settings.r.f.browse') }}
+                </button>
+              </div>
             </div>
             <div class="f-row">
               <label>{{ t('settings.r.f.arguments') }}</label>
-              <n-input
-                size="small"
-                type="textarea"
-                :rows="2"
-                :value="r.Arguments"
-                :input-props="{ spellcheck: false }"
-                @update:value="onArguments(r, $event)"
-              />
+              <div class="arg-wrap">
+                <n-input
+                  size="small"
+                  type="textarea"
+                  :rows="2"
+                  :value="r.Arguments"
+                  :input-props="{ spellcheck: false }"
+                  :ref="(c) => setArgRef(c, active + ':' + r.Name + ':Arguments')"
+                  @update:value="setRunnerArg(r, 'Arguments', $event)"
+                />
+                <!-- 宏 chips（#13）：点击插入光标位置，title=宏描述 -->
+                <div v-if="activeMacros.length" class="macro-row">
+                  <span class="macro-row-label">{{ t('settings.r.f.macroHint') }}</span>
+                  <button
+                    v-for="m in activeMacros"
+                    :key="m.name"
+                    class="macro-pill"
+                    type="button"
+                    :title="m.description"
+                    @click="insertMacro(r, 'Arguments', m)"
+                  >
+                    {{ m.name }}
+                  </button>
+                </div>
+              </div>
             </div>
             <!-- SSH 族外部运行器：私钥登录参数（WPF ExternalSshRunnerSettings 审计补齐） -->
             <div v-if="hasArgsPrivateKey(r)" class="f-row">
               <label>{{ t('settings.r.f.argsPrivateKey') }}</label>
-              <n-input
-                size="small"
-                type="textarea"
-                :rows="2"
-                :value="r.ArgumentsForPrivateKey"
-                :input-props="{ spellcheck: false }"
-                @update:value="onArgsPrivateKey(r, $event)"
-              />
+              <div class="arg-wrap">
+                <n-input
+                  size="small"
+                  type="textarea"
+                  :rows="2"
+                  :value="r.ArgumentsForPrivateKey"
+                  :input-props="{ spellcheck: false }"
+                  :ref="(c) => setArgRef(c, active + ':' + r.Name + ':ArgumentsForPrivateKey')"
+                  @update:value="setRunnerArg(r, 'ArgumentsForPrivateKey', $event)"
+                />
+                <div v-if="activeMacros.length" class="macro-row">
+                  <span class="macro-row-label">{{ t('settings.r.f.macroHint') }}</span>
+                  <button
+                    v-for="m in activeMacros"
+                    :key="m.name"
+                    class="macro-pill"
+                    type="button"
+                    :title="m.description"
+                    @click="insertMacro(r, 'ArgumentsForPrivateKey', m)"
+                  >
+                    {{ m.name }}
+                  </button>
+                </div>
+              </div>
             </div>
             <div class="f-row">
               <label>{{ t('settings.r.f.env') }}</label>
@@ -507,20 +688,26 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
                 <p class="f-hint">{{ t('settings.r.f.specialHint') }}</p>
               </div>
             </div>
-            <div class="f-row">
+            <!-- 集成到标签页（#12）：开关与输入框同列对齐；解释文本移植 WPF
+                 ExternalRunnerSettings.xaml 的 Caution 词条（14 语言），行 ToolTip=WPF 同名词条 -->
+            <div class="f-row" :title="t('settings.r.f.hostingTitle')">
               <label>{{ t('editor.f.RunWithHosting') }}</label>
-              <n-switch
-                size="small"
-                :value="!!r.RunWithHosting"
-                :loading="autoSaving"
-                @update:value="onHosting(r, $event)"
-              />
+              <div class="hosting-wrap">
+                <n-switch
+                  size="small"
+                  :value="!!r.RunWithHosting"
+                  :loading="autoSaving"
+                  @update:value="onHosting(r, $event)"
+                />
+                <span class="hosting-hint">{{ t('settings.r.f.hostingHint') }}</span>
+              </div>
             </div>
           </template>
         </div>
       </div>
 
-      <!-- 添加运行器模态（#14）：名称校验 = WPF CmdAddRunner；SSH 族建 ExternalRunnerForSSH -->
+      <!-- 添加运行器模态（batch8 #10 对齐 WPF CmdAddRunner）：只输入名称（非空 + 协议内唯一），
+           确认后建默认值运行器并选中新卡——exe 路径/启动参数等在卡片内继续配置 -->
       <n-modal
         v-model:show="adding"
         preset="card"
@@ -543,32 +730,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
               <p v-if="addNameError" class="f-err">{{ addNameError }}</p>
             </div>
           </div>
-          <div class="f-row">
-            <label>{{ t('editor.f.ExePath') }}</label>
-            <n-input
-              size="small"
-              v-model:value="addForm.exePath"
-              :placeholder="t('editor.ph.exePath')"
-              :input-props="{ spellcheck: false }"
-            />
-          </div>
-          <div class="f-row">
-            <label>{{ t('settings.r.f.arguments') }}</label>
-            <n-input
-              size="small"
-              type="textarea"
-              :rows="2"
-              v-model:value="addForm.arguments"
-              :input-props="{ spellcheck: false }"
-            />
-          </div>
-          <!-- 宏提示：当前协议可用宏（GET macros，与 WPF 参数自动补全同源），title 给描述 -->
-          <p v-if="activeMacros.length" class="f-hint macro-hint">
-            {{ t('settings.r.f.macroHint') }}
-            <code v-for="m in activeMacros" :key="m.name" class="macro-chip" :title="m.description">
-              {{ m.name }}
-            </code>
-          </p>
         </div>
         <template #footer>
           <div class="modal-actions">
@@ -621,7 +782,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .sel-row {
   display: grid;
-  grid-template-columns: 100px minmax(0, 300px);
+  /* 第三列（#9）：放"+ 添加运行器"按钮，justify-self:end 推到行右端 */
+  grid-template-columns: 100px minmax(0, 300px) 1fr;
   gap: 10px;
   align-items: center;
   margin-bottom: 12px;
@@ -630,9 +792,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   font-size: 0.9615rem;
   color: var(--text-2);
 }
-.toolbar {
-  display: flex;
-  margin-bottom: 12px;
+.sel-add {
+  justify-self: end;
 }
 .r-cards {
   display: flex;
@@ -647,6 +808,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: border-color 0.4s;
+}
+/* 新建卡短暂高亮（#10：创建并选中新卡）——justAdded 3s 后熄灭，transition 平滑回落 */
+.r-card.flash {
+  border-color: var(--accent);
 }
 .r-head {
   display: flex;
@@ -719,6 +885,82 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   min-width: 0;
 }
 
+/* ---- exe 路径行：输入框 + 浏览按钮（#10）---- */
+.exe-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.exe-wrap .n-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.act-btn {
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: var(--text-3);
+  font-size: 0.9231rem;
+  line-height: 1;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.act-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-text);
+  background: var(--bg-hover);
+}
+.act-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---- 启动参数行：textarea + 宏 chips（#13）---- */
+.arg-wrap {
+  min-width: 0;
+}
+.macro-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+}
+.macro-row-label {
+  font-size: 0.8077rem;
+  color: var(--text-4);
+  margin-right: 2px;
+}
+.macro-pill {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 0.8077rem;
+  line-height: 1.5;
+  padding: 1px 8px;
+  cursor: pointer;
+}
+.macro-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent-text);
+  background: var(--bg-hover);
+}
+
+/* ---- 集成到标签页行（#12）：开关与解释文本同列 ---- */
+.hosting-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hosting-hint {
+  font-size: 0.8462rem;
+  color: var(--text-4);
+}
+
 /* ---- 主题下拉选项色点 + 预览条 ---- */
 .theme-opt {
   display: inline-flex;
@@ -762,19 +1004,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   margin: 4px 0 0;
   font-size: 0.8462rem;
   color: var(--danger);
-}
-.macro-hint {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
-}
-.macro-chip {
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0 4px;
-  font-size: 0.8077rem;
-  color: var(--text-3);
 }
 .modal-actions {
   display: flex;

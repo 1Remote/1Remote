@@ -38,6 +38,7 @@ const icons = ref([])
 const loadingIcons = ref(false)
 const exePath = ref('')
 const extracting = ref(false)
+const picking = ref(false)
 
 async function loadIcons() {
   if (builtinCache) {
@@ -99,6 +100,22 @@ async function extractFromExe() {
     message.error(e?.status === 404 ? t('editor.iconExtractNotFound') : t('editor.iconExtractFailed'))
   } finally {
     extracting.value = false
+  }
+}
+
+// exe 路径原生文件选择器（batch8 Task D #10 顺带）：与运行器设置同一 API
+// （POST /api/files/pick-exe，后端 WPF OpenFileDialog）。只填入路径不自动提取——
+// 提取可能失败需要 toast，选择器职责保持单一；404 = 用户取消，静默。
+async function browseExePath() {
+  if (picking.value) return
+  picking.value = true
+  try {
+    const resp = await api.pickExe(exePath.value)
+    if (resp?.path) exePath.value = resp.path
+  } catch (e) {
+    if (e?.status !== 404) message.error(t('settings.r.pickFailed'))
+  } finally {
+    picking.value = false
   }
 }
 
@@ -164,7 +181,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
         {{ t('editor.iconUploadBtn') }}
       </label>
 
-      <!-- exe 提取：主机绝对路径 -->
+      <!-- exe 提取：主机绝对路径（+ 原生文件选择器填路径） -->
       <div class="ip-section">{{ t('editor.iconExtractFromExe') }}</div>
       <div class="ip-exe">
         <n-input
@@ -174,6 +191,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
           :input-props="{ spellcheck: false }"
           @keyup.enter="extractFromExe"
         />
+        <button class="ip-btn" type="button" :disabled="picking" @click="browseExePath">
+          {{ t('settings.r.f.browse') }}
+        </button>
         <button class="ip-btn" type="button" :disabled="extracting || !exePath.trim()" @click="extractFromExe">
           {{ extracting ? t('editor.saving') : t('editor.iconExtract') }}
         </button>

@@ -280,17 +280,22 @@ const MAPPING = {
   // -- 运行器组 --
   'settings.r.selected': 'Selected runner',
   'settings.r.internal': 'Default',
-  'settings.r.f.arguments': 'Cmd parameter',
   'settings.r.f.env': 'Environment variables',
   // fix batch7 Task E #13/#14：PuTTY 主题/字体/字号、私钥参数、增删校验文案（WPF 运行器
-  // 设置页词条 1:1；主题/字体/字符集为下拉标签，字号自由数字）
+  // 设置页词条 1:1；主题/字体/字符集为下拉标签，字号自由数字）。
+  // batch8 Task D #10：arguments/argsPrivateKey 改为"启动参数（通过密码/私钥）"组合文案，
+  // WPF 无对应词条（'Cmd parameter' 与 'Login with password' 是两个独立键）→ 撤出映射，
+  // 12 生成语言回落 en-US，zh 系走手写（zh-CN 手写基准 + zh-TW OVERRIDES）
   'settings.r.addTitle': 'New runner name',
   'settings.r.nameRequired': 'Can not be empty!',
   'settings.r.nameExists': 'XXX is already existed!',
   'settings.r.f.theme': 'Themes',
   'settings.r.f.font': 'Font',
   'settings.r.f.fontSize': 'Font size',
-  'settings.r.f.argsPrivateKey': 'Login with ssh private key',
+  // batch8 Task D #12：RunWithHosting 解释文本与行 ToolTip——WPF ExternalRunnerSettings.xaml
+  // 的 14 语言词条 1:1 移植（注意映射键是 XAML 的 x:Key，en 译文与键名不同属正常）
+  'settings.r.f.hostingHint': 'Caution: some exe can not be hosted in 1Remote.',
+  'settings.r.f.hostingTitle': 'Hosting this exe in 1Remote tab view?',
 
   // -- 关于页（fix batch6 Task D #7）：5 个有 WPF 词条的键，14 语言文案从
   //    AboutPageView.xaml 的 DynamicResource 键移植；纯技术标签（Author/Support/
@@ -345,6 +350,14 @@ const OVERRIDES = {
     'settings.r.f.specialHint':
       '\u7279\u6b8a\u5b57\u5143\uff08\u5982\u4f7f\u7528\u8005\u540d\u7a31\u4e2d\u7684 @\uff09\u53ef\u80fd\u9700\u8981\u7528 %XX \u8a9e\u6cd5\u8f49\u7fa9\uff0c\u6bcf\u884c\u4e00\u500b KEY=VALUE\uff0c\u4f8b\u5982 @=%40',
     'settings.r.f.macroHint': '\u53ef\u7528\u5de8\u96c6\uff1a',
+    // batch8 Task D #10/#11\uff1aweb \u5c08\u6709\u9375\uff08\u555f\u52d5\u53c3\u6578\u7d44\u5408\u6587\u6848\u3001\u700f\u89bd\u6309\u9215\u3001\u5167\u5efa\u8def\u5f91\u7ba1\u7406\u63d0\u793a\u3001
+    // \u6a94\u6848\u9078\u64c7\u8996\u7a97\u5931\u6557\uff09\u2014\u2014WPF \u7121\u5c0d\u61c9\u689d\u76ee\uff0c\u767b\u8a18\u5f8c\u518d\u751f\u6210\u624d\u4e0d\u6703\u56de\u843d en-US
+    'settings.r.f.arguments': '\u555f\u52d5\u53c3\u6578\uff08\u900f\u904e\u5bc6\u78bc\uff09',
+    'settings.r.f.argsPrivateKey': '\u555f\u52d5\u53c3\u6578\uff08\u900f\u904e\u79c1\u5bc6\u91d1\u9470\uff09',
+    'settings.r.f.browse': '\u700f\u89bd\u2026',
+    'settings.r.internalExeManaged':
+      '\u5167\u5efa\u57f7\u884c\u5668\u8def\u5f91\u7531\u61c9\u7528\u7a0b\u5f0f\u7ba1\u7406\u3002',
+    'settings.r.pickFailed': '\u958b\u555f\u6a94\u6848\u9078\u64c7\u8996\u7a97\u5931\u6557\u3002',
   },
 }
 
