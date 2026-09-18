@@ -105,7 +105,7 @@ function visibleRowFields(row) {
 }
 
 /**
- * 行字段的"浏览…"按钮条件（batch9 Task E ⑱A）：filePickWhen 以行对象求值——
+ * 行字段的"浏览…"按钮条件：filePickWhen 以行对象求值——
  * 数据源与语义同 visibleWhen（借道 isVisible 的条件求值器传入）。不满足时返回
  * 剥离 filePick 的浅拷贝（勿改 schema 常量——描述符是模块级共享对象），满足时
  * 原样透传。当前唯一消费方：ArgumentList 的 Value（仅 Type=File 的行带按钮，

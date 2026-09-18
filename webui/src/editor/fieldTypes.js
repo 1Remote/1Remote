@@ -88,7 +88,7 @@ export const FIELD = {
  *   DisplayName / Address / Port 等）。
  * @property {string} [placeholderKey] 占位文案 i18n 键，缺失则无占位。
  * @property {{filter: string, titleKey?: string}} [filePick]
- *   仅 TEXT 使用（batch9 Task E ⑱A）：路径/文件字段的"浏览…"按钮——WPF 表单里
+ *   仅 TEXT 使用：路径/文件字段的"浏览…"按钮——WPF 表单里
  *   SelectFileHelper.OpenFile 按钮的 web 平价（按钮渲染与 api.pickFile 调用见
  *   FormField 的 filePick 段；filter 照抄各 WPF 调用点的字面量）。当前落点（全集
  *   审计见 schemas.js 的 filePick 注释块）：
@@ -96,7 +96,7 @@ export const FIELD = {
  *     （KiTTY Session|*.*）、ExePath（Exe|*.exe）、ArgumentList 行 Value
  *     （all files|*.*，仅 File 型行——见 filePickWhen）。
  * @property {FieldCondition} [filePickWhen]
- *   仅 subform 行字段使用（batch9 Task E ⑱A）：行内"浏览…"按钮的出现条件——数据源与
+ *   仅 subform 行字段使用：行内"浏览…"按钮的出现条件——数据源与
  *   求值语义同 visibleWhen（行对象域），由 SubformList 渲染行时求值（复用
  *   visibility.js 的条件求值器），不满足时剥离 filePick 只留输入框。当前唯一消费方：
  *   ArgumentList 的 Value（Type ∈ ['File'] 时才有按钮，对齐 WPF ArgumentFile 模板
@@ -104,9 +104,9 @@ export const FIELD = {
  * @property {number} [rows]
  *   仅 TEXTAREA 使用：textarea 的默认行数，缺省 3。脚本字段（CommandBeforeConnected/
  *   CommandAfterDisconnected）设 1——渲染为单行输入框高（28px）、CSS 允许纵向拉高
- *   （batch9 #8，对齐 WPF 单行 TextBox 的观感；拉高后多行编辑仍是超集）。
+ *   （对齐 WPF 单行 TextBox 的观感；拉高后多行编辑仍是超集）。
  * @property {Array<'select'|'test'>} [actions]
- *   仅 TEXTAREA 使用：行内按钮（batch9 #9，对齐 WPF 脚本行的 Select/Test 两按钮，
+ *   仅 TEXTAREA 使用：行内按钮（对齐 WPF 脚本行的 Select/Test 两按钮，
  *   ServerEditorPageView.xaml:168-215）——'select' = 后端原生文件对话框选脚本回填裸
  *   路径（POST /api/files/pick）；'test' = 后端执行该命令并弹窗显示输出/退出码
  *   （POST /api/scripts/test）。当前仅脚本字段使用。

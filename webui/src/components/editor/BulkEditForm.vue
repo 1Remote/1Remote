@@ -1,7 +1,7 @@
 <script setup>
 /**
- * 批量编辑表单（自 EditorDrawer 拆出，仅在抽屉 mode='bulk' 时挂载）——batch9 Task C 起
- * 为 schema 驱动的协议感知视图（owner 需求，对齐 WPF 批量编辑语义）：
+ * 批量编辑表单（自 EditorDrawer 拆出，仅在抽屉 mode='bulk' 时挂载）——schema 驱动的
+ * 协议感知视图（owner 需求，对齐 WPF 批量编辑语义）：
  *  - 勾选全为同一协议 → 完整渲染该协议的 PROTOCOLS[P].groups（与单机编辑同一份 schema、
  *    同 labelKey/placeholderKey/helpUrl，控件复用 FormField/SwitchItem——批量与非批量的
  *    输入方式/占位/帮助链接天然一致）；混合协议 → 组/字段级交集（规则见 editor/bulkSchema.js）。

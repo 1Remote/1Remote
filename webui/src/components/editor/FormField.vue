@@ -7,14 +7,14 @@
  *  - 不直接改 json：父级按字段 v-model 绑定到 json 对象属性，本组件只 emit update:modelValue；
  *  - 隐藏字段值保留透传的约定同样由父级保证（隐藏≠删值）。
  * 四个字段类型带远程交互（其余仍为纯展示）：
- *  - TEXT 的路径字段（filePick 描述符，batch9 Task E ⑱A）：行内"浏览…"按钮——
+ *  - TEXT 的路径字段（filePick 描述符）：行内"浏览…"按钮——
  *    POST /api/files/pick 弹后端原生文件对话框回填路径（WPF 表单 Select 按钮
  *    的 web 平价，见 onFilePick）；
- *  - TEXTAREA 的脚本字段（actions: ['select','test']，batch9 #9）：行内 [选择][测试]
+ *  - TEXTAREA 的脚本字段（actions: ['select','test']）：行内 [选择][测试]
  *    两按钮——选择 = POST /api/files/pick 弹后端原生文件对话框回填路径；测试 =
  *    POST /api/scripts/test 执行命令并把命令/输出/退出码弹 naive dialog 呈现
  *    （对齐 WPF 脚本行两按钮，见 onScriptSelect/onScriptTest）；
- *  - TAGS（batch9 #10）：输入框下常驻已有标签候选 chips（点击即加，对齐 WPF TagsEditor
+ *  - TAGS：输入框下常驻已有标签候选 chips（点击即加，对齐 WPF TagsEditor
  *    的 TagsForSelect），数据经 composables/useTagSuggestions.js 模块级缓存。
  * 字段描述符形状见 editor/fieldTypes.js；i18n：字段 labelKey 由 schemas.js 兜底注入
  *（editor.f.*）；SELECT 选项 labelKey 缺失显示 String(value)——Serial 的
@@ -66,7 +66,7 @@ const { runnerNames } = useRunnerOptions()
 const label = computed(() => (props.field.labelKey ? t(props.field.labelKey) : props.field.key))
 const placeholder = computed(() => (props.field.placeholderKey ? t(props.field.placeholderKey) : undefined))
 
-// ---- text 的"浏览…"按钮（batch9 Task E ⑱A）：filePick 描述符（fieldTypes.js）——
+// ---- text 的"浏览…"按钮：filePick 描述符（fieldTypes.js）——
 // WPF 表单路径字段旁 SelectFileHelper.OpenFile 按钮的 web 平价（全集审计见
 // schemas.js 的 filePick 注释块）。按钮调 POST /api/files/pick（后端弹 WPF 同款
 // OpenFileDialog，filter 照抄各 WPF 调用点；path 传当前值作初始目录），选中回填
@@ -191,7 +191,7 @@ function onTagsUpdate(v) {
   emit('update:modelValue', normalizeTags(v))
 }
 
-// ---- tags 候选 chips（batch9 #10）：已有标签名（useTagSuggestions 模块级缓存，
+// ---- tags 候选 chips：已有标签名（useTagSuggestions 模块级缓存，
 // stale-while-revalidate——TAGS 字段组件创建时拉一次）。已选中的不再展示，最多 12 个
 //（克制：候选是"快速点选"，不是完整列表，长列表交给输入）；点击 = 追加回 json。
 const { tags: allTags, refresh: refreshTagSuggestions } = useTagSuggestions()
@@ -204,7 +204,7 @@ function addTag(tag) {
   onTagsUpdate([...normalizeTags(props.modelValue), tag])
 }
 
-// ---- 脚本字段行内按钮（batch9 #9，对齐 WPF 脚本行的 Select/Test 两按钮，
+// ---- 脚本字段行内按钮（对齐 WPF 脚本行的 Select/Test 两按钮，
 // ServerEditorPageView.xaml:162-216）：schemas.js 给 CommandBeforeConnected/
 // CommandAfterDisconnected 挂 actions: ['select','test']。
 //  - 选择：后端弹 WPF 同款原生文件对话框（filter script|*.bat;*.cmd;*.ps1;*.py|*|.*，
@@ -285,7 +285,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
       >
       <!-- 字段旁帮助链接：WPF 表单行 (?) 的 web 落点（如 mstsc 附加
            设置 → 文档 #additional-settings 锚点）；URL 照抄 WPF NavigateUri。
-           普通开关行例外（batch9 #11）：标签列留空 → (?) 挂到开关文字后（SwitchItem 内渲染，
+           普通开关行例外：标签列留空 → (?) 挂到开关文字后（SwitchItem 内渲染，
            如 mstsc 开关行的 "Enabled (?)" 形态） -->
       <HelpLink v-if="field.helpUrl && showLabelInColumn" :href="field.helpUrl" />
       <!-- MARKDOWN 的 编辑 ⇄ 预览 切换（标签列右侧；i18n 键沿用 MarkdownField 原有） -->
@@ -398,7 +398,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
       </n-input>
 
       <!-- tags：n-dynamic-tags（chips 添加/删除/回车确认由组件自带；值经 onTagsUpdate 归一回传）
-           + 已有标签候选 chips（batch9 #10，点击即加——对齐 WPF TagsEditor 的 TagsForSelect） -->
+           + 已有标签候选 chips（点击即加——对齐 WPF TagsEditor 的 TagsForSelect） -->
       <div v-else-if="field.type === FIELD_TYPE.TAGS" class="ff-tags">
         <n-dynamic-tags
           size="small"
@@ -420,8 +420,8 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         </div>
       </div>
 
-      <!-- textarea：rows 字段描述符缺省 3；脚本字段 rows=1（默认单行输入框高，batch9 #8）
-           + 行内 [选择][测试] 按钮（actions，batch9 #9） -->
+      <!-- textarea：rows 字段描述符缺省 3；脚本字段 rows=1（默认单行输入框高）
+           + 行内 [选择][测试] 按钮（actions 描述符） -->
       <div v-else-if="field.type === FIELD_TYPE.TEXTAREA" class="ff-ta" :class="{ onerow: (field.rows ?? 3) === 1 }">
         <n-input
           class="ff-ta-input"
@@ -456,8 +456,8 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
       </div>
 
       <!-- markdown：编辑 ⇄ 预览（MarkdownField，值域同 textarea；受控：preview 状态由
-           本组件持有，切换按钮在标签列右侧）；placeholder 透传编辑态 textarea（batch9 #7：
-           Note 挂 editor.ph.note = WPF 输入区 Tag 的 markdown 示例文本，多行占位） -->
+           本组件持有，切换按钮在标签列右侧）；placeholder 透传编辑态 textarea（Note 挂
+           editor.ph.note = WPF 输入区 Tag 的 markdown 示例文本，多行占位） -->
       <MarkdownField
         v-else-if="field.type === FIELD_TYPE.MARKDOWN"
         :model-value="String(modelValue ?? '')"
@@ -621,7 +621,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   width: 100%;
 }
 
-/* text + filePick"浏览…"按钮（batch9 ⑱A）：输入框占主列、按钮贴右（同 ff-ta 布局）；
+/* text + filePick"浏览…"按钮：输入框占主列、按钮贴右（同 ff-ta 布局）；
    容器由上方 100% 规则撑满控件列 */
 .ff-text-pick {
   display: flex;
@@ -656,7 +656,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   color: var(--text-1);
 }
 
-/* tags：输入 + 候选 chips 两行（batch9 #10）。容器由上方 .ff-control > :deep(*) 的
+/* tags：输入 + 候选 chips 两行。容器由上方 .ff-control > :deep(*) 的
    100% 规则撑满控件列；n-dynamic-tags 的 chips 换行/删除/禁用态均组件自带，
    不自绘 chips 样式 */
 .ff-tags {
@@ -700,7 +700,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   cursor: not-allowed;
 }
 
-/* textarea 行（batch9 #8/#9）：textarea 占主列、行内按钮贴右。rows=1 的脚本字段默认
+/* textarea 行：textarea 占主列、行内按钮贴右。rows=1 的脚本字段默认
    单行输入框高（28px，与 n-input small 文本框同观），CSS 覆写允许纵向拉高——naive 的
    textarea 默认 resize:none，必须显式覆写；拉高后按钮保持顶部对齐（WPF 按钮随行拉伸，
    web 顶部对齐观感更稳，有意偏差） */
@@ -723,7 +723,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   resize: vertical;
 }
 
-/* 行内 [选择][测试] 按钮（batch9 #9）：与 n-input small 同高的小按钮 */
+/* 行内 [选择][测试] 按钮：与 n-input small 同高的小按钮 */
 .ff-ta-actions {
   flex: 0 0 auto;
   display: flex;

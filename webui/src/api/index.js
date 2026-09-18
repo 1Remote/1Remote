@@ -104,7 +104,7 @@ export const api = {
   // ids 空/未知数据源 → 400，任一 id 不存在 → 404（整批拒绝，前端退化为「未回读」占位）
   batchPeek: (ids, ds) => request('/api/servers/batch/peek', { method: 'POST', body: ds ? { ids, ds } : { ids } }),
   icons: () => request('/api/icons'),
-  // 通用文件选择器（batch9 #9，泛化自 pick-exe）：后端弹 WPF OpenFileDialog，
+  // 通用文件选择器：后端弹 WPF OpenFileDialog，
   // filter 为 WPF SelectFileHelper 线格式（"exe|*.exe" / "script|*.bat;*.cmd;*.ps1;*.py|*|*.*"），
   // title 可选（对话框标题），path 传当前值（后端取其目录作初始目录）。
   // 成功 → {path}；用户取消 → 404（err.status=404，调用方静默）。timeout 放宽到 10 分钟：
@@ -115,7 +115,7 @@ export const api = {
       body: { filter: filter || '', title: title || '', path: path || '' },
       timeout: 600_000,
     }),
-  // 脚本测试（编辑器脚本行 Test 按钮，batch9 #9）：{command} = 字段当前的单行命令文本，
+  // 脚本测试（编辑器脚本行 Test 按钮）：{command} = 字段当前的单行命令文本，
   // 后端复用 WPF 的 DisassembleOneLineScriptCmd 拆解 + 执行，回传
   // {file, arguments, exitCode, timedOut, output, error}（output 截断 4KB；15s 超时杀进程）
   testScript: (command) => request('/api/scripts/test', { method: 'POST', body: { command }, timeout: 30_000 }),

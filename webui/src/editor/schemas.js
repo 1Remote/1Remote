@@ -69,7 +69,7 @@
  *      RdpControlAdditionalSettings（KEY_VALUE_LINES 行编辑器的属性名框；WPF 出处
  *        RdpFormView.xaml:570 的 HelpBrush "e.g. EnableAutoReconnect:i:0"）→
  *        editor.ph.rdpControlKey
- *      Note（batch9 #7：ServerEditorPageView.xaml:295 的 markdown 示例多行 Tag，字面量
+ *      Note（ServerEditorPageView.xaml:295 的 markdown 示例多行 Tag，字面量
  *        英文 → 12 生成语言同值回落，zh-CN/zh-TW 手写）→ editor.ph.note
  *  - DynamicResource（WPF 14 语言有译文 → convert-locales.mjs MAPPING 移植）：
  *      RemoteApplicationName/Program（RdpAppFormView:65/77）→ editor.ph.remoteAppName /
@@ -95,11 +95,11 @@
  *      已覆盖清单内，或为 {Binding} 数据挂接/搜索框（web search.placeholder 已覆盖）/
  *      设置页运行器环境变量逐行输入（web 为整块 textarea + envHint，编辑形态不同），
  *      无新增补齐项。）
- *  - 批量编辑（batch9 Task C）不再有独立的 BULK_FIELDS 扁平清单：批量表单直接复用本
+ *  - 批量编辑不再有独立的 BULK_FIELDS 扁平清单：批量表单直接复用本
  *    文件的 PROTOCOLS schema（全同协议 = 完整分组，混合协议 = 组/字段级交集，见
  *    editor/bulkSchema.js），placeholder/帮助链接随 schema 免费一致。
  *
- * filePick（batch9 Task E ⑱A，"浏览…"按钮 = WPF SelectFileHelper.OpenFile 按钮的
+ * filePick（"浏览…"按钮 = WPF SelectFileHelper.OpenFile 按钮的
  * web 平价，按钮渲染见 FormField）：以 WPF 全部 OpenFile 调用点为清单源的全集审计
  * （Ui/ 下 grep "SelectFileHelper." 共 25 处，管理 UI 域内逐条处置）：
  *  - 补齐（本文件标注 filePick，filter 照抄 WPF 调用点字面量）：
@@ -286,8 +286,8 @@ function basicGroup({ withAddressPort = true } = {}) {
     // 下方插入（保持"图标/颜色正下方"的 WPF 行位）。bool? 恒非 null 编辑（true/false）
     { key: 'AlwaysOpenInNewTabWindow', type: FIELD.SWITCH },
     // 备注：MARKDOWN 特化——编辑 ⇄ 预览切换（MarkdownField）。批量编辑同样按本
-    // schema 渲染 MARKDOWN（batch9 Task C 起批量复用单机 schema，不再有扁平清单）。
-    // placeholder（batch9 #7）：WPF Note 输入区 Tag 的 markdown 示例文本
+    // schema 渲染 MARKDOWN（批量复用单机 schema，不再有扁平清单）。
+    // placeholder：WPF Note 输入区 Tag 的 markdown 示例文本
     // （ServerEditorPageView.xaml:295，字面量英文 → 12 生成语言同值回落，zh 系手写）
     { key: 'Note', type: FIELD.MARKDOWN, placeholderKey: 'editor.ph.note' }
   )
@@ -456,8 +456,8 @@ const RUNNER_PROTOCOLS = ['VNC', 'SSH', 'Telnet', 'Serial', 'SFTP', 'FTP']
  * 置于 basic 组之后（同 WPF"公共区在前、协议专属表单在后"的行序）。
  *  - CommandBeforeConnected/CommandAfterDisconnected：TEXTAREA（多行形态；
  *    WPF 是单行 TextBox——命令可含换行的长脚本，多行编辑是超集，值语义不变）。
- *    rows=1（batch9 #8）：默认渲染为单行输入框高（28px）可纵向拉高（WPF 单行同观）。
- *    actions: ['select','test']（batch9 #9）：行内两按钮对齐 WPF 脚本行的
+ *    rows=1：默认渲染为单行输入框高（28px）可纵向拉高（WPF 单行同观）。
+ *    actions: ['select','test']：行内两按钮对齐 WPF 脚本行的
  *    Select/Test（xaml:168-180/203-215）——选择 = 后端原生文件对话框回填裸路径，
  *    测试 = 后端执行该命令弹窗显示输出/退出码（见 FormField 的按钮实现）。
  *    placeholder = WPF Tag 的 14 语言译文（'Run bat before connect' 等，MAPPING 移植）。
@@ -544,9 +544,8 @@ function rdpMstscGroup() {
     id: 'mstsc',
     labelKey: 'editor.group.mstsc',
     fields: [
-      // 开关行帮助链接（batch9 #11 迁移）：WPF RdpFormView.xaml:269-281 mstsc 开关行的
-      // "Enabled (?)"→ mstsc 模式文档；(?) 挂开关文字后（SwitchItem 渲染，
-      // 此前挂组标题旁属过渡落点）；url 照抄
+      // 开关行帮助链接：WPF RdpFormView.xaml:269-281 mstsc 开关行的
+      // "Enabled (?)"→ mstsc 模式文档；(?) 挂开关文字后（SwitchItem 渲染）；url 照抄
       {
         key: 'MstscModeEnabled',
         type: FIELD.SWITCH,
@@ -1172,7 +1171,7 @@ export const PROTOCOLS = {
 // 不覆盖。locales 的 editor.f.* 键集与去重后的字段 key 集合一一对应（9 协议共享
 // 基类字段，同名 key 语义一致——如各协议的 UserName 均为「用户名」；子表单行字段与
 // 顶层同名字段同键共用：Address/Port/UserName/Password/Name 两处文案相同）。
-// 批量编辑（batch9 Task C）同样消费本 schema（全同协议/混合交集，见 bulkSchema.js），
+// 批量编辑同样消费本 schema（全同协议/混合交集，见 bulkSchema.js），
 // labelKey 兜底随之共用，无独立的批量字段文案键。
 // ---------------------------------------------------------------------------
 for (const schema of Object.values(PROTOCOLS)) {

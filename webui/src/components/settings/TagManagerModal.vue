@@ -18,8 +18,8 @@ import { api } from '../../api'
 import { BATCH_CONNECT_THRESHOLD, useServers } from '../../composables/useServers'
 import { useUiLockWhileMounted } from '../../composables/editorBus'
 
-// 模态存在期间持有通用 UI 锁：App.vue 顶栏（搜索/「+」/⚙）随之禁用（batch9 #2；
-// 本组件由 ServerListView 以 v-if 挂载/卸载，挂载即锁定、关闭释放）
+// 模态存在期间持有通用 UI 锁：App.vue 顶栏（搜索/「+」/⚙）随之禁用
+//（本组件由 ServerListView 以 v-if 挂载/卸载，挂载即锁定、关闭释放）
 useUiLockWhileMounted()
 
 const props = defineProps({

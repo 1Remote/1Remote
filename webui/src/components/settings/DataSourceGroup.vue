@@ -12,7 +12,7 @@
  * - Local 卡片只读：测试可用；编辑/删除不开放（后端 PUT/DELETE Local 均为 400，SQLite 路径
  *   属安全域外）。
  * - 编辑模态：密码留空 = 保持原密码（后端 PUT 语义：空串跳过赋值），placeholder 注明。
- * - sqlite 路径"浏览…"（batch9 Task E ⑱A）：WPF SqliteSettingView 的 Select 按钮
+ * - sqlite 路径"浏览…"：WPF SqliteSettingView 的 Select 按钮
  *   （SqliteSettingViewModel.cs:103，filter "SqliteSource Database|*.db" 照抄）的 web
  *   平价——添加/编辑两模态的路径行均带按钮，调 /api/files/pick 弹后端原生对话框。
  *   偏差：WPF checkFileExists:false（可选不存在的库文件），端点恒 true——只能选已

@@ -45,13 +45,10 @@ export function useFolderOps() {
 
   // 名称输入对话框（naive dialog + NInput 渲染函数）：resolve(名称) | resolve(null)；
   // onPositiveClick 返回 false 保持打开（校验失败就地提示）。
-  // 回车=确认（batch8 起接入，batch9 #5 加固——owner 复测仍报"必须点确认按钮"；
-  // 隔离环境用真实键盘事件实测 batch8 的机制本身是通的，推测失败环境差异在焦点到达
-  // 或宿主（WebView2）事件路径上，故不再依赖任何单一环节）：
+  // 回车=确认走三层冗余（宿主 WebView2 的焦点到达路径存在环境差异，不依赖任何单一环节）：
   // - NInput 元素级 onKeydown：焦点在输入框内时（正常路径）keydown 冒泡到 NInput 根元素触发；
   // - window 级 keydown 兜底：对话框打开期间无论焦点在哪（body/其他控件），回车一律走
-  //   同一 submit；已被其他消费者认领（defaultPrevented）或焦点在按钮/textarea/n-select
-  //  （回车=原生 click/换行/选中语义）时让位；
+  //   同一 submit；焦点在按钮/textarea/n-select（回车=原生 click/换行/选中语义）时让位；
   // - 打开即显式 focus()：不依赖 autofocus 属性对动态插入 DOM 的生效（HTML 规范允许
   //   每 document 只 flush 一次，宿主实现存在差异）。
   // IME 组合输入中的回车（候选选字）各级一致忽略；无效名时就地提示并保持打开。
@@ -223,7 +220,7 @@ export function useFolderOps() {
       })
       return
     }
-    // 有服务器：二选一（batch9 #4）。WPF 语义核实（ServerTreeViewModel.cs:503-516）：
+    // 有服务器：二选一。WPF 语义核实（ServerTreeViewModel.cs:503-516）：
     // 确认后实际删除文件夹及全部内含服务器（AppData.DeleteServer），但其确认文案写的是
     // "move its contents to parent folder"（文不符实）。web 给两种语义显式选择：
     // positive（红）= WPF 实际行为（连服务器一起删）；negative = WPF 文案所述/web 原行为
