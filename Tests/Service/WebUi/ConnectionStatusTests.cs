@@ -78,6 +78,39 @@ namespace Tests.Service.WebUi
                 WebUiEndpoints.DeriveConnectionState(new[] { "seed-rdp" }, ""));
         }
 
+        // ---- 纯函数：DeriveConnectionState 连接进行中（connecting，batch7 #6）----
+
+        [TestMethod]
+        public void Derive_ConnectingSetContainsId_Connecting()
+        {
+            // 连接请求进行中（前置脚本/凭据对话期间），尚未注册会话 → 琥珀中间态
+            Assert.AreEqual(WebUiConstants.StatusConnecting,
+                WebUiEndpoints.DeriveConnectionState(Array.Empty<string>(), "seed-rdp", new[] { "seed-rdp" }));
+        }
+
+        [TestMethod]
+        public void Derive_ActiveWinsOverConnecting_Connected()
+        {
+            // 注册完成瞬间：连接字典已含 host、进行中集合尚未收尾移除——按已连接呈现，避免绿→琥珀回跳
+            Assert.AreEqual(WebUiConstants.StatusConnected,
+                WebUiEndpoints.DeriveConnectionState(new[] { "seed-rdp" }, "seed-rdp", new[] { "seed-rdp" }));
+        }
+
+        [TestMethod]
+        public void Derive_OnlyOtherServersConnecting_TargetDisconnected()
+        {
+            Assert.AreEqual(WebUiConstants.StatusDisconnected,
+                WebUiEndpoints.DeriveConnectionState(Array.Empty<string>(), "seed-rdp", new[] { "a", "b" }));
+        }
+
+        [TestMethod]
+        public void Derive_NullConnectingSet_Disconnected()
+        {
+            // 旧调用形态（省略第三参）：行为与扩展前逐字节一致
+            Assert.AreEqual(WebUiConstants.StatusDisconnected,
+                WebUiEndpoints.DeriveConnectionState(Array.Empty<string>(), "seed-rdp", null));
+        }
+
         // ---- DtoMapper 接线：connectionState 参数 ----
 
         [TestMethod]

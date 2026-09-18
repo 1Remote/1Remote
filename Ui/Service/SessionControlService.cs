@@ -62,6 +62,7 @@ namespace _1RM.Service
         private readonly object _dictLock = new object();
         private readonly ConcurrentDictionary<string, TabWindowView> _token2TabWindows = new ConcurrentDictionary<string, TabWindowView>();
         private readonly ConcurrentDictionary<string, HostBase> _connectionId2Hosts = new ConcurrentDictionary<string, HostBase>();
+        private readonly ConcurrentDictionary<string, byte> _connectingServerIds = new ConcurrentDictionary<string, byte>();
         private readonly ConcurrentDictionary<string, FullScreenWindowView> _connectionId2FullScreenWindows = new ConcurrentDictionary<string, FullScreenWindowView>();
         private readonly ConcurrentQueue<HostBase> _hostToBeDispose = new ConcurrentQueue<HostBase>();
         private readonly ConcurrentQueue<Window> _windowToBeDispose = new ConcurrentQueue<Window>();
@@ -80,9 +81,33 @@ namespace _1RM.Service
         public ConcurrentDictionary<string, HostBase> ConnectionId2Hosts => _connectionId2Hosts;
 
         /// <summary>
-        /// Web UI 连接状态刷新通知（Plan 4 Task 1）：会话进入/移出 _connectionId2Hosts 后调用，
+        /// 进行中连接的目标服务器 Id 集合（Web UI 状态点反馈，batch7 #6）：
+        /// OnRequestOpenConnection 入队时加入、Connect 收尾（注册成功或放弃/失败）时移除。
+        /// 动机：连接管线在会话注册（ConnectWithTab 的 TryAdd）之前有前置脚本、
+        /// 可用性探测、凭据/密码对话等耗时环节（实测带 xcopy 前置脚本的服务器 ~8s），
+        /// 此前列表状态点全程无反馈；Web 侧据此集合派生 connecting（琥珀）中间态，
+        /// 随开场的 notify 立即可见，注册后翻绿（connected 优先级高于 connecting，无闪变）。
+        /// 语义：仅「连接请求进行中」，不代表远端可达；与 ConnectionId2Hosts 同为
+        /// ConcurrentDictionary，Kestrel 线程只做键枚举，跨线程安全。
+        /// </summary>
+        public ConcurrentDictionary<string, byte> ConnectingServerIds => _connectingServerIds;
+
+        /// <summary>服务器加入/移出「进行中连接」集合（id 空——如临时会话——静默忽略）。</summary>
+        private void MarkServerConnecting(string? serverId, bool connecting)
+        {
+            if (string.IsNullOrEmpty(serverId))
+                return;
+            if (connecting)
+                _connectingServerIds.TryAdd(serverId, 0);
+            else
+                _connectingServerIds.TryRemove(serverId, out _);
+        }
+
+        /// <summary>
+        /// Web UI 连接状态刷新通知（Plan 4 Task 1）：会话进入/移出 _connectionId2Hosts 后、
+        /// 以及连接请求开始/收尾（进行中集合变动，batch7 #6）时调用，
         /// 触发 GlobalData.ReloadAll(force) → OnReloadAll → /api/events（SSE）推送 reload →
-        /// 前端重新拉取 /api/servers，connectionState 状态点随之点亮/熄灭。
+        /// 前端重新拉取 /api/servers，connectionState 状态点随之点亮/熄灭/转琥珀（connecting）。
         /// force=true 是必须的：连接/断开不写数据库，无 force 的 ReloadAll 会因 NeedRead 判定
         /// 「数据未变」而静默返回，OnReloadAll 不触发（见 GlobalData.ReloadAll）；代价是 Web UI
         /// 运行期每次连接/断开多一次全库重读，可接受。
@@ -121,7 +146,20 @@ namespace _1RM.Service
             var credentialName = assignCredentialName;
             Task.Factory.StartNew(async () =>
             {
-                await Connect(org, view, tabToken, runnerName, credentialName);
+                // 进行中反馈：入集 + 立即通知（Web UI 状态点先转琥珀；无 WebUi 时近零开销）
+                MarkServerConnecting(org.Id, true);
+                NotifyWebUiSessionChanged();
+                try
+                {
+                    await Connect(org, view, tabToken, runnerName, credentialName);
+                }
+                finally
+                {
+                    // 收尾通知：注册成功 → connected（连接字典命中，优先级高于 connecting）；
+                    // 放弃/失败（密码取消、前置脚本退出码非 0、Unhosted 等）→ disconnected。
+                    MarkServerConnecting(org.Id, false);
+                    NotifyWebUiSessionChanged();
+                }
             })
             .Unwrap() // observe the inner task: exceptions thrown by the async lambda land on it, not on the outer Task<Task>, so the ContinueWith below would never see them without this
             .ContinueWith(t =>
@@ -143,7 +181,19 @@ namespace _1RM.Service
             {
                 foreach (var org in protocolBases)
                 {
-                    tabToken = await Connect(org, view, tabToken, runnerName, credentialName);
+                    // 逐台支架（同单台重载）：进行中入集→连接→收尾移除，两端的 notify 让
+                    // Web UI 状态点跟随每台的 connecting/最终态推进
+                    MarkServerConnecting(org.Id, true);
+                    NotifyWebUiSessionChanged();
+                    try
+                    {
+                        tabToken = await Connect(org, view, tabToken, runnerName, credentialName);
+                    }
+                    finally
+                    {
+                        MarkServerConnecting(org.Id, false);
+                        NotifyWebUiSessionChanged();
+                    }
                 }
             })
             .Unwrap() // observe the inner task: exceptions thrown by the async lambda land on it, not on the outer Task<Task>, so the ContinueWith below would never see them without this
