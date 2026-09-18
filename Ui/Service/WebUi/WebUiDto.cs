@@ -111,6 +111,17 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
+    /// POST /api/servers/batch/peek 请求体（批量编辑共享值回读，fix batch8 #8）：
+    /// {ids, ds?}——ids 为目标服务器 id 数组（ds 省略 = Local）。响应为逐台非敏感字段
+    /// 载荷（BatchPeekItem 的 camelCase 序列），绝不包含 password 类加密字段。
+    /// </summary>
+    public class BatchPeekRequest
+    {
+        public List<string>? Ids { get; set; }
+        public string? Ds { get; set; }
+    }
+
+    /// <summary>
     /// POST /api/ui-state/list-order 请求体（列表行拖拽排序）。
     /// ids = 整库服务器 id 按新顺序排列（全量替换 LocalityListViewService.ServerCustomOrder，
     /// 与 WPF ServerListPageView 拖拽落点调 ServerCustomOrderSave 传入完整可见列表同语义）；

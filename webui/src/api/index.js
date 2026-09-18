@@ -98,6 +98,10 @@ export const api = {
   // 批量补丁：patch 键为 camelCase（列表 DTO 域，与后端 allow-list 对应）；ds 省略 = Local
   batchUpdate: (ids, patch, ds) =>
     request('/api/servers/batch', { method: 'POST', body: ds ? { ids, patch, ds } : { ids, patch } }),
+  // 批量回读（batch8 #8）：只读返回逐台非敏感字段 {id, askPasswordWhenConnect,
+  // inheritedCredentialName, startupAutoCommand, startupPath, rdpFileAdditionalSettings}
+  //（协议不适用字段为 null；不含 password 等任何加密字段）；ids 空或任一未知 id → 400/404
+  batchPeek: (ids, ds) => request('/api/servers/batch/peek', { method: 'POST', body: ds ? { ids, ds } : { ids } }),
   icons: () => request('/api/icons'),
   // Serial 编辑器可输入下拉建议：后端机器 COM 口 + 波特率表
   //（与 WPF SerialFormView 的 AutoCompleteComboBox 数据源同源，Serial.cs）

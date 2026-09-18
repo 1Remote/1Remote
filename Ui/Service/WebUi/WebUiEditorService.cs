@@ -39,6 +39,38 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
+    /// 批量回读（POST /api/servers/batch/peek）的结果分类，由端点映射为 HTTP 状态码。
+    /// 与 EditorSaveResult 分离：peek 是只读操作，无 DbError/ServerId 载体。
+    /// </summary>
+    public sealed class BatchPeekResult
+    {
+        public EditorSaveStatus Status { get; private init; }
+        /// <summary>Ok 时的逐台回读载荷（camelCase 列表 DTO 域）。</summary>
+        public List<BatchPeekItem> Items { get; private init; } = new();
+        /// <summary>BadRequest 时的错误列表。</summary>
+        public List<string> Errors { get; private init; } = new();
+
+        public static BatchPeekResult Ok(List<BatchPeekItem> items) => new() { Status = EditorSaveStatus.Ok, Items = items };
+        public static BatchPeekResult BadRequest(List<string> errors) => new() { Status = EditorSaveStatus.BadRequest, Errors = errors };
+        public static BatchPeekResult NotFound() => new() { Status = EditorSaveStatus.NotFound };
+    }
+
+    /// <summary>
+    /// 批量回读的单台载荷：仅非敏感字段（安全论证见 WebUiEditorService.PeekBatch 注释——
+    /// 不含 password/privateKey 等任何加密属性；协议不适用字段为 null）。
+    /// 属性名 PascalCase（C# 惯例），端点经 Results.Json 的 Web 默认 camelCase 策略输出。
+    /// </summary>
+    public sealed class BatchPeekItem
+    {
+        public string Id { get; set; } = string.Empty;
+        public bool? AskPasswordWhenConnect { get; set; }
+        public string? InheritedCredentialName { get; set; }
+        public string? StartupAutoCommand { get; set; }
+        public string? StartupPath { get; set; }
+        public string? RdpFileAdditionalSettings { get; set; }
+    }
+
+    /// <summary>
     /// 连接编辑器的编排逻辑（供 Web UI 端点复用，与 HTTP 层解耦）。
     /// 职责：GET /api/servers/{id}/config 可编辑配置（克隆解密后的明文 JSON）、
     /// POST/PUT/DELETE /api/servers*（新建/整体替换/删除）、POST /api/servers/batch
@@ -329,6 +361,69 @@ namespace _1RM.Service.WebUi
                 property.SetValue(server, converted);
             }
             return errors;
+        }
+
+        /// <summary>
+        /// POST /api/servers/batch/peek：批量编辑的共享值回读（fix batch8 #8）。
+        /// 出参逐台固定 6 键（camelCase 列表 DTO 域）：id + 批量表单中列表 DTO 不携带、
+        /// 历来只能「覆盖」的 5 个非敏感字段（askPasswordWhenConnect / inheritedCredentialName /
+        /// startupAutoCommand / startupPath / rdpFileAdditionalSettings；属性不存在于该协议
+        /// 类型时为 null，如 RDP 无 StartupPath）。
+        ///
+        /// 安全论证（本端点绝不返回加密字段）：
+        ///  - 六个键中无 password/privateKey 类加密属性——AskPasswordWhenConnect 是 bool?、
+        ///    InheritedCredentialName 是凭据库条目名引用（非机密，列表编辑器本就展示）、
+        ///    其余三个是纯文本命令/路径/rdp 附加行；
+        ///  - 因此无需克隆+解密（GetEditableConfig 的明文纪律是为 password 类字段设立的），
+        ///    直接读 VmItemList 缓存对象即可——缓存是加密态，但本方法不触碰任何加密属性，
+        ///    也不存在"读出即解密"的属性（解密只发生在 DecryptToConnectLevel 显式调用）；
+        ///  - 只读端点：无任何写入路径，不克隆不落库（反射只 GetProperty+GetValue）。
+        /// 错误语义与 batch 补丁对齐：ids 空/缺失 → BadRequest；未知数据源 → BadRequest；
+        /// 任一 id 不存在/不可编辑 → NotFound（整批拒绝，前端回退到「未回读」占位）。
+        /// </summary>
+        public static BatchPeekResult PeekBatch(string? dataSourceName, List<string>? ids)
+        {
+            if (ids == null || ids.Count == 0)
+                return BatchPeekResult.BadRequest(new List<string> { "ids must be a non-empty array of server ids" });
+
+            var dataSource = ResolveDataSource(dataSourceName);
+            if (dataSource == null)
+                return BatchPeekResult.BadRequest(new List<string> { $"unknown dataSourceName '{dataSourceName}'" });
+
+            var idList = ids.Distinct().ToList();
+            var gd = IoC.Get<GlobalData>();
+            var vms = new List<ProtocolBaseViewModel>();
+            lock (gd) // 快照语义同 ApplyBatchPatch：锁内只做查找
+            {
+                foreach (var id in idList)
+                {
+                    var vm = gd.GetItemById(dataSource.DataSourceName, id);
+                    if (vm == null || !WebUiEndpoints.IsConnectable(vm.Server))
+                        return BatchPeekResult.NotFound();
+                    vms.Add(vm);
+                }
+            }
+
+            var items = vms.Select(vm => new BatchPeekItem
+            {
+                Id = vm.Server.Id,
+                AskPasswordWhenConnect = (bool?)ReadProperty(vm.Server, nameof(ProtocolBaseWithAddressPortUserPwd.AskPasswordWhenConnect)),
+                InheritedCredentialName = (string?)ReadProperty(vm.Server, nameof(ProtocolBaseWithAddressPortUserPwd.InheritedCredentialName)),
+                StartupAutoCommand = (string?)ReadProperty(vm.Server, nameof(SSH.StartupAutoCommand)),
+                StartupPath = (string?)ReadProperty(vm.Server, nameof(SFTP.StartupPath)),
+                RdpFileAdditionalSettings = (string?)ReadProperty(vm.Server, nameof(RDP.RdpFileAdditionalSettings)),
+            }).ToList();
+            return BatchPeekResult.Ok(items);
+        }
+
+        /// <summary>
+        /// 按声明类型读取属性：属性不在 server 的实际类型上（协议差异，如 RDP 无 StartupPath）
+        /// 返回 null 而非抛错——批量回读是尽力展示共享值，协议不适用字段以 null 占位。
+        /// </summary>
+        private static object? ReadProperty(ProtocolBase server, string propertyName)
+        {
+            var property = server.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            return property != null && property.CanRead ? property.GetValue(server) : null;
         }
 
         #endregion
