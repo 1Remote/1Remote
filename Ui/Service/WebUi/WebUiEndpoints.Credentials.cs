@@ -79,7 +79,8 @@ namespace _1RM.Service.WebUi
             });
 
             // 更新凭据（按名寻址，与 WPF 凭据编辑一致）：整体替换语义；Password/PrivateKeyPath
-            // 空=保持原值（batch8 #17：编辑 API 不回显明文，空提交不得清空密钥）；
+            // 三态：null（未提交）=保持原值、空串=显式清除、非空=新值（batch9 Task D ⑯，接替
+            // batch8 #17 的"空=保持"——web 编辑表单掩码占位，显式清空需能落库）；
             // nameBefore=路由名驱动引用服务器联动改名/字段同步（Dapper 事务）；
             // 重命名目标名做与新建相同的唯一校验。
             app.MapPut("/api/credentials/{name}", (string name, string? ds, CredentialSaveRequest? body) =>

@@ -296,8 +296,8 @@ namespace _1RM.Service.WebUi
         public string? Address { get; set; }        // API 兼容保留（web 表单不提交，落库前被清空）
         public string? Port { get; set; }           // 同上
         public string? UserName { get; set; }
-        public string? Password { get; set; }
-        public string? PrivateKeyPath { get; set; }
+        public string? Password { get; set; }       // Update：null=保持原值；空串=显式清除；非空=新值（batch9 Task D ⑯）
+        public string? PrivateKeyPath { get; set; } // 同 Password（Create 一律按空串=无处理）
     }
 
     /// <summary>
