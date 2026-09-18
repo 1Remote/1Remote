@@ -142,12 +142,17 @@ namespace _1RM.Service.WebUi
     }
 
     /// <summary>
-    /// POST /api/files/pick-exe 请求体（batch8 Task D #10）：{path?}。path 为当前 exe 路径
-    /// （仅用于推导文件对话框的初始目录，取其目录名；缺失/无效时对话框用系统默认位置）。
-    /// 响应 {path} = 用户选中的 exe 全路径；用户取消 → 404。
+    /// POST /api/files/pick 请求体（batch9 Task B #9，泛化自 batch8 的 pick-exe）：全 {可选}。
+    ///  - filter：文件对话框过滤器，WPF SelectFileHelper 线格式（"label|*.ext1;*.ext2|label2|*.*"）；
+    ///    缺省回退 "exe|*.exe"（原 pick-exe 调用方语义，exe 选择器仍是主流用法）。
+    ///  - title：对话框标题（WPF CmdSelectScript 传 "Select a script"）；缺省用系统默认。
+    ///  - path：当前值（仅用于推导对话框初始目录，取其目录名；缺失/无效时用系统默认位置）。
+    /// 响应 {path} = 用户选中的文件全路径；用户取消 → 404。
     /// </summary>
-    public class PickExeRequest
+    public class PickFileRequest
     {
+        public string? Filter { get; set; }
+        public string? Title { get; set; }
         public string? Path { get; set; }
     }
 
