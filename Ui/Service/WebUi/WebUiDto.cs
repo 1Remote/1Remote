@@ -24,6 +24,7 @@ namespace _1RM.Service.WebUi
         public string Address { get; set; } = string.Empty;
         public string Port { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
+        public string SubTitle { get; set; } = string.Empty;   // ProtocolBase.SubTitle（WPF 列表地址列原文，如 Serial "COM1(9600)"）
         public string Note { get; set; } = string.Empty;      // 备注（Markdown 源文本，供列表行悬停预览）
         public List<string> Tags { get; set; } = new();
         public string Color { get; set; } = string.Empty;      // 服务器自定义色 hex

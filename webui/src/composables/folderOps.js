@@ -42,11 +42,22 @@ export function useFolderOps() {
   }
 
   // 名称输入对话框（naive dialog + NInput 渲染函数）：resolve(名称) | resolve(null)；
-  // onPositiveClick 返回 false 保持打开（校验失败就地提示）
+  // onPositiveClick 返回 false 保持打开（校验失败就地提示）。
+  // 回车=确认（fix：此前输入名称后回车无动作）：与「确定」按钮共用校验与 resolve；
+  // IME 组合输入中的回车（候选选字）不触发；无效时就地提示并保持打开
   function promptName(title, initial) {
     return new Promise((resolve) => {
       const name = ref(initial || '')
-      dialog.create({
+      const submit = () => {
+        const v = name.value.trim()
+        if (!v || v.includes('/')) {
+          message.warning(t('tree.folderNameInvalid'))
+          return false
+        }
+        resolve(v)
+        return true
+      }
+      const dia = dialog.create({
         title,
         content: () =>
           h(NInput, {
@@ -56,17 +67,13 @@ export function useFolderOps() {
             'onUpdate:value': (v) => {
               name.value = v
             },
+            onKeydown: (e) => {
+              if (e.key === 'Enter' && !e.isComposing && submit()) dia.destroy()
+            },
           }),
         positiveText: t('common.ok'),
         negativeText: t('editor.cancel'),
-        onPositiveClick: () => {
-          const v = name.value.trim()
-          if (!v || v.includes('/')) {
-            message.warning(t('tree.folderNameInvalid'))
-            return false
-          }
-          resolve(v)
-        },
+        onPositiveClick: () => submit() || false,
         onNegativeClick: () => resolve(null),
         onClose: () => resolve(null),
       })

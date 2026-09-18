@@ -5,7 +5,7 @@
   "common.ok": "确定",
 
   "search.placeholder": "搜索服务器（Ctrl+F）",
-  "search.title": "Ctrl+K 聚焦 · Esc 清空",
+  "search.title": "搜索服务器（Ctrl+F）",
   "search.searching": "搜索中…",
 
   "crumb.allDataSources": "全部数据",
@@ -92,6 +92,7 @@
   "ctx.delete": "删除",
 
   "row.select": "选择",
+  "row.selectFolder": "选择文件夹内所有服务器（含子文件夹）",
   "row.connect": "连接",
   "row.edit": "编辑",
   "row.note": "备注",

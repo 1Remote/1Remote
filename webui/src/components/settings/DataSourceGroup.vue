@@ -192,6 +192,16 @@ async function editSave() {
   }
 }
 
+// 模态表单回车=保存（添加/编辑模态各自传保存函数；与保存按钮同守卫——校验未过/保存中
+// 不动作）：输入框聚焦回车提交；按钮/textarea/下拉（类型下拉的回车=选中选项）留给原生
+// 行为；IME 组合中的回车（选字）不触发
+function onFormEnter(e, fn) {
+  if (e.key !== 'Enter' || e.isComposing) return
+  if (e.target?.closest?.('button, textarea, .n-select')) return
+  e.preventDefault()
+  fn()
+}
+
 // ---- 删除：二段确认（409 keepServers 重试）----
 function onDelete(d) {
   dialog.warning({
@@ -312,7 +322,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
       role="dialog"
       aria-modal="true"
     >
-      <div class="form">
+      <div class="form" @keydown="onFormEnter($event, addSave)">
         <div class="f-row">
           <label>{{ t('settings.d.type') }}</label>
           <n-select
@@ -384,7 +394,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
       role="dialog"
       aria-modal="true"
     >
-      <div class="form">
+      <div class="form" @keydown="onFormEnter($event, editSave)">
         <div v-if="editing?.type === 'sqlite'" class="f-row">
           <label>{{ t('settings.d.f.path') }}</label>
           <n-input size="small" v-model:value="editForm.path" :input-props="{ spellcheck: false }" />
