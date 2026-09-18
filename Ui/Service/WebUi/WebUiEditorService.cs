@@ -424,7 +424,35 @@ namespace _1RM.Service.WebUi
                 object? converted;
                 try
                 {
-                    converted = prop.Value?.ToObject(property.PropertyType);
+                    var targetType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+                    if (targetType.IsEnum && prop.Value?.Type == JTokenType.Integer)
+                    {
+                        // 枚举值域校验（评审建议）：Integer 类型门只挡类型不挡取值，
+                        // 手搓 API 传未定义值（如 42）会被 Newtonsoft 接受落库——拒绝之
+                        var rawEnum = prop.Value!.ToObject(targetType);
+                        if (!Enum.IsDefined(targetType, rawEnum!))
+                        {
+                            errors.Add($"patch field '{prop.Name}': {prop.Value} is not a defined value of enum {targetType.Name}");
+                            continue;
+                        }
+                        converted = rawEnum;
+                    }
+                    else if (targetType == typeof(List<string>) && prop.Value?.Type == JTokenType.Array)
+                    {
+                        // 数组元素类型校验（评审建议）：Newtonsoft 会把 [1,true] 强转成 ["1","True"]，
+                        // 静默改写标签内容——非字符串元素直接拒绝
+                        var arr = (JArray)prop.Value!;
+                        if (arr.Any(el => el.Type != JTokenType.String))
+                        {
+                            errors.Add($"patch field '{prop.Name}': array elements must all be strings");
+                            continue;
+                        }
+                        converted = arr.ToObject(property.PropertyType);
+                    }
+                    else
+                    {
+                        converted = prop.Value?.ToObject(property.PropertyType);
+                    }
                 }
                 catch (Exception ex)
                 {

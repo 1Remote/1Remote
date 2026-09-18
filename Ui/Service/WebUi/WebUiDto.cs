@@ -113,7 +113,7 @@ namespace _1RM.Service.WebUi
     /// <summary>
     /// POST /api/servers/batch/peek 请求体（批量编辑共享值回读，fix batch8 #8）：
     /// {ids, ds?}——ids 为目标服务器 id 数组（ds 省略 = Local）。响应为逐台非敏感字段
-    /// 载荷（BatchPeekItem 的 camelCase 序列），绝不包含 password 类加密字段。
+    /// 载荷（allow-list 派生的 camelCase 键序列），绝不包含 password 类加密字段。
     /// </summary>
     public class BatchPeekRequest
     {
