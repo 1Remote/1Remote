@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
 import { enUS, zhCN } from 'naive-ui'
 import { useNaiveTheme } from './themes'
 import { useServers } from './composables/useServers'
@@ -56,6 +57,25 @@ function onAddSelect(key) {
 // 数据源 = App 挂载即拉一次 /api/version（首检未完成时 30s 重拉至定论，见组合式函数头注释）；
 // 简单方案，刻意不与设置页共享状态（后端读静态缓存，请求轻量）
 const { update: updateInfo } = useVersionInfo()
+
+// ⚙ 进设置（#19 自愈加固）：router.push 同目标重复导航会被 vue-router 判为
+// NAVIGATION_DUPLICATED 静默丢弃（isSameRouteLocation 去重，不重跑 finalizeNavigation，
+// 不重新赋 currentRoute）——若一次语言切换等全站重渲染中 router-view 的渲染 effect
+// 曾抛错死亡（URL/currentRoute 已推进而视图停在旧页），此后再点 ⚙ 全部落在去重分支，
+// 表现为"永远进不了设置、刷新才恢复"。检测到 duplicated 失败时带 force 重发一次：
+// force 跳过去重检查，finalizeNavigation 重新给 currentRoute 赋新对象，重新触发
+// router-view 渲染——把"卡死直到手动刷新"变成"下一次点击自愈"。
+const router = useRouter()
+function openSettings() {
+  router.push('/settings').then(
+    (failure) => {
+      if (isNavigationFailure(failure, NavigationFailureType.duplicated)) {
+        router.push({ path: '/settings', force: true }).catch(() => {})
+      }
+    },
+    () => {}
+  )
+}
 
 // ===== 窗口控制：仅 WebView2 宿主可见/生效 =====
 // window.chrome.webview 只存在于 WebView2：普通浏览器打开时整套窗口控制隐藏，
@@ -172,7 +192,7 @@ function onTopbarDblClick(e) {
                 <n-button quaternary size="small" :disabled="editorOpen" :title="t('topbar.addServer')">+</n-button>
               </n-dropdown>
               <span class="gear-wrap">
-                <n-button quaternary size="small" :disabled="editorOpen" @click="$router.push('/settings')">⚙</n-button>
+                <n-button quaternary size="small" :disabled="editorOpen" @click="openSettings()">⚙</n-button>
                 <!-- 更新红点：仅 updateAvailable（fix batch6 Task D #12） -->
                 <span v-if="updateInfo?.available" class="gear-dot"></span>
               </span>
