@@ -125,6 +125,18 @@ namespace _1RM.View
         {
             if (this.ShowInTaskbar)
             {
+#if !DEBUG
+                // Honor the user's 'close button behavior = Exit' choice for Alt+F4 and the
+                // taskbar 'Close window' command too, mirroring BtnClose.Click's Exit branch
+                // instead of always hiding to the tray (which leaves a background process
+                // with live sessions that the user believes is gone).
+                if (IoC.Get<ConfigurationService>().General.CloseButtonBehavior == (int)GeneralConfig.EnumCloseButtonBehavior.Exit)
+                {
+                    Vm.HideMe(); // clears ShowInTaskbar so App.Close's internal close is not re-intercepted here
+                    App.Close();
+                    return;
+                }
+#endif
                 Vm.HideMe();
                 e.Cancel = true;
             }

@@ -91,13 +91,14 @@ namespace _1RM.Service
             Task.Factory.StartNew(async () =>
             {
                 await Connect(org, view, tabToken, runnerName, credentialName);
-            }).ContinueWith(t =>
+            })
+            .Unwrap() // observe the inner task: exceptions thrown by the async lambda land on it, not on the outer Task<Task>, so the ContinueWith below would never see them without this
+            .ContinueWith(t =>
             {
-                if (t.Exception != null)
-                {
-                    SimpleLogHelper.Fatal(t.Exception);
-                }
-            });
+                SimpleLogHelper.Fatal(t.Exception!);
+                Execute.OnUIThread(() =>
+                    MessageBoxHelper.ErrorAlert($"Connect failed: {t.Exception!.GetBaseException().Message}"));
+            }, TaskContinuationOptions.OnlyOnFaulted);
         }
 
         private void OnRequestOpenConnection(IEnumerable<ProtocolBase> protocolBases, in string fromView, in string assignTabToken = "", in string assignRunnerName = "", in string assignCredentialName = "")
@@ -113,13 +114,14 @@ namespace _1RM.Service
                 {
                     tabToken = await Connect(org, view, tabToken, runnerName, credentialName);
                 }
-            }).ContinueWith(t =>
+            })
+            .Unwrap() // observe the inner task: exceptions thrown by the async lambda land on it, not on the outer Task<Task>, so the ContinueWith below would never see them without this
+            .ContinueWith(t =>
             {
-                if (t.Exception != null)
-                {
-                    SimpleLogHelper.Fatal(t.Exception);
-                }
-            });
+                SimpleLogHelper.Fatal(t.Exception!);
+                Execute.OnUIThread(() =>
+                    MessageBoxHelper.ErrorAlert($"Connect failed: {t.Exception!.GetBaseException().Message}"));
+            }, TaskContinuationOptions.OnlyOnFaulted);
         }
 
 
@@ -200,13 +202,29 @@ namespace _1RM.Service
         {
             Task.Factory.StartNew(() =>
             {
-                MarkProtocolHostToClose(connectionIds);
-                CleanupProtocolsAndWindows();
+                try
+                {
+                    MarkProtocolHostToClose(connectionIds);
+                    CleanupProtocolsAndWindows();
+                }
+                catch (Exception e)
+                {
+                    // a failure here used to vanish silently (no UI feedback, no log), leaving half-closed sessions behind
+                    SimpleLogHelper.Fatal(e);
+                }
             });
         }
         private void MarkProtocolHostToClose(string[] connectionIds)
         {
             var tabsToHide = new List<(string key, TabWindowView tab)>();
+            // Collect tabs whose UI item removal must be deferred: calling TryRemoveItem dispatches
+            // to the UI thread and blocks (OnUIThreadSync). Doing that while holding _dictLock
+            // deadlocks whenever the UI thread is itself waiting on _dictLock (e.g. a concurrent
+            // connect calling CleanupProtocolsAndWindows). Same reason as the tabsToHide fix below.
+            var tabsToRemoveItem = new List<(string key, TabWindowView tab, string connectionId)>();
+            // Full-screen windows to ShowOrHide after the lock (ShowOrHide must run on the UI thread,
+            // and dispatching while holding _dictLock has the same deadlock risk).
+            var fullScreensToShowOrHide = new List<FullScreenWindowView>();
 
             lock (_dictLock)
             {
@@ -231,17 +249,10 @@ namespace _1RM.Service
                     foreach (var (key, tab) in _token2TabWindows.ToArray())
                     {
 #endif
-                        if (tab.GetViewModel().TryRemoveItem(connectionId))
+                        // detect only, defer the UI round-trip to after the lock
+                        if (tab.GetViewModel().Items.Any(x => x.Content.ConnectionId == connectionId))
                         {
-                            var items = tab.GetViewModel().Items.ToList();
-                            if (items.Count == 0)
-                            {
-                                // collect instead of calling Hide() inside lock
-                                tabsToHide.Add((key, tab));
-                                // move tab from dict to queue
-                                _token2TabWindows.TryRemove(key, out _);
-                                _windowToBeDispose.Enqueue(tab);
-                            }
+                            tabsToRemoveItem.Add((key, tab, connectionId));
                         }
                     }
 
@@ -259,8 +270,8 @@ namespace _1RM.Service
                         {
                             _connectionId2FullScreenWindows.TryRemove(key, out _);
                             _windowToBeDispose.Enqueue(full);
-                            // execyte ShowOrHide in UI thread
-                            Execute.OnUIThreadSync(() => full.ShowOrHide(null));
+                            // defer ShowOrHide to after the lock
+                            fullScreensToShowOrHide.Add(full);
                         }
                     }
                 }
@@ -302,6 +313,35 @@ namespace _1RM.Service
             }
 
             // perform UI operations outside the lock
+            foreach (var (key, tab, connectionId) in tabsToRemoveItem)
+            {
+                if (tab.GetViewModel().TryRemoveItem(connectionId))
+                {
+                    var items = tab.GetViewModel().Items.ToList();
+                    if (items.Count == 0)
+                    {
+                        // retire the window from the routing dict under a short re-lock
+                        // (dictionary operations only, no UI dispatch inside)
+                        lock (_dictLock)
+                        {
+                            if (_token2TabWindows.TryGetValue(key, out var t) && ReferenceEquals(t, tab))
+                            {
+                                // move tab from dict to queue
+                                _token2TabWindows.TryRemove(key, out _);
+                                _windowToBeDispose.Enqueue(tab);
+                                tabsToHide.Add((key, tab));
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var full in fullScreensToShowOrHide)
+            {
+                // execute ShowOrHide in UI thread
+                Execute.OnUIThreadSync(() => full.ShowOrHide(null));
+            }
+
             foreach (var (key, tab) in tabsToHide)
             {
                 // execute Hide in UI thread
