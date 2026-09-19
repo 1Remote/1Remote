@@ -921,7 +921,7 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
 }
 
-/* FolderRow 根节点（.frow）在本组件模板内使用、携带本组件 scope 属性，可直接选中 */
+/* FolderRow 根节点（.frow）在子组件模板中，但子组件根元素携带父组件 scope 属性，可直接选中 */
 .virtual-wrap .frow {
   box-sizing: border-box;
   /* 与 ServerRow 同款：虚拟分支 36px 几何精确一致 */

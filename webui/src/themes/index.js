@@ -19,7 +19,7 @@ export const ACCENT_HEX = {
 // 强调色 hover 色（与 theme.css 中 --accent-hover 保持一致）。
 // naive-ui 内置主题的 primaryColorPressed/Suppl 派生自绿色基底，overrides 只替换给出的键，
 // 故必须一并覆盖，否则按下主按钮/loading 态会闪绿色
-export const ACCENT_HOVER_HEX = {
+const ACCENT_HOVER_HEX = {
   blue: '#4d73ff',
   violet: '#a78bfa',
   pink: '#f472b6',

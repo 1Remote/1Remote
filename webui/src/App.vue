@@ -38,7 +38,7 @@ const searchInput = ref(null)
 // AreBrowserAcceleratorKeysEnabled=false；这里是浏览器直开 dev 页的场景）：
 //  - Ctrl/Cmd+P 打印：应用无打印功能，吞掉（否则弹浏览器打印预览）
 //  - Alt+Left / Alt+Right 历史导航：单页壳无历史语义，keydown preventDefault 拦截。
-//    可拦截性说明（batch11 实测）：本环境 CDP 合成按键不触发浏览器加速键、OS 级
+//    可拦截性说明：本环境 CDP 合成按键不触发浏览器加速键、OS 级
 //    注入到不了窗口，无法实证；按 Chromium/MDN 文档，Alt+←/→ 是 keydown 的默认
 //    动作（可被 preventDefault 取消，保留例外仅 Ctrl+W/T/N 等浏览器保留键），
 //    保留此兜底，硬保证由 WPF 侧 AreBrowserAcceleratorKeysEnabled 提供。
