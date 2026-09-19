@@ -168,14 +168,23 @@ export const api = {
   // DELETE：数据源下仍有服务器时返回 409 {serverCount}，keepServers=true 确认后按 WPF 语义移除
   //（服务器留在库文件中，不迁移不删除）。
   addDataSource: (type, config, name) => request('/api/datasources', { method: 'POST', body: { type, name, config } }),
-  updateDataSource: (name, config) =>
-    request(`/api/datasources/${encodeURIComponent(name)}`, { method: 'PUT', body: { config } }),
+  // newName（可选）= 改名（WPF CmdEdit 弹窗 Name 写 org.DataSourceName 的 web 平价；重名 → 409）
+  updateDataSource: (name, config, newName) =>
+    request(`/api/datasources/${encodeURIComponent(name)}`, {
+      method: 'PUT',
+      body: newName === undefined ? { config } : { name: newName, config },
+    }),
   deleteDataSource: (name, keepServers = false) =>
     request(`/api/datasources/${encodeURIComponent(name)}${keepServers ? '?keepServers=true' : ''}`, {
       method: 'DELETE',
     }),
-  testDataSource: (name, config) =>
-    request(`/api/datasources/${encodeURIComponent(name)}/test`, { method: 'POST', body: { config } }),
+  // type 仅未保存草稿测试时需要（name 查不到已存项时后端按 type 构造临时实例测试，
+  // WPF 测试按钮对表单草稿测试的平价）；已存项 config 覆盖测试时可省略
+  testDataSource: (name, config, type) =>
+    request(`/api/datasources/${encodeURIComponent(name)}/test`, {
+      method: 'POST',
+      body: type === undefined ? { config } : { type, config },
+    }),
   // 运行器配置：整体往返 {protocols:{SSH:{selectedRunnerName, runners:[...]}}}——runners 数组为
   // PascalCase + $type 直通域（与 GET 原样往返，勿做命名转换）；PUT 缺失协议=保持，未知协议 400
   getRunners: () => request('/api/settings/runners'),

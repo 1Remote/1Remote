@@ -155,8 +155,12 @@ namespace _1RM.Service.WebUi
         /// plan 全局约定安全域）；未知名 → 404。字段缺失 = 保持不变；password null/空串 = 保持
         /// （Mysql/Pgsql Password setter 收 "" 会清空，必须条件赋值）。落库顺序 = WPF CmdEdit：
         /// Save() → AddOrUpdateDataSource（断开旧连接重连）。
+        /// newName（body.name，batch10 Task B #7）非空且异于现名 = 改名，WPF CmdEdit 平价：
+        /// 弹窗 Name 直接写 org.DataSourceName 后 Save + AddOrUpdateDataSource（后者移除同实例
+        /// 旧键再入新键）。重名（CurrentCultureIgnoreCase，排除自身）→ 409；WPF sqlite 弹窗
+        /// 仅 Local 禁改名（NameWritable），web 编辑模态本就不开放 Local，其余类型均可改名。
         /// </summary>
-        public static DataSourceMutationResult Update(string name, DataSourceConfigInput? input)
+        public static DataSourceMutationResult Update(string name, DataSourceConfigInput? input, string? newName = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name == DataSourceService.LOCAL_DATA_SOURCE_NAME)
                 return DataSourceMutationResult.BadRequest($"data source 'Local' can not be modified via web ui");
@@ -200,6 +204,20 @@ namespace _1RM.Service.WebUi
             }
             if (errors.Count > 0)
                 return DataSourceMutationResult.BadRequest(errors);
+
+            // 改名（在 config 应用后、Save 前）：排除自身的重名 → 409；同实例改名由
+            // AddOrUpdateDataSource 内部移除旧键再入新键（同实例条目 TryRemove，见其实现）
+            if (!string.IsNullOrWhiteSpace(newName))
+            {
+                var trimmed = newName.Trim();
+                if (trimmed != source.DataSourceName)
+                {
+                    var conflict = FindNameConflict(trimmed);
+                    if (conflict != null && !ReferenceEquals(conflict, source))
+                        return DataSourceMutationResult.Conflict($"name: data source '{trimmed}' already exists", serverCount: 0);
+                    source.DataSourceName = trimmed;
+                }
+            }
 
             var cs = IoC.Get<ConfigurationService>();
             var dss = IoC.Get<DataSourceService>();
@@ -248,14 +266,25 @@ namespace _1RM.Service.WebUi
         /// AddOrUpdateDataSource 内部同款自检，返回错误详情）；mysql/pgsql：静态 TestConnection，
         /// 请求 config 中未提供/空密码时沿用已存密码（解密）。带 config 时按 config 测试
         /// （字段缺省回退已存值）——支持"保存前先测"的向导流程。未知数据源 → 404。
+        ///
+        /// 草稿测试（batch10 Task B #8，WPF 语义对齐）：WPF Mysql/PgsqlSettingViewModel
+        /// .CmdTestConnection 对**表单草稿**构造临时配置直接 TestConnection（不经保存）；
+        /// 未保存的数据源名查不到已存实例，故当 name 无匹配且 body.type + config 齐备时按
+        /// 草稿测试：sqlite 临时实例 SelfCheck；mysql/pgsql 校验必填后静态 TestConnection。
+        /// 密码缺省可回退 name 能寻址到的已存源密码（编辑弹窗"密码留空=保持"的测试侧平价）。
         /// </summary>
-        public static DataSourceTestResult Test(string name, DataSourceConfigInput? input)
+        public static DataSourceTestResult Test(string name, DataSourceConfigInput? input, string? type = null)
         {
             var dss = IoC.Get<DataSourceService>();
             var resolvedName = string.IsNullOrWhiteSpace(name) ? DataSourceService.LOCAL_DATA_SOURCE_NAME : name;
             var source = dss.GetDataSource(resolvedName);
             if (source == null)
-                return DataSourceTestResult.NotFound();
+            {
+                var draftType = NormalizeType(type);
+                if (draftType == null || input == null)
+                    return DataSourceTestResult.NotFound();
+                return TestDraft(draftType, input, name, dss);
+            }
 
             switch (source)
             {
@@ -568,6 +597,69 @@ namespace _1RM.Service.WebUi
             catch (Exception)
             {
                 return false; // TestConnection 内部 OpenNewConnection 异常按失败语义处理
+            }
+        }
+
+        /// <summary>
+        /// 草稿测试（name 无已存实例时的分支）：sqlite = 临时实例 SelfCheck（WPF sqlite 弹窗
+        /// 保存前的 ValidateDbStatusAndShowMessageBox 同款自检）；mysql/pgsql = 必填校验后静态
+        /// TestConnection（WPF CmdTestConnection 对表单草稿构造临时配置的同款）。
+        /// 密码缺省回退：name 能寻址到已存源（改名草稿场景）时沿用其密码。
+        /// </summary>
+        private static DataSourceTestResult TestDraft(string type, DataSourceConfigInput cfg,
+            string? name, DataSourceService dss)
+        {
+            switch (type)
+            {
+                case "sqlite":
+                {
+                    var path = cfg.Path?.Trim() ?? string.Empty;
+                    if (path.Length == 0)
+                        return DataSourceTestResult.BadRequest("config.path: can not be empty");
+                    var source = new SqliteSource(string.IsNullOrWhiteSpace(name) ? "draft" : name!.Trim()) { Path = path };
+                    var ret = source.Database_SelfCheck();
+                    source.Database_CloseConnection();
+                    return DataSourceTestResult.Ok(ret.Status == EnumDatabaseStatus.OK,
+                        MapStatus(ret.Status), ret.Status == EnumDatabaseStatus.OK ? string.Empty : ret.GetErrorMessage);
+                }
+                case "mysql":
+                case "pgsql":
+                {
+                    var host = cfg.Host?.Trim() ?? string.Empty;
+                    var databaseName = cfg.DatabaseName?.Trim() ?? string.Empty;
+                    var userName = cfg.UserName?.Trim() ?? string.Empty;
+                    var port = cfg.Port ?? (type == "mysql" ? 3306 : 5432);
+                    var errors = new List<string>();
+                    if (host.Length == 0) errors.Add("config.host: can not be empty");
+                    if (port < 1 || port > 65535) errors.Add("config.port: must be 1 - 65535");
+                    if (databaseName.Length == 0) errors.Add("config.databaseName: can not be empty");
+                    if (userName.Length == 0) errors.Add("config.userName: can not be empty");
+                    var password = cfg.Password ?? string.Empty;
+                    if (password.Length == 0 && !string.IsNullOrWhiteSpace(name))
+                    {
+                        // 改名草稿：旧名仍能寻址到已存源，沿用其密码（编辑弹窗"密码留空=保持"平价；
+                        // Password 属性在 MysqlSource/PgsqlSource 上，getter 返回解密明文）
+                        switch (dss.GetDataSource(name))
+                        {
+                            case MysqlSource em:
+                                password = em.Password;
+                                break;
+                            case PgsqlSource ep:
+                                password = ep.Password;
+                                break;
+                        }
+                    }
+                    if (password.Length == 0) errors.Add("config.password: can not be empty");
+                    if (errors.Count > 0)
+                        return DataSourceTestResult.BadRequest(string.Join("; ", errors));
+                    var ok = type == "mysql"
+                        ? MysqlSource.TestConnection(host, port, databaseName, userName, password)
+                        : PgsqlSource.TestConnection(host, port, databaseName, userName, password);
+                    return DataSourceTestResult.FromBool(ok,
+                        ok ? WebUiConstants.StatusConnected : WebUiConstants.StatusDisconnected);
+                }
+                default:
+                    return DataSourceTestResult.BadRequest($"type: '{type}' is not supported");
             }
         }
 
