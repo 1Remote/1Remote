@@ -312,6 +312,114 @@ namespace Tests.Service.WebUi
             StringAssert.Contains(cfg2, "\"Port\":\"3382\"");
         }
 
+        /// <summary>前置辅助：POST 新建任意协议一台（json 含鉴别字段与专属字段初值），返回生成的 id。</summary>
+        private static async Task<string> CreateServerViaPostAsync(string json)
+        {
+            var resp = await _client.PostAsync("/api/servers",
+                new StringContent($"{{\"dataSourceName\":\"Local\",\"json\":{json}}}", Encoding.UTF8, "application/json"));
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode,
+                $"前置创建失败: {await resp.Content.ReadAsStringAsync()}");
+            using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+            return doc.RootElement.GetProperty("id").GetString()!;
+        }
+
+        /// <summary>
+        /// 混合协议批量编辑（owner 验证要求）：两协议 RDP+SSH，patch 仅含共有键
+        /// （displayName/port/askPasswordWhenConnect——webui bulkSchemaView 混合交集的成员，
+        /// 511 组合穷举已核实前端交集无越权键）→ 两台共有键更新；RDP 专属三字段
+        /// （RdpWidth/RdpFullScreenFlag/EnableClipboard）与 SSH 专属两字段
+        /// （SshVersion/StartupAutoCommand）逐字段保持原值，未 patch 的密码明文往返不变。
+        /// 反向保护（交集外键手搓提交 → 400 零写入）见 BatchPatch_ExtendedKeyMissingOnProtocol_Returns400。
+        /// </summary>
+        [TestMethod]
+        public async Task BatchPatch_MixedTwoProtocols_CommonKeysApplied_SpecificFieldsUntouched()
+        {
+            var rdpId = await CreateServerViaPostAsync(
+                "{\"Protocol\":\"RDP\",\"ClassVersion\":\"RDP.V1\",\"DisplayName\":\"mix-rdp\"," +
+                "\"Address\":\"172.18.1.1\",\"Port\":\"3391\",\"Password\":\"pw-rdp-mix\"," +
+                "\"RdpWidth\":1234,\"RdpFullScreenFlag\":2,\"EnableClipboard\":false}");
+            var sshId = await CreateServerViaPostAsync(
+                "{\"Protocol\":\"SSH\",\"ClassVersion\":\"Putty.SSH.V1\",\"DisplayName\":\"mix-ssh\"," +
+                "\"Address\":\"172.18.2.2\",\"Port\":\"3392\",\"Password\":\"pw-ssh-mix\"," +
+                "\"SshVersion\":1,\"StartupAutoCommand\":\"cd /mix-ssh\"}");
+
+            var resp = await PostBatchAsync(
+                $"{{\"ids\":[\"{rdpId}\",\"{sshId}\"]," +
+                "\"patch\":{\"displayName\":\"mix-renamed\",\"port\":\"2222\",\"askPasswordWhenConnect\":true}}");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode,
+                $"混合协议批量补丁失败: {await resp.Content.ReadAsStringAsync()}");
+            StringAssert.Contains(await resp.Content.ReadAsStringAsync(), "\"updated\":2");
+
+            // RDP 侧：共有键已更新，专属三字段与密码逐字段保持
+            var rdp = await GetConfigAsync(rdpId);
+            StringAssert.Contains(rdp, "\"DisplayName\":\"mix-renamed\"", "共有键 displayName 应写入 RDP");
+            StringAssert.Contains(rdp, "\"Port\":\"2222\"", "共有键 port 应写入 RDP");
+            StringAssert.Contains(rdp, "\"AskPasswordWhenConnect\":true", "共有键 askPasswordWhenConnect 应写入 RDP");
+            StringAssert.Contains(rdp, "\"RdpWidth\":1234", "RDP 专属 RdpWidth 必须保持原值");
+            StringAssert.Contains(rdp, "\"RdpFullScreenFlag\":2", "RDP 专属 RdpFullScreenFlag 必须保持原值");
+            StringAssert.Contains(rdp, "\"EnableClipboard\":false", "RDP 专属 EnableClipboard 必须保持原值");
+            StringAssert.Contains(rdp, "\"Password\":\"pw-rdp-mix\"", "未 patch 的 RDP 密码必须保持");
+
+            // SSH 侧：共有键已更新，专属两字段与密码逐字段保持
+            var ssh = await GetConfigAsync(sshId);
+            StringAssert.Contains(ssh, "\"DisplayName\":\"mix-renamed\"", "共有键 displayName 应写入 SSH");
+            StringAssert.Contains(ssh, "\"Port\":\"2222\"", "共有键 port 应写入 SSH");
+            StringAssert.Contains(ssh, "\"AskPasswordWhenConnect\":true", "共有键 askPasswordWhenConnect 应写入 SSH");
+            StringAssert.Contains(ssh, "\"SshVersion\":1", "SSH 专属 SshVersion 必须保持原值");
+            StringAssert.Contains(ssh, "\"StartupAutoCommand\":\"cd /mix-ssh\"", "SSH 专属 StartupAutoCommand 必须保持原值");
+            StringAssert.Contains(ssh, "\"Password\":\"pw-ssh-mix\"", "未 patch 的 SSH 密码必须保持");
+        }
+
+        /// <summary>
+        /// 混合协议批量编辑（owner 验证要求）：三协议 RDP+SSH+VNC 同款——patch 仅含共有键，
+        /// 三台共有键更新，三协议专属字段（RDP 三项 / SSH 两项 / VNC 的 VncWindowResizeMode）
+        /// 与各自未 patch 的密码全部逐字段保持原值。
+        /// </summary>
+        [TestMethod]
+        public async Task BatchPatch_MixedThreeProtocols_CommonKeysApplied_SpecificFieldsUntouched()
+        {
+            var rdpId = await CreateServerViaPostAsync(
+                "{\"Protocol\":\"RDP\",\"ClassVersion\":\"RDP.V1\",\"DisplayName\":\"mix3-rdp\"," +
+                "\"Address\":\"172.19.1.1\",\"Port\":\"3394\",\"Password\":\"pw3-rdp\"," +
+                "\"RdpWidth\":2345,\"RdpFullScreenFlag\":2,\"EnableClipboard\":false}");
+            var sshId = await CreateServerViaPostAsync(
+                "{\"Protocol\":\"SSH\",\"ClassVersion\":\"Putty.SSH.V1\",\"DisplayName\":\"mix3-ssh\"," +
+                "\"Address\":\"172.19.2.2\",\"Port\":\"3395\",\"Password\":\"pw3-ssh\"," +
+                "\"SshVersion\":1,\"StartupAutoCommand\":\"cd /mix3-ssh\"}");
+            var vncId = await CreateServerViaPostAsync(
+                "{\"Protocol\":\"VNC\",\"ClassVersion\":\"VNC.V1\",\"DisplayName\":\"mix3-vnc\"," +
+                "\"Address\":\"172.19.3.3\",\"Port\":\"3396\",\"Password\":\"pw3-vnc\"," +
+                "\"VncWindowResizeMode\":1}");
+
+            var resp = await PostBatchAsync(
+                $"{{\"ids\":[\"{rdpId}\",\"{sshId}\",\"{vncId}\"]," +
+                "\"patch\":{\"displayName\":\"mix3-renamed\",\"port\":\"3333\",\"askPasswordWhenConnect\":true}}");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode,
+                $"三协议批量补丁失败: {await resp.Content.ReadAsStringAsync()}");
+            StringAssert.Contains(await resp.Content.ReadAsStringAsync(), "\"updated\":3");
+
+            var rdp = await GetConfigAsync(rdpId);
+            StringAssert.Contains(rdp, "\"DisplayName\":\"mix3-renamed\"");
+            StringAssert.Contains(rdp, "\"Port\":\"3333\"");
+            StringAssert.Contains(rdp, "\"RdpWidth\":2345", "RDP 专属 RdpWidth 必须保持原值");
+            StringAssert.Contains(rdp, "\"RdpFullScreenFlag\":2", "RDP 专属 RdpFullScreenFlag 必须保持原值");
+            StringAssert.Contains(rdp, "\"EnableClipboard\":false", "RDP 专属 EnableClipboard 必须保持原值");
+            StringAssert.Contains(rdp, "\"Password\":\"pw3-rdp\"", "未 patch 的 RDP 密码必须保持");
+
+            var ssh = await GetConfigAsync(sshId);
+            StringAssert.Contains(ssh, "\"DisplayName\":\"mix3-renamed\"");
+            StringAssert.Contains(ssh, "\"Port\":\"3333\"");
+            StringAssert.Contains(ssh, "\"SshVersion\":1", "SSH 专属 SshVersion 必须保持原值");
+            StringAssert.Contains(ssh, "\"StartupAutoCommand\":\"cd /mix3-ssh\"", "SSH 专属 StartupAutoCommand 必须保持原值");
+            StringAssert.Contains(ssh, "\"Password\":\"pw3-ssh\"", "未 patch 的 SSH 密码必须保持");
+
+            var vnc = await GetConfigAsync(vncId);
+            StringAssert.Contains(vnc, "\"DisplayName\":\"mix3-renamed\"");
+            StringAssert.Contains(vnc, "\"Port\":\"3333\"");
+            StringAssert.Contains(vnc, "\"VncWindowResizeMode\":1", "VNC 专属 VncWindowResizeMode 必须保持原值");
+            StringAssert.Contains(vnc, "\"Password\":\"pw3-vnc\"", "未 patch 的 VNC 密码必须保持");
+        }
+
         /// <summary>
         /// batch9 Task C：扩展键同样受「属性不在该协议类型上 → 按台 400」约束——
         /// openSftpOnConnected 仅 SSH 有，对 RDP 批量 patch → 400 且零写入。
