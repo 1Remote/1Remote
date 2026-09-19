@@ -312,9 +312,17 @@ namespace _1RM.Service.WebUi
         public DataSourceConfigInput? Config { get; set; }
     }
 
-    /// <summary>PUT /api/datasources/{name} 请求体：{config:{...}}（字段缺失 = 保持不变）。</summary>
+    /// <summary>
+    /// PUT /api/datasources/{name} 请求体：{config:{...}, name?}（config 字段缺失 = 保持不变）；
+    /// name 非空且不同于路径名 = 改名（WPF CmdEdit 弹窗 Name 直接写 org.DataSourceName 的 web 平价；
+    /// 重名 CurrentCultureIgnoreCase 排除自身 → 409）。
+    /// POST /api/datasources/{name}/test 复用本类：type 供"未保存草稿测试"分支构造临时实例
+    /// （WPF 测试按钮对表单草稿构造临时配置测试的 web 平价，batch10 Task B #8）。
+    /// </summary>
     public class DataSourceConfigRequest
     {
+        public string? Name { get; set; }
+        public string? Type { get; set; }
         public DataSourceConfigInput? Config { get; set; }
     }
 

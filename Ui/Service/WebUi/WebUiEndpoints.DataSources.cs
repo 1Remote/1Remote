@@ -26,9 +26,9 @@ namespace _1RM.Service.WebUi
     /// WebUiEndpoints 分域：数据源域（按名寻址，Local 为内置 SQLite 不暴露增删路径）。
     /// ─ GET    /api/datasources             列表（本地 + 附加，config 视图无密码）
     /// ─ POST   /api/datasources             新建（WPF-parity：连接失败不回滚）
-    /// ─ PUT    /api/datasources/{name}      更新连接参数（保存后重连）
+    /// ─ PUT    /api/datasources/{name}      更新连接参数 + 可选改名（保存后重连）
     /// ─ DELETE /api/datasources/{name}      删除（serverCount>0 未确认 → 409）
-    /// ─ POST   /api/datasources/{name}/test 测试连接（保存前验证向导流程）
+    /// ─ POST   /api/datasources/{name}/test 测试连接（已存项按 config 覆盖 / 未保存草稿按 type 构造）
     /// 注册顺序由主文件 MapAll 统一编排（与拆分前一致）。
     /// </summary>
     public static partial class WebUiEndpoints
@@ -67,11 +67,13 @@ namespace _1RM.Service.WebUi
                 };
             });
 
-            // 更新数据源连接参数：Local → 400（SQLite 路径不暴露）；字段缺失 = 保持；password 空 = 保持
-            // （Mysql/Pgsql Password setter 收 "" 会清空）；保存后 AddOrUpdateDataSource 重连。
+            // 更新数据源连接参数（+可选改名，batch10 Task B #7）：body.name 非空且异于路径名 = 改名
+            // （WPF CmdEdit 弹窗 Name 写 org.DataSourceName 平价）。Local → 400（SQLite 路径不暴露）；
+            // 字段缺失 = 保持；password 空 = 保持（Mysql/Pgsql Password setter 收 "" 会清空）；
+            // 保存后 AddOrUpdateDataSource 重连；改名重名 → 409。
             app.MapPut("/api/datasources/{name}", (string name, DataSourceConfigRequest? body) =>
             {
-                var result = WebUiDataSourceService.Update(name, body?.Config);
+                var result = WebUiDataSourceService.Update(name, body?.Config, body?.Name);
                 return result.Status switch
                 {
                     DataSourceMutationStatus.Ok => Results.Json(new
@@ -80,6 +82,7 @@ namespace _1RM.Service.WebUi
                         connectError = result.ConnectError,
                     }),
                     DataSourceMutationStatus.NotFound => Results.NotFound(),
+                    DataSourceMutationStatus.Conflict => Results.Json(new { errors = result.Errors }, statusCode: 409),
                     _ => Results.BadRequest(new { errors = result.Errors }),
                 };
             });
@@ -101,10 +104,12 @@ namespace _1RM.Service.WebUi
             });
 
             // 测试连接：sqlite = Database_SelfCheck（含错误详情）；mysql/pgsql = 静态 TestConnection，
-            // config 未带密码时沿用已存密码。带 config = 按 config 测试（保存前验证向导流程）。
+            // config 未带密码时沿用已存密码。带 config = 按 config 测试（保存前验证向导流程）；
+            // 未保存草稿（name 无已存实例）带 body.type = 草稿测试（WPF 测试按钮对表单草稿
+            // 构造临时配置测试的平价，batch10 Task B #8）。
             app.MapPost("/api/datasources/{name}/test", (string name, DataSourceConfigRequest? body) =>
             {
-                var result = WebUiDataSourceService.Test(name, body?.Config);
+                var result = WebUiDataSourceService.Test(name, body?.Config, body?.Type);
                 return result.Status switch
                 {
                     DataSourceMutationStatus.Ok => Results.Json(new
