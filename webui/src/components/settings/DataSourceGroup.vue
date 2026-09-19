@@ -6,12 +6,12 @@
  * - 列表来自 useServers 共享态（/api/datasources 含 config 连接参数视图，无密码）；
  *   变更后 reload() 主动刷新（SSE 兜底之外，数据源增删不必然触发 OnReloadAll）。
  * - 测试连接：卡片按钮按已存参数测（POST /api/datasources/{name}/test）；新建/编辑模态的
- *   "测试连接"按钮对**表单草稿**测试（batch10 Task B #8，WPF Mysql/Pgsql 弹窗测试按钮语义：
- *   构造临时配置直接测试，不经保存——未保存名查不到已存项，后端按 body.type 构造临时实例；
+ *   "测试连接"按钮对**表单草稿**测试（WPF Mysql/Pgsql 弹窗测试按钮语义：构造临时配置
+ *   直接测试，不经保存——未保存名查不到已存项，后端按 body.type 构造临时实例；
  *   密码留空时旧名可寻址到已存源则沿用其密码，与编辑弹窗"密码留空=保持"一致）。
  *   结果行内显示（成功/失败+详情），不再要求"先保存再测"。
- * - 名称（batch10 Task B #7，WPF 弹窗平价）：新建模态名称可填（sqlite 可缺省按路径推导）；
- *   编辑模态名称可改（WPF 弹窗 Name 直写 org.DataSourceName；Local 在 web 侧本就不可编辑）。
+ * - 名称（WPF 弹窗平价）：新建模态名称可填（sqlite 可缺省按路径推导）；编辑模态名称
+ *   可改（WPF 弹窗 Name 直写 org.DataSourceName；Local 在 web 侧本就不可编辑）。
  *   重名即时提示（computed 比对现有列表，忽略大小写对齐后端 CurrentCultureIgnoreCase，
  *   编辑排除自身；后端最终守卫 POST 409 / PUT 409）。
  * - Local 卡片只读：测试可用；编辑/删除不开放（后端 PUT/DELETE Local 均为 400，SQLite 路径
@@ -71,8 +71,9 @@ async function onTest(d) {
 }
 
 // ---- 添加模态：类型三选 + 动态表单（sqlite: name?/path；mysql/pgsql: name/host/port/db/user/password）----
-const adding = ref(false)
-const addForm = reactive({
+// 空白草稿工厂：reactive 初始化与 openAdd 复位共用同一份（上次未提交的草稿不带入新会话，
+// 与 CredentialVaultGroup.openCreate 同款）
+const blankAddForm = () => ({
   type: 'sqlite',
   name: '',
   path: '',
@@ -82,24 +83,16 @@ const addForm = reactive({
   userName: '',
   password: '',
 })
+const adding = ref(false)
+const addForm = reactive(blankAddForm())
 const addSaving = ref(false)
 const typeOptions = ['sqlite', 'mysql', 'pgsql'].map((v) => ({
   value: v,
   label: computed(() => t('settings.d.type.' + v)),
 }))
 
-// 打开即重置（与 CredentialVaultGroup.openCreate 同款）：上次未提交的草稿不带入新会话
 function openAdd() {
-  Object.assign(addForm, {
-    type: 'sqlite',
-    name: '',
-    path: '',
-    host: '',
-    port: 3306,
-    databaseName: '',
-    userName: '',
-    password: '',
-  })
+  Object.assign(addForm, blankAddForm())
   addTestResult.value = null
   adding.value = true
 }
@@ -112,8 +105,8 @@ function onAddTypeChange(v) {
   if (addForm.port === other || !addForm.port) addForm.port = defaults[v] ?? 3306
 }
 
-// ---- 名称即时查重（batch10 Task B #6/#7）：忽略大小写（对齐后端 CurrentCultureIgnoreCase；
-// 编辑排除自身原名）——重名即提示 + 禁用保存，后端 409 仍为最终守卫 ----
+// ---- 名称即时查重（新建/编辑共用谓词）：忽略大小写（对齐后端 CurrentCultureIgnoreCase；
+// 编辑排除自身原名）——重名即提示 + 禁用保存，后端最终守卫 POST 409 / PUT 409 ----
 const nameExistsAmong = (n, excludeName) =>
   !!n && datasources.value.some((d) => d.name !== excludeName && d.name.trim().toLowerCase() === n.trim().toLowerCase())
 const addNameExists = computed(() => nameExistsAmong(addForm.name, null))
@@ -144,6 +137,9 @@ function draftConfig(f, type) {
       }
 }
 
+// 保存失败 toast 的后端明细（400/409 的 {errors} 串接；无明细则仅通用文案）
+const errDetail = (e) => e?.body?.errors?.join('; ') || ''
+
 async function addSave() {
   if (!addValid.value || addSaving.value) return
   addSaving.value = true
@@ -157,15 +153,25 @@ async function addSave() {
     if (r?.dataSource && r.dataSource.status === 'connected') message.success(t('settings.d.testOk'))
     else message.warning(t('settings.d.testFailed') + (r?.connectError ? ` (${r.connectError})` : ''))
   } catch (e) {
-    const detail = e?.body?.errors?.join('; ')
+    const detail = errDetail(e)
     message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
   } finally {
     addSaving.value = false
   }
 }
 
-// ---- 新建模态"测试连接"（batch10 Task B #8）：对表单草稿测试（不经保存，WPF 测试按钮语义；
-// 未保存名后端按 type 构造临时实例；结果行内展示，失败带 detail）----
+// ---- 新建/编辑模态"测试连接"：对表单草稿测试（不经保存，WPF Mysql/Pgsql 弹窗测试按钮
+// 语义——未保存名后端按 type 构造临时实例；密码留空且旧名可寻址到已存源则沿用其密码，
+// 与编辑弹窗"密码留空=保持"一致）。结果行内展示（成功/失败+detail），不抛错 ----
+async function testDraft(name, form, type) {
+  try {
+    const r = await api.testDataSource(name, draftConfig(form, type), type)
+    return { ok: !!r?.ok, detail: r?.detail || '' }
+  } catch (e) {
+    return { ok: false, detail: e?.body?.errors?.join('; ') || e?.body?.detail || '' }
+  }
+}
+
 const addTesting = ref(false)
 const addTestResult = ref(null) // null | { ok, detail }
 async function testAdd() {
@@ -173,15 +179,8 @@ async function testAdd() {
   addTesting.value = true
   addTestResult.value = null
   try {
-    const r = await api.testDataSource(
-      addForm.name.trim() || addForm.path.trim(),
-      draftConfig(addForm, addForm.type),
-      addForm.type
-    )
-    addTestResult.value = { ok: !!r?.ok, detail: r?.detail || '' }
-  } catch (e) {
-    const detail = e?.body?.errors?.join('; ') || e?.body?.detail || ''
-    addTestResult.value = { ok: false, detail }
+    // sqlite 新建名称可缺省：以 path 作寻址名（未保存项后端按 body 配置构造，名仅辅助寻址）
+    addTestResult.value = await testDraft(addForm.name.trim() || addForm.path.trim(), addForm, addForm.type)
   } finally {
     addTesting.value = false
   }
@@ -231,15 +230,15 @@ async function editSave() {
     if (r?.dataSource && r.dataSource.status === 'connected') message.success(t('settings.saved'))
     else message.warning(t('settings.d.testFailed') + (r?.connectError ? ` (${r.connectError})` : ''))
   } catch (e) {
-    const detail = e?.body?.errors?.join('; ')
+    const detail = errDetail(e)
     message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
   } finally {
     editSaving.value = false
   }
 }
 
-// ---- 编辑模态"测试连接"：对当前表单草稿测试（未保存的改名/参数草稿，WPF 弹窗测试按钮语义；
-// name 传旧名——已存项寻址 + 密码留空时沿用已存密码；结果行内展示）----
+// ---- 编辑模态"测试连接"：对当前表单草稿测试（未保存的改名/参数草稿）；
+// name 传旧名——已存项寻址 + 密码留空时沿用已存密码 ----
 const editTesting = ref(false)
 const editTestResult = ref(null) // null | { ok, detail }
 async function testEdit() {
@@ -247,15 +246,7 @@ async function testEdit() {
   editTesting.value = true
   editTestResult.value = null
   try {
-    const r = await api.testDataSource(
-      editing.value.name,
-      draftConfig(editForm, editing.value.type),
-      editing.value.type
-    )
-    editTestResult.value = { ok: !!r?.ok, detail: r?.detail || '' }
-  } catch (e) {
-    const detail = e?.body?.errors?.join('; ') || e?.body?.detail || ''
-    editTestResult.value = { ok: false, detail }
+    editTestResult.value = await testDraft(editing.value.name, editForm, editing.value.type)
   } finally {
     editTesting.value = false
   }
@@ -468,7 +459,7 @@ bindModalEsc([
             />
           </div>
         </template>
-        <!-- 草稿测试结果行（batch10 Task B #8）：成功/失败 + 后端 detail（校验错误串或连接错误） -->
+        <!-- 草稿测试结果行：成功/失败 + 后端 detail（校验错误串或连接错误） -->
         <p v-if="addTestResult" class="f-note" :class="{ ok: addTestResult.ok }">
           {{
             addTestResult.ok
@@ -502,7 +493,7 @@ bindModalEsc([
       aria-modal="true"
     >
       <div class="form" @keydown="onFormEnter($event, editSave)">
-        <!-- 名称行（batch10 Task B #7）：WPF 弹窗 Name 编辑平价（改名走 PUT body.name） -->
+        <!-- 名称行：WPF 弹窗 Name 编辑平价（改名走 PUT body.name） -->
         <div class="f-row">
           <label>{{ t('settings.d.name') }}</label>
           <div>
@@ -769,7 +760,7 @@ bindModalEsc([
   font-size: 0.8462rem;
   color: var(--text-4);
 }
-/* 名称重名即时提示（batch10 Task B #6）：输入框下方红字 */
+/* 名称重名即时提示：输入框下方红字 */
 .f-err {
   margin: 4px 0 0;
   font-size: 0.8462rem;
