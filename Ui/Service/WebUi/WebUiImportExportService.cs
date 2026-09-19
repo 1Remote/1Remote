@@ -128,8 +128,11 @@ namespace _1RM.Service.WebUi
         /// 前置：数据源必须存在且可写（Database_InsertServer 对只读库静默返回 Success，必须前置拦截）。
         /// 返回 {added, skipped, errors}；解析整体失败（非文件、无有效行、库打不开）→ 400 {errors}。
         /// 成功插入任意台后 ReloadAll(force) 刷新 VmItemList/SSE（WPF 导入后同款）。
+        /// folderPath（可选，'/' 分隔，batch10 Task A #1）：文件夹内入口的导入——导入服务器的
+        /// TreeNodes 统一改写为该路径拆分（覆盖解析器产出：JSON 导出文件可能自带旧库路径，
+        /// 对目标库无意义）；null/空白 = 落数据源根（WPF 导入原语义）。
         /// </summary>
-        public static ImportResult Import(string? dataSourceName, ImportFileKind kind, string filePath)
+        public static ImportResult Import(string? dataSourceName, ImportFileKind kind, string filePath, string? folderPath = null)
         {
             if (kind == ImportFileKind.Unknown)
                 return ImportResult.BadRequest(new List<string> { $"unsupported file type '{Path.GetFileName(filePath)}' (expected .json/.csv/.rdp/.db)" });
@@ -166,6 +169,10 @@ namespace _1RM.Service.WebUi
                 });
 
             // 逐台插入（单元素批量重载，见类注释的凭据提取决策）：清 Id = IsTmpSession 新建语义（WPF :385/:473 同款）
+            // 目标文件夹：TreeNodes setter 自带 Trim/去空段拷贝（ProtocolBase.cs:132），共享同一列表安全
+            var targetNodes = string.IsNullOrWhiteSpace(folderPath)
+                ? null
+                : folderPath.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
             var added = 0;
             var errors = new List<string>();
             foreach (var server in servers)
@@ -173,6 +180,8 @@ namespace _1RM.Service.WebUi
                 try
                 {
                     server.Id = string.Empty;
+                    if (targetNodes != null)
+                        server.TreeNodes = new List<string>(targetNodes);
                     var ret = dataSource.Database_InsertServer(new List<ProtocolBase> { server });
                     if (ret.IsSuccess)
                     {

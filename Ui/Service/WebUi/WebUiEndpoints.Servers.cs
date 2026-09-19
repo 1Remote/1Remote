@@ -244,7 +244,9 @@ namespace _1RM.Service.WebUi
             // 格式按上传文件扩展名嗅探（.json/.csv/.rdp/.db）→ 解析 → 逐台插入（凭据提取走 Dapper
             // 批量重载的按 Hash 自动提取，见 WebUiImportExportService 类注释）→ {added, skipped, errors}。
             // 未知格式/未知数据源/只读数据源/解析失败 → 400 {errors}；上传文件落临时目录，处理完即删。
-            app.MapPost("/api/servers/import", async (HttpContext ctx, string? ds) =>
+            // folder（可选，'/' 分隔，batch10 Task A #1）：目标文件夹——webui 文件夹内入口导入时传
+            // 当前文件夹路径，导入服务器 TreeNodes 改写为该路径拆分；缺省 = 落数据源根（原语义）。
+            app.MapPost("/api/servers/import", async (HttpContext ctx, string? ds, string? folder) =>
             {
                 if (!ctx.Request.HasFormContentType)
                     return Results.BadRequest(new { errors = new[] { "request must be multipart/form-data with a 'file' part" } });
@@ -282,7 +284,7 @@ namespace _1RM.Service.WebUi
                     {
                         await file.CopyToAsync(fs);
                     }
-                    var result = WebUiImportExportService.Import(ds, kind, tmpPath);
+                    var result = WebUiImportExportService.Import(ds, kind, tmpPath, folder);
                     return result.Status switch
                     {
                         ExportStatus.Ok => Results.Json(new { added = result.Added, skipped = result.Skipped, errors = result.Errors }),
