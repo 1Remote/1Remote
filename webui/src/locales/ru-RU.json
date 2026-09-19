@@ -506,6 +506,7 @@
   "settings.r.external": "Внешний",
   "settings.r.internalHint": "Встроенный триггер, настраивать нечего.",
   "settings.r.f.arguments": "Аргументы (через пароль)",
+  "settings.r.f.argumentsGeneric": "Параметр командной строки",
   "settings.r.f.env": "Переменные среды",
   "settings.r.f.envHint": "По одному KEY=VALUE на строку",
   "settings.r.loadFailed": "Не удалось загрузить настройки триггеров",

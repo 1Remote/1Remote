@@ -506,6 +506,7 @@
   "settings.r.external": "Externí",
   "settings.r.internalHint": "Vestavěný spouštěč, není co konfigurovat.",
   "settings.r.f.arguments": "Argumenty (přes heslo)",
+  "settings.r.f.argumentsGeneric": "parametry pro příkaz",
   "settings.r.f.env": "Proměnné prostředí",
   "settings.r.f.envHint": "Jedna dvojice KEY=VALUE na řádek",
   "settings.r.loadFailed": "Nastavení spouštěčů se nepodařilo načíst",

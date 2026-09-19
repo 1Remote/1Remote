@@ -272,6 +272,9 @@ const MAPPING = {
   'settings.r.selected': 'Selected runner',
   'settings.r.internal': 'Default',
   'settings.r.f.env': 'Environment variables',
+  // batch10 Task B #9：通用参数位 label（协议无私钥字段时用，WPF ExternalRunnerSettings
+  // 非 SSH 弹窗的同位标签 1:1——'Cmd parameter'，从不带"通过密码"后缀）
+  'settings.r.f.argumentsGeneric': 'Cmd parameter',
   // fix batch7 Task E #13/#14：PuTTY 主题/字体/字号、私钥参数、增删校验文案（WPF 运行器
   // 设置页词条 1:1；主题/字体/字符集为下拉标签，字号自由数字）。
   // batch8 Task D #10：arguments/argsPrivateKey 改为"启动参数（通过密码/私钥）"组合文案，

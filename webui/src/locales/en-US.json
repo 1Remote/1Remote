@@ -539,6 +539,7 @@
   "settings.r.external": "External",
   "settings.r.internalHint": "Built-in runner, nothing to configure.",
   "settings.r.f.arguments": "Arguments (via password)",
+  "settings.r.f.argumentsGeneric": "CMD parameter",
   "settings.r.f.env": "Environment variables",
   "settings.r.f.envHint": "One KEY=VALUE per line",
   "settings.r.loadFailed": "Failed to load runner settings",

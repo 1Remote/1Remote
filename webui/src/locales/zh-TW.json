@@ -506,6 +506,7 @@
   "settings.r.external": "外部",
   "settings.r.internalHint": "內建執行器，無需設定。",
   "settings.r.f.arguments": "啟動參數（透過密碼）",
+  "settings.r.f.argumentsGeneric": "命令列參數",
   "settings.r.f.env": "環境變數",
   "settings.r.f.envHint": "每行一個 KEY=VALUE",
   "settings.r.loadFailed": "載入執行器設定失敗",

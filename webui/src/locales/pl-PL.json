@@ -506,6 +506,7 @@
   "settings.r.external": "Zewnętrzny",
   "settings.r.internalHint": "Wbudowany program uruchamiający, nie ma nic do konfiguracji.",
   "settings.r.f.arguments": "Argumenty (przez hasło)",
+  "settings.r.f.argumentsGeneric": "Parametry konsoli",
   "settings.r.f.env": "Zmienne środowiskowe",
   "settings.r.f.envHint": "Jedna para KEY=VALUE na wiersz",
   "settings.r.loadFailed": "Nie udało się załadować ustawień programów uruchamiających",

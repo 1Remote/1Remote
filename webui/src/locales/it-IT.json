@@ -506,6 +506,7 @@
   "settings.r.external": "Esterno",
   "settings.r.internalHint": "Runner predefinito, nulla da configurare.",
   "settings.r.f.arguments": "Argomenti (con password)",
+  "settings.r.f.argumentsGeneric": "Parametro CMD",
   "settings.r.f.env": "Variabili d'ambiente",
   "settings.r.f.envHint": "Un KEY=VALUE per riga",
   "settings.r.loadFailed": "Caricamento delle impostazioni runner non riuscito",

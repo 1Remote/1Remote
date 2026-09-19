@@ -506,6 +506,7 @@
   "settings.r.external": "Externe",
   "settings.r.internalHint": "Lanceur intégré, rien à configurer.",
   "settings.r.f.arguments": "Arguments (via mot de passe)",
+  "settings.r.f.argumentsGeneric": "CMD paramètre",
   "settings.r.f.env": "Variables d'environnement",
   "settings.r.f.envHint": "Un KEY=VALUE par ligne",
   "settings.r.loadFailed": "Échec du chargement des réglages des lanceurs",
