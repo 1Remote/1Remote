@@ -506,6 +506,7 @@
   "settings.r.external": "Extern",
   "settings.r.internalHint": "Integrierter Runner, nichts zu konfigurieren.",
   "settings.r.f.arguments": "Argumente (über Passwort)",
+  "settings.r.f.argumentsGeneric": "CMD-Parameter",
   "settings.r.f.env": "Umgebungsvariablen",
   "settings.r.f.envHint": "Ein KEY=VALUE pro Zeile",
   "settings.r.loadFailed": "Runner-Einstellungen konnten nicht geladen werden",

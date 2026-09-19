@@ -25,7 +25,7 @@
  *   仅切换展示（ed-seg 样式，EditorDrawer 凭据组同款），保存只提交可见侧——隐藏侧
  *   编辑态提交 null（保持原值）、新建态提交空串（无）。与 WPF"保存时清空另一侧"
  *   不同：web 列表无从预填，默认侧是猜测（密码），切换即清会把仅改名/仅换私钥的
- *   保存变成静默清库，故取保守语义，提示行（cv.secretHint）告知如何显式清除。
+ *   保存变成静默清库，故取保守语义（显式清除走"reveal 后清空再保存"）。
  *   reveal 成功后若密码侧为空且私钥侧非空则自动切到私钥侧（WPF 编辑打开时
  *   org.PrivateKeyPath 非空默认勾选私钥的对齐；仅用户未手动切换过时应用）。
  *   私钥路径行带"浏览…"按钮（api.pickFile，filter 照抄 WPF 弹窗 ppk|*.*）。
@@ -133,6 +133,17 @@ function setAuthMode(mode) {
   authMode.value = mode
 }
 
+// ---- 名称即时查重（batch10 Task B #6，WPF 弹窗 IDataErrorInfo 即时判重的 web 形态）：
+// 忽略大小写（对齐后端/后端 UpdateCredential CurrentCultureIgnoreCase 判重，exclude=原名）；
+// 重名即输入框下方红字提示 + 禁用保存（后端 409 仍为最终守卫） ----
+const nameExists = computed(() => {
+  const n = form.name.trim()
+  if (!n) return false
+  return credentials.value.some(
+    (c) => c.name !== editing.value?.name && c.name.trim().toLowerCase() === n.toLowerCase()
+  )
+})
+
 // 👁：编辑态未加载明文时 = reveal（本地验证门，与行级 reveal 同端点同 30s 窗口）；
 // 已加载（或新建态）= 普通明文切换（仅密码行有切换，私钥路径 reveal 后即明文可编辑）
 function onEye(field) {
@@ -187,7 +198,7 @@ async function pickKeyFile() {
 }
 
 async function save() {
-  if (!form.name.trim() || saving.value) return
+  if (!form.name.trim() || nameExists.value || saving.value) return
   saving.value = true
   const isEdit = editing.value.mode === 'edit'
   // 可见侧：未 reveal 且掩码未动 → null（保持原值）；其余提交现值（空串=显式清除，
@@ -217,7 +228,7 @@ async function save() {
   }
 }
 
-// 模态表单回车=保存：共通语义见 utils/formEnter.js（与保存按钮同守卫：名称空/保存中不动作）
+// 模态表单回车=保存：共通语义见 utils/formEnter.js（与保存按钮同守卫：名称空/重名/保存中不动作）
 
 // ---- 删除（引用数警告 + 404 静默刷新）----
 function onDelete(c) {
@@ -385,8 +396,8 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
       </div>
     </template>
 
-    <!-- 新建/编辑模态：Name 必填；密码/私钥二选一（segmented，仅切换展示）；
-         编辑态两字段预填掩码，👁 reveal（本地验证）回填明文；私钥行带浏览按钮 -->
+    <!-- 新建/编辑模态：Name 必填 + 即时查重（batch10 Task B #6）；密码/私钥二选一（segmented，
+         仅切换展示）；编辑态两字段预填掩码，👁 reveal（本地验证）回填明文；私钥行带浏览按钮 -->
     <n-modal
       v-model:show="showEdit"
       preset="card"
@@ -399,7 +410,17 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
       <div class="form" @keydown="onFormEnter($event, save)">
         <div class="f-row">
           <label>{{ t('editor.f.Name') }} *</label>
-          <n-input size="small" v-model:value="form.name" :input-props="{ spellcheck: false }" />
+          <div>
+            <n-input
+              size="small"
+              v-model:value="form.name"
+              :status="nameExists ? 'error' : undefined"
+              :input-props="{ spellcheck: false }"
+            />
+            <!-- 重名即时提示（batch10 Task B #5 顺带清理：原 secretHint 长提示行删除，
+                 键保留避免动 locales 平价；文案复用运行器重名词条） -->
+            <p v-if="nameExists" class="f-err">{{ t('settings.r.nameExists', { name: form.name.trim() }) }}</p>
+          </div>
         </div>
         <div class="f-row">
           <label>{{ t('editor.f.UserName') }}</label>
@@ -430,7 +451,6 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
             </button>
           </div>
         </div>
-        <p v-if="editing?.mode === 'edit'" class="f-hint">{{ t('cv.secretHint') }}</p>
         <div v-if="authMode === 'password'" class="f-row">
           <label>{{ t('editor.f.Password') }}</label>
           <n-input
@@ -490,7 +510,13 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
       <template #footer>
         <div class="modal-actions">
           <n-button size="small" @click="editing = null">{{ t('editor.cancel') }}</n-button>
-          <n-button size="small" type="primary" :disabled="!form.name.trim()" :loading="saving" @click="save">
+          <n-button
+            size="small"
+            type="primary"
+            :disabled="!form.name.trim() || nameExists"
+            :loading="saving"
+            @click="save"
+          >
             {{ t('settings.save') }}
           </n-button>
         </div>
@@ -693,6 +719,12 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   font-size: 0.8462rem;
   line-height: 1.5;
   color: var(--text-4);
+}
+/* 名称重名即时提示（batch10 Task B #6）：输入框下方红字 */
+.f-err {
+  margin: 4px 0 0;
+  font-size: 0.8462rem;
+  color: var(--danger);
 }
 /* 密码/私钥二选一 segmented（ed-seg 样式模式，EditorDrawer 凭据组同款） */
 .cv-seg {

@@ -236,7 +236,11 @@ function onFontSize(v) {
       </div>
       <div class="f-row">
         <label>
-          {{ t('settings.r.f.arguments') }}
+          <!-- 参数行 label（batch10 Task B #9）：SSH 族（有 ArgumentsForPrivateKey 字段）区分
+               "通过密码/通过私钥"两个参数位；其余协议（VNC/FTP 等外部运行器无私钥概念）用
+               通用 label（WPF ExternalRunnerSettings 同行标签 'Cmd parameter'，非 SSH 弹窗
+               从不带"通过密码"后缀） -->
+          {{ hasArgsPrivateKey(runner) ? t('settings.r.f.arguments') : t('settings.r.f.argumentsGeneric') }}
           <!-- 参数行 (?)：WPF External(SSH)RunnerSettings Arguments 行 (?) → 运行器文档
                （url 照抄）；WPF 同行的 (i) 宏说明弹窗由宏 chips 的 title=描述承载，不再重复 -->
           <HelpLink href="https://1remote.github.io/usage/protocol/runner/" />

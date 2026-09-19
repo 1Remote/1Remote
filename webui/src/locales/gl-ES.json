@@ -506,6 +506,7 @@
   "settings.r.external": "Externo",
   "settings.r.internalHint": "Executable predeterminado, non hai nada que configurar.",
   "settings.r.f.arguments": "Argumentos (con contrasinal)",
+  "settings.r.f.argumentsGeneric": "Parámetro CMD",
   "settings.r.f.env": "Variables do entorno",
   "settings.r.f.envHint": "Un KEY=VALUE por liña",
   "settings.r.loadFailed": "Non se puido cargar a configuración de executables",

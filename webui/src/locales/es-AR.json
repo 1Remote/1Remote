@@ -506,6 +506,7 @@
   "settings.r.external": "Externo",
   "settings.r.internalHint": "Ejecutor predeterminado, no hay nada que configurar.",
   "settings.r.f.arguments": "Argumentos (con contraseña)",
+  "settings.r.f.argumentsGeneric": "Parámetro CMD",
   "settings.r.f.env": "Variables de entorno",
   "settings.r.f.envHint": "Un KEY=VALUE por línea",
   "settings.r.loadFailed": "Error al cargar la configuración de ejecutores",

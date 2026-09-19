@@ -539,6 +539,7 @@
   "settings.r.external": "外部",
   "settings.r.internalHint": "内置运行器，无需配置。",
   "settings.r.f.arguments": "启动参数（通过密码）",
+  "settings.r.f.argumentsGeneric": "命令行参数",
   "settings.r.f.env": "环境变量",
   "settings.r.f.envHint": "每行一个 KEY=VALUE",
   "settings.r.loadFailed": "加载运行器配置失败",

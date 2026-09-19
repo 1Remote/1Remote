@@ -506,6 +506,7 @@
   "settings.r.external": "外部",
   "settings.r.internalHint": "内蔵ランナーのため、設定項目はありません。",
   "settings.r.f.arguments": "起動引数（パスワード経由）",
+  "settings.r.f.argumentsGeneric": "引数",
   "settings.r.f.env": "環境変数",
   "settings.r.f.envHint": "1 行につき 1 つの KEY=VALUE",
   "settings.r.loadFailed": "ランナー設定の読み込みに失敗しました",
