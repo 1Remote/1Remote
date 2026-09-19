@@ -404,8 +404,11 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
       </n-input>
 
       <!-- tags：n-dynamic-tags（chips 添加/删除/回车确认由组件自带；值经 onTagsUpdate 归一回传）
-           + 已有标签候选 chips（点击即加——对齐 WPF TagsEditor 的 TagsForSelect） -->
-      <div v-else-if="field.type === FIELD_TYPE.TAGS" class="ff-tags">
+           + 已有标签候选 chips（点击即加——对齐 WPF TagsEditor 的 TagsForSelect）。
+           类名用 ff-tags-box 而非 ff-tags：根行已带 'ff-' + type 生成的 ff-tags，
+           同名时下方 .ff-tags-box 的 display:flex 覆写根行 148px 网格（.form-field），
+           正是标签行"标题在上/内容在下"错位的根因（与 COLOR 行 ff-color-box 同款教训） -->
+      <div v-else-if="field.type === FIELD_TYPE.TAGS" class="ff-tags-box">
         <n-dynamic-tags
           size="small"
           :value="Array.isArray(modelValue) ? modelValue : []"
@@ -666,9 +669,9 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 
 /* tags：输入 + 候选 chips 两行。容器由上方 .ff-control > :deep(*) 的
    100% 规则撑满控件列（form-field 两列网格不破：148px 标签列与其他行对齐，
-   候选区只活在控件列内）；n-dynamic-tags 的 chips 换行/删除/禁用态均组件自带，
-   不自绘 chips 样式 */
-.ff-tags {
+   候选区只活在控件列内）；类名避开根行生成的 ff-tags（见模板注释）；
+   n-dynamic-tags 的 chips 换行/删除/禁用态均组件自带，不自绘 chips 样式 */
+.ff-tags-box {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -676,7 +679,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   min-width: 0;
 }
 
-.ff-tags :deep(.n-dynamic-tags) {
+.ff-tags-box :deep(.n-dynamic-tags) {
   width: 100%;
 }
 
