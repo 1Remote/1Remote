@@ -178,12 +178,12 @@
 
   "settings.o.close.exit": "退出",
   "settings.o.close.minimize": "最小化系统托盘",
-  "settings.o.log.0": "调试",
-  "settings.o.log.1": "提示",
-  "settings.o.log.2": "警告",
-  "settings.o.log.3": "错误",
-  "settings.o.log.4": "致命",
-  "settings.o.log.5": "禁用",
+  "settings.o.log.0": "Debug",
+  "settings.o.log.1": "Info",
+  "settings.o.log.2": "Warning",
+  "settings.o.log.3": "Error",
+  "settings.o.log.4": "Fatal",
+  "settings.o.log.5": "Disabled",
 
   "settings.appearance.base": "基底",
   "settings.appearance.base.dark": "深色",
