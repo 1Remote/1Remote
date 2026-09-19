@@ -123,7 +123,10 @@ async function doImport() {
   }
 }
 
-// 开启时复位（上次的文件/错误/进度不跨次残留）；数据源/文件夹默认值随打开时的树选中走
+// 开启时复位（上次的文件/错误/进度不跨次残留）；数据源/文件夹默认值随打开时的树选中走。
+// immediate 必须为 true：本组件以 v-if 条件挂载（父级 importModal 置真才创建），挂载时
+// props.show 已是 true 且不再变化——无 immediate 的 watch 永不触发，defaultDs/defaultFolder
+// 全部失效（曾导致非 Local 数据源内导入实际落 Local；评审实证）
 watch(
   () => props.show,
   (open) => {
@@ -138,7 +141,8 @@ watch(
       : names.includes('Local')
         ? 'Local'
         : names[0] || 'Local'
-  }
+  },
+  { immediate: true }
 )
 
 function fmtSize(n) {
