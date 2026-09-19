@@ -20,7 +20,7 @@ export const fullKey = (dsName, folderPath) => (folderPath ? dsName + SEP + fold
  * tree-state 键 → { ds, path }。单段键（数据源根）或无法解析（空）返回 null。
  * 注意 path 各段不允许包含 '/'，故 split('/').join(SEP) 往返无损。
  */
-export function parseKey(key) {
+function parseKey(key) {
   if (!key) return null
   const parts = key.split(SEP)
   if (parts.length < 2 || parts.some((p) => !p)) return null

@@ -33,7 +33,7 @@ function cloneValue(v) {
  * 整体携带或丢弃）。
  * @returns {Set<string>}
  */
-export function schemaFieldKeys(schema) {
+function schemaFieldKeys(schema) {
   const keys = new Set()
   for (const g of schema?.groups || []) {
     for (const f of g.fields || []) keys.add(f.key)

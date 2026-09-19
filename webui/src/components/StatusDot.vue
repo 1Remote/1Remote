@@ -3,8 +3,7 @@
 // （Plan 4 Task 1 起随 /api/servers 下发，SSE reload 事件驱动前端自动刷新）。
 // connected → 绿点+光晕；connecting/reconnecting → 琥珀；disconnected/未知 → 灰空心圈。
 // 语义：仅反映「1Remote 托管会话是否活跃」——外部 mstsc.exe 等 Unhosted 会话不点亮。
-// （原 idle 态会在点旁补「—」文本：纯装饰冗余——空心圈已表意、悬停 title 给精确状态，
-// batch11 Task A #1 移除。）
+// idle 态不在点旁附「—」文本：空心圈已表意、悬停 title 给精确状态，不加装饰性冗余。
 import { computed } from 'vue'
 
 const props = defineProps({ state: { type: String, default: 'disconnected' } })

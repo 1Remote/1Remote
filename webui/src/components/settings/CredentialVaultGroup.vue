@@ -715,12 +715,6 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   font-size: 0.9615rem;
   color: var(--text-2);
 }
-.f-hint {
-  margin: -2px 0 0;
-  font-size: 0.8462rem;
-  line-height: 1.5;
-  color: var(--text-4);
-}
 /* 名称重名即时提示：输入框下方红字 */
 .f-err {
   margin: 4px 0 0;

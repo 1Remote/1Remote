@@ -4,7 +4,7 @@
  * 否则（主机名/混合）回退码点序字符串比较——不用 localeCompare，保证与单测/后端语义一致。
  * @returns {number} <0 a 在前；0 相等；>0 b 在前
  */
-export function isIPv4(s) {
+function isIPv4(s) {
   return typeof s === 'string' && /^\d{1,3}(\.\d{1,3}){3}$/.test(s)
 }
 
