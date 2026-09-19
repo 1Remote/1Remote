@@ -82,7 +82,14 @@ namespace _1RM.View
                     WebUI.Visibility = Visibility.Collapsed;
                     // WebView2 不可用时网页无法接管标题栏，恢复 WPF 自绘标题栏保证窗口可用
                     SetWebShellChrome(false);
+                    return;
                 }
+
+                // 禁用 WebView2 的浏览器加速键（Alt+Left/Right 历史导航、Ctrl+P 打印、
+                // Ctrl+F/T 等）：单页壳没有历史可退，Ctrl+F 页内查找由应用自己的搜索接管
+                //（页面 __focusSearch / WPF 侧 Ctrl+F 转发），保留浏览器版会出现双份行为。
+                // 仅 Web 引擎场景会初始化 CoreWebView2，WPF 引擎不进此分支。
+                WebUI.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
             };
 
             // 网页 topbar 窗口控制桥：页面经 window.chrome.webview.postMessage 发送
