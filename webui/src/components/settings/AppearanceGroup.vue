@@ -116,7 +116,9 @@ function applyClassic(name) {
 
 <style scoped>
 .group {
-  max-width: 640px;
+  /* 统一设置内容宽（SettingsView.s-body 的 --settings-content-w 穿透继承）；
+     内部网格（三卡/圆点/分段/pills）不动 */
+  width: min(100%, var(--settings-content-w));
 }
 .sub {
   margin: 16px 0 8px;

@@ -250,6 +250,9 @@ onBeforeUnmount(() => {
   color: var(--text-1);
 }
 .s-body {
+  /* 内容宽令牌：继承穿透供各分组组件根元素取用（width: min(100%, var(--settings-content-w))），
+     子组件不再各自定义 max-width（统一 960px 内容宽） */
+  --settings-content-w: 960px;
   min-height: 0;
   overflow-y: auto;
   padding: 18px 24px 40px;
