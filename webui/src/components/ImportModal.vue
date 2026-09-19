@@ -5,8 +5,8 @@
  *
  * - 数据源下拉：仅列可写数据源（后端对只读源 400，前置过滤避免明知必败的选择）；
  *   默认 = 打开时树选中的数据源（不可写则回退 Local / 首个可写）。
- *   文件夹内入口（batch10 Task A #1）：defaultFolder 随树选中注入，标题下方显示
- *   "导入到：ds/文件夹"，导入的服务器 TreeNodes 落到该路径（后端 ?folder= 参数）。
+ *   文件夹内入口：defaultFolder 随树选中注入，标题下方显示"导入到：ds/文件夹"，
+ *   导入的服务器 TreeNodes 落到该路径（后端 ?folder= 参数）。
  * - 文件：拖放区 + 点击选择（accept 与后端 DetectImportKind 对齐：.json/.csv/.rdp/.db/.sqlite）；
  *   客户端扩展名校验先行（后端 400 的兜底仍在）。
  * - 导入 = api.importServers（multipart）→ {added, skipped}：成功 toast 后关闭，
@@ -162,7 +162,7 @@ function fmtSize(n) {
     role="dialog"
     aria-modal="true"
   >
-    <!-- 标题 + 目标行（batch10 #1）："导入到：ds/文件夹"——folder 空 = 只显示数据源；
+    <!-- 标题 + 目标行："导入到：ds/文件夹"——folder 空 = 只显示数据源；
          数据源切换实时跟随下拉（文件夹路径是打开时的树选中快照） -->
     <template #header>
       <div class="imp-title">{{ t('import.title') }}</div>

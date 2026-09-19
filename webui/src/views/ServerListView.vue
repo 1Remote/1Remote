@@ -480,8 +480,8 @@ const importModal = ref(false)
         @update:show="tagManager = $event ? tagManager : null"
       />
 
-      <!-- 导入模态：默认数据源/文件夹取当前树选中（文件夹内入口导入即落该文件夹，
-           batch10 Task A #1）；关闭即销毁（文件/错误不跨次残留） -->
+      <!-- 导入模态：默认数据源/文件夹取当前树选中（文件夹内入口导入即落该文件夹）；
+           关闭即销毁（文件/错误不跨次残留） -->
       <ImportModal
         v-if="importModal"
         :show="true"

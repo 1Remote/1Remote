@@ -133,9 +133,9 @@ function setAuthMode(mode) {
   authMode.value = mode
 }
 
-// ---- 名称即时查重（batch10 Task B #6，WPF 弹窗 IDataErrorInfo 即时判重的 web 形态）：
-// 忽略大小写（对齐后端/后端 UpdateCredential CurrentCultureIgnoreCase 判重，exclude=原名）；
-// 重名即输入框下方红字提示 + 禁用保存（后端 409 仍为最终守卫） ----
+// ---- 名称即时查重（WPF 弹窗 IDataErrorInfo 即时判重的 web 形态）：忽略大小写
+//（对齐后端 UpdateCredential 的 CurrentCultureIgnoreCase 判重，排除原名）；
+// 重名即输入框下方红字提示 + 禁用保存（后端 400 仍为最终守卫） ----
 const nameExists = computed(() => {
   const n = form.name.trim()
   if (!n) return false
@@ -396,7 +396,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
       </div>
     </template>
 
-    <!-- 新建/编辑模态：Name 必填 + 即时查重（batch10 Task B #6）；密码/私钥二选一（segmented，
+    <!-- 新建/编辑模态：Name 必填 + 即时查重；密码/私钥二选一（segmented，
          仅切换展示）；编辑态两字段预填掩码，👁 reveal（本地验证）回填明文；私钥行带浏览按钮 -->
     <n-modal
       v-model:show="showEdit"
@@ -417,8 +417,8 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
               :status="nameExists ? 'error' : undefined"
               :input-props="{ spellcheck: false }"
             />
-            <!-- 重名即时提示（batch10 Task B #5 顺带清理：原 secretHint 长提示行删除，
-                 键保留避免动 locales 平价；文案复用运行器重名词条） -->
+            <!-- 重名即时提示（secretHint 长提示行已随即时查重移除，locale 键保留避免
+                 动 locales 平价；文案复用运行器重名词条） -->
             <p v-if="nameExists" class="f-err">{{ t('settings.r.nameExists', { name: form.name.trim() }) }}</p>
           </div>
         </div>
@@ -721,7 +721,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   line-height: 1.5;
   color: var(--text-4);
 }
-/* 名称重名即时提示（batch10 Task B #6）：输入框下方红字 */
+/* 名称重名即时提示：输入框下方红字 */
 .f-err {
   margin: 4px 0 0;
   font-size: 0.8462rem;
