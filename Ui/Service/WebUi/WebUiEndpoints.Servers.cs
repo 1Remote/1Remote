@@ -245,7 +245,8 @@ namespace _1RM.Service.WebUi
             // 批量重载的按 Hash 自动提取，见 WebUiImportExportService 类注释）→ {added, skipped, errors}。
             // 未知格式/未知数据源/只读数据源/解析失败 → 400 {errors}；上传文件落临时目录，处理完即删。
             // folder（可选，'/' 分隔，batch10 Task A #1）：目标文件夹——webui 文件夹内入口导入时传
-            // 当前文件夹路径，导入服务器 TreeNodes 改写为该路径拆分；缺省 = 落数据源根（原语义）。
+            // 当前文件夹路径，导入服务器 TreeNodes 改写为该路径拆分；缺省 = 不改写（保留解析器产出：
+            // JSON 导出文件自带源库路径则保留、CSV/RDP 无路径则落根——与 WPF 导入一致）。
             app.MapPost("/api/servers/import", async (HttpContext ctx, string? ds, string? folder) =>
             {
                 if (!ctx.Request.HasFormContentType)
