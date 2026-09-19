@@ -33,6 +33,16 @@ const searchInput = ref(null)
 // 再次按下全选已有内容，方便直接覆盖输入。
 // Esc 不在此处理（输入框元素级 handler 焦点在表格时不触发，无法参与统一链序）——
 // 全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 的 window 级 handler 统一调度。
+//
+// 浏览器快捷键兜底（WPF 壳主修复在 MainWindowView 的
+// AreBrowserAcceleratorKeysEnabled=false；这里是浏览器直开 dev 页的场景）：
+//  - Ctrl/Cmd+P 打印：应用无打印功能，吞掉（否则弹浏览器打印预览）
+//  - Alt+Left / Alt+Right 历史导航：单页壳无历史语义，keydown preventDefault 拦截。
+//    可拦截性说明（batch11 实测）：本环境 CDP 合成按键不触发浏览器加速键、OS 级
+//    注入到不了窗口，无法实证；按 Chromium/MDN 文档，Alt+←/→ 是 keydown 的默认
+//    动作（可被 preventDefault 取消，保留例外仅 Ctrl+W/T/N 等浏览器保留键），
+//    保留此兜底，硬保证由 WPF 侧 AreBrowserAcceleratorKeysEnabled 提供。
+//  - F5/Ctrl+R 刷新不拦——刷新是开发需要
 function onGlobalKey(e) {
   const key = e.key?.toLowerCase()
   if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && key === 'f') {
@@ -40,6 +50,16 @@ function onGlobalKey(e) {
     e.preventDefault()
     searchInput.value?.focus()
     searchInput.value?.select()
+    return
+  }
+  // Ctrl/Cmd+P：preventDefault 即抑制浏览器打印
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && key === 'p') {
+    e.preventDefault()
+    return
+  }
+  // Alt+←/→：拦截浏览器历史后退/前进（单页应用无历史栈）
+  if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && (key === 'arrowleft' || key === 'arrowright')) {
+    e.preventDefault()
   }
 }
 onMounted(() => window.addEventListener('keydown', onGlobalKey))
