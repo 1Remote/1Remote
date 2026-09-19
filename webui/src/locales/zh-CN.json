@@ -27,6 +27,7 @@
   "tree.renameFolder": "重命名文件夹",
   "tree.deleteFolder": "删除文件夹",
   "tree.deleteFolderConfirm": "确定删除文件夹「{name}」？其中 {n} 台服务器与子文件夹将上移一级。",
+  "tree.deleteFolderEmpty": "文件夹「{name}」为空，可以放心删除。",
   "tree.deleteFolderHasServers": "文件夹「{name}」内含 {n} 台服务器（含子文件夹）。请选择删除方式：",
   "tree.deleteWithServers": "删除文件夹及其中服务器",
   "tree.deleteKeepContents": "仅删除文件夹，内容上移一级",
@@ -85,6 +86,7 @@
   "import.skipped": "跳过 {n} 条（无法识别的条目）",
   "import.failed": "导入失败",
   "import.errors": "导入未完成：",
+  "import.importTo": "导入到：{target}",
 
   "ctx.connect": "连接",
   "ctx.newWindow": "新窗口连接",
@@ -402,6 +404,7 @@
   "editor.scriptTestExitAbort": "退出码：{code}。非 0 时连接请求将被中止。",
   "editor.scriptTestTimeout": "脚本超时未结束，已被终止。",
   "editor.scriptTestStartFailed": "无法运行脚本",
+  "editor.scriptTestEmpty": "先输入脚本再测试",
 
   "editor.group.basic": "基本信息",
   "editor.group.credential": "凭据",

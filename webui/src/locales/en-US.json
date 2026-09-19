@@ -27,6 +27,7 @@
   "tree.renameFolder": "Rename folder",
   "tree.deleteFolder": "Delete folder",
   "tree.deleteFolderConfirm": "Delete folder \"{name}\"? Its {n} server(s) and subfolders will move up one level.",
+  "tree.deleteFolderEmpty": "Folder \"{name}\" is empty and safe to delete.",
   "tree.deleteFolderHasServers": "Folder \"{name}\" contains {n} server(s) (including subfolders). Choose how to delete it:",
   "tree.deleteWithServers": "Delete folder and servers",
   "tree.deleteKeepContents": "Only delete folder (move contents up)",
@@ -85,6 +86,7 @@
   "import.skipped": "Skipped {n} entries (unrecognized items)",
   "import.failed": "Import failed",
   "import.errors": "Import did not complete:",
+  "import.importTo": "Import to: {target}",
 
   "ctx.connect": "Connect",
   "ctx.newWindow": "Connect in new window",
@@ -402,6 +404,7 @@
   "editor.scriptTestExitAbort": "Exit code: {code}. A non-zero exit code will abort the connection request.",
   "editor.scriptTestTimeout": "The script did not finish in time and was terminated.",
   "editor.scriptTestStartFailed": "Failed to run the script",
+  "editor.scriptTestEmpty": "Enter a script first",
 
   "editor.group.basic": "Basic",
   "editor.group.credential": "Credentials",
