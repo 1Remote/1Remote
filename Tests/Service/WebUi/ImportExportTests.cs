@@ -91,14 +91,16 @@ namespace Tests.Service.WebUi
             return (id, displayName);
         }
 
-        /// <summary>multipart 上传一个内存文件到 POST /api/servers/import。</summary>
-        private static async Task<HttpResponseMessage> ImportAsync(byte[] content, string fileName, string ds = "Local")
+        /// <summary>multipart 上传一个内存文件到 POST /api/servers/import（folder 可选：目标文件夹路径）。</summary>
+        private static async Task<HttpResponseMessage> ImportAsync(byte[] content, string fileName, string ds = "Local", string? folder = null)
         {
             using var form = new MultipartFormDataContent();
             var fileContent = new ByteArrayContent(content);
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
             form.Add(fileContent, "file", fileName);
-            return await _client.PostAsync($"/api/servers/import?ds={Uri.EscapeDataString(ds)}", form);
+            var qs = $"?ds={Uri.EscapeDataString(ds)}";
+            if (!string.IsNullOrEmpty(folder)) qs += $"&folder={Uri.EscapeDataString(folder)}";
+            return await _client.PostAsync($"/api/servers/import{qs}", form);
         }
 
         private static async Task<List<(string Id, string DisplayName, string Address)>> GetServersAsync()
@@ -366,6 +368,28 @@ namespace Tests.Service.WebUi
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
             Assert.IsTrue(doc.RootElement.GetProperty("errors").GetArrayLength() >= 1);
+        }
+
+        // ------------------------------------------------------------------
+        // 目标文件夹（batch10 Task A #1）
+        // ------------------------------------------------------------------
+
+        [TestMethod]
+        public async Task Import_WithFolderPath_AssignsImportedServersToFolder()
+        {
+            // folder='a/b' → 导入服务器的 TreeNodes=["a","b"]（config 端点为 PascalCase 直通域）
+            var name = NewName("fld-srv");
+            var csv = MinimalCsv(name, "9.9.9.8", "fld-user", "fld-pw");
+            var resp = await ImportAsync(Encoding.UTF8.GetBytes(csv), "servers.csv", folder: "a/b");
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode, await resp.Content.ReadAsStringAsync());
+
+            var list = await GetServersAsync();
+            var srv = list.FirstOrDefault(x => x.DisplayName == name);
+            Assert.IsTrue(srv != default, "导入后服务器应在列表中");
+            var cfg = await _client.GetAsync($"/api/servers/{srv.Id}/config?ds=Local");
+            Assert.AreEqual(HttpStatusCode.OK, cfg.StatusCode);
+            var body = await cfg.Content.ReadAsStringAsync();
+            StringAssert.Contains(body, "\"TreeNodes\":[\"a\",\"b\"]", "folderPath 必须落到导入服务器的 TreeNodes");
         }
     }
 }
