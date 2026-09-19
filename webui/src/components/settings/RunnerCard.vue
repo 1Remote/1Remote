@@ -236,7 +236,7 @@ function onFontSize(v) {
       </div>
       <div class="f-row">
         <label>
-          <!-- 参数行 label（batch10 Task B #9）：SSH 族（有 ArgumentsForPrivateKey 字段）区分
+          <!-- 参数行 label：SSH 族（有 ArgumentsForPrivateKey 字段）区分
                "通过密码/通过私钥"两个参数位；其余协议（VNC/FTP 等外部运行器无私钥概念）用
                通用 label（WPF ExternalRunnerSettings 同行标签 'Cmd parameter'，非 SSH 弹窗
                从不带"通过密码"后缀） -->

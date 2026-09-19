@@ -209,8 +209,8 @@ export function useFolderOps() {
     const holder = holderAt(buildTree(servers.value, datasources.value, folderPathsByDs.value), dsName, oldPath)
     const count = holder ? countHolderServers(holder) : 0
     const name = oldPath.split('/').pop()
-    // 空文件夹（递归无服务器）：单按钮确认直接删——专用文案（batch10 Task A #2：
-    // 原先复用 deleteFolderConfirm 传 n=0，会显示"其中 0 台服务器…上移一级"的怪句）
+    // 空文件夹（递归无服务器）：单按钮确认直接删——专用文案
+    //（原先复用 deleteFolderConfirm 传 n=0，会显示"其中 0 台服务器…上移一级"的怪句）
     if (!count) {
       dialog.warning({
         title: t('tree.deleteFolder'),
