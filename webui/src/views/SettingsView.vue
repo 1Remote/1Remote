@@ -257,4 +257,24 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   padding: 18px 24px 40px;
 }
+
+/* ---- 设置分组共享的"标签列 + 控件列"行网格（GeneralGroup/LauncherGroup 的 .row）----
+   :deep 穿透 scoped 边界统一定义（原先两分组各持一份同款规则）；仅此两分组的模板
+   使用 .row，其余分组的行内表单用各自的 .f-row，不受影响 */
+:deep(.row) {
+  display: grid;
+  grid-template-columns: clamp(180px, 22%, 280px) minmax(0, 1fr);
+  gap: 6px 16px;
+  align-items: center;
+  min-height: 40px;
+  padding: 7px 0;
+}
+/* 行悬停：全出血底色（无圆角/无水平内边距），标签列不加 nowrap——长词条自然两行折行 */
+:deep(.row:hover) {
+  background: var(--bg-hover);
+}
+:deep(.row-label) {
+  font-size: 0.9615rem;
+  color: var(--text-2);
+}
 </style>
