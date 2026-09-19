@@ -5,6 +5,8 @@
  *
  * - 数据源下拉：仅列可写数据源（后端对只读源 400，前置过滤避免明知必败的选择）；
  *   默认 = 打开时树选中的数据源（不可写则回退 Local / 首个可写）。
+ *   文件夹内入口（batch10 Task A #1）：defaultFolder 随树选中注入，标题下方显示
+ *   "导入到：ds/文件夹"，导入的服务器 TreeNodes 落到该路径（后端 ?folder= 参数）。
  * - 文件：拖放区 + 点击选择（accept 与后端 DetectImportKind 对齐：.json/.csv/.rdp/.db/.sqlite）；
  *   客户端扩展名校验先行（后端 400 的兜底仍在）。
  * - 导入 = api.importServers（multipart）→ {added, skipped}：成功 toast 后关闭，
@@ -26,6 +28,8 @@ const props = defineProps({
   show: { type: Boolean, default: false },
   /** 默认目标数据源（ServerListView 当前树选中） */
   defaultDs: { type: String, default: 'Local' },
+  /** 默认目标文件夹（'/' 分隔路径；'' = 落数据源根——「全部数据」/数据源根选中不注入） */
+  defaultFolder: { type: String, default: '' },
 })
 const emit = defineEmits(['update:show'])
 
@@ -47,6 +51,9 @@ const dsOptions = computed(() =>
   (writableDs.value.length ? writableDs.value : datasources.value).map((d) => ({ label: d.name, value: d.name }))
 )
 const ds = ref('Local')
+// 目标文件夹：打开时的树选中快照（不随后续树操作变）；导入请求与标题目标行共用。
+// 数据源可切换（下拉），文件夹路径对任意数据源同样合法（虚拟文件夹 = TreeNodes 前缀）。
+const folder = ref('')
 
 // ---- 文件选择（input 引用 + 拖放态）----
 const fileInput = ref(null)
@@ -79,13 +86,16 @@ function clearFile() {
 const importing = ref(false)
 const errors = ref([]) // 服务端 400 {errors}（内联展示；成功路径后端只回 {added, skipped}）
 
+// 标题下方的目标行："导入到：ds/文件夹路径"（folder 空 = 只显示数据源）；长路径省略，title 看全名
+const importTarget = computed(() => ds.value + (folder.value ? '/' + folder.value : ''))
+
 async function doImport() {
   const f = file.value
   if (!f || importing.value) return
   importing.value = true
   errors.value = []
   try {
-    const res = await api.importServers(f, ds.value)
+    const res = await api.importServers(f, ds.value, folder.value)
     if (res?.added > 0) {
       message.success(t('import.done', { n: res.added }))
       if (res.skipped > 0) message.info(t('import.skipped', { n: res.skipped }))
@@ -113,7 +123,7 @@ async function doImport() {
   }
 }
 
-// 开启时复位（上次的文件/错误/进度不跨次残留）；数据源默认值随打开时的树选中走
+// 开启时复位（上次的文件/错误/进度不跨次残留）；数据源/文件夹默认值随打开时的树选中走
 watch(
   () => props.show,
   (open) => {
@@ -121,6 +131,7 @@ watch(
     file.value = null
     errors.value = []
     importing.value = false
+    folder.value = props.defaultFolder || ''
     const names = dsOptions.value.map((o) => o.value)
     ds.value = names.includes(props.defaultDs)
       ? props.defaultDs
@@ -142,12 +153,17 @@ function fmtSize(n) {
   <n-modal
     v-model:show="showBind"
     preset="card"
-    :title="t('import.title')"
     :bordered="false"
     :style="{ width: 'min(460px, 92vw)' }"
     role="dialog"
     aria-modal="true"
   >
+    <!-- 标题 + 目标行（batch10 #1）："导入到：ds/文件夹"——folder 空 = 只显示数据源；
+         数据源切换实时跟随下拉（文件夹路径是打开时的树选中快照） -->
+    <template #header>
+      <div class="imp-title">{{ t('import.title') }}</div>
+      <div class="imp-target" :title="importTarget">{{ t('import.importTo', { target: importTarget }) }}</div>
+    </template>
     <!-- 目标数据源（只读源后端必 400，直接不进选项） -->
     <div class="f-row">
       <label>{{ t('import.ds') }}</label>
@@ -200,6 +216,21 @@ function fmtSize(n) {
 </template>
 
 <style scoped>
+/* 标题 + 目标行（n-modal card 的 header slot）：目标行小一号、次级色，长路径单行省略 */
+.imp-title {
+  font-size: 1.0769rem;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.imp-target {
+  margin-top: 2px;
+  font-size: 0.8846rem;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .f-row {
   display: flex;
   align-items: center;

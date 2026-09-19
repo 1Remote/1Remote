@@ -194,6 +194,10 @@ function onTagsUpdate(v) {
 // ---- tags 候选 chips：已有标签名（useTagSuggestions 模块级缓存，
 // stale-while-revalidate——TAGS 字段组件创建时拉一次）。已选中的不再展示，最多 12 个
 //（克制：候选是"快速点选"，不是完整列表，长列表交给输入）；点击 = 追加回 json。
+// 显示名截断 TAG_SUGGEST_MAX 字符（batch10 Task A #4：长标签不撑破两行候选区），
+// :title 恒给全名。
+const TAG_SUGGEST_MAX = 20
+const clipTag = (s) => (s.length > TAG_SUGGEST_MAX ? s.slice(0, TAG_SUGGEST_MAX) + '…' : s)
 const { tags: allTags, refresh: refreshTagSuggestions } = useTagSuggestions()
 if (props.field.type === FIELD.TAGS) refreshTagSuggestions()
 const tagSuggestions = computed(() => {
@@ -215,6 +219,9 @@ function addTag(tag) {
 const actionSelect = computed(() => Array.isArray(props.field.actions) && props.field.actions.includes('select'))
 const actionTest = computed(() => Array.isArray(props.field.actions) && props.field.actions.includes('test'))
 const scriptBusy = ref(false) // 两按钮互斥占用（选择请求寿命 = 用户开着对话框的时间）
+// 脚本值为空（含纯空白）时禁用"测试"（batch10 Task A #3：空命令的测试必然无意义，
+// 后端 DisassembleOneLineScriptCmd 拆不出可执行项）；"选择"不受影响——选择正是填值的入口
+const scriptEmpty = computed(() => String(props.modelValue ?? '').trim() === '')
 async function onScriptSelect() {
   if (scriptBusy.value) return
   scriptBusy.value = true
@@ -413,9 +420,10 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
             type="button"
             class="ff-tag-sug-chip"
             :disabled="disabled"
+            :title="s"
             @click="addTag(s)"
           >
-            + {{ s }}
+            + {{ clipTag(s) }}
           </button>
         </div>
       </div>
@@ -447,7 +455,8 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
             v-if="actionTest"
             class="ff-mini-btn"
             type="button"
-            :disabled="disabled || scriptBusy"
+            :disabled="disabled || scriptBusy || scriptEmpty"
+            :title="scriptEmpty ? t('editor.scriptTestEmpty') : ''"
             @click="onScriptTest"
           >
             {{ t('editor.scriptTest') }}
@@ -657,7 +666,8 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 /* tags：输入 + 候选 chips 两行。容器由上方 .ff-control > :deep(*) 的
-   100% 规则撑满控件列；n-dynamic-tags 的 chips 换行/删除/禁用态均组件自带，
+   100% 规则撑满控件列（form-field 两列网格不破：148px 标签列与其他行对齐，
+   候选区只活在控件列内）；n-dynamic-tags 的 chips 换行/删除/禁用态均组件自带，
    不自绘 chips 样式 */
 .ff-tags {
   display: flex;
@@ -672,11 +682,15 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 /* 候选 chips：虚线小标签（视觉从属"可点选的候选"，与已选实心 chips 区分），最多 12 个
-   （tagSuggestions 截断），无候选/全部已选时整行不渲染 */
+   （tagSuggestions 截断），无候选/全部已选时整行不渲染。
+   候选区限高两行（batch10 Task A #4）：行高 = 字号 0.8462rem + 上下 padding 3px*2 +
+   边框 1px*2，两行 + 一个 4px 行距——超出滚轮（overflow-y:auto），不足两行自适应 */
 .ff-tag-sug {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  max-height: calc(2 * (0.8462rem + 8px) + 4px);
+  overflow-y: auto;
 }
 
 .ff-tag-sug-chip {

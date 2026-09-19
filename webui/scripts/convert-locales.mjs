@@ -379,6 +379,10 @@ const OVERRIDES = {
     'tree.collapse': '\u00ab \u6536\u5408',
     'tree.collapseTitle': '\u6536\u5408\u5074\u6b04',
     'tree.deleteFolder': '\u522a\u9664\u8cc7\u6599\u593e',
+    // batch10 Task A #2：刪除空資料夾的專用文案（原鍵傳 n=0 顯示「其中 0 台…」）
+    // 資料夾「{name}」為空，可以放心刪除。
+    'tree.deleteFolderEmpty':
+      '\u8cc7\u6599\u593e\u300c{name}\u300d\u70ba\u7a7a\uff0c\u53ef\u4ee5\u653e\u5fc3\u522a\u9664\u3002',
     'tree.folderNamePlaceholder': '\u8f38\u5165\u8cc7\u6599\u593e\u540d\u7a31',
     'tree.folderNameInvalid': '\u540d\u7a31\u4e0d\u80fd\u70ba\u7a7a\uff0c\u4e14\u4e0d\u80fd\u5305\u542b\u300c/\u300d',
     'tree.folderNameExists': '\u6b64\u5c64\u7d1a\u5df2\u5b58\u5728\u540c\u540d\u8cc7\u6599\u593e',
@@ -423,6 +427,8 @@ const OVERRIDES = {
     'import.skipped': '\u7565\u904e {n} \u7b46\uff08\u7121\u6cd5\u8fa8\u8b58\u7684\u9805\u76ee\uff09',
     'import.failed': '\u532f\u5165\u5931\u6557',
     'import.errors': '\u532f\u5165\u672a\u5b8c\u6210\uff1a',
+    // batch10 Task A #1：匯入模態標題下方的目標行。匯入至：{target}
+    'import.importTo': '\u532f\u5165\u81f3\uff1a{target}',
     'ctx.otherCredential': '\u4f7f\u7528\u5176\u4ed6\u6191\u8b49\u9023\u7dda',
     'row.note': '\u5099\u8a3b',
     'row.more': '\u66f4\u591a',
@@ -573,6 +579,8 @@ const OVERRIDES = {
       '\u9000\u51fa\u78bc\uff1a{code}\u3002\u975e 0 \u6642\u9023\u7dda\u8acb\u6c42\u5c07\u88ab\u4e2d\u6b62\u3002',
     'editor.scriptTestTimeout': '\u6307\u4ee4\u78bc\u903e\u6642\u672a\u7d50\u675f\uff0c\u5df2\u88ab\u7d42\u6b62\u3002',
     'editor.scriptTestStartFailed': '\u7121\u6cd5\u57f7\u884c\u6307\u4ee4\u78bc',
+    // batch10 Task A #3：腳本為空時「測試」按鈕的 title。請先輸入指令碼
+    'editor.scriptTestEmpty': '\u8acb\u5148\u8f38\u5165\u6307\u4ee4\u78bc',
     'editor.ph.note':
       '# \u652f\u63f4 Markdown\n\n- \u5728\u9019\u88e1\u5beb\u5099\u8a3b\n- foo\n\n![\u5716\u7247](http://x/structure.png)\n\n[\u9023\u7d50](http://x/readme.md)',
     'editor.group.alternate': '\u5099\u7528\u9023\u7dda',

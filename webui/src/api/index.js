@@ -182,11 +182,14 @@ export const api = {
   saveRunners: (protocols) => request('/api/settings/runners', { method: 'PUT', body: { protocols } }),
   // 导入/导出：
   // 导入 = multipart 上传（FormData 由浏览器补 boundary，勿设 Content-Type）；格式按扩展名嗅探
-  //（.json=1Remote 导出、.csv=mRemoteNG、.rdp、.db=PRemoteM/1Remote 双探测）→ {added, skipped, errors}
-  importServers: (file, ds) => {
+  //（.json=1Remote 导出、.csv=mRemoteNG、.rdp、.db=PRemoteM/1Remote 双探测）→ {added, skipped, errors}。
+  // folder（可选，'/' 分隔）：目标文件夹——导入服务器 TreeNodes 落到该路径；缺省落数据源根。
+  importServers: (file, ds, folder) => {
     const form = new FormData()
     form.append('file', file)
-    return requestRaw(`/api/servers/import?ds=${encodeURIComponent(ds ?? 'Local')}`, { method: 'POST', body: form })
+    let qs = `?ds=${encodeURIComponent(ds ?? 'Local')}`
+    if (folder) qs += `&folder=${encodeURIComponent(folder)}`
+    return requestRaw(`/api/servers/import${qs}`, { method: 'POST', body: form })
   },
   // 导出 = 明文 JSON attachment（跨数据源，ids 逗号分隔）——blob 响应不能走 JSON request；
   // 二次验证未通过抛 err.status=403；成功返回 {blob, filename}（调用方 object URL + a[download] 触发保存）
