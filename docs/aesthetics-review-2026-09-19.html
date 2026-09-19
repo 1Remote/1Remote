@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark" data-accent="blue">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>1Remote Web UI 美学审核示意 · 2026-09-19</title>
+<style>
+/* ============================================================
+   页面自身样式（审核工具，非产品代码）
+   主题变量表逐字取自 webui/src/themes/theme.css —— 保证小样忠实
+   ============================================================ */
+:root {
+  --accent: #2c5aff;
+  --accent-hover: #4d73ff;
+  --accent-container: #16203a;
+  --accent-text: #7c9bff;
+}
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f1011; --bg-panel: #131417; --bg-elevated: #1a1b1f; --bg-hover: #17181c;
+  --border: #26272b; --border-strong: #2c2e33;
+  --text-1: #e8e9ea; --text-2: #c9cdd4; --text-3: #8b8f98; --text-4: #565a63;
+  --danger: #ef6a6a; --success: #26a269; --warning: #f0b25f;
+  /* 建议的分档阴影令牌（本页演示用；dark 档 = 现状值） */
+  --shadow-menu-p: 0 6px 24px rgb(0 0 0 / 25%);
+  --shadow-menu-c: 0 6px 24px rgb(0 0 0 / 25%);
+}
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: #fafafa; --bg-panel: #ffffff; --bg-elevated: #ffffff; --bg-hover: #f4f4f5;
+  --border: #e4e4e7; --border-strong: #d4d4d8;
+  --text-1: #18181b; --text-2: #3f3f46; --text-3: #71717a; --text-4: #a1a1aa;
+  --danger: #dc2626; --success: #16a34a; --warning: #d97706;
+  --shadow-menu-p: 0 6px 24px rgb(0 0 0 / 10%);
+  --shadow-menu-c: 0 6px 24px rgb(0 0 0 / 25%);
+}
+[data-accent='blue']   { --accent:#2c5aff; --accent-hover:#4d73ff; --accent-container:#16203a; --accent-text:#7c9bff; }
+[data-accent='violet'] { --accent:#8b5cf6; --accent-hover:#a78bfa; --accent-container:#1d1626; --accent-text:#b8a6f7; }
+[data-accent='pink']   { --accent:#ec4899; --accent-hover:#f472b6; --accent-container:#26141e; --accent-text:#f5a8cd; }
+[data-accent='red']    { --accent:#ef4444; --accent-hover:#f87171; --accent-container:#26120f; --accent-text:#f5a09a; }
+[data-accent='orange'] { --accent:#f97316; --accent-hover:#fb923c; --accent-container:#241d12; --accent-text:#f0b25f; }
+[data-accent='green']  { --accent:#10b981; --accent-hover:#34d399; --accent-container:#12241a; --accent-text:#5fd38d; }
+[data-accent='slate']  { --accent:#64748b; --accent-hover:#7c8ba1; --accent-container:#1b2028; --accent-text:#9aa8bb; }
+[data-theme='light'][data-accent='blue']   { --accent-container:#e8edfa; --accent-text:#2c5aff; }
+[data-theme='light'][data-accent='violet'] { --accent-container:#ede9fb; --accent-text:#6d28d9; }
+[data-theme='light'][data-accent='pink']   { --accent-container:#fce7f3; --accent-text:#be185d; }
+[data-theme='light'][data-accent='red']    { --accent-container:#fee2e2; --accent-text:#b91c1c; }
+[data-theme='light'][data-accent='orange'] { --accent-container:#ffedd5; --accent-text:#c2410c; }
+[data-theme='light'][data-accent='green']  { --accent-container:#d1fae5; --accent-text:#047857; }
+[data-theme='light'][data-accent='slate']  { --accent-container:#e2e8f0; --accent-text:#475569; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text-2);
+  font-family: -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size: 13px; line-height: 1.6;
+  padding-bottom: 80px;
+}
+a { color: var(--accent-text); }
+
+/* ---- 顶栏 ---- */
+header.page {
+  position: sticky; top: 0; z-index: 99;
+  background: var(--bg-panel); border-bottom: 1px solid var(--border);
+  padding: 10px 20px 8px;
+}
+h1 { margin: 0 0 2px; font-size: 15px; color: var(--text-1); font-weight: 600; }
+.sub { color: var(--text-4); font-size: 11.5px; }
+.controls { display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+.ctl-label { color: var(--text-3); font-size: 11.5px; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.seg button {
+  border: none; background: transparent; color: var(--text-2); font-size: 12px;
+  padding: 4px 12px; cursor: pointer; font-family: inherit;
+}
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button.on { background: var(--accent-container); color: var(--accent-text); }
+.acc-dots { display: inline-flex; gap: 6px; }
+.acc-dots button {
+  width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent;
+  outline: 1px solid var(--border-strong); outline-offset: 1px; cursor: pointer; padding: 0;
+}
+.acc-dots button.on { outline: 2px solid var(--text-2); }
+
+/* ---- 图例 + 目录 ---- */
+.legend {
+  display: flex; gap: 18px; flex-wrap: wrap; align-items: center;
+  margin: 10px 20px 0; padding: 8px 12px;
+  border: 1px dashed var(--border-strong); border-radius: 8px;
+  color: var(--text-3); font-size: 11.5px;
+}
+.legend .chip-cur, .legend .chip-prop {
+  display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px;
+}
+.legend .chip-cur { background: #d4a72c; }
+.legend .chip-prop { background: var(--success); }
+nav.toc {
+  margin: 12px 20px 0; display: flex; flex-wrap: wrap; gap: 6px;
+}
+nav.toc a {
+  font-size: 11.5px; color: var(--text-3); text-decoration: none;
+  border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px;
+}
+nav.toc a:hover { color: var(--text-1); border-color: var(--border-strong); background: var(--bg-hover); }
+
+/* ---- 区块骨架 ---- */
+main { max-width: 1240px; margin: 0 auto; padding: 18px 20px 0; }
+section.block { margin-top: 34px; }
+section.block > h2 {
+  font-size: 14px; color: var(--text-1); font-weight: 600; margin: 0 0 2px;
+}
+section.block > h2 .no { color: var(--accent-text); margin-right: 6px; }
+.meta { color: var(--text-4); font-size: 11.5px; margin-bottom: 10px; }
+.meta b { color: var(--warning); font-weight: 600; }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 980px) { .compare { grid-template-columns: 1fr; } }
+.pane {
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg-panel);
+  padding: 10px 14px 14px; min-width: 0;
+}
+.pane > .pane-head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px; font-weight: 600; margin: 2px 0 10px;
+}
+.pane.current > .pane-head { color: #d4a72c; }
+.pane.proposed > .pane-head { color: var(--success); }
+.pane-head .tagline { font-weight: 400; color: var(--text-4); }
+.note { color: var(--text-4); font-size: 11px; margin-top: 8px; line-height: 1.5; }
+.note b { color: var(--text-3); font-weight: 600; }
+
+/* 小样通用 */
+.demo { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.demo-col { display: flex; flex-direction: column; gap: 8px; }
+.spec {
+  display: block; font-size: 10px; color: var(--text-4); text-align: center;
+  margin-top: 4px; line-height: 1.35; font-family: Consolas, monospace; white-space: nowrap;
+}
+.spec.warn { color: var(--warning); }
+.rowlabel { font-size: 11.5px; color: var(--text-3); margin: 6px 0 4px; font-weight: 600; }
+
+/* ================= B1 色板 ================= */
+.swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+.sw { width: 86px; }
+.sw .box { height: 30px; border-radius: 6px; border: 1px solid var(--border); }
+.sw .lb { font-size: 10px; color: var(--text-4); font-family: Consolas, monospace; margin-top: 3px; word-break: break-all; }
+.dotset { display: flex; align-items: center; gap: 16px; margin-top: 10px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+
+/* ================= B2 圆角 ================= */
+.radii { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.radii .sq { width: 56px; height: 40px; background: var(--bg-elevated); border: 1px solid var(--accent); }
+.radii .sq.hot { border-color: var(--warning); border-width: 1.5px; }
+
+/* ================= B3 字号 ================= */
+.fsrow { display: flex; align-items: baseline; gap: 10px; padding: 3px 0; border-bottom: 1px dashed var(--border); }
+.fsrow .px { font-family: Consolas, monospace; font-size: 10px; color: var(--text-4); width: 88px; flex: none; }
+.fsrow .cnt { font-size: 10px; color: var(--text-4); width: 46px; flex: none; text-align: right; }
+.fsrow .txt { color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pair { display: flex; gap: 18px; align-items: baseline; margin-top: 8px; }
+
+/* ================= B4/B5/B6 按钮小样（按代码参数复刻） ================= */
+.btn { border: 1px solid var(--border); background: transparent; color: var(--text-2); cursor: pointer; font-family: inherit; white-space: nowrap; }
+.btn:hover { border-color: var(--border-strong); background: var(--bg-hover); color: var(--text-1); }
+.b-bulk-toggle { border-radius: 5px; padding: 5px 9px;  font-size: 11.5px; background: var(--bg-elevated); color: var(--text-3); }
+.b-bb         { border-radius: 6px; padding: 5px 10px; font-size: 12px; }
+.b-act-ds     { border-radius: 6px; padding: 0 10px;   font-size: 11.5px; height: 24px; }
+.b-en-clear   { border-radius: 6px; padding: 6px 12px; font-size: 12px; }
+.b-act-rc     { border-radius: 6px; padding: 6px 10px; font-size: 12px; background: var(--bg-elevated); color: var(--text-3); }
+.b-sf-add     { border-radius: 5px; padding: 6px 12px; font-size: 12px; border-style: dashed; border-color: var(--border-strong); color: var(--text-3); }
+.b-ff-mini    { border-radius: 3px; height: 28px; padding: 0 10px; font-size: 11.5px; background: var(--bg-elevated); }
+.b-ctx-item   { border-radius: 5px; padding: 7px 10px; font-size: 12.5px; }
+.b-ed-btn     { border-radius: 6px; padding: 7px 14px; font-size: 12.5px; }
+.b-r-tab      { border-radius: 6px; padding: 5px 12px; font-size: 12.5px; }
+.b-eg-btn     { border-radius: 7px; padding: 8px 14px; font-size: 12.5px; background: var(--bg-elevated); }
+/* 主按钮 */
+.b-bb-primary   { border-radius: 6px; padding: 5px 10px; font-size: 12px; border-color: var(--accent); color: var(--accent-text); }
+.b-bb-primary.hover-sim { border-color: var(--border-strong); background: var(--bg-hover); color: var(--accent-text); }
+.b-ed-primary   { border-radius: 6px; padding: 7px 14px; font-size: 12.5px; border-color: var(--accent); color: var(--accent-text); }
+.b-ed-primary.hover-sim { border-color: var(--accent); background: var(--bg-hover); color: var(--accent-text); }
+/* 建议侧 */
+.p-btn-s { border-radius: 6px; height: 24px; padding: 0 10px; font-size: 12.5px; }
+.p-btn-m { border-radius: 6px; height: 28px; padding: 0 12px; font-size: 12.5px; }
+.p-btn-m.primary { border-color: var(--accent); color: var(--accent-text); }
+.p-btn-m.primary.hover-sim { background: var(--bg-hover); }
+/* 工具行复刻（面包屑行内 3 种圆角并存） */
+.tl { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+.tl .n-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 24px; padding: 0 8px; font-size: 12px; cursor: pointer;
+  border-radius: 3px; background: transparent; border: none; color: var(--text-2);
+} /* Naive quaternary small 的近似观感（默认 3px 圆角） */
+.tl .tt-btn {
+  width: 24px; height: 22px; border-radius: 5px; border: 1px solid var(--border);
+  background: var(--bg-panel); color: var(--text-3); font-size: 12px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.tl .bb-btn {
+  border-radius: 6px; padding: 5px 10px; font-size: 12px;
+  border: 1px solid var(--border); background: transparent; color: var(--text-2); cursor: pointer;
+}
+
+/* ================= B7 输入控件 ================= */
+.inp { display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-3); padding: 0 9px; font-size: 12px; }
+.i-searchbox { height: 26px; border-radius: 7px; border-color: var(--border-strong); width: 190px; }
+.i-naive     { height: 28px; border-radius: 3px; width: 190px; background: var(--bg-elevated); } /* n-input small 近似 */
+.i-hk        { height: 28px; border-radius: 6px; width: 190px; background: var(--bg-elevated); color: var(--text-1); justify-content: center; }
+.i-colorbox  { height: 28px; border-radius: 3px; width: 190px; background: var(--bg-elevated); padding: 0 6px; }
+.i-colorbox .cur { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--border-strong); background: var(--accent); }
+.i-mdprev   { width: 190px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg-elevated); color: var(--text-4); font-size: 12px; padding: 8px 12px; }
+.p-input { height: 28px; border-radius: 6px; width: 190px; }
+
+/* ================= B8 胶囊 chips ================= */
+.chip { display: inline-flex; align-items: center; border-radius: 999px; white-space: nowrap; line-height: 1; }
+.c-tag     { border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-3); font-size: 10.5px; padding: 2.5px 8px; }
+.c-badge   { font-size: 10.5px; padding: 2.5px 9px; }
+.c-tagchip { border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-2); font-size: 11px; padding: 3px 8px; }
+.c-schip   { border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-2); font-size: 11.5px; padding: 2px 4px 2px 9px; line-height: 1.4; }
+.c-verbadge{ border: 1px solid var(--accent); color: var(--accent-text); font-size: 11px; padding: 1px 8px; line-height: 1.5; }
+.c-macro   { border: 1px solid var(--border); background: transparent; color: var(--text-3); font-size: 10.5px; padding: 1px 8px; line-height: 1.5; }
+.p-chip    { border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-2); font-size: 11px; padding: 2.5px 8px; }
+.c-schip .x { margin-left: 5px; color: var(--text-4); font-size: 10px; }
+
+/* ================= B9 分段控件 ================= */
+.segdemo { display: inline-flex; border: 1px solid var(--border); overflow: hidden; }
+.segdemo button { border: none; background: var(--bg-elevated); color: var(--text-3); font-size: 12px; line-height: 1; padding: 6px 12px; cursor: pointer; font-family: inherit; }
+.segdemo button + button { border-left: 1px solid var(--border); }
+.segdemo button.on { background: var(--accent-container); color: var(--accent-text); }
+.segdemo2 { display: inline-flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+.segdemo2 button { border: none; background: transparent; color: var(--text-2); font-size: 12px; height: 28px; min-width: 44px; cursor: pointer; font-family: inherit; }
+.segdemo2 button + button { border-left: 1px solid var(--border); }
+.segdemo2 button.on { background: var(--accent-container); color: var(--accent-text); }
+
+/* ================= B10 图标钮与禁用 ================= */
+.ic { display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-3); font-size: 12px; cursor: pointer; border-radius: 50%; }
+.ic.bordered { border: 1px solid var(--border); border-radius: 5px; }
+.dis { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+.dis .d { text-align: center; }
+.dis .btn-d { border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text-2); font-size: 12.5px; padding: 5px 12px; cursor: not-allowed; }
+
+/* ================= B11 阴影 ================= */
+.shadowbox { width: 210px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg-elevated); padding: 10px 12px; font-size: 12px; color: var(--text-2); }
+.shadowbox .t { color: var(--text-1); font-weight: 600; margin-bottom: 3px; }
+.shadowbox .s { color: var(--text-4); font-size: 11px; }
+.sh-cur { box-shadow: 0 6px 24px rgb(0 0 0 / 25%); }
+.sh-prop { box-shadow: var(--shadow-menu-p); }
+.sh-note { margin-top: 10px; font-size: 11px; color: var(--text-4); }
+
+/* ================= B12 高亮矩阵 ================= */
+.hl-matrix { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.hl-cell { border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: var(--bg-panel); }
+.hl-cell .nm { font-size: 10px; color: var(--text-4); font-family: Consolas, monospace; display: flex; justify-content: space-between; }
+.hl-cell .ratio { font-family: Consolas, monospace; }
+.hl-cell .ratio.bad { color: var(--danger); }
+.hl-cell .ratio.ok { color: var(--success); }
+.hl-samp { margin-top: 6px; font-size: 12.5px; color: var(--text-2); }
+.hl-cur { background: var(--accent); color: var(--bg-panel); border-radius: 2px; padding: 0 1px; }
+.hl-prop { background: var(--accent-container); color: var(--accent-text); font-weight: 600; border-radius: 2px; padding: 0 1px; }
+.themebox { padding: 6px 8px 8px; border-radius: 6px; }
+.themebox.dark  { background: #0f1011; color: #c9cdd4; }
+.themebox.light { background: #fafafa; color: #3f3f46; }
+.themebox.dark  .hl-cell { background: #131417; border-color: #26272b; }
+.themebox.light .hl-cell { background: #ffffff; border-color: #e4e4e7; }
+.themebox.dark  .hl-samp { color: #c9cdd4; }
+.themebox.light .hl-samp { color: #3f3f46; }
+.themebox.dark  .hl-cell .nm { color: #565a63; }
+.themebox.light .hl-cell .nm { color: #a1a1aa; }
+.themebox-label { font-size: 10.5px; color: var(--text-4); margin: 8px 0 4px; font-weight: 600; }
+/* 每个 cell 的高亮色由 JS 按实测 hex 内联（不依赖页面 data-theme，保证矩阵固定呈现双基底） */
+
+/* ================= B13 动效时长 ================= */
+.dur { margin: 4px 0; display: flex; align-items: center; gap: 8px; }
+.dur .lb { font-family: Consolas, monospace; font-size: 10.5px; color: var(--text-4); width: 150px; flex: none; }
+.dur .bar { height: 8px; border-radius: 4px; background: var(--accent); opacity: 0.75; }
+.dur .use { font-size: 10.5px; color: var(--text-4); }
+.dur.rm .lb::after { content: ' · 缺 rm'; color: var(--danger); }
+
+footer.page {
+  max-width: 1240px; margin: 40px auto 0; padding: 14px 20px;
+  border-top: 1px solid var(--border); color: var(--text-4); font-size: 11px;
+}
+</style>
+</head>
+<body>
+
+<header class="page">
+  <h1>1Remote Web UI 美学设计修正报告 · 示意图</h1>
+  <div class="sub">2026-09-19 · 批次 11 Task C · 三审核者（视觉/UI 工程/设计系统）22 条发现的可视化对照 · 左栏=按代码真实参数复刻的现状，右栏=建议后 · 配套报告：<code>docs/aesthetics-review-2026-09-19.md</code></div>
+  <div class="controls">
+    <span class="ctl-label">基底</span>
+    <span class="seg" id="themeSeg">
+      <button data-t="dark" class="on">暗色</button><button data-t="light">亮色</button>
+    </span>
+    <span class="ctl-label">强调色（验证 7 色稳健性）</span>
+    <span class="acc-dots" id="accDots"></span>
+    <span class="ctl-label" id="accName">blue</span>
+  </div>
+</header>
+
+<div class="legend">
+  <span><span class="chip-cur"></span>左栏 = 现状（值取自 webui/src 组件 scoped 样式）</span>
+  <span><span class="chip-prop"></span>右栏 = 建议（本报告提案，未实施）</span>
+  <span>字号换算：产品根字号 13px（M 档），12px=0.9231rem、12.5px=0.9615rem；本页直接以 px 复刻</span>
+  <span>本页为审核工具，不属于产品代码</span>
+</div>
+
+<nav class="toc">
+  <a href="#b1">B1 色彩令牌与硬编码红点</a>
+  <a href="#b2">B2 圆角阶梯</a>
+  <a href="#b3">B3 字号阶梯</a>
+  <a href="#b4">B4 按钮家族</a>
+  <a href="#b5">B5 主按钮 hover 分叉</a>
+  <a href="#b6">B6 空态按钮无 hover</a>
+  <a href="#b7">B7 输入控件</a>
+  <a href="#b8">B8 胶囊 chips 家族</a>
+  <a href="#b9">B9 分段控件</a>
+  <a href="#b10">B10 图标钮与禁用态</a>
+  <a href="#b11">B11 浮层阴影</a>
+  <a href="#b12">B12 搜索高亮 7 色矩阵</a>
+  <a href="#b13">B13 动效时长</a>
+</nav>
+
+<main>
+
+<!-- ============ B1 ============ -->
+<section class="block" id="b1">
+  <h2><span class="no">B1</span>色彩令牌总览与硬编码红点</h2>
+  <div class="meta">关联发现：<b>V5</b>（red ×3）、S1（令牌仅覆盖颜色维度）。色板 = theme.css 的 16 个变量（随上方基底/强调色切换实时变化）。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 两种"红"并存</div>
+      <div class="dotset">
+        <span><span class="dot" style="background:red"></span><code style="font-size:10.5px">red（#f00000）</code></span>
+        <span><span class="dot" style="background:var(--danger)"></span><code style="font-size:10.5px">--danger</code></span>
+      </div>
+      <div class="note">
+        更新红点三处硬编码 <b>red</b>：App.vue:357（⚙）、SettingsView.vue:237（关于项）、AboutGroup.vue:240（更新链接）。
+        亮色基底（用上方切换器验证）下纯红过饱和，与 --danger 两种红同屏。<br />
+        其余取色纪律良好：组件样式基本全部走变量。
+      </div>
+      <div class="rowlabel">主题变量色板（现状，16 个）</div>
+      <div class="swatches" id="swatches"></div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 红点纳入主题</div>
+      <div class="dotset">
+        <span><span class="dot" style="background:var(--danger)"></span><code style="font-size:10.5px">--danger（或新增 --dot-update）</code></span>
+      </div>
+      <div class="note">
+        三处 <b>red → var(--danger)</b>；若要保持比 danger 更醒目的"通知"语义，在 theme.css 按基底定义 <b>--dot-update</b>（dark #ef4444 / light #dc2626 量级）。
+        功能不变，仅换色值；亮色下饱和度与界面一致。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B2 ============ -->
+<section class="block" id="b2">
+  <h2><span class="no">B2</span>圆角阶梯：7 种在用值 → 3 档语义</h2>
+  <div class="meta">关联发现：<b>V1</b>、<b>E6</b>（Naive 默认 3px 与自定义 5/6/7px 双轨）。计数来自全站 grep。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 在用的非胶囊圆角（虚线金框 = 7px 孤立方言带）</div>
+      <div class="radii">
+        <div><div class="sq" style="border-radius:2px"></div><span class="spec">2px ×2<br>.hl</span></div>
+        <div><div class="sq" style="border-radius:3px"></div><span class="spec">3px ×11<br>code·ff-mini</span></div>
+        <div><div class="sq" style="border-radius:4px"></div><span class="spec">4px ×5<br>badge·swatch</span></div>
+        <div><div class="sq" style="border-radius:5px"></div><span class="spec">5px ×22<br>ctx-item·act</span></div>
+        <div><div class="sq" style="border-radius:6px"></div><span class="spec">6px ×20<br>bb-btn·ed-btn</span></div>
+        <div><div class="sq hot" style="border-radius:7px"></div><span class="spec warn">7px ×8<br>searchbox·s-item…</span></div>
+        <div><div class="sq" style="border-radius:8px"></div><span class="spec">8px ×11<br>菜单·卡片</span></div>
+        <div><div class="sq" style="border-radius:10px"></div><span class="spec">10px ×1<br>hero-logo</span></div>
+      </div>
+      <div class="rowlabel">同屏实例：面包屑行三种圆角并排（App.vue 顶栏 n-button 3px · TableToolbar tt-btn 5px · bb-btn 6px）</div>
+      <div class="tl">
+        <span class="n-button">+</span>
+        <span class="tt-btn">≡</span>
+        <span class="bb-btn">✎ 批量编辑</span>
+      </div>
+      <div class="tl"><span class="spec">n-button r3</span><span class="spec">tt-btn r5</span><span class="spec">bb-btn r6</span></div>
+      <div class="note">搜索框 7px（App.vue:287）与编辑抽屉内 n-input 3px 属两个圆角世界；themes/index.js 的 overrides 未设 borderRadius。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 3 档语义 + Naive overrides 对齐</div>
+      <div class="radii">
+        <div><div class="sq" style="border-radius:3px"></div><span class="spec">--radius-xs 3px<br>行内 code·微元素</span></div>
+        <div><div class="sq" style="border-radius:6px"></div><span class="spec">--radius-ctrl 6px<br>按钮·输入·菜单项</span></div>
+        <div><div class="sq" style="border-radius:8px"></div><span class="spec">--radius-box 8px<br>卡片·浮层·表格框</span></div>
+      </div>
+      <div class="rowlabel">映射：4→3 · 5→6 · 7→6（控件）/→8（容器） · 10→8</div>
+      <div class="tl">
+        <span class="n-button" style="border-radius:6px">+</span>
+        <span class="tt-btn" style="border-radius:6px">≡</span>
+        <span class="bb-btn" style="border-radius:6px">✎ 批量编辑</span>
+      </div>
+      <div class="tl"><span class="spec">r6</span><span class="spec">r6</span><span class="spec">r6</span></div>
+      <div class="note">配套：overrides 增加 <b>common.borderRadius = 6px / borderRadiusSmall = 4px</b>，Naive 组件与自定义控件同档（需整屏回归 input/select/button/tag）。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B3 ============ -->
+<section class="block" id="b3">
+  <h2><span class="no">B3</span>字号阶梯：12 档 → 5 档</h2>
+  <div class="meta">关联发现：<b>V2</b>、<b>E5</b>（魔法小数 190+ 处、HelpLink 1 处 11px 硬编码）。使用次数来自全站 grep。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 全部在用字号（根字号 13px）</div>
+      <div class="fsrow"><span class="px">9px · 0.6923rem</span><span class="cnt">×2</span><span class="txt" style="font-size:9px">表头排序箭头 ▲ ▼ ↕</span></div>
+      <div class="fsrow"><span class="px">10px · 0.7692rem</span><span class="cnt">×8</span><span class="txt" style="font-size:10px">chevron ▸ · ds-type · 关闭钮 ✕</span></div>
+      <div class="fsrow"><span class="px">10.5px · 0.8077rem</span><span class="cnt">×8</span><span class="txt" style="font-size:10.5px">标签胶囊 · 协议徽章 · ctx-hint</span></div>
+      <div class="fsrow"><span class="px">11px · 0.8462rem</span><span class="cnt">×21</span><span class="txt" style="font-size:11px">计数 · sb-lang · 版本徽章</span></div>
+      <div class="fsrow"><span class="px">11.5px · 0.8846rem</span><span class="cnt">×32</span><span class="txt" style="font-size:11.5px">表头 · 时间列 · 状态栏 · r-badge</span></div>
+      <div class="fsrow"><span class="px">12px · 0.9231rem</span><span class="cnt">×51</span><span class="txt" style="font-size:12px">bb-btn · act-btn · r-tab · ed-seg</span></div>
+      <div class="fsrow"><span class="px">12.5px · 0.9615rem</span><span class="cnt">×50</span><span class="txt" style="font-size:12.5px">行文本 · ctx-item · ed-btn · 标签列</span></div>
+      <div class="fsrow"><span class="px">13px · 1rem</span><span class="cnt">×10</span><span class="txt" style="font-size:13px">树 label · act 字形 ▸✎⋯</span></div>
+      <div class="fsrow"><span class="px">14px · 1.0769rem</span><span class="cnt">×9</span><span class="txt" style="font-size:14px">页面标题 · s-header · ed-title</span></div>
+      <div class="fsrow"><span class="px">18px · 1.3846rem</span><span class="cnt">×1</span><span class="txt" style="font-size:18px">hero-name</span></div>
+      <div class="fsrow"><span class="px">20px · 1.5385rem</span><span class="cnt">×1</span><span class="txt" style="font-size:20px">dz-icon ⬒</span></div>
+      <div class="rowlabel">近邻档并排（视觉不可分辨，却被跨组件混用）</div>
+      <div class="pair"><span class="txt" style="font-size:11px">11px 计数 ·25·</span><span class="txt" style="font-size:11.5px">11.5px 计数 ·25·</span></div>
+      <div class="pair"><span class="txt" style="font-size:12px">12px 按钮 编辑</span><span class="txt" style="font-size:12.5px">12.5px 按钮 编辑</span></div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 5 档阶梯 --fs-*</div>
+      <div class="fsrow"><span class="px">10.5px micro</span><span class="cnt">←9/10</span><span class="txt" style="font-size:10.5px">箭头 · chip · 计数微档</span></div>
+      <div class="fsrow"><span class="px">11.5px caption</span><span class="cnt">←11</span><span class="txt" style="font-size:11.5px">表头 · 时间戳 · hint</span></div>
+      <div class="fsrow"><span class="px">12.5px body</span><span class="cnt">←12/13</span><span class="txt" style="font-size:12.5px">正文与按钮（基准全面落实）</span></div>
+      <div class="fsrow"><span class="px">14px title</span><span class="cnt">保持</span><span class="txt" style="font-size:14px">页面/区块标题</span></div>
+      <div class="fsrow"><span class="px">18px display</span><span class="cnt">←20</span><span class="txt" style="font-size:18px">hero · 空态大图标</span></div>
+      <div class="note">
+        实现载体：theme.css 定义 <b>--fs-micro / -caption / -body / -title / -display</b>（rem 值保持随 S/M/L/XL 根字号缩放），
+        组件改引变量——顺带消除 190+ 处 <b>0.9615rem</b> 类魔法小数与 HelpLink.vue:169 的 11px 硬编码。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B4 ============ -->
+<section class="block" id="b4">
+  <h2><span class="no">B4</span>按钮家族：7 种实测高度 → 24/28 两档</h2>
+  <div class="meta">关联发现：<b>V3</b>、E4。高度 = padding×2 + 字号×行高1 + 边框 2px 的实测值（与代码参数一致）。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 同类次级按钮 7 种高度</div>
+      <div class="demo">
+        <div><button class="btn b-bulk-toggle">覆盖</button><span class="spec">h23.5 r5<br>BulkEditForm:404</span></div>
+        <div><button class="btn b-bb">批量编辑</button><span class="spec">h24 r6<br>TableToolbar:105</span></div>
+        <div><button class="btn b-en-clear">清除过滤</button><span class="spec">h26 r6<br>ServerListView:808</span></div>
+        <div><button class="btn b-act-rc">浏览…</button><span class="spec">h26 r6<br>RunnerCard:457</span></div>
+        <div><button class="btn b-ff-mini">选择</button><span class="spec">h28 r3<br>FormField:746</span></div>
+        <div><button class="btn b-ed-btn">保存</button><span class="spec">h28.5 r6<br>EditorDrawer:790</span></div>
+        <div><button class="btn b-r-tab">RDP</button><span class="spec">h29.5 r6<br>RunnerGroup r-tab</span></div>
+        <div><button class="btn b-eg-btn">导入</button><span class="spec warn">h30.5 r7<br>ServerListView:745</span></div>
+      </div>
+      <div class="note">同为"表单/工具条次级按钮"，相邻组件各自定高；批量条（24）与抽屉底栏（28.5）在同一列表页出现。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · --ctrl-h-s 24 / --ctrl-h-m 28 两档，r6 · 12.5px</div>
+      <div class="demo">
+        <div><button class="btn p-btn-s">批量编辑</button><span class="spec">h24 r6 12.5px<br>行内紧凑档</span></div>
+        <div><button class="btn p-btn-m">保存</button><span class="spec">h28 r6 12.5px<br>标准档</span></div>
+        <div><button class="btn p-btn-m primary">连接</button><span class="spec">h28 主按钮<br>统一 hover 见 B5</span></div>
+      </div>
+      <div class="note">归类：bb-btn/act/bulk-toggle→24；ed-btn/ctx-item/eg-btn/ff-mini→28（eg-btn 30.5→28 即 padding 8→7）。功能与点击区不缩小（24px≥现状 23.5px）。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B5 ============ -->
+<section class="block" id="b5">
+  <h2><span class="no">B5</span>主按钮 hover 分叉（复制漂移实例）</h2>
+  <div class="meta">关联发现：<b>E3</b>。TableToolbar.vue:116-129 vs EditorDrawer.vue:801-821。悬停模拟格 = 按特异性计算出的实际渲染结果。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 同名"主按钮"两处 hover 结果相反</div>
+      <div class="rowlabel">批量条「▶ 连接」（bb-primary）——hover 后 accent 边框丢失</div>
+      <div class="demo">
+        <div><button class="b-bb-primary">▶ 连接</button><span class="spec">常态：accent 边框</span></div>
+        <div><button class="b-bb-primary hover-sim">▶ 连接</button><span class="spec warn">hover：边框退化为<br>--border-strong</span></div>
+      </div>
+      <div class="rowlabel">抽屉「保存」（ed-primary）——hover 保留 accent 边框</div>
+      <div class="demo">
+        <div><button class="b-ed-primary">保存</button><span class="spec">常态</span></div>
+        <div><button class="b-ed-primary hover-sim">保存</button><span class="spec">hover：accent 边框保留</span></div>
+      </div>
+      <div class="note">原因：.bb-btn:hover:not(:disabled)（特异性 0,3,0）的 border-strong 压过 .bb-primary（0,1,0）；EditorDrawer 侧补了 .ed-primary:hover 守卫。明显的非有意分叉。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 统一主按钮 hover 规范</div>
+      <div class="demo">
+        <div><button class="btn p-btn-m primary">▶ 连接</button><span class="spec">常态：accent 边框 + accent 文字</span></div>
+        <div><button class="btn p-btn-m primary hover-sim">▶ 连接</button><span class="spec">hover：accent 边框保留<br>+ bg-hover 底</span></div>
+      </div>
+      <div class="note">最小修复：为 .bb-primary 补 <b>:hover:not(:disabled)</b>（2 行，对齐 ed-primary）。规范入令牌注释：主按钮 hover = accent 边框 + --bg-hover + accent 文字。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B6 ============ -->
+<section class="block" id="b6">
+  <h2><span class="no">B6</span>空态引导 CTA 无 hover 反馈</h2>
+  <div class="meta">关联发现：<b>V4</b>。ServerListView.vue:745-762（.eg-btn 只有基础态与 :disabled，无 :hover）。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 空库首屏的第一 CTA 是"死"的</div>
+      <div class="demo">
+        <div><button class="b-eg-btn">＋ 新建服务器</button><span class="spec warn">无 :hover 规则<br>悬停无任何反馈</span></div>
+        <div><button class="b-eg-btn" style="border-color:var(--accent);color:var(--accent-text)">⤓ 导入服务器</button><span class="spec warn">主按钮同样<br>无 hover 强化</span></div>
+      </div>
+      <div class="note">对照：同文件 .en-clear（无匹配清除按钮）有完整 hover；列表批量条、抽屉保存按钮都有 hover。空库/离线/无匹配三个空态共用此缺口。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 补齐与全站一致的 hover</div>
+      <div class="demo">
+        <div><button class="btn p-btn-m">＋ 新建服务器</button><span class="spec">hover：border-strong<br>+ bg-hover + text-1</span></div>
+        <div><button class="btn p-btn-m primary">⤓ 导入服务器</button><span class="spec">hover：accent 边框<br>+ bg-hover</span></div>
+      </div>
+      <div class="note">纯增量 2 条规则（.eg-btn:hover / .eg-primary:hover），无功能影响，直接提升首启动引导的可用性观感。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B7 ============ -->
+<section class="block" id="b7">
+  <h2><span class="no">B7</span>输入控件：高度 × 圆角双漂移</h2>
+  <div class="meta">关联发现：<b>V1</b>、<b>E6</b>。参数逐个取自代码。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 5 种输入容器形态</div>
+      <div class="demo-col">
+        <div class="demo"><div class="inp i-searchbox">⌕ 搜索服务器…</div><span class="spec">searchbox · h26 r7 · border-strong<br>App.vue:275-290</span></div>
+        <div class="demo"><div class="inp i-naive">192.168.1.10</div><span class="spec">n-input small · h28 r3（Naive 默认）</span></div>
+        <div class="demo"><div class="inp i-hk">Ctrl + Alt + P</div><span class="spec">hk-box · h28 r6<br>LauncherGroup:241</span></div>
+        <div class="demo"><div class="inp i-colorbox"><span class="cur"></span>#FF2C5AFF</div><span class="spec">ff-color-box · h28 r3<br>FormField:777</span></div>
+        <div class="demo"><div class="i-mdprev">**备注** 预览态容器…</div><span class="spec">md-preview · r7 容器<br>MarkdownField:80-90</span></div>
+      </div>
+      <div class="note">同一编辑抽屉里 n-input(3px) 与 md-preview(7px) 并存；顶栏搜索框(26/7px) 与抽屉输入框(28/3px) 不同高不同角。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 输入统一 h28 r6（Naive overrides 对齐）</div>
+      <div class="demo-col">
+        <div class="demo"><div class="inp p-input">⌕ 搜索服务器…</div><span class="spec">h28 r6</span></div>
+        <div class="demo"><div class="inp p-input">192.168.1.10</div><span class="spec">h28 r6</span></div>
+        <div class="demo"><div class="inp p-input" style="text-align:center">Ctrl + Alt + P</div><span class="spec">h28 r6</span></div>
+        <div class="demo"><div class="inp p-input"><span class="cur" style="width:16px;height:16px;border-radius:3px;border:1px solid var(--border-strong);background:var(--accent);display:inline-block"></span>#FF2C5AFF</div><span class="spec">h28 r6</span></div>
+        <div class="demo"><div class="i-mdprev" style="border-radius:8px">**备注** 预览态容器…</div><span class="spec">容器类归 r8</span></div>
+      </div>
+      <div class="note">搜索框 26→28（顶栏 44px 内仍宽松）；控件圆角全档 6px、预览等"容器"归 8px。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B8 ============ -->
+<section class="block" id="b8">
+  <h2><span class="no">B8</span>胶囊 chips 家族：6 种参数</h2>
+  <div class="meta">关联发现：<b>V3</b>（chip 分支）。行内标签类控件逐个复刻。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 6 种 pill 实现</div>
+      <div class="demo-col">
+        <div class="demo"><span class="chip c-tag">生产环境</span><span class="spec">ServerRow .tag · 2.5×8 · 10.5px</span></div>
+        <div class="demo"><span class="chip c-badge" style="background:#2c5aff22;color:#2c5aff;border:1px solid #2c5aff33">RDP</span><span class="spec">ProtocolBadge · 2.5×9 · 10.5px（协议身份色，豁免）</span></div>
+        <div class="demo"><span class="chip c-tagchip">📌 vpn</span><span class="spec">SideTree .tag-chip · 3×8 · 11px</span></div>
+        <div class="demo"><span class="chip c-schip">⌕ name: win<span class="x">✕</span></span><span class="spec">search-chip · 2/4/2/9 · 11.5px</span></div>
+        <div class="demo"><span class="chip c-verbadge">v1.0.0</span><span class="spec">AboutGroup ver-badge · 1×8 · 11px</span></div>
+        <div class="demo"><span class="chip c-macro">{'$name'$}</span><span class="spec">RunnerCard macro-pill · 1×8 · 10.5px</span></div>
+      </div>
+      <div class="note">同为"行内小标签"，垂直内边距 1/2/2.5/3px、字号 10.5/11/11.5px 三个维度各自组合；ServerRow 的 tag 与 SideTree 的 tag-chip 几乎同一组件却参数不同。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 中性 chip 归一：2.5×8 · 11px · r999</div>
+      <div class="demo-col">
+        <div class="demo"><span class="chip p-chip">生产环境</span><span class="spec">tag / tag-chip / ver-badge / macro-pill 统一</span></div>
+        <div class="demo"><span class="chip p-chip">📌 vpn <span style="color:var(--text-4)">·12</span></span><span class="spec">计数用 --text-4</span></div>
+        <div class="demo"><span class="chip c-badge" style="background:#2c5aff22;color:#2c5aff;border:1px solid #2c5aff33;padding:2.5px 9px">RDP</span><span class="spec">协议徽章保留身份色（语义豁免），仅对齐内边距</span></div>
+      </div>
+      <div class="note">ProtocolBadge 是协议身份语言，颜色保留；只把中性 chips（tag/tag-chip/ver-badge/macro-pill/search-chip）收敛为一组参数。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B9 ============ -->
+<section class="block" id="b9">
+  <h2><span class="no">B9</span>分段控件：两套实现参数不同</h2>
+  <div class="meta">关联发现：<b>V1</b>。EditorDrawer .ed-seg（r6 · 按钮 padding 6×12 · ≈26px）vs AppearanceGroup .seg（r7 · 按钮 h28）。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 手动/凭据库切换 vs 字号 S/M/L/XL</div>
+      <div class="demo">
+        <div class="segdemo"><button class="on">手动输入</button><button>凭据库</button></div>
+        <span class="spec">ed-seg · 外框 r6 · 钮 6×12 ≈h26<br>EditorDrawer:687-704</span>
+        <div class="segdemo2"><button>S</button><button class="on">M</button><button>L</button><button>XL</button></div>
+        <span class="spec warn">AppearanceGroup .seg · 外框 r7 · 钮 h28<br>AppearanceGroup:233-241</span>
+      </div>
+      <div class="note">同为分段控件，圆角 6 vs 7、高度 26 vs 28——两批次各自实现，无共享参数。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 分段控件统一 r6 · h28</div>
+      <div class="demo">
+        <div class="segdemo2" style="border-radius:6px"><button class="on">手动输入</button><button>凭据库</button></div>
+        <div class="segdemo2" style="border-radius:6px"><button>S</button><button class="on">M</button><button>L</button><button>XL</button></div>
+      </div>
+      <div class="note">ed-seg 按钮提到 h28（与输入控件同档）；.seg 圆角 7→6。激活态语言不变（accent-container + accent-text，两处本就一致）。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B10 ============ -->
+<section class="block" id="b10">
+  <h2><span class="no">B10</span>图标按钮尺寸与禁用不透明度</h2>
+  <div class="meta">关联发现：<b>V3</b>、<b>E4</b>（禁用 0.35/0.45/0.5/0.55/0.6 五种）。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 图标钮 18-28px 六种高度</div>
+      <div class="demo">
+        <div><button class="ic" style="width:18px;height:18px;font-size:10px">✕</button><span class="spec">sc-x 18<br>搜索 chip</span></div>
+        <div><button class="ic" style="width:20px;height:20px;font-size:10px">✕</button><span class="spec">f-x 20<br>ImportModal</span></div>
+        <div><button class="ic bordered" style="width:22px;height:22px;font-size:10.5px">✎</button><span class="spec">tt-btn/act 22<br>工具簇</span></div>
+        <div><button class="ic" style="width:24px;height:24px">▸</button><span class="spec">ServerRow act 24<br>行内操作</span></div>
+        <div><button class="ic bordered" style="width:26px;height:26px">✕</button><span class="spec">bb-x 26<br>批量条</span></div>
+        <div><button class="ic bordered" style="width:28px;height:28px">✕</button><span class="spec">ed-close 28<br>抽屉</span></div>
+      </div>
+      <div class="rowlabel">禁用态五种不透明度（同为"不可用"）</div>
+      <div class="dis">
+        <div class="d"><button class="btn-d" style="opacity:.35">0.35</button><span class="spec">pin-btn</span></div>
+        <div class="d"><button class="btn-d" style="opacity:.45">0.45</button><span class="spec">ServerRow act</span></div>
+        <div class="d"><button class="btn-d" style="opacity:.5">0.50</button><span class="spec">bb-btn</span></div>
+        <div class="d"><button class="btn-d" style="opacity:.55">0.55</button><span class="spec">ed-btn</span></div>
+        <div class="d"><button class="btn-d" style="opacity:.6;color:var(--text-4)">0.60</button><span class="spec">ctx-item</span></div>
+      </div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 图标钮 24/28 两档 · 禁用统一 0.5</div>
+      <div class="demo">
+        <div><button class="ic bordered" style="width:24px;height:24px;border-radius:6px">✕</button><span class="spec">h24 · r6（chip 内等紧凑位）</span></div>
+        <div><button class="ic bordered" style="width:28px;height:28px;border-radius:6px">✕</button><span class="spec">h28 · r6（工具条/面板）</span></div>
+      </div>
+      <div class="rowlabel">禁用态 --opacity-disabled: 0.5</div>
+      <div class="dis">
+        <div class="d"><button class="btn-d" style="opacity:.5">0.50</button><span class="spec">全站一档（可辅以 --text-4 变色）</span></div>
+      </div>
+      <div class="note">sc-x/f-x 这类超小关闭钮可保留现值（嵌在 chip 内，语义为"文字一部分"），但独立可点击的图标钮收敛 24/28。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B11 ============ -->
+<section class="block" id="b11">
+  <h2><span class="no">B11</span>浮层阴影：三份复制 + 亮色偏重</h2>
+  <div class="meta">关联发现：<b>E1</b>（0 6px 24px rgb(0 0 0/25%) 逐字复制 3 份：ServerTable:950 / SideTree:613 / TableToolbar:199）、<b>S3</b>。切换上方基底对比亮色效果。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 固定 25% 黑阴影（不随主题）</div>
+      <div class="demo">
+        <div class="shadowbox sh-cur"><div class="t">右键菜单 .ctx-menu</div><div class="s">连接 · 编辑 · 复制 · 删除…</div></div>
+        <span class="spec">0 6px 24px rgb(0 0 0 / 25%)<br>×3 处复制</span>
+      </div>
+      <div class="sh-note">亮色基底下（切上方开关）25% 黑阴影显脏、层级过重——Linear 亮色阴影约 8-12% 并更依赖边框。抽屉另有第 4 种（-10px 0 28px / 22%）。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · --shadow-menu 按基底分档</div>
+      <div class="demo">
+        <div class="shadowbox sh-prop"><div class="t">右键菜单 .ctx-menu</div><div class="s">连接 · 编辑 · 复制 · 删除…</div></div>
+        <span class="spec">dark: 25%（现状值）<br>light: 10%（随基底切换）</span>
+      </div>
+      <div class="sh-note">theme.css 定义 --shadow-menu / --shadow-overlay 两枚令牌并在 [data-theme='light'] 分档；四处手写值替换为变量，单点维护。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B12 ============ -->
+<section class="block" id="b12">
+  <h2><span class="no">B12</span>搜索高亮 .hl：7 强调色 × 双基底稳健性矩阵</h2>
+  <div class="meta">关联发现：<b>S4</b>。ServerRow.vue:353-358（background: var(--accent); color: var(--bg-panel)）。对比度按 WCAG 相对亮度实算，红色数字 = 低于 AA 4.5:1（12.5px 正文）。每格为"服务器名 RDP-3389 命中高亮"小样。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · accent 实心底 + bg-panel 文字（14 格中 8 格低于 AA）</div>
+      <div class="themebox dark">
+        <div class="themebox-label">dark 基底</div>
+        <div class="hl-matrix" id="hlDark"></div>
+      </div>
+      <div class="themebox light">
+        <div class="themebox-label">light 基底</div>
+        <div class="hl-matrix" id="hlLight"></div>
+      </div>
+      <div class="note">默认组合（dark+blue）即 3.5:1；light+green 2.3:1 最差。代码注释宣称"均高对比"与实测不符。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · accent-container 底 + accent-text 字（与行选中态同语言）</div>
+      <div class="themebox dark">
+        <div class="themebox-label">dark 基底</div>
+        <div class="hl-matrix" id="hpDark"></div>
+      </div>
+      <div class="themebox light">
+        <div class="themebox-label">light 基底</div>
+        <div class="hl-matrix" id="hpLight"></div>
+      </div>
+      <div class="note">14 格全部 ≥4.4:1（dark 全部 ≥6:1；light 的 blue/orange 为 4.5 临界，可加 font-weight:600 或亮色 accent-text 微调一档彻底达标）。与 .row.selected 选中态使用同一对变量，高亮/选中语言统一。改动 = 1 条规则。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B13 ============ -->
+<section class="block" id="b13">
+  <h2><span class="no">B13</span>动效时长：8 种 → 3 档</h2>
+  <div class="meta">关联发现：<b>E7</b>（reduced-motion 覆盖 4/6：App 搜索 spinner 与 RunnerCard 闪光缺守卫）、S1（动效无令牌）。条长按时长线性绘制（1.4s = 满）。</div>
+  <div class="compare">
+    <div class="pane current">
+      <div class="pane-head">现状 · 8 种时长</div>
+      <div class="dur"><span class="lb">0.12s chevron/HelpLink</span><span class="bar" style="width:9%"></span><span class="use">SideTree:474 · HelpLink:131</span></div>
+      <div class="dur"><span class="lb">0.15s dropzone</span><span class="bar" style="width:11%"></span><span class="use">ImportModal:265</span></div>
+      <div class="dur"><span class="lb">0.17s 抽屉滑入/蒙层</span><span class="bar" style="width:12%"></span><span class="use">EditorDrawer:545,560</span></div>
+      <div class="dur rm"><span class="lb">0.4s RunnerCard 闪光</span><span class="bar" style="width:29%"></span><span class="use">RunnerCard:369</span></div>
+      <div class="dur rm"><span class="lb">0.7s App 搜索 spinner</span><span class="bar" style="width:50%"></span><span class="use">App.vue:333</span></div>
+      <div class="dur"><span class="lb">0.8s 凭据库 spinner</span><span class="bar" style="width:57%"></span><span class="use">CredentialVault:667</span></div>
+      <div class="dur"><span class="lb">1.2s 快捷键录制脉冲</span><span class="bar" style="width:86%"></span><span class="use">LauncherGroup:255</span></div>
+      <div class="dur"><span class="lb">1.4s 骨架屏脉动</span><span class="bar" style="width:100%"></span><span class="use">ServerListView:682</span></div>
+      <div class="note">"缺 rm" = 无 prefers-reduced-motion 守卫（其余 4 处动画均有）。</div>
+    </div>
+    <div class="pane proposed">
+      <div class="pane-head">建议 · 3 档令牌（循环动画除外）</div>
+      <div class="dur"><span class="lb">--dur-fast 0.12s</span><span class="bar" style="width:9%"></span><span class="use">微交互：chevron · hover 过渡 · 徽标</span></div>
+      <div class="dur"><span class="lb">--dur-med 0.2s</span><span class="bar" style="width:14%"></span><span class="use">面板：抽屉 0.17→0.2 · dropzone</span></div>
+      <div class="dur"><span class="lb">--dur-slow 0.4s</span><span class="bar" style="width:29%"></span><span class="use">强调闪光：RunnerCard</span></div>
+      <div class="dur"><span class="lb">循环类（豁免档）</span><span class="bar" style="width:57%;opacity:.4"></span><span class="use">spinner 0.7/0.8 · 脉冲 1.2/1.4 保持</span></div>
+      <div class="note">同步补两处 reduced-motion：App spinner（静态边框）、RunnerCard flash（直接终态）。各 2 行。</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="page">
+  本页为美学审核示意图（docs/aesthetics-review-2026-09-19.html），与报告 docs/aesthetics-review-2026-09-19.md 配套。
+  所有"现状"小样参数取自 webui/src 组件 scoped 样式的真实值（圆角/内边距/字号/行高/颜色按代码复刻；Naive 组件为近似的默认观感）；
+  "建议"小样仅演示报告建议值，产品代码未做任何修改。生成于 2026-09-19。
+</footer>
+
+<script>
+// ---- 基底 / 强调色切换（审核工具行为，验证 7 色稳健性） ----
+var root = document.documentElement;
+var ACCENTS = ['blue','violet','pink','red','orange','green','slate'];
+var ACCENT_HEX = { blue:'#2c5aff', violet:'#8b5cf6', pink:'#ec4899', red:'#ef4444', orange:'#f97316', green:'#10b981', slate:'#64748b' };
+
+document.getElementById('themeSeg').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  root.setAttribute('data-theme', b.dataset.t);
+  this.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+});
+
+var dots = document.getElementById('accDots');
+ACCENTS.forEach(function (a) {
+  var b = document.createElement('button');
+  b.style.background = ACCENT_HEX[a];
+  b.title = a;
+  if (a === 'blue') b.classList.add('on');
+  b.addEventListener('click', function () {
+    root.setAttribute('data-accent', a);
+    dots.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    document.getElementById('accName').textContent = a;
+  });
+  dots.appendChild(b);
+});
+
+// ---- B1 色板 ----
+var VARS = [
+  ['--bg',''],['--bg-panel',''],['--bg-elevated',''],['--bg-hover',''],
+  ['--border',''],['--border-strong',''],
+  ['--text-1','A'],['--text-2','A'],['--text-3','A'],['--text-4','A'],
+  ['--danger',''],['--success',''],['--warning',''],
+  ['--accent',''],['--accent-container',''],['--accent-text','A']
+];
+var swc = document.getElementById('swatches');
+function renderSwatches() {
+  swc.innerHTML = '';
+  var cs = getComputedStyle(root);
+  VARS.forEach(function (v) {
+    var d = document.createElement('div');
+    d.className = 'sw';
+    var val = cs.getPropertyValue(v[0]).trim();
+    d.innerHTML = '<div class="box" style="background:' + val + ';color:' + val + '">' + (v[1] ? '<span style="opacity:.9;font-size:10px">A</span>' : '') + '</div><div class="lb">' + v[0] + '<br>' + val + '</div>';
+    swc.appendChild(d);
+  });
+}
+renderSwatches();
+new MutationObserver(renderSwatches).observe(root, { attributes: true, attributeFilter: ['data-theme','data-accent'] });
+
+// ---- B12 高亮矩阵（对比度按 WCAG 相对亮度实算） ----
+function lum(hex) {
+  var c = hex.replace('#','');
+  var f = function (i) {
+    var x = parseInt(c.substr(i,2),16)/255;
+    return x <= 0.03928 ? x/12.92 : Math.pow((x+0.055)/1.055, 2.4);
+  };
+  return 0.2126*f(0) + 0.7152*f(2) + 0.0722*f(4);
+}
+function ratio(fg, bg) {
+  var a = lum(fg), b = lum(bg);
+  var hi = Math.max(a,b), lo = Math.min(a,b);
+  return (hi+0.05)/(lo+0.05);
+}
+var ACC = {
+  blue:   { a:'#2c5aff', cd:'#16203a', td:'#7c9bff', cl:'#e8edfa', tl:'#2c5aff' },
+  violet: { a:'#8b5cf6', cd:'#1d1626', td:'#b8a6f7', cl:'#ede9fb', tl:'#6d28d9' },
+  pink:   { a:'#ec4899', cd:'#26141e', td:'#f5a8cd', cl:'#fce7f3', tl:'#be185d' },
+  red:    { a:'#ef4444', cd:'#26120f', td:'#f5a09a', cl:'#fee2e2', tl:'#b91c1c' },
+  orange: { a:'#f97316', cd:'#241d12', td:'#f0b25f', cl:'#ffedd5', tl:'#c2410c' },
+  green:  { a:'#10b981', cd:'#12241a', td:'#5fd38d', cl:'#d1fae5', tl:'#047857' },
+  slate:  { a:'#64748b', cd:'#1b2028', td:'#9aa8bb', cl:'#e2e8f0', tl:'#475569' }
+};
+var DARK_PANEL = '#131417', LIGHT_PANEL = '#ffffff';
+function cell(accent, mode, kind) {
+  var v = ACC[accent];
+  var bg = mode === 'dark' ? v.cd : v.cl;
+  var fg = mode === 'dark' ? v.td : v.tl;
+  var r = kind === 'cur' ? ratio(v.a, mode === 'dark' ? DARK_PANEL : LIGHT_PANEL) : ratio(fg, bg);
+  var ok = r >= 4.5;
+  var inner = kind === 'cur'
+    ? '<span class="hl-cur" style="background:' + v.a + ';color:' + (mode === 'dark' ? DARK_PANEL : LIGHT_PANEL) + '">RDP-3389</span>'
+    : '<span class="hl-prop" style="background:' + bg + ';color:' + fg + '">RDP-3389</span>';
+  return '<div class="hl-cell" data-accent="' + accent + '"><div class="nm"><span>' + accent +
+    '</span><span class="ratio ' + (ok ? 'ok' : 'bad') + '">' + r.toFixed(1) + ':1</span></div>' +
+    '<div class="hl-samp">win-' + inner + '</div></div>';
+}
+function fill(id, kind) {
+  var h = '';
+  ACCENTS.forEach(function (a) { h += cell(a, 'dark', kind); });
+  document.getElementById(id + 'Dark').innerHTML = h;
+  h = '';
+  ACCENTS.forEach(function (a) { h += cell(a, 'light', kind); });
+  document.getElementById(id + 'Light').innerHTML = h;
+}
+fill('hl', 'cur');
+fill('hp', 'prop');
+</script>
+</body>
+</html>
