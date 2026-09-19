@@ -141,75 +141,84 @@ const SWITCHES_REST = [
     <p v-if="loading" class="hint">{{ t('settings.loading') }}</p>
     <p v-else-if="loadError" class="hint err">{{ t('settings.loadFailed') }}</p>
     <template v-else>
-      <div class="row">
-        <label class="row-label">{{ t('settings.f.language') }}</label>
-        <div class="row-control slim">
-          <n-select
-            size="small"
-            :value="form.language"
-            :options="langOptions"
-            @update:show="shield"
-            @update:value="onLanguageChange"
-          />
-          <!-- 帮助链接：WPF GeneralSettingView.xaml:41-62 语言行下方的
-               "Can't find your language?" → 翻译协作文档。WPF 为字面量英文（14 语言同显英文，
-               AboutPageView 硬编码英文同款先例）→ web 同值硬编码，不进 locale -->
-          <HelpLink class="lang-help" href="https://1remote.github.io/usage/misc/help-translation/" badge="">
-            Can't find your language?
-          </HelpLink>
+      <!-- 块 1：语言 + 关闭按钮行为（行序与分块前原样，零重排） -->
+      <div class="block">
+        <div class="row">
+          <label class="row-label">{{ t('settings.f.language') }}</label>
+          <div class="row-control slim">
+            <n-select
+              size="small"
+              :value="form.language"
+              :options="langOptions"
+              @update:show="shield"
+              @update:value="onLanguageChange"
+            />
+            <!-- 帮助链接：WPF GeneralSettingView.xaml:41-62 语言行下方的
+                 "Can't find your language?" → 翻译协作文档。WPF 为字面量英文（14 语言同显英文，
+                 AboutPageView 硬编码英文同款先例）→ web 同值硬编码，不进 locale -->
+            <HelpLink class="lang-help" href="https://1remote.github.io/usage/misc/help-translation/" badge="">
+              Can't find your language?
+            </HelpLink>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="row-label">{{ t('settings.f.closeButtonBehavior') }}</label>
+          <div class="row-control slim">
+            <n-select
+              size="small"
+              :value="form.closeButtonBehavior"
+              :options="closeOptions.map((o) => ({ value: o.value, label: o.label.value }))"
+              @update:show="shield"
+              @update:value="setField('closeButtonBehavior', $event)"
+            />
+          </div>
         </div>
       </div>
 
-      <div class="row">
-        <label class="row-label">{{ t('settings.f.closeButtonBehavior') }}</label>
-        <div class="row-control slim">
-          <n-select
-            size="small"
-            :value="form.closeButtonBehavior"
-            :options="closeOptions.map((o) => ({ value: o.value, label: o.label.value }))"
-            @update:show="shield"
-            @update:value="setField('closeButtonBehavior', $event)"
-          />
+      <!-- 块 2：7 个行为开关（原序：两段循环夹单独行，结构未动） -->
+      <div class="block">
+        <div class="row" v-for="s in SWITCHES" :key="s.key">
+          <label class="row-label">{{ t('settings.f.' + s.key) }}</label>
+          <div class="row-control">
+            <n-switch size="small" :value="form[s.key]" :loading="autoSaving" @update:value="setField(s.key, $event)" />
+          </div>
+        </div>
+
+        <!-- requireSecondaryVerification：立即生效行（WPF 平价翻转验证门，见文件头注释） -->
+        <div class="row">
+          <label class="row-label">{{ t('settings.f.requireSecondaryVerification') }}</label>
+          <div class="row-control">
+            <n-switch
+              size="small"
+              :value="form.requireSecondaryVerification"
+              :loading="verifying"
+              @update:value="onVerificationToggle"
+            />
+          </div>
+        </div>
+
+        <div class="row" v-for="s in SWITCHES_REST" :key="s.key">
+          <label class="row-label">{{ t('settings.f.' + s.key) }}</label>
+          <div class="row-control">
+            <n-switch size="small" :value="form[s.key]" :loading="autoSaving" @update:value="setField(s.key, $event)" />
+          </div>
         </div>
       </div>
 
-      <div class="row" v-for="s in SWITCHES" :key="s.key">
-        <label class="row-label">{{ t('settings.f.' + s.key) }}</label>
-        <div class="row-control">
-          <n-switch size="small" :value="form[s.key]" :loading="autoSaving" @update:value="setField(s.key, $event)" />
-        </div>
-      </div>
-
-      <!-- requireSecondaryVerification：立即生效行（WPF 平价翻转验证门，见文件头注释） -->
-      <div class="row">
-        <label class="row-label">{{ t('settings.f.requireSecondaryVerification') }}</label>
-        <div class="row-control">
-          <n-switch
-            size="small"
-            :value="form.requireSecondaryVerification"
-            :loading="verifying"
-            @update:value="onVerificationToggle"
-          />
-        </div>
-      </div>
-
-      <div class="row" v-for="s in SWITCHES_REST" :key="s.key">
-        <label class="row-label">{{ t('settings.f.' + s.key) }}</label>
-        <div class="row-control">
-          <n-switch size="small" :value="form[s.key]" :loading="autoSaving" @update:value="setField(s.key, $event)" />
-        </div>
-      </div>
-
-      <div class="row">
-        <label class="row-label">{{ t('settings.f.logLevel') }}</label>
-        <div class="row-control slim">
-          <n-select
-            size="small"
-            :value="form.logLevel"
-            :options="logOptions.map((o) => ({ value: o.value, label: o.label.value }))"
-            @update:show="shield"
-            @update:value="setField('logLevel', $event)"
-          />
+      <!-- 块 3：日志级别 -->
+      <div class="block">
+        <div class="row">
+          <label class="row-label">{{ t('settings.f.logLevel') }}</label>
+          <div class="row-control slim">
+            <n-select
+              size="small"
+              :value="form.logLevel"
+              :options="logOptions.map((o) => ({ value: o.value, label: o.label.value }))"
+              @update:show="shield"
+              @update:value="setField('logLevel', $event)"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -218,7 +227,8 @@ const SWITCHES_REST = [
 
 <style scoped>
 .group {
-  max-width: 640px;
+  /* 统一设置内容宽（SettingsView.s-body 的 --settings-content-w 穿透继承） */
+  width: min(100%, var(--settings-content-w));
 }
 .hint {
   font-size: 0.9615rem;
@@ -227,19 +237,30 @@ const SWITCHES_REST = [
 .hint.err {
   color: var(--danger);
 }
+/* 三块分隔（语言/关闭行为 → 7 开关 → 日志级别）：块间 24px 留白 + 分隔线 */
+.block + .block {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
 .row {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  gap: 6px 12px;
+  grid-template-columns: clamp(180px, 22%, 280px) minmax(0, 1fr);
+  gap: 6px 16px;
   align-items: center;
+  min-height: 40px;
   padding: 7px 0;
+}
+/* 行悬停：全出血底色（无圆角/无水平内边距），标签列不加 nowrap——长词条自然两行折行 */
+.row:hover {
+  background: var(--bg-hover);
 }
 .row-label {
   font-size: 0.9615rem;
   color: var(--text-2);
 }
 .row-control.slim {
-  max-width: 280px;
+  max-width: min(100%, 40ch);
 }
 /* 语言行帮助链接：跟在下拉框下方（WPF 语言行下一行同款位置） */
 .lang-help {

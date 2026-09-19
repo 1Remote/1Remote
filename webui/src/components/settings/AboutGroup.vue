@@ -139,7 +139,8 @@ const CONTRIBUTE = [
 
 <style scoped>
 .about {
-  max-width: 720px;
+  /* 统一设置内容宽（SettingsView.s-body 的 --settings-content-w 穿透继承） */
+  width: min(100%, var(--settings-content-w));
 }
 
 /* ---- hero 行：hero（左）与 Author 块（右）同行左右分布；窄屏折行 ---- */
@@ -319,13 +320,13 @@ const CONTRIBUTE = [
   gap: 8px;
 }
 
-/* ---- Included Components（两列超链接网格） ---- */
+/* ---- Included Components（自适应列网格：宽容器多列、960px 内约 2 列） ---- */
 .components {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 3px 28px;
 }
 .components li {

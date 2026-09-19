@@ -342,7 +342,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .group {
-  max-width: 720px;
+  /* 统一设置内容宽（SettingsView.s-body 的 --settings-content-w 穿透继承）；内部网格不动 */
+  width: min(100%, var(--settings-content-w));
 }
 .hint {
   font-size: 0.9615rem;
