@@ -225,22 +225,8 @@ const SWITCHES = [
 .hint.err {
   color: var(--danger);
 }
-.row {
-  display: grid;
-  grid-template-columns: clamp(180px, 22%, 280px) minmax(0, 1fr);
-  gap: 6px 16px;
-  align-items: center;
-  min-height: 40px;
-  padding: 7px 0;
-}
-/* 行悬停：全出血底色（无圆角/无水平内边距），与 GeneralGroup 同款行网格 */
-.row:hover {
-  background: var(--bg-hover);
-}
-.row-label {
-  font-size: 0.9615rem;
-  color: var(--text-2);
-}
+/* 行网格 .row/.row-label 与 GeneralGroup 共用，统一定义在 SettingsView（:deep 穿透），
+   本文件不再各持一份 */
 .hk-wrap {
   display: flex;
   align-items: center;

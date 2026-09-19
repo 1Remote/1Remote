@@ -243,22 +243,8 @@ const SWITCHES_REST = [
   padding-top: 24px;
   border-top: 1px solid var(--border);
 }
-.row {
-  display: grid;
-  grid-template-columns: clamp(180px, 22%, 280px) minmax(0, 1fr);
-  gap: 6px 16px;
-  align-items: center;
-  min-height: 40px;
-  padding: 7px 0;
-}
-/* 行悬停：全出血底色（无圆角/无水平内边距），标签列不加 nowrap——长词条自然两行折行 */
-.row:hover {
-  background: var(--bg-hover);
-}
-.row-label {
-  font-size: 0.9615rem;
-  color: var(--text-2);
-}
+/* 行网格 .row/.row-label 与 LauncherGroup 共用，统一定义在 SettingsView（:deep 穿透），
+   本文件不再各持一份 */
 .row-control.slim {
   max-width: min(100%, 40ch);
 }
