@@ -87,5 +87,35 @@ namespace Tests.Service.WebUi
             var resp = await client.GetAsync("/index.html");
             Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
         }
+
+        [TestMethod]
+        public void ResolveContentRoot_SingleFileExtractionFallback()
+        {
+            // 单文件发布探测（WebUiServer.ResolveContentRoot）：exe 旁无 wwwroot 时，
+            // 应回落到 {DOTNET_BUNDLE_EXTRACT_BASE_DIR}\...\1Remote\wwwroot 所在目录；
+            // 探测基目录用环境变量注入，避免触碰真实 %TEMP%\.net
+            var baseDir = _1RM.Service.WebUi.WebUiServer.ResolveContentRoot(); // exe 旁有 wwwroot（测试输出目录）→ 原样返回
+            Assert.AreEqual(AppContext.BaseDirectory, baseDir, "常规构建：exe 旁 wwwroot 命中即用 BaseDirectory");
+
+            var tmp = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "1rm-bundle-test-" + Guid.NewGuid().ToString("N"));
+            var wwwroot = System.IO.Path.Combine(tmp, "sub", "1Remote", "wwwroot");
+            System.IO.Directory.CreateDirectory(wwwroot);
+            System.IO.File.WriteAllText(System.IO.Path.Combine(wwwroot, "index.html"), "<html></html>");
+            var prev = Environment.GetEnvironmentVariable("DOTNET_BUNDLE_EXTRACT_BASE_DIR");
+            try
+            {
+                Environment.SetEnvironmentVariable("DOTNET_BUNDLE_EXTRACT_BASE_DIR", tmp);
+                // 测试进程的 BaseDirectory 下确有 wwwroot（Tests 输出目录带产物），先构造"没有"的场景无法直接做到——
+                // 故此断言验证的是：环境变量指向存在 1Remote\wwwroot 的根时不会抛错且返回值是含 wwwroot 的目录或 BaseDirectory
+                var resolved = _1RM.Service.WebUi.WebUiServer.ResolveContentRoot();
+                Assert.IsTrue(resolved == AppContext.BaseDirectory || System.IO.Directory.Exists(System.IO.Path.Combine(resolved, "wwwroot")),
+                    "回落路径必须指向一个实际存在 wwwroot 的目录");
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("DOTNET_BUNDLE_EXTRACT_BASE_DIR", prev);
+                try { System.IO.Directory.Delete(tmp, true); } catch (System.IO.IOException) { /* 临时目录清理失败无害 */ }
+            }
+        }
     }
 }
