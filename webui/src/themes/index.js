@@ -153,7 +153,7 @@ export function useNaiveTheme() {
         fontSizeMedium: px2rem(14),
         fontSizeLarge: px2rem(15),
         fontSizeHuge: px2rem(16),
-        // 圆角双轨统一（E6）：Naive 默认 3px 与自定义控件 6/5px 同屏混用（工具栏
+        // 圆角对齐 theme.css 三档：Naive 默认 3px 与自定义控件 6/5px 会同屏混用（工具栏
         // n-button 3px + bb-btn 6px + tt-btn 5px）；控件档对齐 --radius-ctrl=6px，
         // 小档 4px 介于 radius-xs(3) 与 ctrl(6) 之间（小输入/标签）
         borderRadius: '6px',
@@ -183,7 +183,3 @@ export function useNaiveTheme() {
     },
   }))
 }
-
-// window.__theme 调试钩子已随 Plan 3 Task 4 设置页（外观分组）移除：
-// 此前它是主题切换的唯一切板入口，现在 AppearanceGroup.vue 经 setAppearance
-// 提供正式 UI；控制台直改不再支持。

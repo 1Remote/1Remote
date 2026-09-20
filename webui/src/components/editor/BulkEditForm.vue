@@ -401,7 +401,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
 }
 
 /* 覆盖/保持切换：对齐 TableToolbar .bb-btn 参数（h24/0 10/fs-body/中性 hover）；
-   on 态从"仅边框文字"改容器型（accent-container 底），与分段控件 on 语言一致（F5） */
+   on 态为容器型（accent-container 底 + accent 文字），与分段控件 on 语言一致 */
 .bulk-toggle {
   flex: 0 0 auto;
   height: var(--ctrl-h-s);

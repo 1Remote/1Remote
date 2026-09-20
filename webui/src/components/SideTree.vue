@@ -550,7 +550,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   display: flex;
   align-items: center;
   gap: 4px;
-  height: var(--ctrl-h-s); /* 行内紧凑档（Linear 式密度，F10 归并） */
+  height: var(--ctrl-h-s); /* 行内紧凑档 */
   padding-right: 6px;
   border-radius: var(--radius-ctrl);
   white-space: nowrap;

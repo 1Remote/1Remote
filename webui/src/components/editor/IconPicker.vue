@@ -309,7 +309,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .ip-cell.active {
   border-color: var(--accent-focus);
-  /* 选中环 2px：与 FormField .ff-sw 同款网格单元选中语义（V6 状态档线宽） */
+  /* 选中环 2px：状态指示档线宽，与 FormField .ff-sw 同款网格单元选中语义 */
   box-shadow: 0 0 0 2px var(--accent-focus);
 }
 .ip-upload {

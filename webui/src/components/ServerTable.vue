@@ -1065,7 +1065,7 @@ onBeforeUnmount(() => {
 
 .arrow {
   font-size: 0.6923rem;
-  opacity: var(--opacity-hint); /* 装饰性弱化统一档（F16） */
+  opacity: var(--opacity-hint); /* 装饰性元素弱化档（排序箭头，非交互信息） */
 }
 
 .tbody {

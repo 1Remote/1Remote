@@ -46,7 +46,7 @@ const title = computed(() =>
 }
 .ok .dot {
   background: var(--success);
-  box-shadow: 0 0 4px var(--success); /* 已连接光晕（收敛 4px，F26） */
+  box-shadow: 0 0 4px var(--success); /* 已连接光晕 4px */
 }
 .warn .dot {
   background: var(--warning);

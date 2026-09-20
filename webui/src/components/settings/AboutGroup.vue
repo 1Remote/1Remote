@@ -172,7 +172,7 @@ const CONTRIBUTE = [
 }
 .hero-name {
   font-size: var(--fs-display);
-  font-weight: 600; /* 字重收敛 600 档（F23，全站标题唯一档） */
+  font-weight: 600; /* 全站标题唯一字重档 */
   color: var(--text-1);
 }
 .hero-tagline {
@@ -237,7 +237,7 @@ const CONTRIBUTE = [
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--danger); /* 更新红点：--danger 主题化（V5，原 WPF Fill="Red" 遗产） */
+  background: var(--danger); /* 更新红点走主题化 --danger（WPF 原为硬编码 Fill="Red"） */
 }
 
 /* ---- 分组小标题：克制样式（text-2 弱化 + 留白，不再克隆 WPF accent 色标题）；

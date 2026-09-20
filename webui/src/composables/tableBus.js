@@ -21,8 +21,12 @@ export const listDragFolder = ref(null)
 // ---- 跨库拖拽悬停标记：dragover 拒绝（不 preventDefault → dropEffect=none → drop 不触发）
 // 期间由落区侧置位，源侧 dragend 兜底出 toast。树（SideTree.onRowDragOver）与列表
 //（ServerTable.onFolderDragOver）两侧共用同一标记——同一操作同一套反馈；回到合法
-// 目标或成功 drop 即复位（不误报）。toast 由 SideTree 的 window dragend 监听统一出
-//（边栏收起时无监听者，同树侧落区一并消失——已知边界）----
+// 目标或成功 drop 即复位（不误报）。
+// dragend/drop 的 window 监听留在 SideTree 挂卸（而非本模块随快照生命周期挂卸，已评估）：
+// toast 需要 useMessage/useI18n 的组件上下文，本模块是脱离 setup 的纯信号总线；且监听
+// 随 SideTree 卸载（边栏收起）而消失属既有可见行为——收起边栏时树侧落区本就不存在，
+// 拖拽反馈随之消失是同一边界（已知边界，不额外扩权）。toast 由 SideTree 的 window
+// dragend 监听统一出（见其 onListDragEndGlobal）----
 export const CROSS_DS_NONE = ''
 export const CROSS_DS_SERVER = 'server'
 export const CROSS_DS_FOLDER = 'folder'

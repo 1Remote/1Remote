@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
 .s-back-arrow {
   flex: 0 0 auto;
 }
-/* V6 线宽档：viewBox 16 渲染为 12px，2 单位 = 实际 1.5px 控件级描边档 */
+/* viewBox 16 渲染为 12px，2 单位 = 实际 1.5px 控件级描边档 */
 .s-back-arrow path {
   stroke-width: 2px;
 }

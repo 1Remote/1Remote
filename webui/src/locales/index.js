@@ -35,6 +35,18 @@ const messages = {
 }
 const CODES = LANGUAGES.map((l) => l.code)
 
+// 死键清单（已无任何引用，locale JSON 中保留不删——14 语言 562 键由 convert-locales.mjs
+// 统一生成，单侧删键会破坏全语言键集一致；孤儿键随下一次成组清理时一并移除）：
+// - tree.deleteFolderConfirm：删除确认按 空文件夹/含服务器 二分（deleteFolderEmpty/HasServers）
+// - row.note：列标题统一走 col.* 族（col.note）
+// - settings.placeholder：设置占位页改用 placeholder.comingSoon + page.*
+// - editor.removeTag：标签词条的移除提示随旧标签 chips 一并移除
+// - editor.dataSource / editor.dataSourceLabel：抽屉头部数据源为只读 pill，无文案键
+// - cv.nameRequired：名称必填提示统一走 settings.r.nameRequired（凭据库空名直接禁保存不提示）
+// - settings.d.saveFirstHint：新建数据源 改保存后测流，不再出现「先保存」提示
+// 另有两处孤儿键在产生它们的组件注释里就地说明：statusbar.langEn/langZh（语言切换
+// 改显语言自称，见 ServerListView）、cv.secretHint（见 CredentialVaultGroup）
+
 // 语言探测：localStorage 优先 → 浏览器语言（先精确匹配文件码，再主子标签前缀
 // 匹配，如 'pt' → pt-BR、'zh' → zh-CN，取 LANGUAGES 顺序首个）→ en-US。
 function detectLocale() {

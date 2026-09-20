@@ -415,7 +415,7 @@ function onTopbarDblClick(e) {
   background: var(--bg-hover);
   color: var(--text-1);
 }
-/* V6 线宽档：10px 图标 1:1 渲染，1.5px = 控件级描边档（CSS 覆盖模板 stroke-width="1"） */
+/* 10px 图标 1:1 渲染，1.5px = 控件级描边档（CSS 覆盖模板 stroke-width="1"） */
 .wc-btn svg path,
 .wc-btn svg rect {
   stroke-width: 1.5px;

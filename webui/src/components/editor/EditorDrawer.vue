@@ -589,7 +589,7 @@ onBeforeUnmount(() => {
 .ed-scrim {
   position: absolute;
   inset: 0;
-  /* 遮罩按基底分档（F14）：light 32% 与 8% 轻阴影的层级语言配套（见 theme.css --scrim） */
+  /* 遮罩按基底分档：light 32% 与 8% 轻阴影的层级语言配套（见 theme.css --scrim） */
   background: var(--scrim);
   opacity: 0;
   transition: opacity var(--dur-med) ease;

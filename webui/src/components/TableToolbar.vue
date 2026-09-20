@@ -171,7 +171,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
   color: var(--accent-text);
 }
 
-/* 主按钮 hover 守卫（E3，对齐 EditorDrawer .ed-primary）：保住 accent 边框——
+/* 主按钮 hover 守卫（对齐 EditorDrawer .ed-primary）：保住 accent 边框——
    否则上方 .bb-btn:hover:not(:disabled)（特异性更高）会把边框退化成 --border-strong */
 .bb-primary:hover:not(:disabled) {
   border-color: var(--accent);

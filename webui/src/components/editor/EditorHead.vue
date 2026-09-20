@@ -200,7 +200,7 @@ defineExpose({ title })
 
 /* 数据源只读 pill（编辑/复制/批量）：行内元素（不堆叠于标题下方第二行）——固定 170px
    槽位与新建模式选择器对齐（border-box，padding 计入），超长 ds 名省略。
-   caption+text-3 与 search-chip/tag-chip 的只读 pill 档统一（F20） */
+   caption+text-3 与 search-chip/tag-chip 的只读 pill 档统一 */
 .ed-ds {
   flex: 0 0 170px;
   box-sizing: border-box;

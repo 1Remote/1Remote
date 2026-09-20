@@ -23,17 +23,17 @@ body {
   --text-on-accent: #fff;
 }
 
-/* ---- 尺寸与效果令牌（主题无关，:root 一处定义；美学报告 2026-09-19 附录 A 落地） ----
+/* ---- 尺寸与效果令牌（主题无关，:root 一处定义） ----
  * 字号五档（rem 随 S/M/L/XL 根字号缩放）：micro 10.5 / caption 11.5 / body 12.5（正文与按钮基准）
  *   / title 14 / display 18；9px 装饰字形（表头排序箭头/标签 pin 图标）不参与层级，豁免
  * 圆角三档：xs 3（行内 code/微元素）/ ctrl 6（按钮/输入/菜单项/分段；Naive overrides 已同步）
  *   / box 8（卡片/浮层/表格框）+ pill 999；搜索命中高亮 2px 属状态指示档
- * 线条重量三档（V6）：控件描边 1.5 / 状态指示条 2（拖拽线/选中条/命中高亮）/ 文档引用竖线 3
- * 控件高度两档（V3）：24 行内紧凑 / 28 标准表单与对话框；禁用不透明度统一 0.5（E4）
+ * 线条重量三档：控件描边 1.5 / 状态指示条 2（拖拽线/选中条/命中高亮）/ 文档引用竖线 3
+ * 控件高度两档：24 行内紧凑 / 28 标准表单与对话框；禁用不透明度统一 0.5
  * 中间透明度档：--opacity-hint 0.7（装饰性弱化：表头排序箭头/骨架静态/未选 pin），与
  *   禁用 0.5 拉开，hover 反馈不低于 0.7（0.45/0.55 会弱到像失效/像禁用）
  * 动画时长两档（0.12/0.18s）+ 统一 ease；入场动画保留 ease-out（进入感）
- * 阴影按基底分档（E1/S3）：dark 默认值在此，light 更轻的覆盖见 [data-theme='light']；
+ * 阴影按基底分档：dark 默认值在此，light 更轻的覆盖见 [data-theme='light']；
  *   遮罩 --scrim 同按基底分档（light 32% 与轻阴影的层级语言配套）
  * 焦点色 --accent-focus：dark=--accent；light=--accent-text 深变体（orange/green 的
  *   亮 accent 在浅底上作焦点边框仅 2.69/2.43，不达非文本 3:1）
@@ -67,9 +67,8 @@ body {
   --accent-focus: var(--accent); /* light 基底覆盖为 --accent-text 深变体，见下方 */
 }
 
-/* 键盘焦点环统一（美学报告 2026-09-20 F11）：自定义 button/a 此前各自落 UA 默认环；
- * 焦点色用 --accent-focus。naive 组件自带焦点样式（n-button 为 box-shadow 环），
- * 排除避免双环 */
+/* 键盘焦点环：自定义 button/a 统一 2px --accent-focus 可见环（不落 UA 默认样式）；
+ * naive 组件自带焦点样式（n-button 为 box-shadow 环），排除避免双环 */
 button:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--accent-focus);
@@ -111,10 +110,10 @@ a:focus-visible {
   --danger: #dc2626;
   --success: #16a34a;
   --warning: #d97706;
-  /* 亮色基底阴影更轻（S3）：低透明度 + 依赖边框定义层级，避免 25% 黑显脏 */
+  /* 亮色基底阴影更轻：低透明度 + 依赖边框定义层级，避免 25% 黑显脏 */
   --shadow-menu: 0 6px 24px rgb(0 0 0 / 10%);
   --shadow-overlay: -10px 0 28px rgb(0 0 0 / 8%);
-  /* 遮罩更轻（F14）：与 8% 轻阴影的层级语言配套；焦点色用深变体（F11） */
+  /* 遮罩更轻：与 8% 轻阴影的层级语言配套；焦点色用深变体 */
   --scrim: rgb(0 0 0 / 32%);
   --accent-focus: var(--accent-text);
 }

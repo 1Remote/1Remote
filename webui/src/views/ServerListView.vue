@@ -833,7 +833,7 @@ const importModal = ref(false)
 @media (prefers-reduced-motion: reduce) {
   .sk {
     animation: none;
-    opacity: var(--opacity-hint); /* 静态弱化档与装饰性弱化同源（F16） */
+    opacity: var(--opacity-hint); /* 静态弱化档与装饰性弱化同源 */
   }
 }
 
@@ -872,7 +872,7 @@ const importModal = ref(false)
   opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
-/* 空态 CTA hover（V4）：与 .ed-btn/.bb-btn 同款反馈（border-strong + bg-hover + text-1） */
+/* 空态 CTA hover：与 .ed-btn/.bb-btn 同款反馈（border-strong + bg-hover + text-1） */
 .eg-btn:hover:not(:disabled) {
   border-color: var(--border-strong);
   background: var(--bg-hover);
@@ -882,7 +882,7 @@ const importModal = ref(false)
   border-color: var(--accent);
   color: var(--accent-text);
 }
-/* 主按钮 hover 保留 accent 边框（E3 统一规则：accent 边框 + bg-hover + accent-text） */
+/* 主按钮 hover 统一规则：保留 accent 边框 + bg-hover + accent-text */
 .eg-primary:hover:not(:disabled) {
   border-color: var(--accent);
   background: var(--bg-hover);
