@@ -62,10 +62,15 @@ async function flushSave() {
   })
 }
 
-onMounted(() => load()) // 共享存储幂等（ServerListView 亦会触发首载）
+onMounted(() => {
+  load() // 共享存储幂等（ServerListView 亦会触发首载）
+  // 列表行拖拽的 dragend 在源元素（列表行）上触发并冒泡到 window——树侧经全局监听兜底
+  window.addEventListener('dragend', onListDragEndGlobal)
+})
 onBeforeUnmount(() => {
   clearTimeout(saveTimer)
   if (savePending) flushSave() // 卸载时立即落盘防抖未到的变更（fire-and-forget）
+  window.removeEventListener('dragend', onListDragEndGlobal)
 })
 
 function onToggle(key) {
@@ -99,8 +104,8 @@ const rows = computed(() => {
 // ---- 树拖拽（仅文件夹可拖）：原生 HTML5 DnD。
 // 两条互斥链路，以拖拽来源分发：
 // - 列表服务器行拖入（listDragServer 非空，见 tableBus）：数据源根/文件夹节点均为
-//   「移入」目标（无前后插语义）；同库才高亮（dropEffect=move），跨库不高亮
-//   （dropEffect=none）但仍 preventDefault 收下 drop → toast「不能跨数据源移动」；
+//   「移入」目标（无前后插语义）；同库才高亮（dropEffect=move）；跨库禁止光标
+//   （dropEffect=none → drop 不触发，提示改在 window dragend 出，见 crossDsHovered）；
 //   「全部数据」虚拟根无确定数据源，不收 drop；
 // - 树内文件夹拖拽（dragRow 非空）：行内上 25% = 插到目标前、下 25% = 插到目标后、
 //   中部 = 移入。非法目标（跨数据源 / 拖到自己 / 拖文件夹到自己的后代 / 根行前插后插 /
@@ -144,21 +149,34 @@ function onRowDragEnd() {
   dragRow.value = null
   dropHint.value = null
 }
+// 列表行拖拽的 dragend 兜底（树节点上没有列表拖拽的 dragend 事件源）：跨库悬停过则在
+// 拖拽结束时提示（drop 在 dropEffect=none 下不触发，见 crossDsHovered 注释）
+function onListDragEndGlobal() {
+  if (crossDsHovered) {
+    crossDsHovered = false
+    message.warning(t('toast.crossDsMove'))
+  }
+}
 // 行 dsName（根行持 ds 对象、文件夹行持 dsName 字符串；列表拖入与树内拖共用）
 const rowDsName = (row) => (row.kind === 'root' ? row.ds.name : row.dsName)
+// 跨库悬停标记：dropEffect='none' 时按 HTML 规范 drop 事件不会触发（评审实证），
+// 跨库提示改在源侧 dragend 出——dragover 跨库分支记 true，dragend 检查后 toast+复位
+let crossDsHovered = false
 function onRowDragOver(row, e) {
   const dragSrv = listDragServer.value
   if (dragSrv) {
-    // 列表服务器行拖入树：同库目标高亮为「移入」；跨库收下 drop 但不给可放光标
-    //（drop 时 toast）；「全部数据」虚拟根无数据源归属 → 不收
+    // 列表服务器行拖入树：同库目标高亮为「移入」；跨库禁止光标（drop 不会触发，
+    // 提示在 dragend 出，见 crossDsHovered）；「全部数据」虚拟根无数据源归属 → 不收
     if (moving.value || row.kind === 'all') return
     e.preventDefault()
     if (dragSrv.dataSourceName === rowDsName(row)) {
       e.dataTransfer.dropEffect = 'move'
       dropHint.value = { key: row.key, zone: 'into' }
+      crossDsHovered = false
     } else {
       e.dataTransfer.dropEffect = 'none'
       dropHint.value = null
+      crossDsHovered = true
     }
     return
   }
@@ -183,7 +201,7 @@ function onRowDrop(row, e) {
     dropHint.value = null
     if (moving.value || row.kind === 'all') return
     if (dragSrv.dataSourceName !== rowDsName(row)) {
-      message.warning(t('toast.crossDsMove'))
+      crossDsHovered = false // drop 不会触发（dropEffect=none），此处仅防御性复位
       return
     }
     folderOps.moveServersToFolder([dragSrv], rowDsName(row), row.kind === 'folder' ? row.folder.path : '')
