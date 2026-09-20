@@ -533,7 +533,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 </template>
 
 <style scoped>
-/* 全部取色走主题 CSS 变量，行高紧凑 ~26px，hover --bg-hover */
+/* 全部取色走主题 CSS 变量，行高紧凑 24px（行内档），hover --bg-hover */
 .side-tree {
   position: relative; /* 右键菜单浮层定位基准 */
   display: flex;
@@ -557,7 +557,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 26px;
+  height: var(--ctrl-h-s); /* 行内紧凑档（Linear 式密度，F10 归并） */
   padding-right: 6px;
   border-radius: var(--radius-ctrl);
   white-space: nowrap;
@@ -687,13 +687,14 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   align-items: center;
   gap: 3px;
   max-width: 100%;
+  height: var(--ctrl-h-s);
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
   background: var(--bg-elevated);
-  color: var(--text-2);
+  color: var(--text-3);
   font-size: var(--fs-caption);
   line-height: 1;
-  padding: 3px 8px;
+  padding: 0 8px;
   cursor: pointer;
 }
 .tag-chip:hover {

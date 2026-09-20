@@ -193,15 +193,15 @@ const disabled = () => !props.checkState?.count
   color: var(--text-3);
   font-size: var(--fs-body);
   line-height: 1;
-  width: 26px;
-  height: 24px;
+  width: var(--ctrl-h-s);
+  height: var(--ctrl-h-s);
   border-radius: var(--radius-ctrl);
   cursor: pointer;
 }
 
 .act:hover:not(:disabled) {
-  background: var(--bg-elevated);
-  color: var(--accent-text);
+  background: var(--bg-hover);
+  color: var(--text-1);
 }
 
 .act:disabled {

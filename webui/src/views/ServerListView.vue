@@ -738,7 +738,7 @@ const importModal = ref(false)
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
   background: var(--bg-elevated);
-  color: var(--text-2);
+  color: var(--text-3);
   font-size: var(--fs-caption);
   line-height: 1.4;
 }
@@ -858,13 +858,14 @@ const importModal = ref(false)
   gap: 10px;
 }
 .eg-btn {
+  height: var(--ctrl-h-m);
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-2);
   font-size: var(--fs-body);
   line-height: 1;
-  padding: 7px 14px;
+  padding: 0 14px;
   cursor: pointer;
 }
 .eg-btn:disabled {
@@ -965,18 +966,24 @@ const importModal = ref(false)
   font-size: var(--fs-body);
   color: var(--text-4);
 }
-.en-clear {
+/* 无匹配/表内空态的清除过滤按钮共用一份定义（此前 en-clear/te-clear 两份逐行重复且
+   与 eg-btn 底色/内距漂移）；参数对齐 eg-btn（elevated 底 + 14px 内距） */
+.en-clear,
+.te-clear {
   margin-top: 6px;
+  height: var(--ctrl-h-m);
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
-  background: transparent;
+  background: var(--bg-elevated);
   color: var(--text-2);
   font-size: var(--fs-body);
   line-height: 1;
-  padding: 7px 12px;
+  padding: 0 14px;
   cursor: pointer;
 }
-.en-clear:hover {
+
+.en-clear:hover,
+.te-clear:hover {
   border-color: var(--border-strong);
   background: var(--bg-hover);
   color: var(--text-1);
@@ -1001,22 +1008,6 @@ const importModal = ref(false)
 .te-detail {
   font-size: var(--fs-body);
   color: var(--text-4);
-}
-.te-clear {
-  margin-top: 6px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-ctrl);
-  background: transparent;
-  color: var(--text-2);
-  font-size: var(--fs-body);
-  line-height: 1;
-  padding: 7px 12px;
-  cursor: pointer;
-}
-.te-clear:hover {
-  border-color: var(--border-strong);
-  background: var(--bg-hover);
-  color: var(--text-1);
 }
 
 /* ---- 底部状态栏：26px 单行，左=数据源状态点（≤3 个 + 溢出 +N），右=统计/SSE/语言 ---- */
@@ -1078,13 +1069,14 @@ const importModal = ref(false)
   cursor: help; /* title 说明其语义为后端可达性而非连接会话状态 */
 }
 .sb-lang {
+  height: var(--ctrl-h-s);
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
   font-size: var(--fs-caption);
   line-height: 1;
-  padding: 3px 7px;
+  padding: 0 10px;
   cursor: pointer;
 }
 .sb-lang:hover {

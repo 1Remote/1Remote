@@ -293,7 +293,9 @@ const CONTRIBUTE = [
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 7px 14px;
+  height: var(--ctrl-h-m);
+  box-sizing: border-box; /* <a> 非 UA border-box，显式声明使 28 档含边框 */
+  padding: 0 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);

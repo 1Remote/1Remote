@@ -400,15 +400,18 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   min-width: 0;
 }
 
+/* 覆盖/保持切换：对齐 TableToolbar .bb-btn 参数（h24/0 10/fs-body/中性 hover）；
+   on 态从"仅边框文字"改容器型（accent-container 底），与分段控件 on 语言一致（F5） */
 .bulk-toggle {
   flex: 0 0 auto;
+  height: var(--ctrl-h-s);
+  padding: 0 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
-  color: var(--text-3);
-  font-size: var(--fs-caption);
+  color: var(--text-2);
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 5px 9px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -421,6 +424,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
 
 .bulk-toggle.on {
   border-color: var(--accent);
+  background: var(--accent-container);
   color: var(--accent-text);
 }
 

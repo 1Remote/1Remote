@@ -396,14 +396,16 @@ const barColor = computed(() => opaqueHex(props.server.color))
   color: var(--text-3);
   font-size: var(--fs-body);
   line-height: 1;
-  width: 26px;
-  height: 24px;
+  width: var(--ctrl-h-s);
+  height: var(--ctrl-h-s);
   border-radius: var(--radius-ctrl);
   cursor: pointer;
 }
+/* 行内钮 hover 统一多数派语言（bg-hover + text-1，与 bb-x/sc-x/cv .act 同款；
+   此前 elevated+accent-text 是异类） */
 .act:hover:not(:disabled) {
-  background: var(--bg-elevated);
-  color: var(--accent-text);
+  background: var(--bg-hover);
+  color: var(--text-1);
 }
 .act:disabled {
   opacity: var(--opacity-disabled);

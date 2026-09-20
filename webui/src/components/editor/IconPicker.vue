@@ -240,15 +240,18 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   cursor: not-allowed;
   opacity: var(--opacity-disabled);
 }
+/* "…"与"浏览…"/提取按钮：统一基准形态（h28/0 10/caption/中性 hover，四处浏览按钮收敛之一） */
 .ip-btn {
+  height: var(--ctrl-h-m);
+  padding: 0 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
-  color: var(--text-3);
-  font-size: var(--fs-body);
+  color: var(--text-2);
+  font-size: var(--fs-caption);
   line-height: 1;
-  padding: 5px 10px;
   cursor: pointer;
+  white-space: nowrap;
 }
 .ip-btn:hover:not(:disabled) {
   border-color: var(--border-strong);
@@ -346,6 +349,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   cursor: pointer;
 }
 .ip-clear:hover {
+  background: var(--bg-hover);
   color: var(--danger);
 }
 </style>

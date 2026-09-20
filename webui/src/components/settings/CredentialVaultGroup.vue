@@ -723,10 +723,12 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   font-size: var(--fs-caption);
   color: var(--danger);
 }
-/* 密码/私钥二选一 segmented（ed-seg 样式模式，EditorDrawer 凭据组同款） */
+/* 密码/私钥二选一 segmented（ed-seg 同款：容器 28 档 border-box，按钮 stretch + 横距 14） */
 .cv-seg {
   display: inline-flex;
   align-self: start;
+  height: var(--ctrl-h-m);
+  box-sizing: border-box;
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   overflow: hidden;
@@ -737,7 +739,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   color: var(--text-3);
   font-size: var(--fs-body);
   line-height: 1;
-  padding: 7px 12px;
+  padding: 0 14px;
   cursor: pointer;
   white-space: nowrap;
 }

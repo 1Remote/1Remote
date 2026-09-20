@@ -368,7 +368,9 @@ onBeforeUnmount(() => {
   background: transparent;
   color: var(--text-3);
   font-size: var(--fs-body);
-  padding: 5px 12px;
+  line-height: 1;
+  height: var(--ctrl-h-s);
+  padding: 0 12px;
   cursor: pointer;
 }
 .r-tab:hover {

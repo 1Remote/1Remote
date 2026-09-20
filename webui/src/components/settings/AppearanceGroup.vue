@@ -230,27 +230,32 @@ function applyClassic(name) {
   outline-offset: 1px;
 }
 
-/* 字号分段 */
+/* 字号分段：与 EditorDrawer .ed-seg 同源参数（容器 28 档 border-box + 未选 bg-elevated/
+   text-3 + hover 提 text-1；此前 transparent 底/text-2/hover 仅加底三处漂移） */
 .seg {
   display: inline-flex;
+  height: var(--ctrl-h-m);
+  box-sizing: border-box;
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   overflow: hidden;
 }
 .seg-btn {
   min-width: 44px;
-  height: var(--ctrl-h-m);
   border: none;
-  background: transparent;
-  color: var(--text-2);
+  background: var(--bg-elevated);
+  color: var(--text-3);
   font-size: var(--fs-body);
+  line-height: 1;
+  padding: 0 14px;
   cursor: pointer;
 }
 .seg-btn + .seg-btn {
   border-left: 1px solid var(--border);
 }
-.seg-btn:hover {
+.seg-btn:hover:not(.active) {
   background: var(--bg-hover);
+  color: var(--text-1);
 }
 .seg-btn.active {
   background: var(--accent-container);
@@ -264,7 +269,7 @@ function applyClassic(name) {
   flex-wrap: wrap;
 }
 .pill {
-  height: 26px;
+  height: var(--ctrl-h-m);
   padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);

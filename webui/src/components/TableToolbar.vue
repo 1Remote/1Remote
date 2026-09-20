@@ -145,13 +145,14 @@ onBeforeUnmount(() => clearInterval(hintTimer))
 }
 
 .bb-btn {
+  height: var(--ctrl-h-s);
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
   font-size: var(--fs-body);
   line-height: 1;
-  padding: 5px 10px;
+  padding: 0 10px;
   cursor: pointer;
 }
 
@@ -241,7 +242,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
+  width: var(--ctrl-h-s);
   height: var(--ctrl-h-s);
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);

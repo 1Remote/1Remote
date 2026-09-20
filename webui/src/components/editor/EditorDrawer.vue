@@ -727,9 +727,12 @@ onBeforeUnmount(() => {
   color: var(--text-2);
 }
 
+/* 凭据组二选一分段：容器 28 档（border-box，边框计入）；按钮 stretch 填满、横向内距 14 */
 .ed-seg {
   display: inline-flex;
   align-self: start;
+  height: var(--ctrl-h-m);
+  box-sizing: border-box;
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   overflow: hidden;
@@ -741,7 +744,7 @@ onBeforeUnmount(() => {
   color: var(--text-3);
   font-size: var(--fs-body);
   line-height: 1;
-  padding: 7px 12px;
+  padding: 0 14px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -831,13 +834,14 @@ onBeforeUnmount(() => {
 }
 
 .ed-btn {
+  height: var(--ctrl-h-m);
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
   font-size: var(--fs-body);
   line-height: 1;
-  padding: 7px 14px;
+  padding: 0 14px;
   cursor: pointer;
 }
 

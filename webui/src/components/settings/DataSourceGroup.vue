@@ -749,9 +749,9 @@ bindModalEsc([
   white-space: nowrap;
 }
 .act-btn:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent-text);
+  border-color: var(--border-strong);
   background: var(--bg-hover);
+  color: var(--text-1);
 }
 .act-btn:disabled {
   opacity: var(--opacity-disabled);

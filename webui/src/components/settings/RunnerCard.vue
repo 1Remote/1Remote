@@ -401,8 +401,8 @@ function onFontSize(v) {
 .r-head .del {
   margin-left: auto;
   flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
+  width: var(--ctrl-h-s);
+  height: var(--ctrl-h-s);
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: transparent;
@@ -411,8 +411,8 @@ function onFontSize(v) {
   line-height: 1;
   cursor: pointer;
 }
+/* 删除类行内钮 hover 统一：bg-hover + danger 字（边框保持中性，实心底仅批量条 bb-danger） */
 .r-head .del:hover {
-  border-color: var(--danger);
   background: var(--bg-hover);
   color: var(--danger);
 }
@@ -454,21 +454,25 @@ function onFontSize(v) {
   flex: 1 1 auto;
   min-width: 0;
 }
+/* "浏览…"按钮：全站统一基准形态（h28/0 10/radius-ctrl/caption/中性 hover，与
+   DataSourceGroup.act-btn 同款——此前 7px 拼高 + fs-body + accent hover 四处漂移之一） */
 .act-btn {
   flex: 0 0 auto;
+  height: var(--ctrl-h-m);
+  padding: 0 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
-  color: var(--text-3);
-  font-size: var(--fs-body);
+  color: var(--text-2);
+  font-size: var(--fs-caption);
   line-height: 1;
-  padding: 7px 10px;
   cursor: pointer;
+  white-space: nowrap;
 }
 .act-btn:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent-text);
+  border-color: var(--border-strong);
   background: var(--bg-hover);
+  color: var(--text-1);
 }
 .act-btn:disabled {
   opacity: var(--opacity-disabled);
@@ -492,13 +496,16 @@ function onFontSize(v) {
   margin-right: 2px;
 }
 .macro-pill {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ctrl-h-s);
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-3);
   font-size: var(--fs-micro);
-  line-height: 1.5;
-  padding: 1px 8px;
+  line-height: 1;
+  padding: 0 8px;
   cursor: pointer;
 }
 .macro-pill:hover {
