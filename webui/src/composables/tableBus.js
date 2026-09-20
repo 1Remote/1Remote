@@ -17,3 +17,13 @@ export function handoffTableFocus(delta) {
 // 文件夹拖拽（SideTree 自持 dragRow）三条链路互斥，同时至多一个快照非空 ----
 export const listDragServer = ref(null)
 export const listDragFolder = ref(null)
+
+// ---- 跨库拖拽悬停标记：dragover 拒绝（不 preventDefault → dropEffect=none → drop 不触发）
+// 期间由落区侧置位，源侧 dragend 兜底出 toast。树（SideTree.onRowDragOver）与列表
+//（ServerTable.onFolderDragOver）两侧共用同一标记——同一操作同一套反馈；回到合法
+// 目标或成功 drop 即复位（不误报）。toast 由 SideTree 的 window dragend 监听统一出
+//（边栏收起时无监听者，同树侧落区一并消失——已知边界）----
+export const CROSS_DS_NONE = ''
+export const CROSS_DS_SERVER = 'server'
+export const CROSS_DS_FOLDER = 'folder'
+export const crossDsHover = ref(CROSS_DS_NONE)

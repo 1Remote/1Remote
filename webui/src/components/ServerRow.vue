@@ -173,7 +173,10 @@ const barColor = computed(() => opaqueHex(props.server.color))
   box-shadow: inset 2px 0 0 var(--accent); /* 树叶选中行：左侧强调色细条 */
 }
 .row.cursor {
-  outline: 1px solid var(--border-strong); /* 键盘光标行：subtle 外框（不占布局） */
+  /* 键盘光标行：accent 色外框（不占布局）。单击=光标是核心交互，其落点必须可感知——
+     此前 1px --border-strong 过淡，用户无法判断 Enter 将作用于哪行。与另两类行态可区分：
+     勾选=.selected 的 accent-container 底色、树叶选中=.highlighted 的左缘 2px 细条 */
+  outline: 1px solid var(--accent);
   outline-offset: -1px;
 }
 

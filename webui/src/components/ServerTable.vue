@@ -40,7 +40,15 @@ import { api } from '../api'
 import { useColumns } from '../composables/useColumns'
 import { useRowChecks } from '../composables/useRowChecks'
 import { useServers } from '../composables/useServers'
-import { focusHandoff, listDragServer, listDragFolder } from '../composables/tableBus'
+import {
+  CROSS_DS_FOLDER,
+  CROSS_DS_NONE,
+  CROSS_DS_SERVER,
+  crossDsHover,
+  focusHandoff,
+  listDragServer,
+  listDragFolder,
+} from '../composables/tableBus'
 import { fullKey, isDescendantPath } from '../composables/folders'
 import { naturalIpCompare } from '../utils/compare'
 
@@ -271,11 +279,17 @@ function onFolderDragOver(f, e) {
   if (!dragServer.value && !dragFolder.value) return
   if (!folderDropOk(f)) {
     dropFolder.value = null
+    // 跨库拒绝与树侧同款置位（tableBus.crossDsHover）：dropEffect=none 下 drop 不触发，
+    // 提示改由 dragend 兜底出（SideTree 统一监听）——此前列表侧静默拒绝、树侧有 toast，
+    // 同一操作两套反馈。同库原地/自身子树拒绝仍静默（与树侧 subtree 分支同口径）
+    if (dragServer.value && dragServer.value.dataSourceName !== f.dsName) crossDsHover.value = CROSS_DS_SERVER
+    else if (dragFolder.value && dragFolder.value.dsName !== f.dsName) crossDsHover.value = CROSS_DS_FOLDER
     return
   }
   e.preventDefault()
   e.dataTransfer.dropEffect = 'move'
   dropFolder.value = { dsName: f.dsName, path: f.path }
+  crossDsHover.value = CROSS_DS_NONE // 回到合法目标即清标记（dragend 不误报，树侧同款）
 }
 function onFolderDragLeave(f) {
   if (dropFolder.value?.path === f.path && dropFolder.value?.dsName === f.dsName) dropFolder.value = null

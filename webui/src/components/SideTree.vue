@@ -17,7 +17,14 @@ import { useServers } from '../composables/useServers'
 import { buildTree, countDirectChildServers, fullKey, holderAt, isDescendantPath } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
-import { listDragServer, listDragFolder } from '../composables/tableBus'
+import {
+  CROSS_DS_FOLDER,
+  CROSS_DS_NONE,
+  CROSS_DS_SERVER,
+  crossDsHover,
+  listDragFolder,
+  listDragServer,
+} from '../composables/tableBus'
 
 const props = defineProps({
   selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据（v-model:selection）
@@ -152,24 +159,21 @@ function onRowDragEnd() {
   dragRow.value = null
   dropHint.value = null
 }
-// 跨库悬停标记（记拖拽种类供 dragend 选文案）：dropEffect='none' 时按 HTML 规范
-// drop 事件不会触发，跨库提示改在源侧 dragend 出——dragover 跨库分支记种类，
-// dragend 检查后 toast+复位；回到合法目标即清标记（不误报）
-const CROSS_DS_NONE = ''
-const CROSS_DS_SERVER = 'server'
-const CROSS_DS_FOLDER = 'folder'
-let crossDsHover = CROSS_DS_NONE
+// 跨库悬停标记移 tableBus 共享（记拖拽种类供 dragend 选文案）：dropEffect='none' 时按
+// HTML 规范 drop 事件不会触发，跨库提示改在源侧 dragend 出——dragover 跨库分支记种类
+//（树/列表两侧落区都可置位，见 ServerTable.onFolderDragOver），dragend 检查后 toast+复位；
+// 回到合法目标或成功 drop 即清标记（不误报）
 // 列表行拖拽的 dragend 兜底（树节点上没有列表拖拽的 dragend 事件源）：跨库悬停过则在
 // 拖拽结束时提示（drop 在 dropEffect=none 下不触发，见上），按拖拽种类出对应文案
 function onListDragEndGlobal() {
-  if (crossDsHover) {
-    const kind = crossDsHover
-    crossDsHover = CROSS_DS_NONE
+  if (crossDsHover.value) {
+    const kind = crossDsHover.value
+    crossDsHover.value = CROSS_DS_NONE
     message.warning(kind === CROSS_DS_FOLDER ? t('toast.crossDsFolderMove') : t('toast.crossDsMove'))
   }
 }
 function resetCrossDsHover() {
-  crossDsHover = CROSS_DS_NONE
+  crossDsHover.value = CROSS_DS_NONE
 }
 // 行 dsName（根行持 ds 对象、文件夹行持 dsName 字符串；列表拖入与树内拖共用）
 const rowDsName = (row) => (row.kind === 'root' ? row.ds.name : row.dsName)
@@ -195,11 +199,11 @@ function onRowDragOver(row, e) {
     if (admit === 'ok') {
       e.dataTransfer.dropEffect = 'move'
       dropHint.value = { key: row.key, zone: 'into' }
-      crossDsHover = CROSS_DS_NONE
+      crossDsHover.value = CROSS_DS_NONE
     } else {
       e.dataTransfer.dropEffect = 'none'
       dropHint.value = null
-      if (admit === 'cross-ds') crossDsHover = dragSrv ? CROSS_DS_SERVER : CROSS_DS_FOLDER
+      if (admit === 'cross-ds') crossDsHover.value = dragSrv ? CROSS_DS_SERVER : CROSS_DS_FOLDER
     }
     return
   }
@@ -226,7 +230,7 @@ function onRowDrop(row, e) {
     dropHint.value = null
     const admit = listDropAdmit(row, dragSrv ? dragSrv.dataSourceName : dragFld.dsName, dragFld)
     if (admit === 'cross-ds') {
-      crossDsHover = CROSS_DS_NONE // drop 不会触发（dropEffect=none），此处仅防御性复位
+      crossDsHover.value = CROSS_DS_NONE // drop 不会触发（dropEffect=none），此处仅防御性复位
       return
     }
     if (admit !== 'ok') return
@@ -260,7 +264,8 @@ function targetParentPath(row, zone) {
 
 // 落点执行：算受影响服务器集合的新 TreeNodes → 逐台 GET config → 改 TreeNodes → PUT
 //（UpdateServer 不触发 SSE——由前端显式 reload() 刷新）。同级顺序：before/after 重排
-// 目标层兄弟文件夹序号（1 起）；into 删除被拖文件夹的序号键（排末尾，与 WPF AddChild 后语义一致）
+// 目标层兄弟文件夹序号（1 起）；into 删除被拖文件夹的序号键（排末尾，与 WPF AddChild 后语义一致）。
+// 大子树逐台串行耗时——与批量删除/folderOps 同款 loading 进度 toast（原地更新+终态转换）
 async function applyTreeMove(src, row, zone) {
   const parentPath = targetParentPath(row, zone)
   const prefix = src.folder.path + '/'
@@ -270,6 +275,18 @@ async function applyTreeMove(src, row, zone) {
 
   let moved = 0
   const failed = []
+  // 空子树（0 台受影响，纯顺序调整）不弹「0/0」进度，终态直接常规 toast
+  const progress = affected.length
+    ? message.loading(t('toast.treeWorking', { ok: 0, n: affected.length }), { duration: 0 })
+    : null
+  const finish = (type, content) => {
+    if (progress) {
+      progress.type = type
+      progress.content = content
+      setTimeout(() => progress.destroy(), failed.length || type === 'error' ? 5000 : 2500)
+    } else if (type === 'success') message.success(content)
+    else message.error(content)
+  }
   moving.value = true
   try {
     for (const { server, rest } of affected) {
@@ -284,6 +301,7 @@ async function applyTreeMove(src, row, zone) {
         console.warn('[SideTree] move failed:', server.id, err?.message || err)
         failed.push(server.displayName)
       }
+      if (progress) progress.content = t('toast.treeWorking', { ok: moved + failed.length, n: affected.length })
     }
 
     // 同级顺序写回（仅 before/after 重排；into 清键排末尾）
@@ -313,11 +331,14 @@ async function applyTreeMove(src, row, zone) {
       }
     }
 
-    if (moved === 0 && failed.length === 0 && !orderChanged) return // 完全无变化（原位放下）
+    if (moved === 0 && failed.length === 0 && !orderChanged) {
+      progress?.destroy() // 完全无变化（原位放下）：撤下进度，无终态文案
+      return
+    }
     if (orderChanged) await flushSave()
     await reload() // UpdateServer 路径不触发 SSE（见上），显式刷新列表/树
-    if (failed.length) message.error(t('toast.treeMoveFailed', { n: failed.length }))
-    else if (moved > 0) message.success(t('toast.treeMoved', { n: moved }))
+    if (failed.length) finish('error', t('toast.treeMoveFailed', { n: failed.length }))
+    else finish('success', t('toast.treeMoved', { n: moved }))
   } finally {
     moving.value = false
   }

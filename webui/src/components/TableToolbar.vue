@@ -4,7 +4,7 @@
 // 即只在表格可见时出现）。布局与宿主行内联，不自带整条背景/边框。
 // 组成：批量条（勾选 ≥1 时）+ ≡ 自定义顺序开关 + ▦ 列菜单。
 // 状态（勾选/排序模式/列显隐）全部留在 ServerTable，本组件纯展示 + emit 转发。
-import { onBeforeUnmount, onMounted } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { HIDEABLE_COLS } from '../composables/useColumns'
 
@@ -34,6 +34,19 @@ function onGlobalDownCloseColMenu(e) {
 }
 onMounted(() => window.addEventListener('mousedown', onGlobalDownCloseColMenu))
 onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseColMenu))
+
+// 常驻提示轮换（无勾选时）：双击连接 / Ctrl·Shift 多选各占一半时间，6s 慢速交替——
+// 多选入口（Ctrl+点击/Shift+点击）没有其他常驻可查处，一次性 toast 已按 owner 要求
+// 移除（46d82931），此处是唯一的常驻发现位；轮换而非并列，避免提示行变宽挤压工具簇
+const HINT_KEYS = ['list.doubleClickHint', 'list.multiSelectHint']
+const hintIdx = ref(0)
+let hintTimer = null
+onMounted(() => {
+  hintTimer = setInterval(() => {
+    hintIdx.value = (hintIdx.value + 1) % HINT_KEYS.length
+  }, 6000)
+})
+onBeforeUnmount(() => clearInterval(hintTimer))
 </script>
 
 <template>
@@ -61,9 +74,11 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
       </button>
       <button class="bb-x" :title="t('batch.clear')" @click="emit('clear-checked')">✕</button>
     </div>
-    <!-- 无勾选时的常驻轻提示（--text-4 小字，克制）：裸点击/双击语义对新手不透明，
-         在工具簇原位给一句引导；有勾选时让位给批量条（同位置互斥，不叠加噪音） -->
-    <span v-if="!checkedCount" class="tt-hint">{{ t('list.doubleClickHint') }}</span>
+    <!-- 无勾选时的常驻轻提示（--text-4 小字，克制）：双击连接与 Ctrl/Shift 多选两条
+         6s 轮换（发现位唯一化，见 script）；有勾选时让位给批量条（同位置互斥，不叠加噪音） -->
+    <Transition name="hint-fade" mode="out-in">
+      <span v-if="!checkedCount" :key="HINT_KEYS[hintIdx]" class="tt-hint">{{ t(HINT_KEYS[hintIdx]) }}</span>
+    </Transition>
     <!-- ≡ = 自定义顺序模式开关（开启后行可拖拽重排）；
          ▦ = 列菜单（显隐 + 列宽说明），下拉以本簇为锚向下展开 -->
     <div class="table-tools">
@@ -191,11 +206,26 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   color: var(--text-1);
 }
 
-/* 无勾选轻提示：右侧工具簇左侧同行，小字弱化（常驻但克制——不弹 toast 打扰） */
+/* 无勾选轻提示：右侧工具簇左侧同行，小字弱化（常驻但克制——不弹 toast 打扰）；
+   轮换切换用 0.4s 交叉淡入淡出（reduced-motion 时关闭过渡，文字仍切换） */
 .tt-hint {
   color: var(--text-4);
   font-size: var(--fs-caption);
   white-space: nowrap;
+}
+.hint-fade-enter-active,
+.hint-fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+.hint-fade-enter-from,
+.hint-fade-leave-to {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hint-fade-enter-active,
+  .hint-fade-leave-active {
+    transition: none;
+  }
 }
 
 /* 表头工具簇：与批量条同宿面包屑行右侧，正常流内联排布；

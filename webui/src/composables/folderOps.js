@@ -144,12 +144,18 @@ export function useFolderOps() {
     reload() // WPF parity refresh（tree-state 已本地更新；servers 重取兜底）
   }
 
-  // 受影响服务器（oldPath 前缀下）逐台 config GET → TreeNodes 重写 → PUT。
-  // 返回失败台数；newPathFn(null=删除上移) 语义由 rewriteServerPath 统一。
-  async function rewriteServerPaths(dsName, oldPath, newPath) {
-    const affected = servers.value.filter(
+  // 受影响服务器（oldPath 前缀下）：重命名/移动/删除-保留内容共用的目标集口径
+  function affectedServers(dsName, oldPath) {
+    return servers.value.filter(
       (s) => s.dataSourceName === dsName && (s.folderPath === oldPath || (s.folderPath || '').startsWith(oldPath + '/'))
     )
+  }
+
+  // 受影响服务器（oldPath 前缀下）逐台 config GET → TreeNodes 重写 → PUT。
+  // 返回失败台数；newPathFn(null=删除上移) 语义由 rewriteServerPath 统一；
+  // onProgress 每台完成后回调（进度 toast 原地更新用，可选）
+  async function rewriteServerPaths(dsName, oldPath, newPath, onProgress) {
+    const affected = affectedServers(dsName, oldPath)
     let failed = 0
     for (const s of affected) {
       const next = rewriteServerPath(s.folderPath, oldPath, newPath)
@@ -162,6 +168,7 @@ export function useFolderOps() {
         console.warn('[folderOps] server rewrite failed:', s.id, err?.message || err)
         failed++
       }
+      onProgress?.()
     }
     return failed
   }
@@ -180,16 +187,38 @@ export function useFolderOps() {
   // 服务器 TreeNodes 前缀重写 → 键前缀迁移 → reload → 三档提示（键落盘失败 /
   // 部分服务器失败 / 成功，fail/ok 为文案取值函数）。serverTo 与 keysTo 分开传：
   // 删除-保留内容时服务器上移到父路径，而键走 null 删除语义（rewriteTreeStateKeys
-  // 对 null 有「文件夹自身展开态不随键迁移」的特例，见其注释），其余操作两者同值
+  // 对 null 有「文件夹自身展开态不随键迁移」的特例，见其注释），其余操作两者同值。
+  // 大文件夹逐台 GET+PUT 串行耗时——与批量删除同款 loading 进度 toast（原地更新
+  // content，完成态原地转三档终态），避免长操作无反馈疑似卡死
   async function runPrefixRewrite(dsName, oldPath, serverTo, keysTo, { fail, ok }) {
     busy.value = true
+    const total = affectedServers(dsName, oldPath).length
+    // 空文件夹（0 台受影响）键迁移极快：不弹「0/0」进度，终态直接常规 toast
+    const progress = total ? message.loading(t('toast.treeWorking', { ok: 0, n: total }), { duration: 0 }) : null
+    let done = 0
+    let failedTier = false
+    const finish = (type, content) => {
+      if (progress) {
+        progress.type = type
+        progress.content = content
+        setTimeout(() => progress.destroy(), failedTier ? 5000 : 2500)
+      } else if (type === 'success') message.success(content)
+      else message.error(content)
+    }
     try {
-      const failed = await rewriteServerPaths(dsName, oldPath, serverTo)
+      const failed = await rewriteServerPaths(dsName, oldPath, serverTo, () => {
+        done++
+        if (progress) progress.content = t('toast.treeWorking', { ok: done, n: total })
+      })
       const persistOk = await rewriteKeys(dsName, oldPath, keysTo)
       await reload()
-      if (!persistOk) message.error(fail())
-      else if (failed) message.error(t('toast.treeMoveFailed', { n: failed }))
-      else message.success(ok())
+      if (!persistOk) {
+        failedTier = true
+        finish('error', fail())
+      } else if (failed) {
+        failedTier = true
+        finish('error', t('toast.treeMoveFailed', { n: failed }))
+      } else finish('success', ok())
     } finally {
       busy.value = false
     }
@@ -270,30 +299,42 @@ export function useFolderOps() {
       return
     }
     busy.value = true
+    // 与批量删除同款逐台进度 toast（大文件夹连删同为长操作），完成态原地转三档终态；
+    // 0 台（空文件夹误入此分支）不弹「0/0」进度
+    const affected = affectedServers(dsName, oldPath)
+    const n = affected.length
+    const progress = n ? message.loading(t('toast.batchDeleting', { ok: 0, n }), { duration: 0 }) : null
+    let failed = 0
+    let ok = 0
+    const finish = (type, content) => {
+      if (progress) {
+        progress.type = type
+        progress.content = content
+        setTimeout(() => progress.destroy(), failed || type === 'error' ? 5000 : 2500)
+      } else if (type === 'success') message.success(content)
+      else message.error(content)
+    }
     try {
-      const affected = servers.value.filter(
-        (s) =>
-          s.dataSourceName === dsName && (s.folderPath === oldPath || (s.folderPath || '').startsWith(oldPath + '/'))
-      )
-      let failed = 0
       for (const s of affected) {
         try {
           await api.deleteServer(s.id, dsName)
+          ok++
         } catch (err) {
           console.warn('[folderOps] server delete failed:', s.id, err?.message || err)
           failed++
         }
+        if (progress) progress.content = t('toast.batchDeleting', { ok, n })
       }
       const exact = fullKey(dsName, oldPath)
       const remove = Object.keys(knownExpanded.value).filter((k) => k === exact || k.startsWith(exact + SEP))
       setLocalKeys({}, remove)
-      const ok = await persist((m) => {
+      const persistOk = await persist((m) => {
         for (const k of remove) delete m[k]
       })
       await reload()
-      if (!ok) message.error(t('tree.folderDeleteFailed'))
-      else if (failed) message.error(t('tree.folderDeleteServerFailed', { n: failed }))
-      else message.success(t('tree.folderDeleted'))
+      if (!persistOk) finish('error', t('tree.folderDeleteFailed'))
+      else if (failed) finish('error', t('tree.folderDeleteServerFailed', { n: failed }))
+      else finish('success', t('tree.folderDeleted'))
     } finally {
       busy.value = false
     }
