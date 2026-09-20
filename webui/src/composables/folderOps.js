@@ -3,13 +3,13 @@
 // 机制（有意设计）：
 // - 新建 = PUT /api/ui-state/tree 向 expansion 字典增键（键即存在，值 true=展开且存在，
 //   与 WPF 物化循环 ServerTreeViewModel.cs:873-889 一致，WPF 树自动可见空文件夹）；
-// - 重命名 = 受影响服务器逐台 config GET → TreeNodes 前缀重写 → PUT（复用树拖拽循环）
-//   + 字典键前缀重写；
+// - 重命名 / 文件夹移动（整子树）/ 删除-保留内容（子项上移一级）三个操作同走
+//   runPrefixRewrite：受影响服务器逐台 config GET → TreeNodes 前缀重写 → PUT（复用
+//   树拖拽循环）+ 字典键前缀重写，仅目标路径与提示文案各异（文件夹移动 =
+//   「重命名到新父路径」，见 moveFolder）；
 // - 删除 = 空文件夹直接删；内有服务器时弹选择——连服务器一起删（WPF 实际行为）或
 //   仅删文件夹、子项（服务器/子文件夹键）上移一级（见 deleteFolder/runDelete）；
-// - 移入 = 目标路径逐台重写 TreeNodes（列表行拖到文件夹行 / 树拖拽同语义）；
-//   文件夹移动（列表文件夹行拖拽 / 拖入树节点）= 整个子树：服务器前缀重写 + 键前缀迁移，
-//   机制与重命名完全同源（newPath = 目标父路径 + '/' + 文件夹名，即「重命名到新父路径」）。
+// - 移入（服务器）= 目标路径逐台重写 TreeNodes（列表行拖到文件夹行 / 树拖拽同语义）。
 // UpdateServer 路径不触发 SSE（已知后端行为），全部操作后显式 reload()（WPF parity 刷新）。
 import { h, nextTick, ref } from 'vue'
 import { NInput, useDialog, useMessage } from 'naive-ui'
@@ -176,6 +176,25 @@ export function useFolderOps() {
     })
   }
 
+  // 前缀重写型操作（重命名 / 文件夹移动 / 删除-保留内容）的公共执行体：
+  // 服务器 TreeNodes 前缀重写 → 键前缀迁移 → reload → 三档提示（键落盘失败 /
+  // 部分服务器失败 / 成功，fail/ok 为文案取值函数）。serverTo 与 keysTo 分开传：
+  // 删除-保留内容时服务器上移到父路径，而键走 null 删除语义（rewriteTreeStateKeys
+  // 对 null 有「文件夹自身展开态不随键迁移」的特例，见其注释），其余操作两者同值
+  async function runPrefixRewrite(dsName, oldPath, serverTo, keysTo, { fail, ok }) {
+    busy.value = true
+    try {
+      const failed = await rewriteServerPaths(dsName, oldPath, serverTo)
+      const persistOk = await rewriteKeys(dsName, oldPath, keysTo)
+      await reload()
+      if (!persistOk) message.error(fail())
+      else if (failed) message.error(t('toast.treeMoveFailed', { n: failed }))
+      else message.success(ok())
+    } finally {
+      busy.value = false
+    }
+  }
+
   async function renameFolder(dsName, oldPath) {
     if (!dsWritable(dsName)) {
       message.warning(t('cv.readOnly'))
@@ -191,17 +210,10 @@ export function useFolderOps() {
       return
     }
     const newPath = parent ? parent + '/' + name : name
-    busy.value = true
-    try {
-      const failed = await rewriteServerPaths(dsName, oldPath, newPath)
-      const ok = await rewriteKeys(dsName, oldPath, newPath)
-      await reload()
-      if (!ok) message.error(t('tree.folderRenameFailed'))
-      else if (failed) message.error(t('toast.treeMoveFailed', { n: failed }))
-      else message.success(t('tree.folderRenamed', { name }))
-    } finally {
-      busy.value = false
-    }
+    await runPrefixRewrite(dsName, oldPath, newPath, newPath, {
+      fail: () => t('tree.folderRenameFailed'),
+      ok: () => t('tree.folderRenamed', { name }),
+    })
   }
 
   async function deleteFolder(dsName, oldPath) {
@@ -245,45 +257,43 @@ export function useFolderOps() {
 
   // withServers=true：删除子树内全部服务器（WPF AppData.DeleteServer 同义）+ 删除整个
   // 子树的 tree-state 键（空子文件夹随文件夹消失，对齐 WPF 整节点移除）；
-  // false：子项上移一级（原语义——服务器 TreeNodes 重写 + 子文件夹键上移）
+  // false：子项上移一级（服务器 TreeNodes 重写 + 子文件夹键上移，runPrefixRewrite）
   async function runDelete(dsName, oldPath, withServers) {
     if (busy.value) return
+    if (!withServers) {
+      // 子项上移一级：服务器重写到父路径（rewriteServerPath 对前缀子路径自动拼回），
+      // 键走 null 删除语义（子文件夹键上移、文件夹自身键消失）
+      await runPrefixRewrite(dsName, oldPath, parentPath(oldPath), null, {
+        fail: () => t('tree.folderDeleteFailed'),
+        ok: () => t('tree.folderDeleted'),
+      })
+      return
+    }
     busy.value = true
     try {
-      let ok = true
-      if (withServers) {
-        const affected = servers.value.filter(
-          (s) =>
-            s.dataSourceName === dsName && (s.folderPath === oldPath || (s.folderPath || '').startsWith(oldPath + '/'))
-        )
-        let failed = 0
-        for (const s of affected) {
-          try {
-            await api.deleteServer(s.id, dsName)
-          } catch (err) {
-            console.warn('[folderOps] server delete failed:', s.id, err?.message || err)
-            failed++
-          }
+      const affected = servers.value.filter(
+        (s) =>
+          s.dataSourceName === dsName && (s.folderPath === oldPath || (s.folderPath || '').startsWith(oldPath + '/'))
+      )
+      let failed = 0
+      for (const s of affected) {
+        try {
+          await api.deleteServer(s.id, dsName)
+        } catch (err) {
+          console.warn('[folderOps] server delete failed:', s.id, err?.message || err)
+          failed++
         }
-        const exact = fullKey(dsName, oldPath)
-        const remove = Object.keys(knownExpanded.value).filter((k) => k === exact || k.startsWith(exact + SEP))
-        setLocalKeys({}, remove)
-        ok = await persist((m) => {
-          for (const k of remove) delete m[k]
-        })
-        await reload()
-        if (!ok) message.error(t('tree.folderDeleteFailed'))
-        else if (failed) message.error(t('tree.folderDeleteServerFailed', { n: failed }))
-        else message.success(t('tree.folderDeleted'))
-      } else {
-        // 子项上移一级：newPath = 父路径（rewriteServerPath 对前缀子路径自动拼回）
-        const failed = await rewriteServerPaths(dsName, oldPath, parentPath(oldPath))
-        ok = await rewriteKeys(dsName, oldPath, null)
-        await reload()
-        if (!ok) message.error(t('tree.folderDeleteFailed'))
-        else if (failed) message.error(t('toast.treeMoveFailed', { n: failed }))
-        else message.success(t('tree.folderDeleted'))
       }
+      const exact = fullKey(dsName, oldPath)
+      const remove = Object.keys(knownExpanded.value).filter((k) => k === exact || k.startsWith(exact + SEP))
+      setLocalKeys({}, remove)
+      const ok = await persist((m) => {
+        for (const k of remove) delete m[k]
+      })
+      await reload()
+      if (!ok) message.error(t('tree.folderDeleteFailed'))
+      else if (failed) message.error(t('tree.folderDeleteServerFailed', { n: failed }))
+      else message.success(t('tree.folderDeleted'))
     } finally {
       busy.value = false
     }
@@ -323,8 +333,8 @@ export function useFolderOps() {
   }
 
   // 文件夹整体移动（列表文件夹行拖拽 / 列表文件夹拖入树节点共用）：整个子树迁到
-  // targetParent 之下——服务器 TreeNodes 前缀重写 + tree-state 键前缀迁移，rewrite
-  // 机制与 renameFolder 完全同源（newPath = targetParent + '/' + 名，即重命名到新父路径）。
+  // targetParent 之下——runPrefixRewrite（newPath = targetParent + '/' + 名，
+  // 即「重命名到新父路径」，与 renameFolder 同一执行体）。
   // 拒绝项（UI 层已拦，此处执行层再各设一道防御）：只读源 / 移入自身或后代 /
   // 目标父层同名文件夹（防静默合并两棵子树，与新建/重命名查重一致）；原地放下
   //（newPath === path，如树内拖到自身父节点）静默返回，与 moveServersToFolder 同口径
@@ -341,17 +351,10 @@ export function useFolderOps() {
       message.warning(t('tree.folderNameExists'))
       return
     }
-    busy.value = true
-    try {
-      const failed = await rewriteServerPaths(dsName, path, newPath)
-      const ok = await rewriteKeys(dsName, path, newPath)
-      await reload()
-      if (!ok) message.error(t('tree.folderMoveFailed'))
-      else if (failed) message.error(t('toast.treeMoveFailed', { n: failed }))
-      else message.success(t('tree.folderMoved', { name }))
-    } finally {
-      busy.value = false
-    }
+    await runPrefixRewrite(dsName, path, newPath, newPath, {
+      fail: () => t('tree.folderMoveFailed'),
+      ok: () => t('tree.folderMoved', { name }),
+    })
   }
 
   return { busy, createFolder, renameFolder, deleteFolder, moveServersToFolder, moveFolder }
