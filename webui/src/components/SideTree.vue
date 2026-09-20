@@ -67,7 +67,7 @@ onMounted(() => {
   // 列表行拖拽的 dragend 在源元素（列表行）上触发并冒泡到 window——树侧经全局监听兜底
   window.addEventListener('dragend', onListDragEndGlobal)
   // 成功拖放（如拖回列表侧文件夹行放下）也冒泡 drop 到 window：复位跨库标记，
-  // 避免 dragend 兜底在成功操作后误报（评审发现）
+  // 避免 dragend 兜底在成功操作后误报
   window.addEventListener('drop', resetCrossDsHover, true)
 })
 onBeforeUnmount(() => {
@@ -107,14 +107,10 @@ const rows = computed(() => {
 
 // ---- 树拖拽（仅文件夹可拖）：原生 HTML5 DnD。
 // 三条互斥链路，以拖拽来源分发（快照互斥，同时至多一条在拖）：
-// - 列表服务器行拖入（listDragServer 非空，见 tableBus）：数据源根/文件夹节点均为
-//   「移入」目标（无前后插语义）；同库才高亮（dropEffect=move）；跨库禁止光标
-//   （dropEffect=none → drop 不触发，提示改在 window dragend 出，见 crossDsHover）；
-//   「全部数据」虚拟根无确定数据源，不收 drop；
-// - 列表文件夹行拖入（listDragFolder 非空）：与服务器行同款「移入」语义（目标 =
-//   数据源根=移到根 / 文件夹=移入其中），整子树迁移走 folderOps.moveFolder；
-//   额外拒绝 移入自身或自身后代（isDescendantPath，含拖到自己身上）；
-//   前后插重排序不在此链路提供（拖到树内重排请直接在树内拖）；
+// - 列表服务器行拖入（listDragServer 非空，见 tableBus）与 列表文件夹行拖入
+//   （listDragFolder 非空）：同款「移入」语义——数据源根=移到根 / 文件夹=移入其中，
+//   无前后插语义（树内重排请直接在树内拖）；文件夹为整子树迁移（folderOps.moveFolder）。
+//   两条链路的落区规则共用 listDropAdmit（跨库 / 移入自身子树 / 「全部数据」根均不收）；
 // - 树内文件夹拖拽（dragRow 非空）：行内上 25% = 插到目标前、下 25% = 插到目标后、
 //   中部 = 移入。非法目标（跨数据源 / 拖到自己 / 拖文件夹到自己的后代 / 根行前插后插 /
 //   只读数据源）不显示指示且不 preventDefault → drop 被浏览器拒绝。
@@ -156,60 +152,54 @@ function onRowDragEnd() {
   dragRow.value = null
   dropHint.value = null
 }
+// 跨库悬停标记（记拖拽种类供 dragend 选文案）：dropEffect='none' 时按 HTML 规范
+// drop 事件不会触发，跨库提示改在源侧 dragend 出——dragover 跨库分支记种类，
+// dragend 检查后 toast+复位；回到合法目标即清标记（不误报）
+const CROSS_DS_NONE = ''
+const CROSS_DS_SERVER = 'server'
+const CROSS_DS_FOLDER = 'folder'
+let crossDsHover = CROSS_DS_NONE
 // 列表行拖拽的 dragend 兜底（树节点上没有列表拖拽的 dragend 事件源）：跨库悬停过则在
-// 拖拽结束时提示（drop 在 dropEffect=none 下不触发，见 crossDsHover 注释），按拖拽
-// 种类出对应文案（服务器/文件夹主语不同）
+// 拖拽结束时提示（drop 在 dropEffect=none 下不触发，见上），按拖拽种类出对应文案
 function onListDragEndGlobal() {
   if (crossDsHover) {
     const kind = crossDsHover
-    crossDsHover = ''
-    message.warning(kind === 'folder' ? t('toast.crossDsFolderMove') : t('toast.crossDsMove'))
+    crossDsHover = CROSS_DS_NONE
+    message.warning(kind === CROSS_DS_FOLDER ? t('toast.crossDsFolderMove') : t('toast.crossDsMove'))
   }
 }
 function resetCrossDsHover() {
-  crossDsHover = ''
+  crossDsHover = CROSS_DS_NONE
 }
 // 行 dsName（根行持 ds 对象、文件夹行持 dsName 字符串；列表拖入与树内拖共用）
 const rowDsName = (row) => (row.kind === 'root' ? row.ds.name : row.dsName)
-// 跨库悬停标记（''=无 | 'server' | 'folder'，记拖拽种类供 dragend 选文案）：
-// dropEffect='none' 时按 HTML 规范 drop 事件不会触发（评审实证），
-// 跨库提示改在源侧 dragend 出——dragover 跨库分支记种类，dragend 检查后 toast+复位
-let crossDsHover = ''
+// 列表行（服务器/文件夹同款「移入」语义）拖入树的落区判定：
+// null=不收（重入锁进行中 /「全部数据」虚拟根无数据源归属）；'cross-ds'=跨库；
+// 'subtree'=文件夹拖入自身或自身后代（isDescendantPath 含相等，仅文件夹链路可达）；
+// 'ok'=合法移入目标
+function listDropAdmit(row, srcDsName, draggedFolder) {
+  if (moving.value || row.kind === 'all') return null
+  if (srcDsName !== rowDsName(row)) return 'cross-ds'
+  if (draggedFolder && row.kind === 'folder' && isDescendantPath(draggedFolder.path, row.folder.path)) return 'subtree'
+  return 'ok'
+}
 function onRowDragOver(row, e) {
   const dragSrv = listDragServer.value
-  if (dragSrv) {
-    // 列表服务器行拖入树：同库目标高亮为「移入」；跨库禁止光标（drop 不会触发，
-    // 提示在 dragend 出，见 crossDsHover）；「全部数据」虚拟根无数据源归属 → 不收
-    if (moving.value || row.kind === 'all') return
-    e.preventDefault()
-    if (dragSrv.dataSourceName === rowDsName(row)) {
-      e.dataTransfer.dropEffect = 'move'
-      dropHint.value = { key: row.key, zone: 'into' }
-      crossDsHover = ''
-    } else {
-      e.dataTransfer.dropEffect = 'none'
-      dropHint.value = null
-      crossDsHover = 'server'
-    }
-    return
-  }
   const dragFld = listDragFolder.value
-  if (dragFld) {
-    // 列表文件夹行拖入树：同款「移入」语义（整子树迁移）；另拒 移入自身/自身后代
-    //（isDescendantPath 含相等）；跨库 dropEffect=none + dragend 提示（同上）
-    if (moving.value || row.kind === 'all') return
+  if (dragSrv || dragFld) {
+    // 列表行拖入树：合法目标高亮「移入」；跨库禁光标（drop 不触发，提示在 dragend 出）；
+    // 文件夹拖入自身子树同禁（不出跨库提示）
+    const admit = listDropAdmit(row, dragSrv ? dragSrv.dataSourceName : dragFld.dsName, dragFld)
+    if (!admit) return
     e.preventDefault()
-    if (dragFld.dsName !== rowDsName(row)) {
-      e.dataTransfer.dropEffect = 'none'
-      dropHint.value = null
-      crossDsHover = 'folder'
-    } else if (row.kind === 'folder' && isDescendantPath(dragFld.path, row.folder.path)) {
-      e.dataTransfer.dropEffect = 'none'
-      dropHint.value = null // 自身子树内的节点不是合法目标（不出跨库提示）
-    } else {
+    if (admit === 'ok') {
       e.dataTransfer.dropEffect = 'move'
       dropHint.value = { key: row.key, zone: 'into' }
-      crossDsHover = ''
+      crossDsHover = CROSS_DS_NONE
+    } else {
+      e.dataTransfer.dropEffect = 'none'
+      dropHint.value = null
+      if (admit === 'cross-ds') crossDsHover = dragSrv ? CROSS_DS_SERVER : CROSS_DS_FOLDER
     }
     return
   }
@@ -229,28 +219,20 @@ function onRowDragLeave(row) {
 }
 function onRowDrop(row, e) {
   const dragSrv = listDragServer.value
-  if (dragSrv) {
-    e.preventDefault()
-    dropHint.value = null
-    if (moving.value || row.kind === 'all') return
-    if (dragSrv.dataSourceName !== rowDsName(row)) {
-      crossDsHover = '' // drop 不会触发（dropEffect=none），此处仅防御性复位
-      return
-    }
-    folderOps.moveServersToFolder([dragSrv], rowDsName(row), row.kind === 'folder' ? row.folder.path : '')
-    return
-  }
   const dragFld = listDragFolder.value
-  if (dragFld) {
+  if (dragSrv || dragFld) {
+    // 列表行落下：落区判定与 dragover 同源（listDropAdmit），合法目标执行对应移入
     e.preventDefault()
     dropHint.value = null
-    if (moving.value || row.kind === 'all') return
-    if (dragFld.dsName !== rowDsName(row)) {
-      crossDsHover = '' // 同上：dropEffect=none 下不触发，防御性复位
+    const admit = listDropAdmit(row, dragSrv ? dragSrv.dataSourceName : dragFld.dsName, dragFld)
+    if (admit === 'cross-ds') {
+      crossDsHover = CROSS_DS_NONE // drop 不会触发（dropEffect=none），此处仅防御性复位
       return
     }
-    if (row.kind === 'folder' && isDescendantPath(dragFld.path, row.folder.path)) return
-    folderOps.moveFolder(dragFld.dsName, dragFld.path, row.kind === 'folder' ? row.folder.path : '')
+    if (admit !== 'ok') return
+    const path = row.kind === 'folder' ? row.folder.path : ''
+    if (dragSrv) folderOps.moveServersToFolder([dragSrv], rowDsName(row), path)
+    else folderOps.moveFolder(dragFld.dsName, dragFld.path, path)
     return
   }
   const hint = dropHint.value
