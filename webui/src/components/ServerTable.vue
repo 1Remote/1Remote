@@ -724,6 +724,9 @@ const {
   itemHeight: ROW_HEIGHT,
   overscan: 8,
 })
+// 两种模式共用单一 v-for：虚拟分支读 useVirtualList 的 { index, data } 项，直渲染分支
+// 包成同形状（{ data }），行标记只维护一份
+const rowList = computed(() => (useVirtual.value ? virtualRows.value : renderRows.value.map((data) => ({ data }))))
 
 onMounted(() => {
   window.addEventListener('mousedown', onGlobalDown)
@@ -837,11 +840,12 @@ onBeforeUnmount(() => {
         </div>
         <div class="hcell h-act">{{ t('col.actions') }}</div>
       </div>
-      <!-- >500 行虚拟滚动：wrapper 撑总高 + marginTop 偏移窗口渲染；
-           拖拽/勾选/光标等行级绑定与非虚拟分支保持同一份。
-           序列 = 文件夹行（勾选子孙/双击进入/右键新建/拖入移动）+ 服务器行 -->
-      <div v-if="useVirtual" v-bind="wrapperProps" class="virtual-wrap">
-        <template v-for="{ data: row } in virtualRows" :key="rowKey(row)">
+      <!-- 行区：>500 行启用虚拟滚动（wrapper 由 useVirtualList 撑总高 + marginTop 偏移窗口
+           渲染，.virtual-wrap 限定其几何修正样式）；≤500 行直渲染——包装 div 此时无 class、
+           纯块级透传不参与布局，两种模式行级绑定与几何完全同一份。
+           序列 = 「..」上级行 + 文件夹行（勾选子孙/双击进入/右键新建/拖入移动）+ 服务器行 -->
+      <div v-bind="useVirtual ? wrapperProps : undefined" :class="{ 'virtual-wrap': useVirtual }">
+        <template v-for="{ data: row } in rowList" :key="rowKey(row)">
           <div
             v-if="row.kind === 'parent'"
             class="row prow"
@@ -907,71 +911,6 @@ onBeforeUnmount(() => {
           />
         </template>
       </div>
-      <template v-for="row in useVirtual ? [] : renderRows" :key="rowKey(row)">
-        <div
-          v-if="row.kind === 'parent'"
-          class="row prow"
-          :class="{ 'drop-into': dropFolder && dropFolder.path === row.path && dropFolder.dsName === row.dsName }"
-          :title="t('row.parentFolder')"
-          @dblclick="emit('open-folder', { dsName: row.dsName, path: row.path })"
-          @contextmenu.prevent
-          @dragover="onFolderDragOver(row, $event)"
-          @dragleave="onFolderDragLeave(row)"
-          @drop="onFolderDrop(row, $event)"
-        >
-          <div class="cell cell-check"></div>
-          <div class="cell cell-status"></div>
-          <div class="cell cell-name p-name">
-            <span class="p-icon">📁</span>
-            <span class="p-label">..</span>
-          </div>
-        </div>
-        <FolderRow
-          v-else-if="row.kind === 'folder'"
-          :folder="row.folder"
-          :show-ds="showDs"
-          :check-state="folderChecks.get(rowKey(row))"
-          :drop-active="dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName"
-          :draggable="dsWritable(row.folder.dsName)"
-          @open="emit('open-folder', $event)"
-          @context="onFolderContext"
-          :writable="dsWritable(row.folder.dsName)"
-          @toggle-check="onFolderToggleCheck(row.folder)"
-          @dragstart="onFolderRowDragStart(row.folder, $event)"
-          @dragover="onFolderDragOver(row.folder, $event)"
-          @dragleave="onFolderDragLeave(row.folder)"
-          @drop="onFolderDrop(row.folder, $event)"
-          @dragend="onFolderRowDragEnd"
-          @rename="emit('rename-folder', folderTarget(row.folder))"
-          @delete="emit('delete-folder', folderTarget(row.folder))"
-        />
-        <ServerRow
-          v-else
-          :server="row.server"
-          :selected="checked.has(row.server.id)"
-          :highlighted="!!selection && selection.serverId === row.server.id"
-          :cursor="row.server.id === cursorId"
-          :show-folder="showFolder"
-          :show-ds="showDs"
-          :hidden-cols="hiddenCols"
-          :query="query"
-          :data-id="row.server.id"
-          :draggable="true"
-          :class="{
-            'drop-before': dropHint && dropHint.id === row.server.id && dropHint.before,
-            'drop-after': dropHint && dropHint.id === row.server.id && !dropHint.before,
-          }"
-          @toggle-select="onToggleSelect(row.server.id, row.srvIndex)"
-          @row-click="onRowClick(row.server, $event, row.srvIndex)"
-          @connect="emit('connect', row.server.id)"
-          @edit="emit('edit', row.server)"
-          @context-menu="openMenu"
-          @dragstart="onRowDragStart(row.server, $event)"
-          @dragend="onRowDragEnd"
-          @dragover="onRowDragOver(row.server, $event)"
-          @drop="onRowDrop(row.server, $event)"
-        />
-      </template>
       <slot v-if="!hasSubstance" name="empty">
         <div class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
       </slot>
