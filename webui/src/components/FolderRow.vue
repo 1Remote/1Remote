@@ -15,8 +15,9 @@ const props = defineProps({
   showDs: { type: Boolean, default: false }, // 「全部数据」根视图：名称旁前缀数据源名（跨库同名文件夹区分）
   dropActive: { type: Boolean, default: false }, // 拖拽悬停高亮（父级 dropFolder 命中本行时置真）
   checkState: { type: Object, default: null }, // { checked, indeterminate, count } | null（无子孙=禁用未选）
+  writable: { type: Boolean, default: true }, // 数据源可写：只读源禁用 重命名/删除 按钮（title 提示）
 })
-const emit = defineEmits(['open', 'context', 'dragover', 'dragleave', 'drop', 'toggle-check'])
+const emit = defineEmits(['open', 'context', 'dragover', 'dragleave', 'drop', 'toggle-check', 'rename', 'delete'])
 const { t } = useI18n()
 
 // 三态复选框：indeterminate 无对应 HTML 属性、须写 DOM 属性（与 ServerTable 表头全选同款）；
@@ -59,7 +60,27 @@ const disabled = () => !props.checkState?.count
       <span class="name">{{ folder.name }}</span>
       <span v-if="showDs" class="f-ds">{{ folder.dsName }}</span>
     </div>
-    <div class="cell cell-count">{{ t('crumb.count', { n: folder.count }) }}</div>
+    <div class="cell cell-count">{{ t('folder.contains', { n: folder.count }) }}</div>
+    <!-- 操作列：与 ServerRow 同款常显小按钮（✎ 重命名 / 🗑 删除），接父级 folderOps；
+         只读数据源禁用（title 说明）。点击不冒泡到行级点击/双击 -->
+    <div class="cell cell-act" @click.stop @dblclick.stop>
+      <button
+        class="act"
+        :title="writable ? t('tree.renameFolder') : t('cv.readOnly')"
+        :disabled="!writable"
+        @click="emit('rename', folder)"
+      >
+        ✎
+      </button>
+      <button
+        class="act"
+        :title="writable ? t('tree.deleteFolder') : t('cv.readOnly')"
+        :disabled="!writable"
+        @click="emit('delete', folder)"
+      >
+        🗑
+      </button>
+    </div>
   </div>
 </template>
 
@@ -137,6 +158,36 @@ const disabled = () => !props.checkState?.count
   color: var(--text-4);
   font-size: 0.8846rem;
   white-space: nowrap;
+}
+
+/* 操作列：消费父级 --c-act 与 ServerRow 同宽，按钮同款常显（hover 浮现降低可发现性） */
+.frow .cell-act {
+  flex: 0 0 var(--c-act, 100px);
+  gap: 2px;
+  justify-content: flex-end;
+  padding-right: 0;
+}
+
+.act {
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 1rem;
+  line-height: 1;
+  width: 26px;
+  height: 24px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.act:hover:not(:disabled) {
+  background: var(--bg-elevated);
+  color: var(--accent-text);
+}
+
+.act:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 /* 文件夹勾选复选框：强调色随主题；空（虚拟）文件夹禁用置灰 */

@@ -60,6 +60,8 @@ const emit = defineEmits([
   'rename-folder',
   'delete-folder',
   'move-to-folder',
+  'new-server',
+  'import-servers',
 ])
 const { t } = useI18n()
 const message = useMessage()
@@ -252,8 +254,11 @@ function onFolderDrop(f, e) {
 // - 文件夹行右键 = 新建子文件夹 / 重命名 / 删除——与 SideTree 树右键同一菜单集
 //   （列表/树两侧统一；对齐 WPF 树右键能力，动作经 emit 由 ServerListView 的
 //   folderOps 执行）；
-// - 空白处右键 = 在当前层级新建文件夹（无重命名/删除——空白无目标对象；
-//   全部数据源根无确定数据源 → 禁用并提示先选数据源）----
+// - 空白处右键 = 新建服务器 / 新建文件夹 / 导入服务器（新建服务器与导入不在
+//   文件夹行菜单出现——那两项目标是"当前视图/选中文件夹"，行右键语境是"这个文件夹"，
+//   目标文件夹 ≠ 选中文件夹时语义会漂移，只在空白菜单提供）。
+//   新建服务器/导入交父级（openCreate 带当前 selection 的 initialFolder / 打开导入模态）；
+//   全部数据源根无确定数据源 → 新建文件夹禁用并提示先选数据源----
 const nfMenu = ref(null) // { x, y, target: { dsName, parentPath, folderPath? } | null } —— folderPath 有值=来自文件夹行
 const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
 const nfMenuOk = computed(() => !!nfMenu.value?.target && dsWritable(nfMenu.value.target.dsName))
@@ -283,6 +288,16 @@ function nfCreate() {
   nfMenu.value = null
   if (m?.target) emit('create-folder', m.target)
 }
+// 空白菜单新增两项：动作归 ServerListView（新建走 openCreate——带当前选中文件夹；
+// 导入开模态——默认数据源/文件夹同样取当前选中）
+function nfNewServer() {
+  nfMenu.value = null
+  emit('new-server')
+}
+function nfImport() {
+  nfMenu.value = null
+  emit('import-servers')
+}
 function nfRename() {
   const m = nfMenu.value
   nfMenu.value = null
@@ -293,6 +308,9 @@ function nfDelete() {
   nfMenu.value = null
   if (m?.target?.folderPath) emit('delete-folder', m.target)
 }
+// FolderRow 行内 ✎/🗑 按钮：与右键菜单 重命名/删除 同一目标形状（dsName 定位数据源、
+// folderPath 定位文件夹本身），经同一 emit 链路由 ServerListView 的 folderOps 执行
+const folderTarget = (f) => ({ dsName: f.dsName, parentPath: f.path, folderPath: f.path })
 
 // ---- 渲染序列 ----
 const sorted = computed(() => {
@@ -769,10 +787,13 @@ onBeforeUnmount(() => {
             :drop-active="dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName"
             @open="emit('open-folder', $event)"
             @context="onFolderContext"
+            :writable="dsWritable(row.folder.dsName)"
             @toggle-check="onFolderToggleCheck(row.folder)"
             @dragover="onFolderDragOver(row.folder, $event)"
             @dragleave="onFolderDragLeave(row.folder)"
             @drop="onFolderDrop(row.folder, $event)"
+            @rename="emit('rename-folder', folderTarget(row.folder))"
+            @delete="emit('delete-folder', folderTarget(row.folder))"
           />
           <ServerRow
             v-else
@@ -829,10 +850,13 @@ onBeforeUnmount(() => {
           :drop-active="dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName"
           @open="emit('open-folder', $event)"
           @context="onFolderContext"
+          :writable="dsWritable(row.folder.dsName)"
           @toggle-check="onFolderToggleCheck(row.folder)"
           @dragover="onFolderDragOver(row.folder, $event)"
           @dragleave="onFolderDragLeave(row.folder)"
           @drop="onFolderDrop(row.folder, $event)"
+          @rename="emit('rename-folder', folderTarget(row.folder))"
+          @delete="emit('delete-folder', folderTarget(row.folder))"
         />
         <ServerRow
           v-else
@@ -866,10 +890,17 @@ onBeforeUnmount(() => {
       </slot>
     </div>
 
-    <!-- 文件夹右键菜单：文件夹行=新建子文件夹/重命名/删除（与树右键同集）；空白处=仅新建文件夹 -->
+    <!-- 文件夹右键菜单：文件夹行=新建子文件夹/重命名/删除（与树右键同集）；
+         空白处=新建服务器/新建文件夹/导入服务器（前两项动作归父级） -->
     <div v-if="nfMenu" class="ctx-menu nf-menu" :style="{ left: nfMenu.x + 'px', top: nfMenu.y + 'px' }">
+      <button v-if="!nfMenu.target?.folderPath" class="ctx-item" @click="nfNewServer">
+        <span class="ctx-label">{{ t('topbar.newServer') }}</span>
+      </button>
       <button class="ctx-item" :disabled="!nfMenuOk" :title="nfMenuTip" @click="nfCreate">
         <span class="ctx-label">{{ t('tree.newFolder') }}</span>
+      </button>
+      <button v-if="!nfMenu.target?.folderPath" class="ctx-item" @click="nfImport">
+        <span class="ctx-label">{{ t('import.title') }}</span>
       </button>
       <template v-if="nfMenu.target?.folderPath">
         <button class="ctx-item" :disabled="!nfMenuOk" :title="nfMenuTip" @click="nfRename">

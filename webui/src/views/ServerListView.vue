@@ -135,6 +135,9 @@ const showSkeleton = computed(() => loading.value && !servers.value.length) // �
 // 错误方向；恢复靠 30s 轮询（useServers 断连恢复时会补一次全量重载，此处自动切回正常内容）
 const showOffline = computed(() => !connected.value && !loading.value && !servers.value.length)
 const showGuide = computed(() => connected.value && !loading.value && !servers.value.length) // 已连通且整库为空 → 引导卡片
+// 引导卡协议一览（与 ProtocolBadge 协议集一致）：9 协议灰阶瓦片——身份色仅用于行内徽章，
+// 引导卡只表"支持这些"，克制灰阶
+const GUIDE_PROTOCOLS = ['RDP', 'SSH', 'SFTP', 'FTP', 'VNC', 'Telnet', 'Serial', 'APP', 'RdpApp']
 const showNoMatch = computed(() => servers.value.length > 0 && !visibleServers.value.length) // 标签/搜索交集为空
 const tableHidden = computed(() => showSkeleton.value || showOffline.value || showGuide.value || showNoMatch.value)
 // 表格卸载后 counted 不再上报，面包屑计数跟随空态归零（骨架期如实显示 0）
@@ -144,22 +147,35 @@ const noMatchDetail = computed(() => {
   if (activeTag.value) return t('empty.taggedNone', { tag: activeTag.value })
   return t('empty.filtered') // 兜底（视图层无匹配仅在搜索/标签生效时可达）
 })
-// 清除过滤（无匹配态按钮）：搜索 + 标签 + 树选中一并复位（三者均由本组件持有）
-function clearFilters() {
-  searchQuery.value = ''
-  activeTag.value = ''
-  selection.value = null
+// 清除过滤（无匹配态按钮）只清致因维度，一次点击清一层：优先清搜索词，清后若仍空
+//（标签致因）按钮仍在、文案切到下一维度，二次点击清标签。树选中（文件夹）永不清——
+// 导航意图与过滤意图独立，顺手清掉会把用户踢出当前文件夹。searchQuery 清空即时撤销
+// 过滤（useServers 对空串走立即分支，无防抖延迟），按钮文案随 searchActive 即时回退。
+const clearFilterLabel = computed(() =>
+  searchActive.value ? t('empty.clearSearch') : activeTag.value ? t('empty.clearTag') : t('empty.clearFilters')
+)
+function clearNextFilter() {
+  if (searchQuery.value) searchQuery.value = ''
+  else if (activeTag.value) activeTag.value = ''
 }
 
 // ---- 状态栏（内容区底部 26px）：左=数据源状态点+名称（最多 3 个，超出 +N），
 // 右=统计 + SSE 可达性 + 语言切换。状态点语义与 SideTree 根节点一致（绿=connected /
-// 红=reconnecting·title 带重连信息 / 灰=其余）----
+// 红=reconnecting / 灰=其余）；title 用状态文案（i18n）而非裸枚举——重连时附后端的
+// 重连信息（reconnectInfo）----
 const MAX_DS = 3
 const dsShown = computed(() => datasources.value.slice(0, MAX_DS))
 const dsHidden = computed(() => Math.max(0, datasources.value.length - MAX_DS))
 const dsDotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
-const dsTitle = (ds) =>
-  ds.status === 'reconnecting' ? ds.name + ' · ' + (ds.reconnectInfo || t('tree.reconnecting')) : ds.name
+const dsTitle = (ds) => {
+  const base =
+    ds.status === 'connected'
+      ? t('statusbar.dsConnected', { name: ds.name })
+      : ds.status === 'reconnecting'
+        ? t('statusbar.dsReconnecting', { name: ds.name })
+        : t('statusbar.dsDisconnected', { name: ds.name })
+  return ds.status === 'reconnecting' && ds.reconnectInfo ? base + ' · ' + ds.reconnectInfo : base
+}
 function toggleLocale() {
   setLocale(locale.value === 'en-US' ? nonEnglishLocale : 'en-US')
 }
@@ -479,21 +495,29 @@ const importModal = ref(false)
         <div class="eo-hint">{{ t('empty.offlineHint') }}</div>
       </div>
 
-      <!-- 空库引导卡片：新建与导入均已接线 -->
+      <!-- 空库引导卡片：新建与导入均已接线；导入按钮下补支持格式说明 + 支持协议一览
+           （灰阶瓦片：协议身份色留给行内徽章，引导卡保持克制） -->
       <div v-else-if="showGuide" class="empty-guide">
         <div class="eg-title">{{ t('empty.none') }}</div>
         <div class="eg-actions">
           <button class="eg-btn eg-primary" @click="openCreate">+ {{ t('empty.newFirst') }}</button>
           <button class="eg-btn" @click="importModal = true">⤓ {{ t('import.title') }}</button>
         </div>
+        <div class="eg-import-hint">{{ t('empty.importFormats') }}</div>
+        <div class="eg-protocols" aria-hidden="true">
+          <span v-for="p in GUIDE_PROTOCOLS" :key="p" class="eg-proto">
+            <span class="eg-tile">{{ p.charAt(0) }}</span
+            >{{ p }}
+          </span>
+        </div>
         <div class="eg-hint">{{ t('empty.launcherHint') }}</div>
       </div>
 
-      <!-- 无匹配（库非空但标签/搜索交集为空）：轻提示（附搜索词或标签名）+ 清除过滤 -->
+      <!-- 无匹配（库非空但标签/搜索交集为空）：轻提示（附搜索词或标签名）+ 按维度清除过滤 -->
       <div v-else-if="showNoMatch" class="empty-nomatch">
         <div class="en-title">{{ t('empty.noMatch') }}</div>
         <div class="en-detail">{{ noMatchDetail }}</div>
-        <button class="en-clear" @click="clearFilters">{{ t('empty.clearFilters') }}</button>
+        <button class="en-clear" @click="clearNextFilter">{{ clearFilterLabel }}</button>
       </div>
 
       <ServerTable
@@ -518,7 +542,25 @@ const importModal = ref(false)
         @rename-folder="onRenameFolder"
         @delete-folder="onDeleteFolder"
         @move-to-folder="onMoveToFolder"
-      />
+        @new-server="openCreate"
+        @import-servers="importModal = true"
+      >
+        <!-- 表内空态（表格可见、当前视图 0 行）覆写默认文案，按致因二分统一：
+             ① 标签过滤致空（当前文件夹没有任何带该标签的服务器）→ 与表外无匹配态同款
+             「无匹配结果 + 标签说明 + 清除标签」——有过滤器致空一律归无匹配，不再说"此视图暂无服务器"；
+             ② 无任何过滤的真空文件夹 → 引导文案（#empty.folder，指向 + / 右键两个入口）。
+             搜索致空不会到这（零命中在表外 showNoMatch 接管；有命中则行集非空） -->
+        <template #empty>
+          <div v-if="activeTag" class="table-empty">
+            <div class="te-title">{{ t('empty.noMatch') }}</div>
+            <div class="te-detail">{{ t('empty.taggedNone', { tag: activeTag }) }}</div>
+            <button class="te-clear" @click="clearNextFilter">{{ clearFilterLabel }}</button>
+          </div>
+          <div v-else class="table-empty">
+            <div class="te-detail">{{ t('empty.folder') }}</div>
+          </div>
+        </template>
+      </ServerTable>
 
       <!-- 标签管理模态：置顶/重命名/删除/连接全部；关闭即销毁（v-if 收敛状态） -->
       <TagManagerModal
@@ -812,6 +854,39 @@ const importModal = ref(false)
   font-size: 0.9231rem;
   color: var(--text-4);
 }
+.eg-import-hint {
+  margin-top: 4px;
+  font-size: 0.8846rem;
+  color: var(--text-4);
+}
+/* 支持协议一览：灰阶瓦片（首字母）+名称，小字排一行；身份色留给行内徽章 */
+.eg-protocols {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 12px;
+  max-width: 460px;
+}
+.eg-proto {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-4);
+  font-size: 0.8462rem;
+}
+.eg-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  font-size: 0.7692rem;
+  font-weight: 600;
+}
 
 /* ---- 后端不可达：居中提示（无操作——恢复自动进行，不做手动重试按钮） ---- */
 .empty-offline {
@@ -865,6 +940,43 @@ const importModal = ref(false)
   cursor: pointer;
 }
 .en-clear:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+/* ---- 表内空态（#empty 插槽）：居中轻文案，与表外空态同视觉语言；
+   高度沿用 ServerTable 默认空态的 160px，避免切换时空区跳变 ---- */
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 160px;
+  padding: 0 24px;
+  text-align: center;
+}
+.te-title {
+  font-size: 1rem;
+  color: var(--text-3);
+}
+.te-detail {
+  font-size: 0.9231rem;
+  color: var(--text-4);
+}
+.te-clear {
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.9231rem;
+  line-height: 1;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.te-clear:hover {
   border-color: var(--border-strong);
   background: var(--bg-hover);
   color: var(--text-1);

@@ -61,6 +61,9 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
       </button>
       <button class="bb-x" :title="t('batch.clear')" @click="emit('clear-checked')">✕</button>
     </div>
+    <!-- 无勾选时的常驻轻提示（--text-4 小字，克制）：裸点击/双击语义对新手不透明，
+         在工具簇原位给一句引导；有勾选时让位给批量条（同位置互斥，不叠加噪音） -->
+    <span v-if="!checkedCount" class="tt-hint">{{ t('list.doubleClickHint') }}</span>
     <!-- ≡ = 自定义顺序模式开关（开启后行可拖拽重排）；
          ▦ = 列菜单（显隐 + 列宽说明），下拉以本簇为锚向下展开 -->
     <div class="table-tools">
@@ -178,6 +181,13 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
 .bb-x:hover {
   background: var(--bg-hover);
   color: var(--text-1);
+}
+
+/* 无勾选轻提示：右侧工具簇左侧同行，小字弱化（常驻但克制——不弹 toast 打扰） */
+.tt-hint {
+  color: var(--text-4);
+  font-size: 0.8462rem;
+  white-space: nowrap;
 }
 
 /* 表头工具簇：与批量条同宿面包屑行右侧，正常流内联排布；
