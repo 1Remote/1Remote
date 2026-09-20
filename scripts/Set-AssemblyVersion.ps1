@@ -21,28 +21,28 @@ if (!(Test-Path -Path "Ui/Ui.csproj" -PathType Leaf)) {
     exit 2
 }
 
-# ´Ó AppVersion.cs ÖÐ¶ÁÈ¡°æ±¾ºÅ£¬·ÅÈë $version
-# AppVersion.cs ÖÐ´úÂëÎªÏÂÃæÊÇ£¬ Ó¦¶Á³ö $version Îª "1.2.3"
+# ï¿½ï¿½ AppVersion.cs ï¿½Ð¶ï¿½È¡ï¿½æ±¾ï¿½Å£ï¿½ï¿½ï¿½ï¿½ï¿½ $version
+# AppVersion.cs ï¿½Ð´ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ç£ï¿½ Ó¦ï¿½ï¿½ï¿½ï¿½ $version Îª "1.2.3"
 # public const uint Major = 1;
 # public const uint Minor = 2;
 # public const uint Patch = 3;
 $versionString = Get-Content Ui/AppVersion.cs -Raw
 $majorMatch = [regex]::Match($versionString, 'public const uint Major = (\d+);')
-if(!$majorMatch.Groups.Count){
+if(!$majorMatch.Success){
     Write-Error "Major not found"
     exit 3
 }
 $major = $majorMatch.Groups[1].Value
 
 $minorMatch = [regex]::Match($versionString, 'public const uint Minor = (\d+);')
-if(!$minorMatch.Groups.Count){
+if(!$minorMatch.Success){
     Write-Error "Minor not found"
     exit 3
 }
 $minor = $minorMatch.Groups[1].Value
 
 $patchMatch = [regex]::Match($versionString, 'public const uint Patch = (\d+);')
-if(!$patchMatch.Groups.Count){
+if(!$patchMatch.Success){
     Write-Error "Patch not found"
     exit 3
 }
@@ -54,9 +54,9 @@ $version = "$major.$minor.$patch"
 $date = (Get-Date)
 # $date = (Get-Date -Day 1 -Month 1 -Year 2026) # test code
 
-# µ±Ç°Ê±¼ä×ªÎª×Ö·û´®£¬·ÅÈë $tineStr£¬µ±Ç°Ê±¼äÎª 2023Äê1ÔÂ14ÈÕ 14µã56·Ö23Ãë£¬£¨¼´23ÄêµÄµÚ14Ìì£©£¬Ó¦¶Á³ö $tineStr Îª "23014"
-$year = $date.Year % 10 # Äê·ÝµÄ×îºóÒ»¸öÊý×Ö
-# ÓÉÓÚ°æ±¾ºÅ²»ÄÜ´óÓÚ 65535£¬ËùÒÔÄê·ÝÈç¹û´óÓÚµÈÓÚ 6 Ôò¼õÈ¥ 5£¨6¡¢7¡¢8¡¢9·Ö±ð±äÎª1¡¢2¡¢3¡¢4£©
+# ï¿½ï¿½Ç°Ê±ï¿½ï¿½×ªÎªï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ $tineStrï¿½ï¿½ï¿½ï¿½Ç°Ê±ï¿½ï¿½Îª 2023ï¿½ï¿½1ï¿½ï¿½14ï¿½ï¿½ 14ï¿½ï¿½56ï¿½ï¿½23ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½23ï¿½ï¿½Äµï¿½14ï¿½ì£©ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ $tineStr Îª "23014"
+$year = $date.Year % 10 # ï¿½ï¿½Ýµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+# ï¿½ï¿½ï¿½Ú°æ±¾ï¿½Å²ï¿½ï¿½Ü´ï¿½ï¿½ï¿½ 65535ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ 6 ï¿½ï¿½ï¿½È¥ 5ï¿½ï¿½6ï¿½ï¿½7ï¿½ï¿½8ï¿½ï¿½9ï¿½Ö±ï¿½ï¿½Îª1ï¿½ï¿½2ï¿½ï¿½3ï¿½ï¿½4ï¿½ï¿½
 if($year -ge 6){
     $year = $year - 5
 }
@@ -71,13 +71,32 @@ if($day -lt 10){
 $tineStr = "$year$month$day"
 
 
-# ×éºÏ assemblyVerison Îª $version.$tineStr£¬¼´ "1.2.3.23014"
+# ï¿½ï¿½ï¿½ assemblyVerison Îª $version.$tineStrï¿½ï¿½ï¿½ï¿½ "1.2.3.23014"
 $assemblyVerison = "$version.$tineStr"
+
+
+# Fail-safe collision check. Set-BuildDate.ps1 (which runs earlier in PreBuild)
+# should already have bumped Patch in AppVersion.cs when the year code wraps.
+# If a collision is still detected here, that fix did not happen - stop the
+# build instead of writing a version that would compare as OLDER than the
+# previous release. The check runs before Ui.csproj is modified, so on failure
+# the csproj keeps its previous, still-valid version.
+$csprojContent = Get-Content Ui/Ui.csproj -Raw
+$oldVersionMatch = [regex]::Match($csprojContent, '<AssemblyVersion>(\d+)\.(\d+)\.(\d+)\.(\d+)</AssemblyVersion>')
+if($oldVersionMatch.Success){
+    $oldVersionPrefix = "$($oldVersionMatch.Groups[1].Value).$($oldVersionMatch.Groups[2].Value).$($oldVersionMatch.Groups[3].Value)"
+    $oldRevision = [int]$oldVersionMatch.Groups[4].Value
+    if(($oldVersionPrefix -eq $version) -and ($oldRevision -gt [int]$tineStr)){
+        Write-Error "AssemblyVersion collision: revision would go back from $oldRevision to $tineStr while prefix $version is unchanged. Set-BuildDate.ps1 should have bumped Patch - make sure it runs before this script and encodes dates the same way."
+        Set-Location $originalDirectory
+        exit 5
+    }
+}
 
 echo $assemblyVerison
 
 
-# ½« Ui.csproj ÖÐµÄ <AssemblyVersion>xxxxx</AssemblyVersion> Ìæ»»Îª <AssemblyVersion>$assemblyVerison</AssemblyVersion>
+# ï¿½ï¿½ Ui.csproj ï¿½Ðµï¿½ <AssemblyVersion>xxxxx</AssemblyVersion> ï¿½æ»»Îª <AssemblyVersion>$assemblyVerison</AssemblyVersion>
 (Get-Content Ui/Ui.csproj) -replace '<AssemblyVersion>.*</AssemblyVersion>',"<AssemblyVersion>$assemblyVerison</AssemblyVersion>" | Set-Content Ui/Ui.csproj -Encoding UTF8
 
 # Set the current directory back to the original location
