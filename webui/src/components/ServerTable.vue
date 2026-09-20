@@ -372,7 +372,7 @@ const folderRows = computed(() => {
 })
 // 「..」上级行：文件夹视图（选中了数据源内的子文件夹）时列表最顶行——双击=导航上级、
 // 拖服务器入内 = 移到上级文件夹（与文件夹行共用 onFolderDragOver/Drop，目标=父路径）。
-// 不参与排序/勾选；右键仅抑制浏览器默认菜单（无自有菜单，右键动作归 Task B）
+// 不参与排序/勾选；右键仅抑制浏览器默认菜单（上级行只承担导航，无自有菜单动作）
 const parentRow = computed(() => {
   const sel = props.selection
   if (!sel?.dataSourceName || !sel.folderPath) return null
@@ -380,9 +380,6 @@ const parentRow = computed(() => {
   parts.pop()
   return { kind: 'parent', dsName: sel.dataSourceName, path: parts.join('/') }
 })
-// 「当前视图无实质内容」= 除「..」上级行外无任何文件夹/服务器行——空态插槽的触发条件
-//（子文件夹视图只有 ".." 行时 renderRows.length=1，按 length 判空会漏掉空文件夹文案）
-const hasSubstance = computed(() => renderRows.value.some((r) => r.kind !== 'parent'))
 // 统一渲染序列（虚拟滚动与直渲染共用）：srvIndex 保留服务器在 sorted 内的下标
 //（Shift 范围选择/锚点语义仍基于纯服务器列表）
 const renderRows = computed(() => [
@@ -390,6 +387,9 @@ const renderRows = computed(() => [
   ...folderRows.value,
   ...sorted.value.map((s, i) => ({ kind: 'server', server: s, srvIndex: i })),
 ])
+// 「当前视图无实质内容」= 除「..」上级行外无任何文件夹/服务器行——空态插槽的触发条件
+//（子文件夹视图只有 ".." 行时 renderRows.length=1，按 length 判空会漏掉空文件夹文案）
+const hasSubstance = computed(() => renderRows.value.some((r) => r.kind !== 'parent'))
 const rowKey = (row) =>
   row.kind === 'parent'
     ? 'p:' + row.dsName + ':' + row.path
