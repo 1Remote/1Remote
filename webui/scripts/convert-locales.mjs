@@ -327,6 +327,11 @@ const WRAP = {
 // "非注释 CJK=0"门禁（可读形式见上一行注释）。
 const OVERRIDES = {
   'zh-TW': {
+    // batch12 Task C #1：保存被攔截的 warning toast（可讀形式：有 {n} 項需要修正，請檢查表單頂部提示）
+    'editor.fixBeforeSave':
+      '\u6709 {n} \u9805\u9700\u8981\u4fee\u6b63\uff0c\u8acb\u6aa2\u67e5\u8868\u55ae\u9802\u90e8\u63d0\u793a',
+    // batch12 Task C #2：複製預填名稱後綴「(副本)」（前導空格在代碼裡，詞條只放括號後綴）
+    'editor.copySuffix': '(\u526f\u672c)',
     // 搜尋伺服器（Ctrl+F）
     'search.placeholder': '\u641c\u5c0b\u4f3a\u670d\u5668\uff08Ctrl+F\uff09',
     // 搜尋伺服器（Ctrl+F）——batch8 #3：search.title 與 placeholder 同文（tooltip 一致，刪 Ctrl+K 表述）
@@ -712,6 +717,9 @@ const OVERRIDES = {
   },
   // -- cs-CZ（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'cs-CZ': {
+    // batch12 Task C #1/#2：保存攔截 toast / 複製後綴
+    'editor.fixBeforeSave': 'Uložení zablokováno: opravte {n} položku(y) — viz upozornění v horní části formuláře',
+    'editor.copySuffix': '(kopie)',
     'common.comingSoon': 'Brzy bude k dispozici',
     'common.address': 'adresa',
     'common.username': 'uživatelské jméno',
@@ -1015,6 +1023,10 @@ const OVERRIDES = {
   },
   // -- de-DE（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'de-DE': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave':
+      'Speichern blockiert: {n} Punkte müssen korrigiert werden — siehe Hinweis am oberen Rand des Formulars',
+    'editor.copySuffix': '(Kopie)',
     'common.comingSoon': 'Demnächst verfügbar',
     'common.address': 'Adresse',
     'common.username': 'Benutzername',
@@ -1328,6 +1340,10 @@ const OVERRIDES = {
   },
   // -- es-AR（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'es-AR': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave':
+      'Guardado bloqueado: hay que corregir {n} elemento(s) — vea el aviso en la parte superior del formulario',
+    'editor.copySuffix': '(copia)',
     'common.comingSoon': 'Próximamente',
     'common.address': 'dirección',
     'common.username': 'usuario',
@@ -1637,6 +1653,9 @@ const OVERRIDES = {
   },
   // -- fr-FR（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'fr-FR': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave': 'Enregistrement bloqué : {n} élément(s) à corriger — voir le bandeau en haut du formulaire',
+    'editor.copySuffix': '(copie)',
     'common.comingSoon': 'Bientôt disponible',
     'common.address': 'adresse',
     'common.username': "nom d'utilisateur",
@@ -1949,6 +1968,10 @@ const OVERRIDES = {
   },
   // -- gl-ES（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'gl-ES': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave':
+      'Gardado bloqueado: hai que corrixir {n} elemento(s) — vexa o aviso na parte superior do formulario',
+    'editor.copySuffix': '(copia)',
     'common.comingSoon': 'En breve',
     'common.address': 'enderezo',
     'common.username': 'usuario',
@@ -2256,6 +2279,9 @@ const OVERRIDES = {
   },
   // -- it-IT（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'it-IT': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave': 'Salvataggio bloccato: correggere {n} elemento/i — vedi l’avviso in alto nel modulo',
+    'editor.copySuffix': '(copia)',
     'common.comingSoon': 'Prossimamente',
     'common.address': 'indirizzo',
     'common.username': 'nome utente',
@@ -2567,6 +2593,9 @@ const OVERRIDES = {
   },
   // -- pl-PL（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'pl-PL': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave': 'Zapis zablokowany: popraw {n} element(y) — zobacz baner u góry formularza',
+    'editor.copySuffix': '(kopia)',
     'common.comingSoon': 'Wkrótce dostępne',
     'common.address': 'adres',
     'common.username': 'nazwa użytkownika',
@@ -2873,6 +2902,9 @@ const OVERRIDES = {
   },
   // -- pt-BR（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'pt-BR': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave': 'Salvamento bloqueado: corrija {n} item(ns) — veja o aviso no topo do formulário',
+    'editor.copySuffix': '(cópia)',
     'common.comingSoon': 'Em breve',
     'common.address': 'endereço',
     'common.username': 'usuário',
@@ -3181,6 +3213,9 @@ const OVERRIDES = {
   },
   // -- pt-PT（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'pt-PT': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave': 'Gravação bloqueada: corrija {n} item(ns) — veja o aviso no topo do formulário',
+    'editor.copySuffix': '(cópia)',
     'common.comingSoon': 'Brevemente',
     'common.address': 'endereço',
     'common.username': 'utilizador',
@@ -3489,6 +3524,9 @@ const OVERRIDES = {
   },
   // -- ru-RU（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'ru-RU': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
+    'editor.fixBeforeSave': 'Сохранение заблокировано: исправьте {n} пункт(ов) — см. предупреждение вверху формы',
+    'editor.copySuffix': '(копия)',
     'common.comingSoon': 'Скоро будет доступно',
     'common.address': 'адрес',
     'common.username': 'имя пользователя',
@@ -3798,6 +3836,10 @@ const OVERRIDES = {
   },
   // -- ja-JP（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'ja-JP': {
+    // batch12 Task C #1/#2：保存拦截 toast / 复制后缀（可読形式：保存できません：{n} 項目を修正して下さい——フォーム上部の警告を確認 / (コピー)）
+    'editor.fixBeforeSave':
+      '\u4fdd\u5b58\u3067\u304d\u307e\u305b\u3093\uff1a{n} \u9805\u76ee\u3092\u4fee\u6b63\u3057\u3066\u4e0b\u3055\u3044\u2014\u2014\u30d5\u30a9\u30fc\u30e0\u4e0a\u90e8\u306e\u8b66\u544a\u3092\u78ba\u8a8d',
+    'editor.copySuffix': '(\u30b3\u30d4\u30fc)',
     'common.comingSoon': '\u8fd1\u65e5\u516c\u958b',
     'common.address': '\u30a2\u30c9\u30ec\u30b9',
     'common.username': '\u30e6\u30fc\u30b6\u30fc\u540d',

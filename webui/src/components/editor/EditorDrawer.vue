@@ -21,7 +21,7 @@
  * + 预填来源 config（Id 防御性 delete，TreeNodes 随 json 携带 → 同文件夹，与 WPF
  * 复制一致）。保存成功后列表刷新由 SSE reload 自动完成，无需手动拉取。
  */
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import FormField from './FormField.vue'
@@ -74,6 +74,32 @@ const loadError = ref('')
 const saving = ref(false) // 单机保存中（批量保存中在 BulkEditForm，经 bulkFormRef 同步）
 const saveErrors = ref([]) // 服务端 400 的 {errors} 列表（内联展示）
 const missingRequired = ref([]) // 客户端必填快速校验（字段文案列表）
+
+// ---- 保存错误可见性三联动（toast + 按钮脉动 + 滚动到横幅）----
+// 横幅挂在滚动区顶部（长表单保存时多在视口外），仅靠横幅用户感知不到失败：
+// ① message.warning 计数提示；② 保存按钮 danger 呼吸脉动 3 次后停（animationend 移除
+// class，2s 兜底定时器覆盖 prefers-reduced-motion 下 animation:none 不发 animationend
+// 的情况）；③ nextTick 后 scrollIntoView 到顶部横幅。连续保存失败重触发：先移除 class
+// 隔一帧再加回（双 rAF 保证浏览器见过 class 缺席态，动画重新开始）。
+const errorPulse = ref(false)
+const rootRef = ref(null)
+let pulseTimer = 0
+function announceSaveError(n) {
+  message.warning(t('editor.fixBeforeSave', { n }))
+  errorPulse.value = false
+  clearTimeout(pulseTimer)
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
+      errorPulse.value = true
+      pulseTimer = setTimeout(() => (errorPulse.value = false), 2000)
+    })
+  )
+  nextTick(() => rootRef.value?.querySelector('.ed-banner')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+}
+function onPulseEnd() {
+  clearTimeout(pulseTimer)
+  errorPulse.value = false
+}
 
 // ---- 头部接缝：EditorHead 实例（title 暴露给 aria-label）与数据源镜像 ----
 const headRef = ref(null)
@@ -182,6 +208,13 @@ async function load() {
         const cfg = await api.getServerConfig(props.duplicateFrom, props.dataSourceName)
         raw = cfg.json
         delete raw.Id // Id 为 [JsonIgnore] 本就不在文中；防御性清理（复制=新建语义）
+        // 预填名「原名 (副本)」：WPF 的 Duplicate 不改名（ServerEditorPageViewModel.Duplicate
+        // 仅 Clone + 清 Id），这是 web 增强——降低保存时忘改重名的概率。后缀词条只放括号
+        // 部分（editor.copySuffix），前导空格在代码里（各语言排版习惯不同）；目标名已存在
+        // 不拦（用户可改，仅预填）；后缀计入 initialSnapshot → 打开即保存不算脏。
+        if (typeof raw.DisplayName === 'string' && raw.DisplayName.trim() !== '') {
+          raw.DisplayName = `${raw.DisplayName} ${t('editor.copySuffix')}`
+        }
       } else {
         const s = PROTOCOLS[props.protocol] || PROTOCOLS.RDP
         raw = { Protocol: s.protocol, ClassVersion: s.classVersion, ...deepClone(s.defaults) }
@@ -316,7 +349,10 @@ async function save() {
   }
   if (saving.value || loading.value || loadError.value) return
   missingRequired.value = validateRequired()
-  if (missingRequired.value.length) return
+  if (missingRequired.value.length) {
+    announceSaveError(missingRequired.value.length)
+    return
+  }
   saveErrors.value = []
   saving.value = true
   try {
@@ -346,6 +382,7 @@ async function save() {
     } else {
       message.error(t('editor.saveFailed') + (e?.message ? ` (${e.message})` : ''))
     }
+    if (saveErrors.value.length) announceSaveError(saveErrors.value.length)
   } finally {
     saving.value = false
   }
@@ -362,11 +399,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKey)
   clearTimeout(closeTimer) // 保存成功路径：父级已随 @saved 收敛状态并卸载，防迟到 emit
+  clearTimeout(pulseTimer) // 脉动兜底定时器同拆（组件卸载后不再触碰 errorPulse）
 })
 </script>
 
 <template>
-  <div class="ed-root" :class="{ open: show }">
+  <div ref="rootRef" class="ed-root" :class="{ open: show }">
     <div class="ed-scrim" @click="requestClose"></div>
     <section class="ed-panel" role="dialog" aria-modal="true" :aria-label="headRef?.title">
       <!-- 头部（EditorHead）：瓦片/标题/协议切换/数据源/关闭；协议切换与关闭确认的
@@ -509,9 +547,11 @@ onBeforeUnmount(() => {
           </button>
           <button
             class="ed-btn ed-primary"
+            :class="{ 'ed-pulse-error': errorPulse }"
             type="button"
             :disabled="saving || bulkSaving || loading || !!loadError || bulkDsMixed"
             @click="save"
+            @animationend="onPulseEnd"
           >
             {{ saving || bulkSaving ? t('editor.saving') : t('editor.save') }}
           </button>
@@ -818,5 +858,32 @@ onBeforeUnmount(() => {
   background: var(--bg-hover);
   border-color: var(--accent);
   color: var(--accent-text);
+}
+
+/* 保存错误脉动：danger 边框/背景/外圈呼吸 3 次（0.6s × 3）后停——animationend 移除
+   class（onPulseEnd），2s 兜底定时器防 reduced-motion 下 animation:none 不发事件。
+   正常态（0%/100%）显式回到 .ed-primary 的 accent 边框，避免动画首尾跳色。 */
+@keyframes ed-pulse-error {
+  0%,
+  100% {
+    border-color: var(--accent);
+    background: transparent;
+    box-shadow: none;
+  }
+  50% {
+    border-color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 16%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 22%, transparent);
+  }
+}
+
+.ed-pulse-error {
+  animation: ed-pulse-error 0.6s ease-in-out 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-pulse-error {
+    animation: none;
+  }
 }
 </style>

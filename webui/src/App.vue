@@ -63,7 +63,16 @@ function onGlobalKey(e) {
     e.preventDefault()
   }
 }
-onMounted(() => window.addEventListener('keydown', onGlobalKey))
+onMounted(() => {
+  window.addEventListener('keydown', onGlobalKey)
+  // dev 控制台提醒（owner 原话保留）：排序/列显隐/列宽目前只落 localStorage（浏览器本地），
+  // 与桌面端（WPF 侧 Sqlite/注册表）不共享——持久化策略分叉，后续统一时这里的条目要跟进。
+  // 仅 DEV 构建打包（import.meta.env.DEV 生产构建常量折叠剔除）。
+  if (import.meta.env.DEV)
+    console.warn(
+      '[1Remote WebUI] 排序/列显隐/列宽仅存 localStorage（本地），与桌面端不共享——持久化策略分叉，待后续统一'
+    )
+})
 onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKey))
 
 // 「+」下拉：新建 + 导入——服务器已存在时导入是自然入口；两动作都经 editorBus
