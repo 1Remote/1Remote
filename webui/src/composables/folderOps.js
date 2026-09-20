@@ -15,6 +15,7 @@ import { h, nextTick, ref } from 'vue'
 import { NInput, useDialog, useMessage } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { api } from '../api'
+import { progressToast } from '../utils/progressToast'
 import {
   SEP,
   buildTree,
@@ -194,31 +195,15 @@ export function useFolderOps() {
     busy.value = true
     const total = affectedServers(dsName, oldPath).length
     // 空文件夹（0 台受影响）键迁移极快：不弹「0/0」进度，终态直接常规 toast
-    const progress = total ? message.loading(t('toast.treeWorking', { ok: 0, n: total }), { duration: 0 }) : null
+    const toast = progressToast(message, total, (done) => t('toast.treeWorking', { ok: done, n: total }))
     let done = 0
-    let failedTier = false
-    const finish = (type, content) => {
-      if (progress) {
-        progress.type = type
-        progress.content = content
-        setTimeout(() => progress.destroy(), failedTier ? 5000 : 2500)
-      } else if (type === 'success') message.success(content)
-      else message.error(content)
-    }
     try {
-      const failed = await rewriteServerPaths(dsName, oldPath, serverTo, () => {
-        done++
-        if (progress) progress.content = t('toast.treeWorking', { ok: done, n: total })
-      })
+      const failed = await rewriteServerPaths(dsName, oldPath, serverTo, () => toast.step(++done))
       const persistOk = await rewriteKeys(dsName, oldPath, keysTo)
       await reload()
-      if (!persistOk) {
-        failedTier = true
-        finish('error', fail())
-      } else if (failed) {
-        failedTier = true
-        finish('error', t('toast.treeMoveFailed', { n: failed }))
-      } else finish('success', ok())
+      if (!persistOk) toast.finish('error', fail())
+      else if (failed) toast.finish('error', t('toast.treeMoveFailed', { n: failed }))
+      else toast.finish('success', ok())
     } finally {
       busy.value = false
     }
@@ -303,17 +288,9 @@ export function useFolderOps() {
     // 0 台（空文件夹误入此分支）不弹「0/0」进度
     const affected = affectedServers(dsName, oldPath)
     const n = affected.length
-    const progress = n ? message.loading(t('toast.batchDeleting', { ok: 0, n }), { duration: 0 }) : null
+    const toast = progressToast(message, n, (done) => t('toast.batchDeleting', { ok: done, n }))
     let failed = 0
     let ok = 0
-    const finish = (type, content) => {
-      if (progress) {
-        progress.type = type
-        progress.content = content
-        setTimeout(() => progress.destroy(), failed || type === 'error' ? 5000 : 2500)
-      } else if (type === 'success') message.success(content)
-      else message.error(content)
-    }
     try {
       for (const s of affected) {
         try {
@@ -323,7 +300,7 @@ export function useFolderOps() {
           console.warn('[folderOps] server delete failed:', s.id, err?.message || err)
           failed++
         }
-        if (progress) progress.content = t('toast.batchDeleting', { ok, n })
+        toast.step(ok)
       }
       const exact = fullKey(dsName, oldPath)
       const remove = Object.keys(knownExpanded.value).filter((k) => k === exact || k.startsWith(exact + SEP))
@@ -332,9 +309,9 @@ export function useFolderOps() {
         for (const k of remove) delete m[k]
       })
       await reload()
-      if (!persistOk) finish('error', t('tree.folderDeleteFailed'))
-      else if (failed) finish('error', t('tree.folderDeleteServerFailed', { n: failed }))
-      else finish('success', t('tree.folderDeleted'))
+      if (!persistOk) toast.finish('error', t('tree.folderDeleteFailed'))
+      else if (failed) toast.finish('error', t('tree.folderDeleteServerFailed', { n: failed }))
+      else toast.finish('success', t('tree.folderDeleted'))
     } finally {
       busy.value = false
     }

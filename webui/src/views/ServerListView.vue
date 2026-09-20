@@ -18,6 +18,7 @@ import ImportModal from '../components/ImportModal.vue'
 import EditorDrawer from '../components/editor/EditorDrawer.vue'
 import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
+import { progressToast } from '../utils/progressToast'
 import { applyServerFilters, BATCH_CONNECT_THRESHOLD, useServers } from '../composables/useServers'
 import { buildTree, countDirectChildServers, holderAt } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
@@ -392,7 +393,7 @@ function onBatchDelete(ids) {
 
 async function runBatchDelete(list) {
   const n = list.length
-  const progress = message.loading(t('toast.batchDeleting', { ok: 0, n }), { duration: 0 })
+  const toast = progressToast(message, n, (done) => t('toast.batchDeleting', { ok: done, n }))
   let ok = 0
   for (const s of list) {
     try {
@@ -402,18 +403,17 @@ async function runBatchDelete(list) {
     } catch (e) {
       console.warn('[ServerListView] batch delete failed:', s.id, e?.message || e)
     }
-    progress.content = t('toast.batchDeleting', { ok, n })
+    toast.step(ok)
   }
   await reload()
   const failed = n - ok
-  if (!failed) {
-    progress.type = 'success'
-    progress.content = t('toast.batchDeleted', { n: ok })
-  } else {
-    progress.type = ok ? 'warning' : 'error'
-    progress.content = t('toast.batchDeleted', { n: ok }) + ' · ' + t('toast.batchDeleteFailed', { n: failed })
-  }
-  setTimeout(() => progress.destroy(), failed ? 5000 : 2500)
+  if (!failed) toast.finish('success', t('toast.batchDeleted', { n: ok }))
+  // 部分/全部失败同文案（已删 N · 失败 M），仅档位不同：warning=有删成，error=全军覆没
+  else
+    toast.finish(
+      ok ? 'warning' : 'error',
+      t('toast.batchDeleted', { n: ok }) + ' · ' + t('toast.batchDeleteFailed', { n: failed })
+    )
 }
 
 // ---- 批量编辑：批量条按钮 → 抽屉 bulk 模式 ----

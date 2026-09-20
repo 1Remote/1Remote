@@ -13,6 +13,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { api } from '../api'
+import { progressToast } from '../utils/progressToast'
 import { useServers } from '../composables/useServers'
 import { buildTree, countDirectChildServers, fullKey, holderAt, isDescendantPath } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
@@ -276,17 +277,9 @@ async function applyTreeMove(src, row, zone) {
   let moved = 0
   const failed = []
   // 空子树（0 台受影响，纯顺序调整）不弹「0/0」进度，终态直接常规 toast
-  const progress = affected.length
-    ? message.loading(t('toast.treeWorking', { ok: 0, n: affected.length }), { duration: 0 })
-    : null
-  const finish = (type, content) => {
-    if (progress) {
-      progress.type = type
-      progress.content = content
-      setTimeout(() => progress.destroy(), failed.length || type === 'error' ? 5000 : 2500)
-    } else if (type === 'success') message.success(content)
-    else message.error(content)
-  }
+  const toast = progressToast(message, affected.length, (done) =>
+    t('toast.treeWorking', { ok: done, n: affected.length })
+  )
   moving.value = true
   try {
     for (const { server, rest } of affected) {
@@ -301,7 +294,7 @@ async function applyTreeMove(src, row, zone) {
         console.warn('[SideTree] move failed:', server.id, err?.message || err)
         failed.push(server.displayName)
       }
-      if (progress) progress.content = t('toast.treeWorking', { ok: moved + failed.length, n: affected.length })
+      toast.step(moved + failed.length)
     }
 
     // 同级顺序写回（仅 before/after 重排；into 清键排末尾）
@@ -332,13 +325,13 @@ async function applyTreeMove(src, row, zone) {
     }
 
     if (moved === 0 && failed.length === 0 && !orderChanged) {
-      progress?.destroy() // 完全无变化（原位放下）：撤下进度，无终态文案
+      toast.cancel() // 完全无变化（原位放下）：撤下进度，无终态文案
       return
     }
     if (orderChanged) await flushSave()
     await reload() // UpdateServer 路径不触发 SSE（见上），显式刷新列表/树
-    if (failed.length) finish('error', t('toast.treeMoveFailed', { n: failed.length }))
-    else finish('success', t('toast.treeMoved', { n: moved }))
+    if (failed.length) toast.finish('error', t('toast.treeMoveFailed', { n: failed.length }))
+    else toast.finish('success', t('toast.treeMoved', { n: moved }))
   } finally {
     moving.value = false
   }
