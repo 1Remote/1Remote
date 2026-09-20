@@ -48,6 +48,10 @@ export const parentPath = (p) => {
   return i < 0 ? '' : p.slice(0, i)
 }
 
+/** path 是否在 ancestor 之内（等于或为其后代）——文件夹拖拽的「移入自身/后代」
+ *  禁止判定（SideTree / ServerTable / folderOps 三处共用；含相等 → 拖到自己身上同拒） */
+export const isDescendantPath = (ancestor, path) => path === ancestor || path.startsWith(ancestor + '/')
+
 /**
  * 服务器 TreeNodes 路径前缀重写（重命名/删除文件夹共用）：
  * folderPath 在 oldPath 之下（等于或以 oldPath+'/' 开头）→ 换前缀为 newPath；

@@ -7,7 +7,9 @@
 //   + 字典键前缀重写；
 // - 删除 = 空文件夹直接删；内有服务器时弹选择——连服务器一起删（WPF 实际行为）或
 //   仅删文件夹、子项（服务器/子文件夹键）上移一级（见 deleteFolder/runDelete）；
-// - 移入 = 目标路径逐台重写 TreeNodes（列表行拖到文件夹行 / 树拖拽同语义）。
+// - 移入 = 目标路径逐台重写 TreeNodes（列表行拖到文件夹行 / 树拖拽同语义）；
+//   文件夹移动（列表文件夹行拖拽 / 拖入树节点）= 整个子树：服务器前缀重写 + 键前缀迁移，
+//   机制与重命名完全同源（newPath = 目标父路径 + '/' + 文件夹名，即「重命名到新父路径」）。
 // UpdateServer 路径不触发 SSE（已知后端行为），全部操作后显式 reload()（WPF parity 刷新）。
 import { h, nextTick, ref } from 'vue'
 import { NInput, useDialog, useMessage } from 'naive-ui'
@@ -19,6 +21,7 @@ import {
   countHolderServers,
   fullKey,
   holderAt,
+  isDescendantPath,
   parentPath,
   rewriteServerPath,
   rewriteTreeStateKeys,
@@ -319,5 +322,37 @@ export function useFolderOps() {
     }
   }
 
-  return { busy, createFolder, renameFolder, deleteFolder, moveServersToFolder }
+  // 文件夹整体移动（列表文件夹行拖拽 / 列表文件夹拖入树节点共用）：整个子树迁到
+  // targetParent 之下——服务器 TreeNodes 前缀重写 + tree-state 键前缀迁移，rewrite
+  // 机制与 renameFolder 完全同源（newPath = targetParent + '/' + 名，即重命名到新父路径）。
+  // 拒绝项（UI 层已拦，此处执行层再各设一道防御）：只读源 / 移入自身或后代 /
+  // 目标父层同名文件夹（防静默合并两棵子树，与新建/重命名查重一致）；原地放下
+  //（newPath === path，如树内拖到自身父节点）静默返回，与 moveServersToFolder 同口径
+  async function moveFolder(dsName, path, targetParent) {
+    if (!dsWritable(dsName)) {
+      message.warning(t('cv.readOnly'))
+      return
+    }
+    if (busy.value) return
+    const name = path.split('/').pop()
+    const newPath = targetParent ? targetParent + '/' + name : name
+    if (newPath === path || isDescendantPath(path, targetParent || '')) return
+    if (siblingNames(dsName, targetParent).includes(name)) {
+      message.warning(t('tree.folderNameExists'))
+      return
+    }
+    busy.value = true
+    try {
+      const failed = await rewriteServerPaths(dsName, path, newPath)
+      const ok = await rewriteKeys(dsName, path, newPath)
+      await reload()
+      if (!ok) message.error(t('tree.folderMoveFailed'))
+      else if (failed) message.error(t('toast.treeMoveFailed', { n: failed }))
+      else message.success(t('tree.folderMoved', { name }))
+    } finally {
+      busy.value = false
+    }
+  }
+
+  return { busy, createFolder, renameFolder, deleteFolder, moveServersToFolder, moveFolder }
 }

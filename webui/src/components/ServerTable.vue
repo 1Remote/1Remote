@@ -20,7 +20,9 @@
 // - 批量条 + ≡ 自定义顺序 / ▦ 列菜单工具簇：TableToolbar 组件承载，Teleport 至面包屑行右侧
 //   （#crumb-actions）；勾选/排序模式/列状态仍归本组件，不上提
 // - 行拖拽：重排仅自定义顺序模式生效（上/下半行 = 插到目标前/后）；任意模式拖到
-//   「文件夹行」= 移入该文件夹
+//   「文件夹行」= 移入该文件夹；文件夹行自身可拖（可写源）= 整个子树移动——拖到
+//   别的文件夹行/「..」上级行 = 移入或上移一级，文件夹行不支持拖拽重排序
+//   （hover 服务器行一次性 toast 说明，重排序归树内拖拽）
 // - 右键菜单：连接/编辑/复制/复制地址/复制用户名/删除可用，其余占位禁用（title 提示）；
 //   点击外部关闭，Esc 经 ServerListView 全局 Esc 链关闭
 // - 空态：默认居中提示按「传入列表空=空库 / 非空但过滤后无行=无匹配」二分；
@@ -36,7 +38,8 @@ import { api } from '../api'
 import { useColumns } from '../composables/useColumns'
 import { useRowChecks } from '../composables/useRowChecks'
 import { useServers } from '../composables/useServers'
-import { focusHandoff, listDragServer } from '../composables/tableBus'
+import { focusHandoff, listDragServer, listDragFolder } from '../composables/tableBus'
+import { fullKey, isDescendantPath } from '../composables/folders'
 import { naturalIpCompare } from '../utils/compare'
 
 const props = defineProps({
@@ -60,6 +63,7 @@ const emit = defineEmits([
   'rename-folder',
   'delete-folder',
   'move-to-folder',
+  'move-folder',
   'new-server',
   'import-servers',
 ])
@@ -154,16 +158,22 @@ const fullOrder = computed(() => {
   return props.servers.slice().sort(comparators.custom)
 })
 
-// ---- 行拖拽：行恒可拖（dragstart 始终记录快照），custom 模式内上/下半行 = 插到目标前/后，
+// ---- 行拖拽：两条互斥链路，以被拖行种类分发（快照互斥，同时至多一条在拖）----
+// 服务器行：行恒可拖（dragstart 始终记录快照），custom 模式内上/下半行 = 插到目标前/后，
 // 对齐 WPF 列表 Drop 的 height/2 判定；drop 后 POST 整库新顺序 → 以响应重建 Map → sorted 即时重排；
 // 非 custom 模式下重排不被接受（dragover 不 preventDefault → drop 被浏览器拒绝，
 // 悬停到别的行时 toast 一次性说明原因——每次拖拽只提示一次）；
-// 任意模式拖到「文件夹行」= 移入该文件夹（onFolderDragOver/Drop，跨数据源拒绝）----
+// 任意模式拖到「文件夹行」= 移入该文件夹（onFolderDragOver/Drop，跨数据源拒绝）。
+// 文件夹行（可写源可拖）：拖 = 整个子树移动（folderOps.moveFolder），目标 =
+// 别的文件夹行 /「..」上级行 / 树节点（SideTree 落区，见 tableBus.listDragFolder）；
+// 不支持拖拽重排序（任何模式）——hover 服务器行时一次性 toast 说明（每次拖拽只提示一次）
 const dragId = ref(null)
 const dragServer = ref(null) // 被拖服务器快照（drop 时列表可能已变）
+const dragFolder = ref(null) // 被拖文件夹行快照 { dsName, path, name }（同上）
 const dropHint = ref(null) // { id, before }
 const dropFolder = ref(null) // { dsName, path } 悬停中的文件夹行
 let reorderHintShown = false // 非 custom 重排提示的本次拖拽去重（dragstart 复位）
+let folderReorderHintShown = false // 文件夹重排序不支持提示的本次拖拽去重（dragstart 复位）
 function onRowDragStart(server, e) {
   dragId.value = server.id
   dragServer.value = server
@@ -181,7 +191,31 @@ function onRowDragEnd() {
   dropFolder.value = null
   listDragServer.value = null
 }
+// 文件夹行拖拽源（draggable 由模板绑定 dsWritable）：快照挂本地 + tableBus
+//（SideTree 落区判定），dataTransfer 类型 x-1r-list-folder 与另两条链路区分
+function onFolderRowDragStart(f, e) {
+  dragFolder.value = f
+  listDragFolder.value = f
+  folderReorderHintShown = false
+  e.dataTransfer.effectAllowed = 'move'
+  e.dataTransfer.setData('text/plain', f.path) // Firefox 需要非空 data
+  e.dataTransfer.setData('application/x-1r-list-folder', fullKey(f.dsName, f.path))
+}
+function onFolderRowDragEnd() {
+  dragFolder.value = null
+  dropFolder.value = null
+  listDragFolder.value = null
+}
 function onRowDragOver(server, e) {
+  // 文件夹拖拽不落在服务器行（不支持行间重排序，任何模式）：不 preventDefault →
+  // 浏览器拒收，toast 只提示一次/拖拽（对齐非 custom 服务器重排提示的先例）
+  if (dragFolder.value) {
+    if (!folderReorderHintShown) {
+      folderReorderHintShown = true
+      message.info(t('toast.folderNoReorder'))
+    }
+    return
+  }
   if (!dragId.value || dragId.value === server.id) return
   if (!isCustom.value) {
     // 非 custom 模式：不 preventDefault（重排 drop 被浏览器拒绝），toast 只提示一次/拖拽
@@ -220,14 +254,19 @@ async function onRowDrop(server, e) {
   }
 }
 
-// 文件夹行落区：同数据源且目标 ≠ 当前所在文件夹才接受
-//（跨源/原地 = 不 preventDefault → 浏览器拒绝 drop）
+// 文件夹行落区（含「..」上级行，同为 { dsName, path } 形状）：
+// 服务器拖拽 = 同数据源且目标 ≠ 当前所在文件夹；文件夹拖拽 = 同数据源且目标不在
+// 自身子树内（isDescendantPath 含相等 → 拖到自己身上同拒）。跨源/非法 = 不
+// preventDefault → 浏览器拒绝 drop；目标父层同名文件夹的查重在 drop 执行层
+//（folderOps.moveFolder——dragover 逐次 buildTree 查重不划算，罕见场景接受高亮后被拦）
 function folderDropOk(f) {
   const s = dragServer.value
-  return !!s && s.dataSourceName === f.dsName && (s.folderPath || '') !== f.path
+  if (s) return s.dataSourceName === f.dsName && (s.folderPath || '') !== f.path
+  const d = dragFolder.value
+  return !!d && d.dsName === f.dsName && !isDescendantPath(d.path, f.path)
 }
 function onFolderDragOver(f, e) {
-  if (!dragServer.value) return
+  if (!dragServer.value && !dragFolder.value) return
   if (!folderDropOk(f)) {
     dropFolder.value = null
     return
@@ -245,9 +284,12 @@ function onFolderDrop(f, e) {
   if (!hint || hint.path !== f.path || hint.dsName !== f.dsName || !folderDropOk(f)) return
   e.preventDefault()
   const s = dragServer.value
+  const d = dragFolder.value
   dragId.value = null
   dragServer.value = null
+  dragFolder.value = null
   if (s) emit('move-to-folder', { server: s, dsName: f.dsName, path: f.path })
+  else if (d) emit('move-folder', { folder: d, dsName: f.dsName, path: f.path })
 }
 
 // ---- 文件夹右键菜单（nf-menu）：
@@ -784,13 +826,16 @@ onBeforeUnmount(() => {
             :show-ds="showDs"
             :check-state="folderChecks.get(rowKey(row))"
             :drop-active="dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName"
+            :draggable="dsWritable(row.folder.dsName)"
             @open="emit('open-folder', $event)"
             @context="onFolderContext"
             :writable="dsWritable(row.folder.dsName)"
             @toggle-check="onFolderToggleCheck(row.folder)"
+            @dragstart="onFolderRowDragStart(row.folder, $event)"
             @dragover="onFolderDragOver(row.folder, $event)"
             @dragleave="onFolderDragLeave(row.folder)"
             @drop="onFolderDrop(row.folder, $event)"
+            @dragend="onFolderRowDragEnd"
             @rename="emit('rename-folder', folderTarget(row.folder))"
             @delete="emit('delete-folder', folderTarget(row.folder))"
           />
@@ -847,13 +892,16 @@ onBeforeUnmount(() => {
           :show-ds="showDs"
           :check-state="folderChecks.get(rowKey(row))"
           :drop-active="dropFolder && dropFolder.path === row.folder.path && dropFolder.dsName === row.folder.dsName"
+          :draggable="dsWritable(row.folder.dsName)"
           @open="emit('open-folder', $event)"
           @context="onFolderContext"
           :writable="dsWritable(row.folder.dsName)"
           @toggle-check="onFolderToggleCheck(row.folder)"
+          @dragstart="onFolderRowDragStart(row.folder, $event)"
           @dragover="onFolderDragOver(row.folder, $event)"
           @dragleave="onFolderDragLeave(row.folder)"
           @drop="onFolderDrop(row.folder, $event)"
+          @dragend="onFolderRowDragEnd"
           @rename="emit('rename-folder', folderTarget(row.folder))"
           @delete="emit('delete-folder', folderTarget(row.folder))"
         />

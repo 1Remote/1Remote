@@ -92,6 +92,10 @@ function onDeleteFolder(target) {
 function onMoveToFolder({ server, dsName, path }) {
   folderOps.moveServersToFolder([server], dsName, path)
 }
+// 列表文件夹行拖到文件夹行/「..」上级行：整个子树移动（与树内拖拽同语义）
+function onMoveFolder({ folder, path }) {
+  folderOps.moveFolder(folder.dsName, folder.path, path)
+}
 
 // 传给 ServerTable 的收窄列表（其内部再应用树选中过滤 + 排序，交集自然复合）
 const visibleServers = computed(() => applyServerFilters(servers.value, activeTag.value, searchedIds.value))
@@ -552,6 +556,7 @@ const importModal = ref(false)
         @rename-folder="onRenameFolder"
         @delete-folder="onDeleteFolder"
         @move-to-folder="onMoveToFolder"
+        @move-folder="onMoveFolder"
         @new-server="openCreate"
         @import-servers="importModal = true"
       >

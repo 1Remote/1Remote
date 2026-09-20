@@ -398,6 +398,9 @@ const OVERRIDES = {
     'tree.folderCreateFailed': '\u5efa\u7acb\u8cc7\u6599\u593e\u5931\u6557',
     'tree.folderRenamed': '\u8cc7\u6599\u593e\u5df2\u91cd\u65b0\u547d\u540d\u70ba\u300c{name}\u300d',
     'tree.folderRenameFailed': '\u91cd\u65b0\u547d\u540d\u8cc7\u6599\u593e\u5931\u6557',
+    // batch13 Task B\uff1a\u5217\u8868\u6587\u4ef6\u5939\u884c\u62d6\u62fd\uff08\u6210\u529f/\u5931\u8d25 toast\u3001\u8de8\u5e93\u3001\u4e0d\u652f\u6301\u91cd\u6392\u5e8f\u63d0\u793a\uff09
+    'tree.folderMoved': '\u5df2\u79fb\u52d5\u8cc7\u6599\u593e\u300c{name}\u300d',
+    'tree.folderMoveFailed': '\u79fb\u52d5\u8cc7\u6599\u593e\u5931\u6557',
     'tree.folderDeleted': '\u8cc7\u6599\u593e\u5df2\u522a\u9664',
     'tree.folderDeleteFailed': '\u522a\u9664\u8cc7\u6599\u593e\u5931\u6557',
     'tree.selectDsFirst': '\u8acb\u5148\u5728\u5de6\u5074\u6a39\u72c0\u5716\u4e2d\u9078\u64c7\u8cc7\u6599\u4f86\u6e90',
@@ -421,6 +424,9 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       '\u76ee\u524d\u975e\u81ea\u8a02\u9806\u5e8f\u6a21\u5f0f\uff0c\u53ea\u80fd\u5c07\u4f3a\u670d\u5668\u62d6\u5165\u8cc7\u6599\u593e',
     'toast.crossDsMove': '\u4e0d\u80fd\u8de8\u8cc7\u6599\u4f86\u6e90\u79fb\u52d5\u4f3a\u670d\u5668',
+    'toast.crossDsFolderMove': '\u4e0d\u80fd\u8de8\u8cc7\u6599\u4f86\u6e90\u79fb\u52d5\u8cc7\u6599\u593e',
+    'toast.folderNoReorder':
+      '\u6e05\u55ae\u4e2d\u66ab\u4e0d\u652f\u63f4\u8abf\u6574\u8cc7\u6599\u593e\u9806\u5e8f\uff0c\u53ef\u62d6\u5230\u8cc7\u6599\u593e\u884c\u79fb\u5165',
     'toast.batchDeleting': '\u6b63\u5728\u522a\u9664 {ok}/{n}\u2026',
     'toast.batchDeleted': '\u5df2\u522a\u9664 {n} \u53f0\u4f3a\u670d\u5668',
     'toast.batchDeleteFailed': '{n} \u53f0\u4f3a\u670d\u5668\u522a\u9664\u5931\u6557',
@@ -743,6 +749,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Složku se nepodařilo vytvořit',
     'tree.folderRenamed': 'Složka přejmenována na „{name}“',
     'tree.folderRenameFailed': 'Složku se nepodařilo přejmenovat',
+    'tree.folderMoved': 'Složka „{name}“ přesunuta',
+    'tree.folderMoveFailed': 'Přesunutí složky se nepodařilo',
     'tree.folderDeleted': 'Složka smazána',
     'tree.folderDeleteFailed': 'Složku se nepodařilo smazat',
     'tree.selectDsFirst': 'Nejprve vyberte zdroj dat ve stromu',
@@ -764,6 +772,9 @@ const OVERRIDES = {
     'row.parentFolder': 'Nadřazená složka',
     'toast.reorderNeedCustom': 'Řádky lze přeskládat jen ve vlastním pořadí. Server můžete přetáhnout do složky',
     'toast.crossDsMove': 'Servery nelze přesouvat mezi zdroji dat',
+    'toast.crossDsFolderMove': 'Složky nelze přesouvat mezi zdroji dat',
+    'toast.folderNoReorder':
+      'Složky nelze v seznamu přeřadit. Přetáhněte složku na jinou složku, aby se do ní přesunula',
     'toast.batchDeleting': 'Mazání {ok}/{n}…',
     'toast.batchDeleted': 'Smazáno serverů: {n}',
     'toast.batchDeleteFailed': '{n} serverů se nepodařilo smazat',
@@ -1049,6 +1060,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Ordner konnte nicht erstellt werden',
     'tree.folderRenamed': 'Ordner umbenannt in „{name}“',
     'tree.folderRenameFailed': 'Ordner konnte nicht umbenannt werden',
+    'tree.folderMoved': 'Ordner „{name}“ verschoben',
+    'tree.folderMoveFailed': 'Ordner konnte nicht verschoben werden',
     'tree.folderDeleted': 'Ordner gelöscht',
     'tree.folderDeleteFailed': 'Ordner konnte nicht gelöscht werden',
     'tree.selectDsFirst': 'Wählen Sie zuerst eine Datenquelle im Baum',
@@ -1071,6 +1084,9 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'Zeilen lassen sich nur in der eigenen Reihenfolge sortieren. Server können weiterhin in Ordner gezogen werden',
     'toast.crossDsMove': 'Server können nicht über Datenquellen hinweg verschoben werden',
+    'toast.crossDsFolderMove': 'Ordner können nicht über Datenquellen hinweg verschoben werden',
+    'toast.folderNoReorder':
+      'Ordner lassen sich in der Liste nicht neu anordnen. Ziehen Sie einen Ordner auf einen anderen Ordner, um ihn zu verschieben',
     'toast.batchDeleting': '{ok}/{n} werden gelöscht…',
     'toast.batchDeleted': '{n} Server gelöscht',
     'toast.batchDeleteFailed': '{n} Server konnten nicht gelöscht werden',
@@ -1365,6 +1381,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'No se pudo crear la carpeta',
     'tree.folderRenamed': 'Carpeta renombrada a "{name}"',
     'tree.folderRenameFailed': 'No se pudo renombrar la carpeta',
+    'tree.folderMoved': 'Carpeta "{name}" movida',
+    'tree.folderMoveFailed': 'No se pudo mover la carpeta',
     'tree.folderDeleted': 'Carpeta eliminada',
     'tree.folderDeleteFailed': 'No se pudo eliminar la carpeta',
     'tree.selectDsFirst': 'Primero seleccioná una fuente de datos en el árbol',
@@ -1387,6 +1405,9 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'Las filas solo se reordenan en modo de orden personalizado. Podés soltar servidores en carpetas',
     'toast.crossDsMove': 'No se pueden mover servidores entre fuentes de datos',
+    'toast.crossDsFolderMove': 'No se pueden mover carpetas entre fuentes de datos',
+    'toast.folderNoReorder':
+      'Las carpetas no se pueden reordenar en la lista. Podés soltar una carpeta en otra para moverla',
     'toast.batchDeleting': 'Eliminando {ok}/{n}…',
     'toast.batchDeleted': '{n} servidores eliminados',
     'toast.batchDeleteFailed': 'No se pudieron eliminar {n} servidores',
@@ -1676,6 +1697,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Échec de la création du dossier',
     'tree.folderRenamed': 'Dossier renommé en « {name} »',
     'tree.folderRenameFailed': 'Échec du renommage du dossier',
+    'tree.folderMoved': 'Dossier « {name} » déplacé',
+    'tree.folderMoveFailed': 'Échec du déplacement du dossier',
     'tree.folderDeleted': 'Dossier supprimé',
     'tree.folderDeleteFailed': 'Échec de la suppression du dossier',
     'tree.selectDsFirst': "Sélectionnez d'abord une source de données dans l'arborescence",
@@ -1698,6 +1721,9 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'Les lignes ne se réorganisent qu’en ordre personnalisé. Un serveur peut toujours être déposé dans un dossier',
     'toast.crossDsMove': 'Les serveurs ne peuvent pas être déplacés entre sources de données',
+    'toast.crossDsFolderMove': 'Les dossiers ne peuvent pas être déplacés entre sources de données',
+    'toast.folderNoReorder':
+      'Les dossiers ne peuvent pas être réordonnés dans la liste. Déposez-en un sur un dossier pour le déplacer',
     'toast.batchDeleting': 'Suppression {ok}/{n}…',
     'toast.batchDeleted': '{n} serveurs supprimés',
     'toast.batchDeleteFailed': 'Échec de la suppression de {n} serveurs',
@@ -1991,6 +2017,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Non se puido crear o cartafol',
     'tree.folderRenamed': 'Renomeouse o cartafol a «{name}»',
     'tree.folderRenameFailed': 'Non se puido renomear o cartafol',
+    'tree.folderMoved': 'Moveuse o cartafol «{name}»',
+    'tree.folderMoveFailed': 'Non se puido mover o cartafol',
     'tree.folderDeleted': 'Eliminouse o cartafol',
     'tree.folderDeleteFailed': 'Non se puido eliminar o cartafol',
     'tree.selectDsFirst': 'Selecciona primeiro unha fonte de datos na árbore',
@@ -2013,6 +2041,9 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'As filas só se reordenan no modo de orde personalizada. Aínda podes soltar servidores en cartafoles',
     'toast.crossDsMove': 'Non se poden mover servidores entre fontes de datos',
+    'toast.crossDsFolderMove': 'Non se poden mover cartafoles entre fontes de datos',
+    'toast.folderNoReorder':
+      'Os cartafoles non se poden reordenar na lista. Podes soltar un cartafol noutro para movelo',
     'toast.batchDeleting': 'Eliminando {ok}/{n}…',
     'toast.batchDeleted': 'Elimináronse {n} servidores',
     'toast.batchDeleteFailed': 'Non se puideron eliminar {n} servidores',
@@ -2300,6 +2331,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Creazione della cartella non riuscita',
     'tree.folderRenamed': 'Cartella rinominata in "{name}"',
     'tree.folderRenameFailed': 'Rinomina della cartella non riuscita',
+    'tree.folderMoved': 'Cartella "{name}" spostata',
+    'tree.folderMoveFailed': 'Spostamento della cartella non riuscito',
     'tree.folderDeleted': 'Cartella eliminata',
     'tree.folderDeleteFailed': 'Eliminazione della cartella non riuscita',
     'tree.selectDsFirst': "Seleziona prima un'origine dati nell'albero",
@@ -2322,6 +2355,9 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'Le righe si riordinano solo in ordine personalizzato. I server si possono comunque trascinare nelle cartelle',
     'toast.crossDsMove': 'Impossibile spostare server tra origini dati diverse',
+    'toast.crossDsFolderMove': 'Impossibile spostare cartelle tra origini dati diverse',
+    'toast.folderNoReorder':
+      'Le cartelle non si possono riordinare nella lista. Trascinane una su una cartella per spostarla',
     'toast.batchDeleting': 'Eliminazione {ok}/{n}…',
     'toast.batchDeleted': '{n} server eliminati',
     'toast.batchDeleteFailed': 'Impossibile eliminare {n} server',
@@ -2613,6 +2649,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Nie udało się utworzyć folderu',
     'tree.folderRenamed': 'Zmieniono nazwę folderu na „{name}”',
     'tree.folderRenameFailed': 'Nie udało się zmienić nazwy folderu',
+    'tree.folderMoved': 'Przeniesiono folder „{name}”',
+    'tree.folderMoveFailed': 'Nie udało się przenieść folderu',
     'tree.folderDeleted': 'Folder usunięty',
     'tree.folderDeleteFailed': 'Nie udało się usunąć folderu',
     'tree.selectDsFirst': 'Najpierw wybierz źródło danych w drzewie',
@@ -2635,6 +2673,9 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'Zmiana kolejności wierszy wymaga własnej kolejności. Serwer można nadal przeciągnąć do folderu',
     'toast.crossDsMove': 'Nie można przenosić serwerów między źródłami danych',
+    'toast.crossDsFolderMove': 'Nie można przenosić folderów między źródłami danych',
+    'toast.folderNoReorder':
+      'Folderów nie można przenosić na liście w celu zmiany kolejności. Przeciągnij folder na inny folder, aby go przenieść',
     'toast.batchDeleting': 'Usuwanie {ok}/{n}…',
     'toast.batchDeleted': 'Usunięto serwery: {n}',
     'toast.batchDeleteFailed': 'Nie udało się usunąć {n} serwerów',
@@ -2921,6 +2962,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Falha ao criar a pasta',
     'tree.folderRenamed': 'Pasta renomeada para "{name}"',
     'tree.folderRenameFailed': 'Falha ao renomear a pasta',
+    'tree.folderMoved': 'Pasta "{name}" movida',
+    'tree.folderMoveFailed': 'Falha ao mover a pasta',
     'tree.folderDeleted': 'Pasta excluída',
     'tree.folderDeleteFailed': 'Falha ao excluir a pasta',
     'tree.selectDsFirst': 'Selecione primeiro uma fonte de dados na árvore',
@@ -2943,6 +2986,8 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'As linhas só podem ser reordenadas no modo de ordem personalizada. Ainda é possível soltar servidores em pastas',
     'toast.crossDsMove': 'Não é possível mover servidores entre fontes de dados',
+    'toast.crossDsFolderMove': 'Não é possível mover pastas entre fontes de dados',
+    'toast.folderNoReorder': 'As pastas não podem ser reordenadas na lista. Arraste uma pasta até outra para movê-la',
     'toast.batchDeleting': 'Excluindo {ok}/{n}…',
     'toast.batchDeleted': '{n} servidores excluídos',
     'toast.batchDeleteFailed': 'Falha ao excluir {n} servidores',
@@ -3231,6 +3276,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Falha ao criar a pasta',
     'tree.folderRenamed': 'Pasta renomeada para "{name}"',
     'tree.folderRenameFailed': 'Falha ao renomear a pasta',
+    'tree.folderMoved': 'Pasta "{name}" movida',
+    'tree.folderMoveFailed': 'Falha ao mover a pasta',
     'tree.folderDeleted': 'Pasta eliminada',
     'tree.folderDeleteFailed': 'Falha ao eliminar a pasta',
     'tree.selectDsFirst': 'Selecione primeiro uma fonte de dados na árvore',
@@ -3253,6 +3300,8 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'As linhas só podem ser reordenadas no modo de ordem personalizada. Ainda pode largar servidores em pastas',
     'toast.crossDsMove': 'Não é possível mover servidores entre origens de dados',
+    'toast.crossDsFolderMove': 'Não é possível mover pastas entre origens de dados',
+    'toast.folderNoReorder': 'As pastas não podem ser reordenadas na lista. Arraste uma pasta para outra para a mover',
     'toast.batchDeleting': 'A eliminar {ok}/{n}…',
     'toast.batchDeleted': '{n} servidores eliminados',
     'toast.batchDeleteFailed': 'Falha ao eliminar {n} servidores',
@@ -3541,6 +3590,8 @@ const OVERRIDES = {
     'tree.folderCreateFailed': 'Не удалось создать папку',
     'tree.folderRenamed': 'Папка переименована в «{name}»',
     'tree.folderRenameFailed': 'Не удалось переименовать папку',
+    'tree.folderMoved': 'Папка «{name}» перемещена',
+    'tree.folderMoveFailed': 'Не удалось переместить папку',
     'tree.folderDeleted': 'Папка удалена',
     'tree.folderDeleteFailed': 'Не удалось удалить папку',
     'tree.selectDsFirst': 'Сначала выберите источник данных в дереве',
@@ -3563,6 +3614,9 @@ const OVERRIDES = {
     'toast.reorderNeedCustom':
       'Менять порядок строк можно только в режиме своего порядка. Сервер всё равно можно перетащить в папку',
     'toast.crossDsMove': 'Нельзя перемещать серверы между источниками данных',
+    'toast.crossDsFolderMove': 'Нельзя перемещать папки между источниками данных',
+    'toast.folderNoReorder':
+      'Папки нельзя переупорядочить в списке. Перетащите папку на другую папку, чтобы переместить её',
     'toast.batchDeleting': 'Удаление {ok}/{n}…',
     'toast.batchDeleted': 'Удалено серверов: {n}',
     'toast.batchDeleteFailed': 'Не удалось удалить серверов: {n}',
@@ -3858,6 +3912,9 @@ const OVERRIDES = {
       '\u30d5\u30a9\u30eb\u30c0\u30fc\u540d\u3092\u300c{name}\u300d\u306b\u5909\u66f4\u3057\u307e\u3057\u305f',
     'tree.folderRenameFailed':
       '\u30d5\u30a9\u30eb\u30c0\u30fc\u540d\u306e\u5909\u66f4\u306b\u5931\u6557\u3057\u307e\u3057\u305f',
+    'tree.folderMoved': '\u30d5\u30a9\u30eb\u30c0\u30fc\u300c{name}\u300d\u3092\u79fb\u52d5\u3057\u307e\u3057\u305f',
+    'tree.folderMoveFailed':
+      '\u30d5\u30a9\u30eb\u30c0\u30fc\u306e\u79fb\u52d5\u306b\u5931\u6557\u3057\u307e\u3057\u305f',
     'tree.folderDeleted': '\u30d5\u30a9\u30eb\u30c0\u30fc\u3092\u524a\u9664\u3057\u307e\u3057\u305f',
     'tree.folderDeleteFailed':
       '\u30d5\u30a9\u30eb\u30c0\u30fc\u306e\u524a\u9664\u306b\u5931\u6557\u3057\u307e\u3057\u305f',
@@ -3886,6 +3943,10 @@ const OVERRIDES = {
       '\u30ab\u30b9\u30bf\u30e0\u9806\u5e8f\u30e2\u30fc\u30c9\u3067\u306e\u307f\u4e26\u3079\u66ff\u3048\u3067\u304d\u307e\u3059\u3002\u30b5\u30fc\u30d0\u30fc\u306f\u30d5\u30a9\u30eb\u30c0\u30fc\u3078\u30c9\u30ed\u30c3\u30d7\u3067\u304d\u307e\u3059',
     'toast.crossDsMove':
       '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u3092\u307e\u305f\u3044\u3067\u30b5\u30fc\u30d0\u30fc\u3092\u79fb\u52d5\u3067\u304d\u307e\u305b\u3093',
+    'toast.crossDsFolderMove':
+      '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u3092\u307e\u305f\u3044\u3067\u30d5\u30a9\u30eb\u30c0\u30fc\u3092\u79fb\u52d5\u3067\u304d\u307e\u305b\u3093',
+    'toast.folderNoReorder':
+      '\u30ea\u30b9\u30c8\u5185\u3067\u306f\u30d5\u30a9\u30eb\u30c0\u30fc\u306e\u4e26\u3079\u66ff\u3048\u306f\u3067\u304d\u307e\u305b\u3093\u3002\u30d5\u30a9\u30eb\u30c0\u30fc\u884c\u306b\u30c9\u30ed\u30c3\u30d7\u3059\u308b\u3068\u4e2d\u306b\u79fb\u52d5\u3067\u304d\u307e\u3059',
     'toast.batchDeleting': '\u524a\u9664\u4e2d {ok}/{n}\u2026',
     'toast.batchDeleted': '{n} \u53f0\u306e\u30b5\u30fc\u30d0\u30fc\u3092\u524a\u9664\u3057\u307e\u3057\u305f',
     'toast.batchDeleteFailed':

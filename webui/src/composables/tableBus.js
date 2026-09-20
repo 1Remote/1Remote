@@ -6,6 +6,9 @@
 //   dataTransfer 数据（只有 types 可见），SideTree 的落区判定（同库才高亮/跨库 toast）
 //   需要被拖服务器的 dataSourceName → 拖拽源（ServerTable）start/end 时在此挂快照；
 //   与树内文件夹拖拽（SideTree 自持 dragRow）天然互斥，同时只会有一个非空。
+// - listDragFolder：列表文件夹行拖拽中的文件夹快照（{ dsName, path, name }），
+//   同一思路的文件夹版——SideTree 据此把树节点判为「移入」目标（moveFolder 链路）。
+//   三条拖拽链路（服务器行/列表文件夹行/树内文件夹）互斥，同时至多一个快照非空。
 import { ref } from 'vue'
 
 let focusSeq = 0
@@ -15,3 +18,4 @@ export function handoffTableFocus(delta) {
 }
 
 export const listDragServer = ref(null)
+export const listDragFolder = ref(null)

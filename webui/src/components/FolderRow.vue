@@ -3,7 +3,9 @@
 // 变量（.cell 样式 scoped 于本组件，与 ServerRow 各自持一份，兜底值同源）。
 // 交互：双击=进入；右键=新建子文件夹/重命名/删除（菜单浮层归 ServerTable，与 SideTree
 // 树右键同一菜单集）；拖服务器入内=移动进去——是否接受 drop 由父级判定（dragover/drop
-// 原事件透传，preventDefault 在父级命中判定内完成）。
+// 原事件透传，preventDefault 在父级命中判定内完成）；本行自身可拖（数据源可写时）=
+// 拖动整个子树移动到别处（dragstart/dragend 同样透传，分发与落点判定全归父级，
+// 与 ServerRow 拖拽同模式）。
 // 勾选复选框=选中该文件夹全部子孙服务器（含子文件夹深处）：三态（全选/半选/未选）由
 // 父级按「子孙 id ∩ checked」派生传入，本组件只渲染与上抛 toggle——勾选集合始终是服务器
 // id 集（父级 checked），文件夹不占 id。
@@ -17,7 +19,18 @@ const props = defineProps({
   checkState: { type: Object, default: null }, // { checked, indeterminate, count } | null（无子孙=禁用未选）
   writable: { type: Boolean, default: true }, // 数据源可写：只读源禁用 重命名/删除 按钮（title 提示）
 })
-const emit = defineEmits(['open', 'context', 'dragover', 'dragleave', 'drop', 'toggle-check', 'rename', 'delete'])
+const emit = defineEmits([
+  'open',
+  'context',
+  'dragstart',
+  'dragover',
+  'dragleave',
+  'drop',
+  'dragend',
+  'toggle-check',
+  'rename',
+  'delete',
+])
 const { t } = useI18n()
 
 // 三态复选框：indeterminate 无对应 HTML 属性、须写 DOM 属性（与 ServerTable 表头全选同款）；
@@ -37,9 +50,11 @@ const disabled = () => !props.checkState?.count
     :title="folder.path"
     @dblclick="emit('open', folder)"
     @contextmenu.prevent="emit('context', { folder, x: $event.clientX, y: $event.clientY })"
+    @dragstart="emit('dragstart', $event)"
     @dragover="emit('dragover', $event)"
     @dragleave="emit('dragleave')"
     @drop="emit('drop', $event)"
+    @dragend="emit('dragend')"
   >
     <div class="cell cell-check">
       <input
@@ -86,7 +101,7 @@ const disabled = () => !props.checkState?.count
 
 <style scoped>
 /* 文件夹行：列对齐复用 --c-* 变量（ServerRow 的 .cell 样式 scoped 于彼组件，此处自带一份）；
-   双击=进入、右键=新建文件夹、拖服务器入内=移动 */
+   双击=进入、右键=新建文件夹、拖服务器入内=移动、可写数据源下行自身可拖（子树移动） */
 .frow {
   display: flex;
   align-items: center;
@@ -95,6 +110,10 @@ const disabled = () => !props.checkState?.count
   border-bottom: 1px solid var(--border);
   user-select: none;
   cursor: default;
+}
+
+.frow[draggable='true'] {
+  cursor: grab;
 }
 
 .frow:hover {
