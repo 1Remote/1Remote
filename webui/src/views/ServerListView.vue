@@ -249,10 +249,11 @@ async function onExport(ids) {
   }
 }
 
-// ---- 全局 Esc 链：一次 Esc 只退一级，按 右键菜单 → 勾选 → 搜索 → 表格光标 逐级回退。
-// 菜单/勾选/光标归 ServerTable（经 ref 暴露的 *IfOpen/*IfAny 方法，返回是否消费），
+// ---- 全局 Esc 链：一次 Esc 只退一级，按 右键菜单 → 列菜单 → 勾选 → 搜索 → 表格光标
+// 逐级回退。菜单/勾选/光标归 ServerTable（经 ref 暴露的 *IfOpen/*IfAny 方法，返回是否消费），
 // 搜索归本组件（useServers 共享态）——三处状态在唯一的 window 级 handler 里按序裁决，
 // 与焦点位置无关（搜索框元素级 handler 在焦点不在输入框时不会触发，无法参与统一链序）。
+// 列菜单开时 Esc 只关列菜单（closeColMenuIfOpen 在勾选/搜索/光标之前——菜单一层）。
 // 编辑抽屉打开时 Esc 归抽屉（关闭/未保存确认，EditorDrawer 自持 window 级 handler，注册在
 // 本链之后，若此处不守卫会先消费掉 Esc），本链整体让位。----
 function onGlobalEsc(e) {
@@ -262,6 +263,7 @@ function onGlobalEsc(e) {
   if (importModal.value) return // 导入模态在开：Esc 归 n-modal（关模态/其内下拉）
   const tb = table.value // 命名避免遮蔽 i18n 的 t
   if (tb?.closeMenuIfOpen()) e.preventDefault()
+  else if (tb?.closeColMenuIfOpen()) e.preventDefault()
   else if (tb?.clearCheckedIfAny()) e.preventDefault()
   else if (searchQuery.value) {
     searchQuery.value = ''
@@ -314,13 +316,15 @@ function openDuplicate(server) {
 }
 
 // 删除：确认对话框（naive dialog）→ DELETE → toast；UpdateServer/DeleteServer 系不触发
-// SSE（已知后端行为），前端兜底 reload 刷新列表
+// SSE（已知后端行为），前端兜底 reload 刷新列表。autoFocus:false——删除确认不自动聚焦
+// positive 按钮，Enter 不可误触确认（Esc 仍可取消；naive 默认 autoFocus 会让回车落到按钮上）
 function onDelete(server) {
   dialog.warning({
     title: t('editor.deleteTitle'),
     content: t('editor.deleteConfirm', { name: server.displayName }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
+    autoFocus: false,
     onPositiveClick: async () => {
       try {
         await api.deleteServer(server.id, server.dataSourceName)
@@ -333,6 +337,49 @@ function onDelete(server) {
       }
     },
   })
+}
+
+// ---- 批量删除：批量条「🗑 删除」→ 确认（autoFocus:false 同 onDelete——回车不可误触）→
+// 逐台串行 DELETE + 进度 toast（loading 句柄原地更新 content）→ reload。
+// 删除后指向已删行的树叶选中态回退；勾选集由 useRowChecks 的数据剔除 watch 自动收敛 ----
+function onBatchDelete(ids) {
+  if (!ids?.length) return
+  const list = (ids || []).map((id) => servers.value.find((s) => s.id === id)).filter(Boolean)
+  if (!list.length) return
+  dialog.warning({
+    title: t('batchDelete.confirmTitle'),
+    content: t('batchDelete.confirmText', { n: list.length }),
+    positiveText: t('editor.deleteYes'),
+    negativeText: t('editor.cancel'),
+    autoFocus: false,
+    onPositiveClick: () => runBatchDelete(list),
+  })
+}
+
+async function runBatchDelete(list) {
+  const n = list.length
+  const progress = message.loading(t('toast.batchDeleting', { ok: 0, n }), { duration: 0 })
+  let ok = 0
+  for (const s of list) {
+    try {
+      await api.deleteServer(s.id, s.dataSourceName)
+      ok++
+      if (selection.value?.serverId === s.id) selection.value = null
+    } catch (e) {
+      console.warn('[ServerListView] batch delete failed:', s.id, e?.message || e)
+    }
+    progress.content = t('toast.batchDeleting', { ok, n })
+  }
+  await reload()
+  const failed = n - ok
+  if (!failed) {
+    progress.type = 'success'
+    progress.content = t('toast.batchDeleted', { n: ok })
+  } else {
+    progress.type = ok ? 'warning' : 'error'
+    progress.content = t('toast.batchDeleted', { n: ok }) + ' · ' + t('toast.batchDeleteFailed', { n: failed })
+  }
+  setTimeout(() => progress.destroy(), failed ? 5000 : 2500)
 }
 
 // ---- 批量编辑：批量条按钮 → 抽屉 bulk 模式 ----
@@ -460,6 +507,7 @@ const importModal = ref(false)
         @counted="tableCount = $event"
         @connect="onConnect"
         @batch-connect="onBatchConnect"
+        @batch-delete="onBatchDelete"
         @bulk-edit="openBulkEdit"
         @export="onExport"
         @edit="openEdit"

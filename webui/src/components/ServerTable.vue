@@ -5,14 +5,18 @@
 //   此处仅剩树选中过滤，两层交集自然复合；搜索激活时树过滤整体让位（搜索本就是全库递归语义）
 // - 视图语义：「全部数据」虚拟根 = 跨库递归总览且不显示文件夹行（来源上下文由行内 folder 列
 //   承担）；数据源根/文件夹内仅列直接子级服务器（资源管理器式浏览），子文件夹以文件夹行呈现
-// - 排序：名称/地址（自然 IP）/协议/最近连接，点表头升降切换；localStorage '1r-sort' 持久化
-// - 多选：单击=单选、Ctrl/⌘=切换、Shift=范围（锚点=上次点击行）；表头三态全选
+// - 排序：名称/地址（自然 IP）/协议/最近连接，点表头 升→降→无 三态循环（第三态清排序
+//   恢复默认树序）；localStorage '1r-sort' 持久化（清除态落 {key:''}）
+// - 多选：勾选只由 复选框点击 / Ctrl+点击 / Shift+点击 / Ctrl+A / 文件夹与表头复选框
+//   触发——裸点击行仅设光标（详见 composables/useRowChecks.js 文件头）；表头三态全选
 //   （=当前视图可见服务器行，不含文件夹的隐藏子孙——要含子孙勾文件夹行复选框）；
-//   勾选集合始终是服务器 id 集，「已选 N 台」与批量编辑/导出自然作用于全集。
+//   勾选集合始终是服务器 id 集，「已选 N 台」与批量编辑/导出/删除自然作用于全集。
 //   勾选/文件夹勾选/剔除的完整语义与口径见 composables/useRowChecks.js 文件头
 // - 键盘：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、Ctrl+A 全选可见、
-//   E 编辑 / Del 删除 / Ctrl+D 复制（目标行 = 恰好单选该台，否则光标行）；
-//   Esc 不在此处理——全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 统一调度（见其 onGlobalEsc）
+//   E 编辑 / Del 删除 / Ctrl+D 复制（目标行 = 恰好单选该台，否则光标行；Ctrl+D 在
+//   多选（>1）时忽略——批量复制无对应后端动作，防误触）；
+//   Esc 不在此处理——全局 Esc 链（菜单→列菜单→勾选→搜索→光标）由 ServerListView
+//   统一调度（见其 onGlobalEsc）
 // - 批量条 + ≡ 自定义顺序 / ▦ 列菜单工具簇：TableToolbar 组件承载，Teleport 至面包屑行右侧
 //   （#crumb-actions）；勾选/排序模式/列状态仍归本组件，不上提
 // - 行拖拽：重排仅自定义顺序模式生效（上/下半行 = 插到目标前/后）；任意模式拖到
@@ -32,6 +36,7 @@ import { api } from '../api'
 import { useColumns } from '../composables/useColumns'
 import { useRowChecks } from '../composables/useRowChecks'
 import { useServers } from '../composables/useServers'
+import { consumeBatchHint, focusHandoff, listDragServer } from '../composables/tableBus'
 import { naturalIpCompare } from '../utils/compare'
 
 const props = defineProps({
@@ -43,6 +48,7 @@ const props = defineProps({
 const emit = defineEmits([
   'connect',
   'batch-connect',
+  'batch-delete',
   'bulk-edit',
   'export',
   'edit',
@@ -96,7 +102,10 @@ function readSort() {
 }
 const sort = ref(readSort())
 function toggleSort(key) {
-  sort.value = sort.value.key === key ? { key, dir: -sort.value.dir } : { key, dir: 1 }
+  // 三态循环：升 → 降 → 无（第三态清排序恢复默认树序，随清除一并持久化）
+  if (sort.value.key !== key) sort.value = { key, dir: 1 }
+  else if (sort.value.dir > 0) sort.value = { key, dir: -1 }
+  else sort.value = { key: '', dir: 1 }
   try {
     localStorage.setItem('1r-sort', JSON.stringify(sort.value))
   } catch {
@@ -145,26 +154,41 @@ const fullOrder = computed(() => {
 
 // ---- 行拖拽：行恒可拖（dragstart 始终记录快照），custom 模式内上/下半行 = 插到目标前/后，
 // 对齐 WPF 列表 Drop 的 height/2 判定；drop 后 POST 整库新顺序 → 以响应重建 Map → sorted 即时重排；
-// 非 custom 模式下重排 drop 不被接受（onRowDragOver/Drop 前置校验）；
+// 非 custom 模式下重排不被接受（dragover 不 preventDefault → drop 被浏览器拒绝，
+// 悬停到别的行时 toast 一次性说明原因——每次拖拽只提示一次）；
 // 任意模式拖到「文件夹行」= 移入该文件夹（onFolderDragOver/Drop，跨数据源拒绝）----
 const dragId = ref(null)
 const dragServer = ref(null) // 被拖服务器快照（drop 时列表可能已变）
 const dropHint = ref(null) // { id, before }
 const dropFolder = ref(null) // { dsName, path } 悬停中的文件夹行
+let reorderHintShown = false // 非 custom 重排提示的本次拖拽去重（dragstart 复位）
 function onRowDragStart(server, e) {
   dragId.value = server.id
   dragServer.value = server
+  listDragServer.value = server // SideTree 落区判定用（dragover 期读不到 dataTransfer 数据，见 tableBus）
+  reorderHintShown = false
   e.dataTransfer.effectAllowed = 'move'
   e.dataTransfer.setData('text/plain', server.id) // Firefox 需要非空 data
+  // 与树内拖拽（application/x-1r-tree-node）以类型区分——SideTree drop 分发依据
+  e.dataTransfer.setData('application/x-1r-server-row', server.id)
 }
 function onRowDragEnd() {
   dragId.value = null
   dragServer.value = null
   dropHint.value = null
   dropFolder.value = null
+  listDragServer.value = null
 }
 function onRowDragOver(server, e) {
-  if (!isCustom.value || !dragId.value || dragId.value === server.id) return
+  if (!dragId.value || dragId.value === server.id) return
+  if (!isCustom.value) {
+    // 非 custom 模式：不 preventDefault（重排 drop 被浏览器拒绝），toast 只提示一次/拖拽
+    if (!reorderHintShown) {
+      reorderHintShown = true
+      message.info(t('toast.reorderNeedCustom'))
+    }
+    return
+  }
   e.preventDefault()
   e.dataTransfer.dropEffect = 'move'
   const r = e.currentTarget.getBoundingClientRect()
@@ -286,13 +310,29 @@ const folderRows = computed(() => {
   }
   return list.map((f) => ({ kind: 'folder', folder: f }))
 })
+// 「..」上级行：文件夹视图（选中了数据源内的子文件夹）时列表最顶行——双击=导航上级、
+// 拖服务器入内 = 移到上级文件夹（与文件夹行共用 onFolderDragOver/Drop，目标=父路径）。
+// 不参与排序/勾选；右键仅抑制浏览器默认菜单（无自有菜单，右键动作归 Task B）
+const parentRow = computed(() => {
+  const sel = props.selection
+  if (!sel?.dataSourceName || !sel.folderPath) return null
+  const parts = sel.folderPath.split('/')
+  parts.pop()
+  return { kind: 'parent', dsName: sel.dataSourceName, path: parts.join('/') }
+})
 // 统一渲染序列（虚拟滚动与直渲染共用）：srvIndex 保留服务器在 sorted 内的下标
 //（Shift 范围选择/锚点语义仍基于纯服务器列表）
 const renderRows = computed(() => [
+  ...(parentRow.value ? [parentRow.value] : []),
   ...folderRows.value,
   ...sorted.value.map((s, i) => ({ kind: 'server', server: s, srvIndex: i })),
 ])
-const rowKey = (row) => (row.kind === 'folder' ? 'f:' + row.folder.dsName + ':' + row.folder.path : row.server.id)
+const rowKey = (row) =>
+  row.kind === 'parent'
+    ? 'p:' + row.dsName + ':' + row.path
+    : row.kind === 'folder'
+      ? 'f:' + row.folder.dsName + ':' + row.folder.path
+      : row.server.id
 
 // ---- 多选：勾选集/表头三态全选/文件夹行勾选（含子孙）/数据变化剔除。
 // servers 域=本组件收到的过滤后列表（tags/搜索/SSE 重载），与剔除 watch 同源——被过滤
@@ -310,9 +350,18 @@ const {
   onFolderToggleCheck,
 } = useRowChecks({ sorted, servers: () => props.servers, folders: () => props.folders })
 
+// 批量条首次出现（0→N）的一次性提示：裸点击不再勾选后，勾选入口变隐蔽（复选框/Ctrl/
+// Shift/Ctrl+A）——首次勾选时告知操作条与右键两个批量入口。consumeBatchHint 会话级
+// 去重（表格卸载重挂载不重发）
+watch(checked, (cur, prev) => {
+  if (prev.size === 0 && cur.size > 0 && consumeBatchHint()) {
+    message.info(t('batch.hint', { n: cur.size }))
+  }
+})
+
 function onRowClick(server, ev, idx) {
   cursorId.value = server.id // 点击行 = 光标落位（Enter 连接光标行，↑↓ 由此起算）
-  rowClickSelect(ev, idx, server.id) // 勾选分支：单击/Ctrl/Shift（锚点语义见 useRowChecks）
+  rowClickSelect(ev, idx, server.id) // 勾选分支：Ctrl/Shift（裸点击不改勾选集，见 useRowChecks）
 }
 // 视图变化作废不可见的光标行（树切换/搜索过滤后旧行号已无意义；光标是纯视觉焦点，
 // 只随可见列表存在。Shift 锚点的作废归 useRowChecks，见其文件头）
@@ -429,8 +478,10 @@ function onGlobalKey(e) {
     e.preventDefault() // 抢在浏览器文本全选前，全选当前视图（合并语义同 toggleAll：保留隐藏子孙勾选）
     addAllVisible()
   } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'd') {
-    // Ctrl+D 复制：preventDefault 阻断浏览器「添加书签」默认
+    // Ctrl+D 复制：preventDefault 阻断浏览器「添加书签」默认；仅单选（≤1 勾选）生效，
+    // 多选（>1）忽略——批量复制无对应动作，防「以为整批复制实际只复制一台」的误触
     e.preventDefault()
+    if (checked.value.size > 1) return
     const s = keyTargetServer()
     if (s) emit('duplicate', s)
   } else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === 'Delete') {
@@ -463,6 +514,14 @@ function closeMenuIfOpen() {
   }
   return false
 }
+function closeColMenuIfOpen() {
+  // 列菜单状态在本组件（TableToolbar 只是受控展示）；Esc 链在右键菜单之后接入本级
+  if (colMenu.value) {
+    colMenu.value = false
+    return true
+  }
+  return false
+}
 function clearCheckedIfAny() {
   if (checked.value.size) {
     clearChecked()
@@ -477,7 +536,16 @@ function clearCursorIfAny() {
   }
   return false
 }
-defineExpose({ closeMenuIfOpen, clearCheckedIfAny, clearCursorIfAny })
+defineExpose({ closeMenuIfOpen, closeColMenuIfOpen, clearCheckedIfAny, clearCursorIfAny })
+
+// 搜索框 ↑/↓ 焦点移交（tableBus.focusHandoff）：App.vue 顶栏搜索框按下方向键 →
+// 表格接管键盘（tableFocused 置真——onDocFocusin 不会因这次没有真实 DOM 焦点变化而
+// 感知），并把光标落到首/末行（已有光标则按方向步进）
+watch(focusHandoff, (req) => {
+  if (!req) return
+  tableFocused.value = true
+  moveCursor(req.delta)
+})
 
 // ---- 列状态：列宽（拖右缘调整/双击重置）+ 列显隐（▦ 列菜单），经 useColumns 持久化
 // localStorage '1r-cols'（仅本地）。flex 列有自定义宽时改为定宽（--c-*-grow=0，
@@ -497,7 +565,7 @@ const colVars = computed(() => {
   const grow0 = (k) => (widthOf(k) ? { ['--c-' + k + '-grow']: '0' } : {})
   return {
     '--c-check': '30px',
-    '--c-status': '58px',
+    '--c-status': '42px',
     '--c-name': px('name', showFolder.value ? '2.3' : '2.8'),
     '--c-addr': px('addr', '1.6'),
     '--c-proto': px('proto', '84px'),
@@ -581,6 +649,7 @@ onBeforeUnmount(() => {
       :hidden-cols="hiddenCols"
       :col-labels="COL_LABELS"
       @batch-connect="emit('batch-connect', [...checked])"
+      @batch-delete="emit('batch-delete', [...checked])"
       @bulk-edit="emit('bulk-edit', [...checked])"
       @export="emit('export', [...checked])"
       @clear-checked="clearChecked"
@@ -674,8 +743,26 @@ onBeforeUnmount(() => {
            序列 = 文件夹行（勾选子孙/双击进入/右键新建/拖入移动）+ 服务器行 -->
       <div v-if="useVirtual" v-bind="wrapperProps" class="virtual-wrap">
         <template v-for="{ data: row } in virtualRows" :key="rowKey(row)">
+          <div
+            v-if="row.kind === 'parent'"
+            class="row prow"
+            :class="{ 'drop-into': dropFolder && dropFolder.path === row.path && dropFolder.dsName === row.dsName }"
+            :title="t('row.parentFolder')"
+            @dblclick="emit('open-folder', { dsName: row.dsName, path: row.path })"
+            @contextmenu.prevent
+            @dragover="onFolderDragOver(row, $event)"
+            @dragleave="onFolderDragLeave(row)"
+            @drop="onFolderDrop(row, $event)"
+          >
+            <div class="cell cell-check"></div>
+            <div class="cell cell-status"></div>
+            <div class="cell cell-name p-name">
+              <span class="p-icon">📁</span>
+              <span class="p-label">..</span>
+            </div>
+          </div>
           <FolderRow
-            v-if="row.kind === 'folder'"
+            v-else-if="row.kind === 'folder'"
             :folder="row.folder"
             :show-ds="showDs"
             :check-state="folderChecks.get(rowKey(row))"
@@ -716,8 +803,26 @@ onBeforeUnmount(() => {
         </template>
       </div>
       <template v-for="row in useVirtual ? [] : renderRows" :key="rowKey(row)">
+        <div
+          v-if="row.kind === 'parent'"
+          class="row prow"
+          :class="{ 'drop-into': dropFolder && dropFolder.path === row.path && dropFolder.dsName === row.dsName }"
+          :title="t('row.parentFolder')"
+          @dblclick="emit('open-folder', { dsName: row.dsName, path: row.path })"
+          @contextmenu.prevent
+          @dragover="onFolderDragOver(row, $event)"
+          @dragleave="onFolderDragLeave(row)"
+          @drop="onFolderDrop(row, $event)"
+        >
+          <div class="cell cell-check"></div>
+          <div class="cell cell-status"></div>
+          <div class="cell cell-name p-name">
+            <span class="p-icon">📁</span>
+            <span class="p-label">..</span>
+          </div>
+        </div>
         <FolderRow
-          v-if="row.kind === 'folder'"
+          v-else-if="row.kind === 'folder'"
           :folder="row.folder"
           :show-ds="showDs"
           :check-state="folderChecks.get(rowKey(row))"
@@ -925,6 +1030,49 @@ onBeforeUnmount(() => {
 .virtual-wrap .frow {
   box-sizing: border-box;
   /* 与 ServerRow 同款：虚拟分支 36px 几何精确一致 */
+}
+
+/* 「..」上级行：文件夹视图顶行——列宽消费 --c-*（.cell 样式 scoped 于 ServerRow/FolderRow
+   各自组件，此处自带一份），36px 几何与真实行对齐；双击回上级、拖入=移到上级文件夹 */
+.prow {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 10px 0 0;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+.prow:hover {
+  background: var(--bg-hover);
+}
+.prow.drop-into {
+  background: var(--accent-container);
+  outline: 1px dashed var(--accent);
+  outline-offset: -1px;
+}
+.prow .cell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.prow .cell-check {
+  flex: 0 0 var(--c-check);
+}
+.prow .cell-status {
+  flex: 0 0 var(--c-status);
+}
+.prow .cell-name {
+  flex: 1 1 0;
+  gap: 8px;
+}
+.p-icon {
+  flex: 0 0 22px;
+  text-align: center;
+  font-size: 1.0769rem;
+}
+.p-label {
+  color: var(--text-1);
+  font-size: 0.9615rem;
 }
 
 .empty {

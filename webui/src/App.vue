@@ -7,6 +7,7 @@ import { useNaiveTheme } from './themes'
 import { useServers } from './composables/useServers'
 import { useEditorBus } from './composables/editorBus'
 import { useVersionInfo } from './composables/useVersionInfo'
+import { handoffTableFocus } from './composables/tableBus'
 const naive = useNaiveTheme()
 const { t, locale } = useI18n()
 const { requestNewServer, requestImport, editorOpen, uiLock } = useEditorBus()
@@ -187,7 +188,8 @@ function onTopbarDblClick(e) {
               <img class="logo-mark" src="/logo.png" width="16" height="16" alt="" />
               1Remote
             </div>
-            <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup）。
+            <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup）；
+                 ↑/↓ 把键盘焦点移交给服务器列表（tableBus.handoffTableFocus：光标落首/末行，此后 ↑↓/Enter 归表格）。
                  编辑抽屉/设置页/模态打开时锁定（overlayActive）：容器弱化 + input disabled -->
             <div
               class="searchbox"
@@ -203,6 +205,8 @@ function onTopbarDblClick(e) {
                 type="text"
                 :disabled="overlayActive"
                 :placeholder="t('search.placeholder')"
+                @keydown.down.prevent="handoffTableFocus(1)"
+                @keydown.up.prevent="handoffTableFocus(-1)"
               />
               <!-- 常驻占位仅切 visibility（不 v-if）：避免 spinner 出现/消失时输入框宽度跳动 -->
               <span class="sb-spin" :class="{ on: searching }" :title="t('search.searching')"></span>

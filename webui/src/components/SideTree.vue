@@ -17,6 +17,7 @@ import { useServers } from '../composables/useServers'
 import { buildTree, countDirectChildServers, fullKey, holderAt } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
+import { listDragServer } from '../composables/tableBus'
 
 const props = defineProps({
   selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据（v-model:selection）
@@ -96,9 +97,14 @@ const rows = computed(() => {
 })
 
 // ---- 树拖拽（仅文件夹可拖）：原生 HTML5 DnD。
-// 落区判定：行内上 25% = 插到目标前、下 25% = 插到目标后、中部 = 移入。
-// 非法目标（跨数据源 / 拖到自己 / 拖文件夹到自己的后代 / 根行前插后插 / 只读数据源）
-// 不显示指示且不 preventDefault → drop 被浏览器拒绝。
+// 两条互斥链路，以拖拽来源分发：
+// - 列表服务器行拖入（listDragServer 非空，见 tableBus）：数据源根/文件夹节点均为
+//   「移入」目标（无前后插语义）；同库才高亮（dropEffect=move），跨库不高亮
+//   （dropEffect=none）但仍 preventDefault 收下 drop → toast「不能跨数据源移动」；
+//   「全部数据」虚拟根无确定数据源，不收 drop；
+// - 树内文件夹拖拽（dragRow 非空）：行内上 25% = 插到目标前、下 25% = 插到目标后、
+//   中部 = 移入。非法目标（跨数据源 / 拖到自己 / 拖文件夹到自己的后代 / 根行前插后插 /
+//   只读数据源）不显示指示且不 preventDefault → drop 被浏览器拒绝。
 const dragRow = ref(null) // 被拖行的 rows 快照（drop 时树可能未变——快照够用）
 const dropHint = ref(null) // { key, zone } zone: 'before' | 'after' | 'into'
 const ZONE_RATIO = 0.25
@@ -131,12 +137,31 @@ function onRowDragStart(row, e) {
   dragRow.value = row
   e.dataTransfer.effectAllowed = 'move'
   e.dataTransfer.setData('text/plain', row.key) // Firefox 需要非空 data 才会启动拖拽
+  // 与列表行拖拽（application/x-1r-server-row）以类型区分——列表 drop 分发依据
+  e.dataTransfer.setData('application/x-1r-tree-node', row.key)
 }
 function onRowDragEnd() {
   dragRow.value = null
   dropHint.value = null
 }
+// 行 dsName（根行持 ds 对象、文件夹行持 dsName 字符串；列表拖入与树内拖共用）
+const rowDsName = (row) => (row.kind === 'root' ? row.ds.name : row.dsName)
 function onRowDragOver(row, e) {
+  const dragSrv = listDragServer.value
+  if (dragSrv) {
+    // 列表服务器行拖入树：同库目标高亮为「移入」；跨库收下 drop 但不给可放光标
+    //（drop 时 toast）；「全部数据」虚拟根无数据源归属 → 不收
+    if (moving.value || row.kind === 'all') return
+    e.preventDefault()
+    if (dragSrv.dataSourceName === rowDsName(row)) {
+      e.dataTransfer.dropEffect = 'move'
+      dropHint.value = { key: row.key, zone: 'into' }
+    } else {
+      e.dataTransfer.dropEffect = 'none'
+      dropHint.value = null
+    }
+    return
+  }
   if (!dragRow.value || moving.value) return
   const zone = zoneFor(row, e)
   if (!canDrop(row, zone)) {
@@ -147,7 +172,23 @@ function onRowDragOver(row, e) {
   e.dataTransfer.dropEffect = 'move'
   dropHint.value = { key: row.key, zone }
 }
+function onRowDragLeave(row) {
+  // 离开行即清该行指示（列表拖入的 drop 不会有树内 dragend 兜底，dragleave 必须自理）
+  if (dropHint.value?.key === row.key) dropHint.value = null
+}
 function onRowDrop(row, e) {
+  const dragSrv = listDragServer.value
+  if (dragSrv) {
+    e.preventDefault()
+    dropHint.value = null
+    if (moving.value || row.kind === 'all') return
+    if (dragSrv.dataSourceName !== rowDsName(row)) {
+      message.warning(t('toast.crossDsMove'))
+      return
+    }
+    folderOps.moveServersToFolder([dragSrv], rowDsName(row), row.kind === 'folder' ? row.folder.path : '')
+    return
+  }
   const hint = dropHint.value
   dropHint.value = null
   if (!dragRow.value || moving.value || !hint || hint.key !== row.key) return
@@ -327,6 +368,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
         @dragstart="onRowDragStart(row, $event)"
         @dragend="onRowDragEnd"
         @dragover="onRowDragOver(row, $event)"
+        @dragleave="onRowDragLeave(row)"
         @drop="onRowDrop(row, $event)"
       >
         <!-- 全部数据源 / 根 / 文件夹：展开箭头 -->
@@ -367,9 +409,15 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
     </div>
 
     <!-- 标签区：标题行恒定不随列表滚动（.tags 拆 head 固定 + .tag-list 独占滚动）；
+         「+ 管理」入口在标题行右端（原为列表区末尾的 chip——混在标签里不显眼）；
          chips+计数，置顶在前；点击=过滤条件；超长名截断（title 恒为全名） -->
     <div class="tags">
-      <div class="tags-head">{{ t('tree.tags') }}</div>
+      <div class="tags-head">
+        <span>{{ t('tree.tags') }}</span>
+        <button class="tags-manage" :title="t('tagm.title')" @click="emit('manage-tags')">
+          {{ t('tree.manageTags') }}
+        </button>
+      </div>
       <div class="tag-list">
         <!-- 循环变量命名 tg：避免遮蔽 script setup 暴露的 i18n 翻译函数 t -->
         <button
@@ -382,10 +430,6 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
         >
           <span v-if="tg.isPinned" class="pin">📌</span><span class="tag-name">{{ tagName(tg.name) }}</span
           ><span class="tag-count">{{ tg.count }}</span>
-        </button>
-        <!-- 标签管理：打开模态（TagManagerModal 由 ServerListView 挂载）——ds 取当前树选中 -->
-        <button class="tag-chip tag-manage" :title="t('tagm.title')" @click="emit('manage-tags')">
-          {{ t('tree.manageTags') }}
         </button>
       </div>
     </div>
@@ -531,9 +575,26 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 }
 .tags-head {
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 「+ 管理」贴标题行右端 */
   color: var(--text-4);
   font-size: 0.8462rem;
   margin-bottom: 6px;
+}
+/* 标签管理入口：标题行右端的轻量文字按钮（不再混入 chips 列表） */
+.tags-manage {
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 0.8462rem;
+  line-height: 1;
+  padding: 2px 0;
+  cursor: pointer;
+}
+.tags-manage:hover {
+  color: var(--text-1);
+  background: transparent;
 }
 .tag-list {
   flex: 1;
@@ -579,9 +640,6 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 .tag-count {
   flex: 0 0 auto;
   color: var(--text-4);
-}
-.tag-manage {
-  color: var(--text-3);
 }
 
 .collapse-btn {
