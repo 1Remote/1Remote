@@ -300,7 +300,14 @@ function requestClose() {
       closing = false
     },
     onClose: () => {
-      closing = false // 点遮罩/右上角关闭 = 继续编辑
+      closing = false // 点 ✕ 关闭按钮 = 继续编辑
+    },
+    // Esc / 点遮罩关闭走 Modal 的 update:show 路径，不经过上面的 onClose——naive 仅在
+    // ✕ 按钮上回调 onClose（DialogEnvironment.mjs handleCloseClick）。若不复位，closing
+    // 永真 → requestClose 永久早退，脏抽屉再也无法关闭（第三轮易用性报告 G1 死锁）。
+    // onAfterLeave 在任何关闭路径的离场动画后都触发，兜底复位（promptName 同款安全网）
+    onAfterLeave: () => {
+      closing = false
     },
   })
 }
