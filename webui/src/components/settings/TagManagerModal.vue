@@ -231,7 +231,7 @@ function runConnectAll(list) {
             :input-props="{ spellcheck: false }"
             :placeholder="t('tagm.renamePlaceholder')"
             autofocus
-            @keydown.enter.prevent="confirmRename"
+            @keydown.enter.prevent="!$event.isComposing && confirmRename()"
             @keydown.esc.prevent="cancelRename"
             @blur="onRenameBlur"
           />
