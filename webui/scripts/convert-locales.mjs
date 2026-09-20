@@ -223,10 +223,10 @@ const MAPPING = {
   'editor.group.connection': 'Connection Settings',
   'editor.dataSource': 'Data Source name',
   'editor.protocol': 'Protocol',
-  // 批次7 #2：头部下拉框前缀标签（协议/数据库）。'Protocol' 与
-  // system_options_data_security_database 在 WPF 14 语言均有译文 → 走映射
+  // 批次7 #2：头部下拉框前缀标签（协议）。'Protocol' 在 WPF 14 语言均有译文 → 走映射；
+  // headDsLabel 曾同走 system_options_data_security_database（"数据库"），易用性审查 F10
+  // 后改词条「数据源」（全站同术语），映射移除、译文入 OVERRIDES
   'editor.headProtocolLabel': 'Protocol',
-  'editor.headDsLabel': 'system_options_data_security_database',
   'editor.close': 'Close',
   'editor.cancel': 'Cancel',
   'editor.save': 'Save',
@@ -477,7 +477,7 @@ const OVERRIDES = {
     'empty.folder':
       '\u6b64\u8cc7\u6599\u593e\u70ba\u7a7a\u3002\u9ede\u53f3\u4e0a\u89d2 + \u65b0\u589e\u4f3a\u670d\u5668\uff0c\u6216\u53f3\u9375\u65b0\u589e\u8cc7\u6599\u593e\u3002',
     'empty.importFormats': '\u652f\u63f4\u5f9e mRemoteNG / .rdp / .csv / .json \u532f\u5165',
-    'folder.contains': '\u5167\u542b {n} \u53f0',
+    'folder.contains': '\u76f4\u63a5\u5167\u542b {n} \u53f0',
     'list.doubleClickHint': '\u96d9\u64ca\u4f3a\u670d\u5668\u5373\u53ef\u9023\u7dda',
     'list.multiSelectHint': 'Ctrl+\u9ede\u64ca / Shift+\u9ede\u64ca\u53ef\u591a\u9078',
     'conn.connected': '\u5df2\u9023\u7dda',
@@ -637,6 +637,7 @@ const OVERRIDES = {
     'editor.headProtocolTip':
       '\u9023\u7dda\u5354\u5b9a\uff08\u5207\u63db\u5c07\u6309\u516c\u5171\u57fa\u5e95\u4fdd\u7559\u6b04\u4f4d\uff09',
     'editor.headDsTip': '\u4f3a\u670d\u5668\u6240\u5c6c\u8cc7\u6599\u4f86\u6e90',
+    'editor.headDsLabel': '\u8cc7\u6599\u4f86\u6e90',
     'editor.dataSourceLabel': '\u8cc7\u6599\u4f86\u6e90',
     'editor.loading': '\u8f09\u5165\u7d44\u614b\u4e2d\u2026',
     'editor.loadFailed': '\u8f09\u5165\u7d44\u614b\u5931\u6557',
@@ -823,7 +824,7 @@ const OVERRIDES = {
     'empty.folder':
       'Tato složka je prázdná. Vytvořte server tlačítkem + vpravo nahoře, nebo klikněte pravým tlačítkem pro vytvoření složky.',
     'empty.importFormats': 'Podporuje import z mRemoteNG / .rdp / .csv / .json',
-    'folder.contains': 'Obsahuje {n}',
+    'folder.contains': 'Obsahuje přímo {n}',
     'list.doubleClickHint': 'Dvojklik na server ho připojí',
     'list.multiSelectHint': 'Ctrl+klik nebo Shift+klik vybere více serverů',
     'conn.connected': 'Připojeno',
@@ -952,6 +953,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Kopie: {name}',
     'editor.headProtocolTip': 'Protokol připojení (při přepnutí zůstanou společné základní pole)',
     'editor.headDsTip': 'Zdroj dat, ke kterému server patří',
+    'editor.headDsLabel': 'Zdroj dat',
     'editor.dataSourceLabel': 'Zdroj dat',
     'editor.loading': 'Načítání konfigurace…',
     'editor.loadFailed': 'Konfiguraci se nepodařilo načíst',
@@ -1137,7 +1139,7 @@ const OVERRIDES = {
     'empty.folder':
       'Dieser Ordner ist leer. Erstellen Sie oben rechts mit + einen Server oder per Rechtsklick einen Ordner.',
     'empty.importFormats': 'Import aus mRemoteNG / .rdp / .csv / .json wird unterstützt',
-    'folder.contains': 'Enthält {n}',
+    'folder.contains': 'Enthält direkt {n}',
     'list.doubleClickHint': 'Doppelklick auf einen Server verbindet ihn',
     'list.multiSelectHint': 'Strg+Klick oder Umschalt+Klick für Mehrfachauswahl',
     'conn.connected': 'Verbunden',
@@ -1273,6 +1275,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Duplikat von: {name}',
     'editor.headProtocolTip': 'Verbindungsprotokoll (beim Wechsel bleiben gemeinsame Basisfelder erhalten)',
     'editor.headDsTip': 'Datenquelle, zu der der Server gehört',
+    'editor.headDsLabel': 'Datenquelle',
     'editor.dataSourceLabel': 'Datenquelle',
     'editor.loading': 'Konfiguration wird geladen…',
     'editor.loadFailed': 'Konfiguration konnte nicht geladen werden',
@@ -1460,7 +1463,7 @@ const OVERRIDES = {
     'empty.folder':
       'Esta carpeta está vacía. Creá un servidor con el + de arriba a la derecha, o hacé clic derecho para crear una carpeta.',
     'empty.importFormats': 'Permite importar desde mRemoteNG / .rdp / .csv / .json',
-    'folder.contains': 'Contiene {n}',
+    'folder.contains': 'Contiene {n} directamente',
     'list.doubleClickHint': 'Hacé doble clic en un servidor para conectarte',
     'list.multiSelectHint': 'Ctrl+clic o Shift+clic para seleccionar varios',
     'conn.connected': 'Conectado',
@@ -1592,6 +1595,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Duplicado de: {name}',
     'editor.headProtocolTip': 'Protocolo de conexión (al cambiar se conservan los campos base comunes)',
     'editor.headDsTip': 'Fuente de datos del servidor',
+    'editor.headDsLabel': 'Fuente de datos',
     'editor.dataSourceLabel': 'Fuente de datos',
     'editor.loading': 'Cargando configuración…',
     'editor.loadFailed': 'Error al cargar la configuración',
@@ -1777,7 +1781,7 @@ const OVERRIDES = {
     'empty.clearTag': 'Effacer le tag',
     'empty.folder': 'Ce dossier est vide. Créez un serveur avec le + en haut à droite, ou un dossier par clic droit.',
     'empty.importFormats': 'Import depuis mRemoteNG / .rdp / .csv / .json pris en charge',
-    'folder.contains': 'Contient {n}',
+    'folder.contains': 'Contient {n} directement',
     'list.doubleClickHint': 'Double-cliquez sur un serveur pour vous connecter',
     'list.multiSelectHint': 'Ctrl+clic ou Maj+clic pour sélectionner plusieurs',
     'conn.connected': 'Connecté',
@@ -1911,6 +1915,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Copie de : {name}',
     'editor.headProtocolTip': 'Protocole de connexion (le changement conserve les champs de base communs)',
     'editor.headDsTip': 'Source de données du serveur',
+    'editor.headDsLabel': 'Source de données',
     'editor.dataSourceLabel': 'Source de données',
     'editor.loading': 'Chargement de la configuration…',
     'editor.loadFailed': 'Échec du chargement de la configuration',
@@ -2100,7 +2105,7 @@ const OVERRIDES = {
     'empty.folder':
       'Este cartafol está baleiro. Crea un servidor co + de arriba á dereita, ou un cartafol desde o menú contextual.',
     'empty.importFormats': 'Permite importar de mRemoteNG / .rdp / .csv / .json',
-    'folder.contains': 'Contén {n}',
+    'folder.contains': 'Contén {n} directamente',
     'list.doubleClickHint': 'Fai dobre clic nun servidor para conectarte',
     'list.multiSelectHint': 'Ctrl+clic ou Maiúsc+clic para seleccionar varios',
     'conn.connected': 'Conectado',
@@ -2230,6 +2235,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Duplicado de: {name}',
     'editor.headProtocolTip': 'Protocolo de conexión (ao cambiar consérvanse os campos base comúns)',
     'editor.headDsTip': 'Fonte de datos á que pertence o servidor',
+    'editor.headDsLabel': 'Fonte de datos',
     'editor.dataSourceLabel': 'Fonte de datos',
     'editor.loading': 'Cargando a configuración…',
     'editor.loadFailed': 'Non se puido cargar a configuración',
@@ -2416,7 +2422,7 @@ const OVERRIDES = {
     'empty.folder':
       'Questa cartella è vuota. Crea un server con il + in alto a destra, oppure una cartella dal menu contestuale.',
     'empty.importFormats': "Supporta l'importazione da mRemoteNG / .rdp / .csv / .json",
-    'folder.contains': 'Contiene {n}',
+    'folder.contains': 'Contiene {n} direttamente',
     'list.doubleClickHint': 'Doppio clic su un server per connetterti',
     'list.multiSelectHint': 'Ctrl+clic o Maiusc+clic per selezionare più server',
     'conn.connected': 'Connesso',
@@ -2550,6 +2556,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Duplicato di: {name}',
     'editor.headProtocolTip': 'Protocollo di connessione (al cambio si mantengono i campi base comuni)',
     'editor.headDsTip': 'Origine dati del server',
+    'editor.headDsLabel': 'Origine dati',
     'editor.dataSourceLabel': 'Origine dati',
     'editor.loading': 'Caricamento della configurazione…',
     'editor.loadFailed': 'Caricamento della configurazione non riuscito',
@@ -2736,7 +2743,7 @@ const OVERRIDES = {
     'empty.folder':
       'Ten folder jest pusty. Utwórz serwer przyciskiem + w prawym górnym rogu albo folder z menu kontekstowego.',
     'empty.importFormats': 'Obsługuje import z mRemoteNG / .rdp / .csv / .json',
-    'folder.contains': 'Zawiera {n}',
+    'folder.contains': 'Zawiera bezpośrednio {n}',
     'list.doubleClickHint': 'Kliknij dwukrotnie serwer, aby się połączyć',
     'list.multiSelectHint': 'Ctrl+klik lub Shift+klik, aby zaznaczyć wiele',
     'conn.connected': 'Połączono',
@@ -2867,6 +2874,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Kopia: {name}',
     'editor.headProtocolTip': 'Protokół połączenia (przy zmianie wspólne pola podstawowe zostają zachowane)',
     'editor.headDsTip': 'Źródło danych, do którego należy serwer',
+    'editor.headDsLabel': 'Źródło danych',
     'editor.dataSourceLabel': 'Źródło danych',
     'editor.loading': 'Ładowanie konfiguracji…',
     'editor.loadFailed': 'Nie udało się załadować konfiguracji',
@@ -3050,7 +3058,7 @@ const OVERRIDES = {
     'empty.folder':
       'Esta pasta está vazia. Crie um servidor com o + no canto superior direito, ou uma pasta pelo menu de contexto.',
     'empty.importFormats': 'Compatível com importação de mRemoteNG / .rdp / .csv / .json',
-    'folder.contains': 'Contém {n}',
+    'folder.contains': 'Contém {n} diretamente',
     'list.doubleClickHint': 'Clique duas vezes em um servidor para conectar',
     'list.multiSelectHint': 'Ctrl+clique ou Shift+clique para selecionar vários',
     'conn.connected': 'Conectado',
@@ -3182,6 +3190,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Duplicado de: {name}',
     'editor.headProtocolTip': 'Protocolo de conexão (ao trocar, os campos base comuns são mantidos)',
     'editor.headDsTip': 'Fonte de dados à qual o servidor pertence',
+    'editor.headDsLabel': 'Fonte de dados',
     'editor.dataSourceLabel': 'Fonte de dados',
     'editor.loading': 'Carregando configuração…',
     'editor.loadFailed': 'Falha ao carregar a configuração',
@@ -3366,7 +3375,7 @@ const OVERRIDES = {
     'empty.folder':
       'Esta pasta está vazia. Crie um servidor com o + no canto superior direito, ou uma pasta através do menu de contexto.',
     'empty.importFormats': 'Suporta importação de mRemoteNG / .rdp / .csv / .json',
-    'folder.contains': 'Contém {n}',
+    'folder.contains': 'Contém {n} diretamente',
     'list.doubleClickHint': 'Faça duplo clique num servidor para ligar',
     'list.multiSelectHint': 'Ctrl+clique ou Shift+clique para selecionar vários',
     'conn.connected': 'Ligado',
@@ -3497,6 +3506,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Duplicado de: {name}',
     'editor.headProtocolTip': 'Protocolo de ligação (ao trocar, os campos base comuns são mantidos)',
     'editor.headDsTip': 'Fonte de dados à qual o servidor pertence',
+    'editor.headDsLabel': 'Fonte de dados',
     'editor.dataSourceLabel': 'Fonte de dados',
     'editor.loading': 'A carregar a configuração…',
     'editor.loadFailed': 'Falha ao carregar a configuração',
@@ -3683,7 +3693,7 @@ const OVERRIDES = {
     'empty.folder':
       'Эта папка пуста. Создайте сервер кнопкой + в правом верхнем углу или папку через контекстное меню.',
     'empty.importFormats': 'Поддерживается импорт из mRemoteNG / .rdp / .csv / .json',
-    'folder.contains': 'Содержит: {n}',
+    'folder.contains': 'Содержит напрямую: {n}',
     'list.doubleClickHint': 'Дважды щёлкните сервер, чтобы подключиться',
     'list.multiSelectHint': 'Ctrl+щелчок или Shift+щелчок — выбор нескольких',
     'conn.connected': 'Подключено',
@@ -3816,6 +3826,7 @@ const OVERRIDES = {
     'editor.title.duplicate': 'Копия: {name}',
     'editor.headProtocolTip': 'Протокол подключения (при переключении сохраняются общие базовые поля)',
     'editor.headDsTip': 'Источник данных, к которому относится сервер',
+    'editor.headDsLabel': 'Источник данных',
     'editor.dataSourceLabel': 'Источник данных',
     'editor.loading': 'Загрузка конфигурации…',
     'editor.loadFailed': 'Не удалось загрузить конфигурацию',
@@ -4028,7 +4039,7 @@ const OVERRIDES = {
       '\u3053\u306e\u30d5\u30a9\u30eb\u30c0\u30fc\u306f\u7a7a\u3067\u3059\u3002\u53f3\u4e0a\u306e + \u3067\u30b5\u30fc\u30d0\u30fc\u3092\u65b0\u898f\u4f5c\u6210\u3001\u307e\u305f\u306f\u53f3\u30af\u30ea\u30c3\u30af\u3067\u30d5\u30a9\u30eb\u30c0\u30fc\u3092\u4f5c\u6210\u3067\u304d\u307e\u3059\u3002',
     'empty.importFormats':
       'mRemoteNG / .rdp / .csv / .json \u304b\u3089\u306e\u30a4\u30f3\u30dd\u30fc\u30c8\u306b\u5bfe\u5fdc',
-    'folder.contains': '\u30d5\u30a9\u30eb\u30c0\u30fc\u5185 {n} \u53f0',
+    'folder.contains': '\u76f4\u4e0b {n} \u53f0',
     'list.doubleClickHint':
       '\u30b5\u30fc\u30d0\u30fc\u3092\u30c0\u30d6\u30eb\u30af\u30ea\u30c3\u30af\u3059\u308b\u3068\u63a5\u7d9a\u3057\u307e\u3059',
     'conn.connected': '\u63a5\u7d9a\u6e08\u307f',
@@ -4179,6 +4190,7 @@ const OVERRIDES = {
     'editor.headProtocolTip':
       '\u63a5\u7d9a\u30d7\u30ed\u30c8\u30b3\u30eb\uff08\u5207\u308a\u66ff\u3048\u3066\u3082\u5171\u901a\u306e\u57fa\u672c\u9805\u76ee\u306f\u4fdd\u6301\u3055\u308c\u307e\u3059\uff09',
     'editor.headDsTip': '\u30b5\u30fc\u30d0\u30fc\u304c\u5c5e\u3059\u308b\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9',
+    'editor.headDsLabel': '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9',
     'editor.dataSourceLabel': '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9',
     'editor.loading': '\u69cb\u6210\u3092\u8aad\u307f\u8fbc\u307f\u4e2d\u2026',
     'editor.loadFailed': '\u69cb\u6210\u306e\u8aad\u307f\u8fbc\u307f\u306b\u5931\u6557\u3057\u307e\u3057\u305f',
