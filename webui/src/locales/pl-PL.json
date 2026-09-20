@@ -68,7 +68,6 @@
   "batch.exportTitle": "Eksportuj wszystkie zaznaczone (jawny JSON, wymagana lokalna weryfikacja)",
   "batch.delete": "Usuń",
   "batch.deleteTitle": "Usuń wszystkie zaznaczone",
-  "batch.hint": "Zaznaczono: {n}. Akcje zbiorcze w pasku powyżej lub w menu kontekstowym",
   "batch.clear": "Wyczyść zaznaczenie",
   "batchConnect.confirmTitle": "Połącz z wieloma serwerami",
   "batchConnect.confirmText": "Za chwilę połączysz się z {n} serwerami. Kontynuować?",

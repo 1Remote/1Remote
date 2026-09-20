@@ -68,7 +68,6 @@
   "batch.exportTitle": "Exportovat všechny vybrané (JSON v čitelné podobě, vyžaduje místní ověření)",
   "batch.delete": "Smazat",
   "batch.deleteTitle": "Smazat všechny vybrané",
-  "batch.hint": "Vybráno: {n}. Hromadné akce najdete v panelu nahoře nebo v kontextové nabídce",
   "batch.clear": "Zrušit výběr",
   "batchConnect.confirmTitle": "Připojit více serverů",
   "batchConnect.confirmText": "Chystáte se připojit k {n} serverům. Pokračovat?",

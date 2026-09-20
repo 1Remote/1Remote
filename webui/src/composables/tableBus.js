@@ -2,8 +2,6 @@
 // → ServerListView → ServerTable），逐层 emit 转发噪音大——与 editorBus 同思路的轻量总线。
 // - handoffTableFocus：搜索框 ↑/↓ 把键盘焦点移交给表格（focusHandoff 带 seq 自增，
 //   同方向重复按也每次触发；表格隐藏（空态/设置页）时无消费者，信号自然丢弃）
-// - consumeBatchHint：批量条首次出现提示的会话级一次性标记（模块级状态，
-//   ServerTable 卸载重挂载不重置——「只首次会话内提示」）
 // - listDragServer：列表服务器行拖拽中的服务器快照。dragover 期间规范禁止读
 //   dataTransfer 数据（只有 types 可见），SideTree 的落区判定（同库才高亮/跨库 toast）
 //   需要被拖服务器的 dataSourceName → 拖拽源（ServerTable）start/end 时在此挂快照；
@@ -14,14 +12,6 @@ let focusSeq = 0
 export const focusHandoff = ref(null) // { seq, delta } —— delta 1=↓ 首行方向 / -1=↑ 末行方向
 export function handoffTableFocus(delta) {
   focusHandoff.value = { seq: ++focusSeq, delta }
-}
-
-let batchHintShown = false
-/** 首次调用返回 true（提示该显示），此后会话内恒 false */
-export function consumeBatchHint() {
-  if (batchHintShown) return false
-  batchHintShown = true
-  return true
 }
 
 export const listDragServer = ref(null)

@@ -74,7 +74,6 @@
   "batch.exportTitle": "Export all selected (plaintext JSON, local verification required)",
   "batch.delete": "Delete",
   "batch.deleteTitle": "Delete all selected",
-  "batch.hint": "{n} selected. Use the toolbar above or the context menu for batch actions",
   "batch.clear": "Clear selection",
 
   "batchConnect.confirmTitle": "Connect multiple servers",

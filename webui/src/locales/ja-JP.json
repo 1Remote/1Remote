@@ -68,7 +68,6 @@
   "batch.exportTitle": "選択したすべてをエクスポート（平文 JSON、ローカル認証が必要）",
   "batch.delete": "削除",
   "batch.deleteTitle": "選択済みをすべて削除",
-  "batch.hint": "{n} 台選択中。上部の操作バーや右クリックで一括操作できます",
   "batch.clear": "選択を解除",
   "batchConnect.confirmTitle": "複数のサーバーに接続",
   "batchConnect.confirmText": "{n} 台のサーバーに接続しようとしています。続行しますか？",

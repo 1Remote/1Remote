@@ -411,11 +411,9 @@ const OVERRIDES = {
     'toast.reorderFailed': '\u5132\u5b58\u81ea\u8a02\u9806\u5e8f\u5931\u6557',
     'toast.treeMoved': '\u5df2\u79fb\u52d5 {n} \u53f0\u4f3a\u670d\u5668',
     'toast.treeMoveFailed': '{n} \u53f0\u4f3a\u670d\u5668\u79fb\u52d5\u5931\u6557',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': '\u522a\u9664',
     'batch.deleteTitle': '\u522a\u9664\u5168\u90e8\u5df2\u9078',
-    'batch.hint':
-      '\u5df2\u9078 {n} \u53f0\uff0c\u53ef\u4f7f\u7528\u4e0a\u65b9\u64cd\u4f5c\u689d\u6216\u53f3\u9375\u6279\u6b21\u64cd\u4f5c',
     'batchDelete.confirmTitle': '\u522a\u9664\u4f3a\u670d\u5668',
     'batchDelete.confirmText':
       '\u78ba\u5b9a\u522a\u9664 {n} \u53f0\u4f3a\u670d\u5668\uff1f\u6b64\u64cd\u4f5c\u7121\u6cd5\u5fa9\u539f\u3002',
@@ -758,10 +756,9 @@ const OVERRIDES = {
     'toast.reorderFailed': 'Vlastní pořadí se nepodařilo uložit',
     'toast.treeMoved': 'Přesunuto serverů: {n}',
     'toast.treeMoveFailed': 'Přesun {n} serverů se nepodařil',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Smazat',
     'batch.deleteTitle': 'Smazat všechny vybrané',
-    'batch.hint': 'Vybráno: {n}. Hromadné akce najdete v panelu nahoře nebo v kontextové nabídce',
     'batchDelete.confirmTitle': 'Smazat servery',
     'batchDelete.confirmText': 'Smazat {n} serverů? Tuto akci nelze vrátit.',
     'row.parentFolder': 'Nadřazená složka',
@@ -1065,10 +1062,9 @@ const OVERRIDES = {
     'toast.reorderFailed': 'Eigene Reihenfolge konnte nicht gespeichert werden',
     'toast.treeMoved': '{n} Server verschoben',
     'toast.treeMoveFailed': '{n} Server konnten nicht verschoben werden',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Löschen',
     'batch.deleteTitle': 'Alle ausgewählten löschen',
-    'batch.hint': '{n} ausgewählt. Batchaktionen über die Leiste oben oder das Kontextmenü',
     'batchDelete.confirmTitle': 'Server löschen',
     'batchDelete.confirmText': '{n} Server löschen? Dies kann nicht rückgängig gemacht werden.',
     'row.parentFolder': 'Übergeordneter Ordner',
@@ -1382,10 +1378,9 @@ const OVERRIDES = {
     'toast.reorderFailed': 'No se pudo guardar el orden personalizado',
     'toast.treeMoved': '{n} servidores movidos',
     'toast.treeMoveFailed': 'No se pudieron mover {n} servidores',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Eliminar',
     'batch.deleteTitle': 'Eliminar todos los seleccionados',
-    'batch.hint': '{n} seleccionados. Acciones en lote con la barra de arriba o el menú contextual',
     'batchDelete.confirmTitle': 'Eliminar servidores',
     'batchDelete.confirmText': '¿Eliminar {n} servidores? Esta acción no se puede deshacer.',
     'row.parentFolder': 'Carpeta superior',
@@ -1694,10 +1689,9 @@ const OVERRIDES = {
     'toast.reorderFailed': "Échec de l'enregistrement de l'ordre personnalisé",
     'toast.treeMoved': '{n} serveurs déplacés',
     'toast.treeMoveFailed': 'Échec du déplacement de {n} serveurs',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Supprimer',
     'batch.deleteTitle': 'Supprimer tous les sélectionnés',
-    'batch.hint': '{n} sélectionnés. Actions groupées via la barre ci-dessus ou le menu contextuel',
     'batchDelete.confirmTitle': 'Supprimer des serveurs',
     'batchDelete.confirmText': 'Supprimer {n} serveurs ? Cette action est irréversible.',
     'row.parentFolder': 'Dossier parent',
@@ -2010,10 +2004,9 @@ const OVERRIDES = {
     'toast.reorderFailed': 'Non se puido gardar a orde personalizada',
     'toast.treeMoved': 'Movéronse {n} servidores',
     'toast.treeMoveFailed': 'Non se puideron mover {n} servidores',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Eliminar',
     'batch.deleteTitle': 'Eliminar todos os seleccionados',
-    'batch.hint': 'Seleccionáronse {n}. Accións en lote na barra superior ou no menú contextual',
     'batchDelete.confirmTitle': 'Eliminar servidores',
     'batchDelete.confirmText': 'Eliminar {n} servidores? Esta acción non se pode desfacer.',
     'row.parentFolder': 'Cartafol superior',
@@ -2320,10 +2313,9 @@ const OVERRIDES = {
     'toast.reorderFailed': "Salvataggio dell'ordine personalizzato non riuscito",
     'toast.treeMoved': '{n} server spostati',
     'toast.treeMoveFailed': 'Spostamento di {n} server non riuscito',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Elimina',
     'batch.deleteTitle': 'Elimina tutti i selezionati',
-    'batch.hint': '{n} selezionati. Azioni batch dalla barra in alto o dal menu contestuale',
     'batchDelete.confirmTitle': 'Elimina server',
     'batchDelete.confirmText': 'Eliminare {n} server? Questa azione non può essere annullata.',
     'row.parentFolder': 'Cartella superiore',
@@ -2634,10 +2626,9 @@ const OVERRIDES = {
     'toast.reorderFailed': 'Nie udało się zapisać własnej kolejności',
     'toast.treeMoved': 'Przeniesiono serwery: {n}',
     'toast.treeMoveFailed': 'Nie udało się przenieść serwerów: {n}',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Usuń',
     'batch.deleteTitle': 'Usuń wszystkie zaznaczone',
-    'batch.hint': 'Zaznaczono: {n}. Akcje zbiorcze w pasku powyżej lub w menu kontekstowym',
     'batchDelete.confirmTitle': 'Usuń serwery',
     'batchDelete.confirmText': 'Usunąć {n} serwerów? Tej operacji nie można cofnąć.',
     'row.parentFolder': 'Folder nadrzędny',
@@ -2943,10 +2934,9 @@ const OVERRIDES = {
     'toast.reorderFailed': 'Falha ao salvar a ordem personalizada',
     'toast.treeMoved': '{n} servidores movidos',
     'toast.treeMoveFailed': 'Falha ao mover {n} servidores',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Excluir',
     'batch.deleteTitle': 'Excluir todos os selecionados',
-    'batch.hint': '{n} selecionados. Ações em lote pela barra acima ou pelo menu de contexto',
     'batchDelete.confirmTitle': 'Excluir servidores',
     'batchDelete.confirmText': 'Excluir {n} servidores? Esta ação não pode ser desfeita.',
     'row.parentFolder': 'Pasta superior',
@@ -3254,10 +3244,9 @@ const OVERRIDES = {
     'toast.reorderFailed': 'Falha ao guardar a ordem personalizada',
     'toast.treeMoved': '{n} servidores movidos',
     'toast.treeMoveFailed': 'Falha ao mover {n} servidores',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Eliminar',
     'batch.deleteTitle': 'Eliminar todos os selecionados',
-    'batch.hint': '{n} selecionados. Ações em lote na barra acima ou no menu de contexto',
     'batchDelete.confirmTitle': 'Eliminar servidores',
     'batchDelete.confirmText': 'Eliminar {n} servidores? Esta ação não pode ser anulada.',
     'row.parentFolder': 'Pasta superior',
@@ -3565,10 +3554,9 @@ const OVERRIDES = {
     'toast.reorderFailed': 'Не удалось сохранить свой порядок',
     'toast.treeMoved': 'Перемещено серверов: {n}',
     'toast.treeMoveFailed': 'Не удалось переместить серверов: {n}',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': 'Удалить',
     'batch.deleteTitle': 'Удалить все выбранные',
-    'batch.hint': 'Выбрано: {n}. Массовые действия — на панели выше или в контекстном меню',
     'batchDelete.confirmTitle': 'Удаление серверов',
     'batchDelete.confirmText': 'Удалить серверов: {n}? Действие нельзя отменить.',
     'row.parentFolder': 'Родительская папка',
@@ -3887,11 +3875,9 @@ const OVERRIDES = {
     'toast.treeMoved': '{n} \u53f0\u306e\u30b5\u30fc\u30d0\u30fc\u3092\u79fb\u52d5\u3057\u307e\u3057\u305f',
     'toast.treeMoveFailed':
       '{n} \u53f0\u306e\u30b5\u30fc\u30d0\u30fc\u306e\u79fb\u52d5\u306b\u5931\u6557\u3057\u307e\u3057\u305f',
-    // batch12 Task A: list interaction keys (batch delete/hint, parent row, drag toasts)
+    // batch12 Task A: list interaction keys (batch delete, parent row, drag toasts)
     'batch.delete': '\u524a\u9664',
     'batch.deleteTitle': '\u9078\u629e\u6e08\u307f\u3092\u3059\u3079\u3066\u524a\u9664',
-    'batch.hint':
-      '{n} \u53f0\u9078\u629e\u4e2d\u3002\u4e0a\u90e8\u306e\u64cd\u4f5c\u30d0\u30fc\u3084\u53f3\u30af\u30ea\u30c3\u30af\u3067\u4e00\u62ec\u64cd\u4f5c\u3067\u304d\u307e\u3059',
     'batchDelete.confirmTitle': '\u30b5\u30fc\u30d0\u30fc\u3092\u524a\u9664',
     'batchDelete.confirmText':
       '{n} \u53f0\u306e\u30b5\u30fc\u30d0\u30fc\u3092\u524a\u9664\u3057\u307e\u3059\u304b\uff1f\u3053\u306e\u64cd\u4f5c\u306f\u5143\u306b\u623b\u305b\u307e\u305b\u3093\u3002',

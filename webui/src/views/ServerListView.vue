@@ -134,7 +134,11 @@ const showSkeleton = computed(() => loading.value && !servers.value.length) // �
 // 后端不可达（拉取失败且无任何数据）：优先于空库引导展示——引导卡的「新建/导入」会把用户带向
 // 错误方向；恢复靠 30s 轮询（useServers 断连恢复时会补一次全量重载，此处自动切回正常内容）
 const showOffline = computed(() => !connected.value && !loading.value && !servers.value.length)
-const showGuide = computed(() => connected.value && !loading.value && !servers.value.length) // 已连通且整库为空 → 引导卡片
+// 空库引导卡：已连通且整库为空（0 服务器且无任何文件夹——建过文件夹就不再算"空库"，
+// 空视图由表内空态的 empty.folder 文案承接，引导卡的「新建/导入」会让已有文件夹结构
+// 的用户误以为库丢了）。文件夹全集以 tree-state 物化键为准（folderPathsByDs）
+const anyFolders = computed(() => [...folderPathsByDs.value.values()].some((set) => set.size > 0))
+const showGuide = computed(() => connected.value && !loading.value && !servers.value.length && !anyFolders.value)
 // 引导卡协议一览（与 ProtocolBadge 协议集一致）：9 协议灰阶瓦片——身份色仅用于行内徽章，
 // 引导卡只表"支持这些"，克制灰阶
 const GUIDE_PROTOCOLS = ['RDP', 'SSH', 'SFTP', 'FTP', 'VNC', 'Telnet', 'Serial', 'APP', 'RdpApp']
@@ -277,6 +281,7 @@ function onGlobalEsc(e) {
   if (editor.value) return // 抽屉在开：Esc 由抽屉处理
   if (tagManager.value) return // 标签管理模态在开：Esc 归 n-modal（关模态），不清搜索/光标
   if (importModal.value) return // 导入模态在开：Esc 归 n-modal（关模态/其内下拉）
+  if (document.querySelector('.n-dialog')) return // naive 对话框在开（删除/重命名确认等）：Esc 只关框（naive 自持关闭），本链不清搜索/光标
   const tb = table.value // 命名避免遮蔽 i18n 的 t
   if (tb?.closeMenuIfOpen()) e.preventDefault()
   else if (tb?.closeColMenuIfOpen()) e.preventDefault()
@@ -466,10 +471,15 @@ const importModal = ref(false)
           </template>
           <span class="crumb-count">{{ t('crumb.count', { n: listCount }) }}</span>
         </div>
-        <!-- 搜索过滤 chip：命中数沿用右侧 crumb-count（同为过滤后计数，不重复展示） -->
+        <!-- 活动过滤器 chips：搜索词 + 标签（文件夹选择由面包屑本身表达，不重复）；
+             点击 chip 上的 ✕ 清对应过滤器，样式沿用 search-chip -->
         <span v-if="searchActive" class="search-chip" :title="t('crumb.searchChip')">
           <span class="sc-label">⌕ {{ searchQuery }}</span>
           <button class="sc-x" :title="t('crumb.clearSearch')" @click="searchQuery = ''">✕</button>
+        </span>
+        <span v-if="activeTag" class="search-chip" :title="'#' + activeTag">
+          <span class="sc-label"># {{ activeTag }}</span>
+          <button class="sc-x" :title="t('empty.clearTag')" @click="activeTag = ''">✕</button>
         </span>
         <!-- 批量条 + 表头工具簇宿主：ServerTable 把勾选批量操作与
              ≡ 自定义顺序 / ▦ 列菜单 Teleport 进来，与面包屑同行右侧对齐。容器位于

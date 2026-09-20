@@ -68,7 +68,6 @@
   "batch.exportTitle": "Exporter toute la sélection (JSON en clair, vérification locale requise)",
   "batch.delete": "Supprimer",
   "batch.deleteTitle": "Supprimer tous les sélectionnés",
-  "batch.hint": "{n} sélectionnés. Actions groupées via la barre ci-dessus ou le menu contextuel",
   "batch.clear": "Effacer la sélection",
   "batchConnect.confirmTitle": "Connecter plusieurs serveurs",
   "batchConnect.confirmText": "Vous êtes sur le point de vous connecter à {n} serveurs. Continuer ?",

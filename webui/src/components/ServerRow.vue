@@ -161,7 +161,9 @@ const barColor = computed(() => opaqueHex(props.server.color))
   border-bottom: 1px solid var(--border);
   user-select: none;
 }
-.row:hover {
+/* hover 只作用于未勾选行——勾选行常亮 accent-container（与 hover 叠加语义：
+   selected 优先），结构上排除而非依赖规则顺序 */
+.row:not(.selected):hover {
   background: var(--bg-hover);
 }
 .row.selected {

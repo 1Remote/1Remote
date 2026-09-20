@@ -68,7 +68,6 @@
   "batch.exportTitle": "匯出全部已選（明文 JSON，需本機驗證）",
   "batch.delete": "刪除",
   "batch.deleteTitle": "刪除全部已選",
-  "batch.hint": "已選 {n} 台，可使用上方操作條或右鍵批次操作",
   "batch.clear": "取消選取",
   "batchConnect.confirmTitle": "連線多台伺服器",
   "batchConnect.confirmText": "即將連線至 {n} 台伺服器，是否繼續？",

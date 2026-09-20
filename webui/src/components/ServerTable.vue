@@ -36,7 +36,7 @@ import { api } from '../api'
 import { useColumns } from '../composables/useColumns'
 import { useRowChecks } from '../composables/useRowChecks'
 import { useServers } from '../composables/useServers'
-import { consumeBatchHint, focusHandoff, listDragServer } from '../composables/tableBus'
+import { focusHandoff, listDragServer } from '../composables/tableBus'
 import { naturalIpCompare } from '../utils/compare'
 
 const props = defineProps({
@@ -338,6 +338,9 @@ const parentRow = computed(() => {
   parts.pop()
   return { kind: 'parent', dsName: sel.dataSourceName, path: parts.join('/') }
 })
+// 「当前视图无实质内容」= 除「..」上级行外无任何文件夹/服务器行——空态插槽的触发条件
+//（子文件夹视图只有 ".." 行时 renderRows.length=1，按 length 判空会漏掉空文件夹文案）
+const hasSubstance = computed(() => renderRows.value.some((r) => r.kind !== 'parent'))
 // 统一渲染序列（虚拟滚动与直渲染共用）：srvIndex 保留服务器在 sorted 内的下标
 //（Shift 范围选择/锚点语义仍基于纯服务器列表）
 const renderRows = computed(() => [
@@ -367,15 +370,6 @@ const {
   folderChecks,
   onFolderToggleCheck,
 } = useRowChecks({ sorted, servers: () => props.servers, folders: () => props.folders })
-
-// 批量条首次出现（0→N）的一次性提示：裸点击不再勾选后，勾选入口变隐蔽（复选框/Ctrl/
-// Shift/Ctrl+A）——首次勾选时告知操作条与右键两个批量入口。consumeBatchHint 会话级
-// 去重（表格卸载重挂载不重发）
-watch(checked, (cur, prev) => {
-  if (prev.size === 0 && cur.size > 0 && consumeBatchHint()) {
-    message.info(t('batch.hint', { n: cur.size }))
-  }
-})
 
 function onRowClick(server, ev, idx) {
   cursorId.value = server.id // 点击行 = 光标落位（Enter 连接光标行，↑↓ 由此起算）
@@ -478,6 +472,11 @@ function moveCursor(delta) {
 }
 function onGlobalKey(e) {
   // Esc 不在此处理：全局 Esc 链（菜单→勾选→搜索→光标）由 ServerListView 统一调度，避免双触发
+  // naive 对话框/模态打开时按键整体让位（DOM 存在性判断，参照 EditorDrawer 的
+  // .n-base-select-menu 让位先例）：删除/批量确认等 dialog 无输入框（autoFocus:false），
+  // 焦点停留在打开前位置 → tableFocused 仍真，Enter/E/Del/Ctrl+A 若不守卫会穿透到
+  // 连接/编辑/删除分支（Enter 误连 P0 即此路径）
+  if (document.querySelector('.n-dialog, .n-modal')) return
   if (!tableFocused.value) return
   // 表格内的可交互控件（表头复选框/批量条按钮等）聚焦时不抢按键：Enter/空格留给原生行为
   if (e.target.closest?.('input, textarea, select, button, [contenteditable]')) return
@@ -885,7 +884,7 @@ onBeforeUnmount(() => {
           @drop="onRowDrop(row.server, $event)"
         />
       </template>
-      <slot v-if="!renderRows.length" name="empty">
+      <slot v-if="!hasSubstance" name="empty">
         <div class="empty">{{ servers.length ? t('empty.filtered') : t('empty.none') }}</div>
       </slot>
     </div>
