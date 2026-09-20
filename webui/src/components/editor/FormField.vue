@@ -789,7 +789,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-color-box:focus-within {
-  border-color: var(--accent);
+  border-color: var(--accent-focus);
 }
 
 /* 当前色块 16×16（常显边框，title 提示当前值/无色） */
@@ -841,7 +841,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-sw.active {
-  box-shadow: 0 0 0 2px var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-focus);
 }
 
 .ff-cur.none,

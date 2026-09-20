@@ -1,9 +1,13 @@
 <script setup>
 // 协议徽章（spec §3.4「协议」列）：每协议固定配色——这是协议身份色，非主题变量，跨主题恒定。
-// 实现取"简"：背景=hex+'22'（13% 透明度叠在任意主题底色上），文字=实心 hex；中间调 hex 在
-// 深浅主题底上均可读（亮色下 FTP 黄稍浅，Task 21 视觉验收再定夺）。未知协议走中性灰兜底。
+// 实现：背景/边框 = hex+'22'/'33'（13%/20% 透明度叠在行底色上，恒定）；文字按基底深浅
+// 取双值——中间调 hex 直接作小字在浅色底上不可读（light+FTP 1.70:1，美学报告 F3），
+// light 侧换深变体、dark 侧对过深的 4 协议（RDP/VNC/Serial/APP）换浅变体，全部组合
+// （含 13% 底色叠加、hover 行底、勾选行 accent-container 底）≥4.5 AA。未知协议走中性灰兜底。
 import { computed } from 'vue'
+import { isDarkMode } from '../themes'
 
+// 身份色（底色/边框来源，双基底恒定）
 const PROTOCOL_COLORS = {
   RDP: '#2c5aff',
   SSH: '#26a269',
@@ -16,13 +20,40 @@ const PROTOCOL_COLORS = {
   RdpApp: '#2c5aff',
 }
 
+// 文字色·暗色基底（身份色过深的换浅一档，其余保持身份色）
+const PROTOCOL_TEXT_DARK = {
+  RDP: '#7c9bff',
+  SSH: '#3cba7f',
+  SFTP: '#f97316',
+  FTP: '#eab308',
+  VNC: '#b8a6f7',
+  Telnet: '#14b8a6',
+  Serial: '#9aa8bb',
+  APP: '#94a3b8',
+  RdpApp: '#7c9bff',
+}
+
+// 文字色·亮色基底（身份色过浅的换深一档）
+const PROTOCOL_TEXT_LIGHT = {
+  RDP: '#2148c8',
+  SSH: '#116631',
+  SFTP: '#a03609',
+  FTP: '#8f5606',
+  VNC: '#6d28d9',
+  Telnet: '#0c6a63',
+  Serial: '#475569',
+  APP: '#46536e',
+  RdpApp: '#2148c8',
+}
+
 const props = defineProps({ protocol: { type: String, default: '' } })
 
 const color = computed(() => PROTOCOL_COLORS[props.protocol] || '')
+const textColor = computed(() => (isDarkMode() ? PROTOCOL_TEXT_DARK : PROTOCOL_TEXT_LIGHT)[props.protocol] || '')
 </script>
 
 <template>
-  <span v-if="color" class="badge" :style="{ background: color + '22', color: color, borderColor: color + '33' }">{{
+  <span v-if="color" class="badge" :style="{ background: color + '22', color: textColor, borderColor: color + '33' }">{{
     protocol
   }}</span>
   <span v-else class="badge badge-unknown">{{ protocol || '?' }}</span>

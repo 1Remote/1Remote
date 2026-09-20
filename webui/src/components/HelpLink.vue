@@ -109,9 +109,9 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
 .help-link:hover {
   color: var(--accent-text);
 }
-/* 键盘焦点圈（鼠标点击不出现）：与主题 accent 一致 */
+/* 键盘焦点圈（鼠标点击不出现）：与主题 accent 一致（light 基底自动取深变体） */
 .help-link:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-focus);
   outline-offset: 2px;
   border-radius: var(--radius-xs);
 }
@@ -153,8 +153,8 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
   fill: currentColor;
 }
 .help-link:hover .hl-badge {
-  color: #fff;
-  background: var(--accent);
+  color: var(--text-on-accent);
+  background: var(--accent-solid);
   transform: scale(1.15);
 }
 /* 自定义徽标字符（当前无调用方）的字体兜底：与 SVG 同尺寸的圆内居中字符 */

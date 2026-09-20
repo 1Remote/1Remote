@@ -142,7 +142,7 @@ function updateRow(i, k, v) {
 }
 
 .kvm-box:focus-within {
-  border-color: var(--accent);
+  border-color: var(--accent-focus);
 }
 
 .kvm-row {

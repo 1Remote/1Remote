@@ -305,8 +305,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   background: var(--bg-hover);
 }
 .ip-cell.active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  border-color: var(--accent-focus);
+  /* 选中环 2px：与 FormField .ff-sw 同款网格单元选中语义（V6 状态档线宽） */
+  box-shadow: 0 0 0 2px var(--accent-focus);
 }
 .ip-upload {
   display: inline-block;

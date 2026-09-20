@@ -29,6 +29,37 @@ const ACCENT_HOVER_HEX = {
   slate: '#7c8ba1',
 }
 
+// 实底强调变体（与 theme.css 中 --accent-solid 保持一致，双基底同值）：白字在亮 --accent
+// 上 orange/green 仅 2.80/2.54（WCAG FAIL），在 solid 上全 7 色 ≥5.18 AA。hover/pressed
+// 再加深一档（白字对比只增不减）
+const ACCENT_SOLID_HEX = {
+  blue: '#2c5aff',
+  violet: '#6d28d9',
+  pink: '#be185d',
+  red: '#b91c1c',
+  orange: '#c2410c',
+  green: '#047857',
+  slate: '#475569',
+}
+const ACCENT_SOLID_HOVER_HEX = {
+  blue: '#274fe0',
+  violet: '#6023bf',
+  pink: '#a71552',
+  red: '#a31919',
+  orange: '#ab390b',
+  green: '#046a4c',
+  slate: '#3e4b5c',
+}
+const ACCENT_SOLID_PRESSED_HEX = {
+  blue: '#2144bf',
+  violet: '#521ea3',
+  pink: '#8f1246',
+  red: '#8b1515',
+  orange: '#923109',
+  green: '#035a41',
+  slate: '#35404f',
+}
+
 // 旧 9 主题 → 预设组合（spec §4）
 export const CLASSIC_THEMES = {
   Light: { themeMode: 'light', accent: 'blue' },
@@ -48,6 +79,11 @@ export const themeState = reactive({ themeMode: 'dark', accent: 'blue', fontSize
 /** themeMode === 'system' 时按系统偏好解析出实际生效的 'dark' | 'light' */
 function resolvedMode() {
   return themeState.themeMode === 'system' ? (themeState.systemDark ? 'dark' : 'light') : themeState.themeMode
+}
+
+/** 当前生效基底是否为 dark（themeMode==='system' 时随系统偏好；读 themeState 保持响应式） */
+export function isDarkMode() {
+  return resolvedMode() === 'dark'
 }
 
 export function applyTheme() {
@@ -123,12 +159,21 @@ export function useNaiveTheme() {
         borderRadius: '6px',
         borderRadiusSmall: '4px',
       },
-      // primary 实心/secondary 按钮文字固定白色（键名以 naive Button self 变量为准，见
-      // node_modules/naive-ui/es/button/styles/light.mjs）：暗色基底的 baseColor=#000 使
-      // textColorPrimary 系派生为黑字（naive 暗色以 baseColor 反差取字色），在蓝/紫等
-      // 强调色上不可读；亮色基底本就是 #FFF，覆盖后行为不变。ghost/text 型保持强调色
-      // 文字（透明底白字不可读），不在覆盖范围
+      // primary 实心按钮底色改喂深变体 solid（--accent-solid 同值）：白字在原亮 accent 上
+      // orange/green 仅 2.80/2.54 FAIL，在 solid/hover/pressed 上全组合 ≥5.18 AA。仅覆盖
+      // Button 组件级 colorPrimary 系——common.primaryColor 仍为原 accent，开关/复选框/
+      // 下拉选中/焦点边框等非文字强调面维持原观感（solid 在暗底上 <3:1 不宜作大面积状态色）
       Button: {
+        colorPrimary: ACCENT_SOLID_HEX[themeState.accent],
+        colorHoverPrimary: ACCENT_SOLID_HOVER_HEX[themeState.accent],
+        colorPressedPrimary: ACCENT_SOLID_PRESSED_HEX[themeState.accent],
+        colorFocusPrimary: ACCENT_SOLID_HOVER_HEX[themeState.accent],
+        colorDisabledPrimary: ACCENT_SOLID_HEX[themeState.accent],
+        // primary 实心/secondary 按钮文字固定白色 = theme.css --text-on-accent 的 JS 镜像
+        //（键名以 naive Button self 变量为准，见 node_modules/naive-ui/es/button/styles/light.mjs）：
+        // 暗色基底的 baseColor=#000 使 textColorPrimary 系派生为黑字（naive 暗色以 baseColor
+        // 反差取字色），在蓝/紫等强调色上不可读；亮色基底本就是 #FFF，覆盖后行为不变。
+        // ghost/text 型保持强调色文字（透明底白字不可读），不在覆盖范围
         textColorPrimary: '#FFFFFF',
         textColorHoverPrimary: '#FFFFFF',
         textColorPressedPrimary: '#FFFFFF',

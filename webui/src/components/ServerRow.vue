@@ -176,7 +176,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   /* 键盘光标行：accent 色外框（不占布局）。单击=光标是核心交互，其落点必须可感知——
      此前 1px --border-strong 过淡，用户无法判断 Enter 将作用于哪行。与另两类行态可区分：
      勾选=.selected 的 accent-container 底色、树叶选中=.highlighted 的左缘 2px 细条 */
-  outline: 1px solid var(--accent);
+  outline: 1px solid var(--accent-focus);
   outline-offset: -1px;
 }
 
@@ -349,11 +349,12 @@ const barColor = computed(() => opaqueHex(props.server.color))
 }
 
 /* 搜索命中高亮：mark 语义的实心强调底 + 对比文字
-   （accent 底 + 面板底色文字——深色主题蓝底深字/浅色主题蓝底白字，均高对比；
+   （--accent-solid 深变体底 + --text-on-accent 白字——白字在 7 色深变体上全部 ≥5.18 AA；
+   此前 accent 底+面板底色字 14 组合中 9 组合低于 AA，light+green 仅 2.54。
    不加粗，保持行高一致） */
 .hl {
-  background: var(--accent);
-  color: var(--bg-panel);
+  background: var(--accent-solid);
+  color: var(--text-on-accent);
   border-radius: 2px;
   padding: 0 1px;
 }

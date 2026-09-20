@@ -179,7 +179,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
 }
 
 .kvl-box:focus-within {
-  border-color: var(--accent);
+  border-color: var(--accent-focus);
 }
 
 .kvl-row {

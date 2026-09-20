@@ -322,7 +322,7 @@ function onTopbarDblClick(e) {
   cursor: text;
 }
 .searchbox:focus-within {
-  border-color: var(--accent);
+  border-color: var(--accent-focus);
 }
 /* 抽屉/设置页/模态打开时的锁定态：弱化 + 禁用光标（克制，不加边框变色等强提示） */
 .searchbox.disabled {

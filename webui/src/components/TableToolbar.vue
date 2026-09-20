@@ -186,7 +186,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
 
 .bb-danger:hover:not(:disabled) {
   background: var(--danger);
-  color: #fff;
+  color: var(--text-on-accent);
 }
 
 .bb-x {

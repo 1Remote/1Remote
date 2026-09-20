@@ -16,6 +16,11 @@ body {
   --accent-hover: #4d73ff;
   --accent-container: #16203a;
   --accent-text: #7c9bff;
+  /* 实底强调变体（深色阶，双基底同值）：白字在其上全 7 色 ≥5.18 AA——亮 --accent
+     （如 orange/green）作实底时白字仅 2.80/2.54 FAIL；实底强调场景（搜索高亮/主按钮/
+     HelpLink 徽标 hover）一律用 solid，文字用 --text-on-accent */
+  --accent-solid: #2c5aff;
+  --text-on-accent: #fff;
 }
 
 /* ---- 尺寸与效果令牌（主题无关，:root 一处定义；美学报告 2026-09-19 附录 A 落地） ----
@@ -25,7 +30,14 @@ body {
  *   / box 8（卡片/浮层/表格框）+ pill 999；搜索命中高亮 2px 属状态指示档
  * 线条重量三档（V6）：控件描边 1.5 / 状态指示条 2（拖拽线/选中条/命中高亮）/ 文档引用竖线 3
  * 控件高度两档（V3）：24 行内紧凑 / 28 标准表单与对话框；禁用不透明度统一 0.5（E4）
- * 阴影按基底分档（E1/S3）：dark 默认值在此，light 更轻的覆盖见 [data-theme='light'] */
+ * 中间透明度档：--opacity-hint 0.7（装饰性弱化：表头排序箭头/骨架静态/未选 pin），与
+ *   禁用 0.5 拉开，hover 反馈不低于 0.7（0.45/0.55 会弱到像失效/像禁用）
+ * 动画时长两档（0.12/0.18s）+ 统一 ease；入场动画保留 ease-out（进入感）
+ * 阴影按基底分档（E1/S3）：dark 默认值在此，light 更轻的覆盖见 [data-theme='light']；
+ *   遮罩 --scrim 同按基底分档（light 32% 与轻阴影的层级语言配套）
+ * 焦点色 --accent-focus：dark=--accent；light=--accent-text 深变体（orange/green 的
+ *   亮 accent 在浅底上作焦点边框仅 2.69/2.43，不达非文本 3:1）
+ */
 :root {
   --fs-micro: 0.8077rem; /* 10.5px 微：chip/箭头/计数 */
   --fs-caption: 0.8846rem; /* 11.5px 辅：时间戳/表头/hint */
@@ -45,6 +57,26 @@ body {
   --shadow-overlay: -10px 0 28px rgb(0 0 0 / 22%);
 
   --opacity-disabled: 0.5;
+  --opacity-hint: 0.7;
+
+  --dur-fast: 0.12s;
+  --dur-med: 0.18s;
+
+  --scrim: rgb(0 0 0 / 40%);
+
+  --accent-focus: var(--accent); /* light 基底覆盖为 --accent-text 深变体，见下方 */
+}
+
+/* 键盘焦点环统一（美学报告 2026-09-20 F11）：自定义 button/a 此前各自落 UA 默认环；
+ * 焦点色用 --accent-focus。naive 组件自带焦点样式（n-button 为 box-shadow 环），
+ * 排除避免双环 */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-focus);
+  outline-offset: 2px;
+}
+.n-button:focus-visible {
+  outline: none;
 }
 
 [data-theme='dark'] {
@@ -82,6 +114,9 @@ body {
   /* 亮色基底阴影更轻（S3）：低透明度 + 依赖边框定义层级，避免 25% 黑显脏 */
   --shadow-menu: 0 6px 24px rgb(0 0 0 / 10%);
   --shadow-overlay: -10px 0 28px rgb(0 0 0 / 8%);
+  /* 遮罩更轻（F14）：与 8% 轻阴影的层级语言配套；焦点色用深变体（F11） */
+  --scrim: rgb(0 0 0 / 32%);
+  --accent-focus: var(--accent-text);
 }
 
 [data-accent='blue'] {
@@ -89,42 +124,49 @@ body {
   --accent-hover: #4d73ff;
   --accent-container: #16203a;
   --accent-text: #7c9bff;
+  --accent-solid: #2c5aff;
 }
 [data-accent='violet'] {
   --accent: #8b5cf6;
   --accent-hover: #a78bfa;
   --accent-container: #1d1626;
   --accent-text: #b8a6f7;
+  --accent-solid: #6d28d9;
 }
 [data-accent='pink'] {
   --accent: #ec4899;
   --accent-hover: #f472b6;
   --accent-container: #26141e;
   --accent-text: #f5a8cd;
+  --accent-solid: #be185d;
 }
 [data-accent='red'] {
   --accent: #ef4444;
   --accent-hover: #f87171;
   --accent-container: #26120f;
   --accent-text: #f5a09a;
+  --accent-solid: #b91c1c;
 }
 [data-accent='orange'] {
   --accent: #f97316;
   --accent-hover: #fb923c;
   --accent-container: #241d12;
   --accent-text: #f0b25f;
+  --accent-solid: #c2410c;
 }
 [data-accent='green'] {
   --accent: #10b981;
   --accent-hover: #34d399;
   --accent-container: #12241a;
   --accent-text: #5fd38d;
+  --accent-solid: #047857;
 }
 [data-accent='slate'] {
   --accent: #64748b;
   --accent-hover: #7c8ba1;
   --accent-container: #1b2028;
   --accent-text: #9aa8bb;
+  --accent-solid: #475569;
 }
 
 /* 亮色基底下的 accent 浅色容器变体（低饱和浅底 + 深色 accent-text 以保证对比度） */
