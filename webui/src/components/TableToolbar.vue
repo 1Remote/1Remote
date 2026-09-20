@@ -17,6 +17,7 @@ const props = defineProps({
 })
 const emit = defineEmits([
   'batch-connect',
+  'batch-delete',
   'bulk-edit',
   'export',
   'clear-checked',
@@ -26,8 +27,8 @@ const emit = defineEmits([
 ])
 const { t } = useI18n()
 
-// 列菜单：点击工具簇外部关闭（window mousedown）。Esc 未接线——不在本组件处理
-// （全局 Esc 链归 ServerListView，未覆盖列菜单）
+// 列菜单：点击工具簇外部关闭（window mousedown）。Esc 关闭经 ServerListView 全局 Esc 链
+//（closeColMenuIfOpen 分支——菜单开时 Esc 只关菜单，不清勾选/搜索/光标）
 function onGlobalDownCloseColMenu(e) {
   if (props.colMenu && !e.target.closest?.('.table-tools')) emit('toggle-col-menu')
 }
@@ -54,6 +55,10 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
       </button>
       <!-- 导出：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
       <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export')">⤓ {{ t('batch.export') }}</button>
+      <!-- 删除：danger 样式与连接主按钮相区分；确认对话框（含逐台删除进度）由 ServerListView 执行 -->
+      <button class="bb-btn bb-danger" :title="t('batch.deleteTitle')" @click="emit('batch-delete')">
+        🗑 {{ t('batch.delete') }}
+      </button>
       <button class="bb-x" :title="t('batch.clear')" @click="emit('clear-checked')">✕</button>
     </div>
     <!-- ≡ = 自定义顺序模式开关（开启后行可拖拽重排）；
@@ -90,11 +95,30 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
 </template>
 
 <style scoped>
-/* 批量操作条：与面包屑/工具簇同行内联——不自带整条背景/边框（宿主行自有 34px 高与底边线） */
+/* 批量操作条：与面包屑/工具簇同行内联——不自带整条背景/边框（宿主行自有 34px 高与底边线）；
+   首次出现（勾选 0→N）滑入 + 淡入，让"批量操作来了"有可感知的入场 */
 .batch-bar {
   display: flex;
   align-items: center;
   gap: 8px;
+  animation: bb-in 0.18s ease-out;
+}
+
+@keyframes bb-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .batch-bar {
+    animation: none;
+  }
 }
 
 .bb-count {
@@ -126,6 +150,17 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
 .bb-primary {
   border-color: var(--accent);
   color: var(--accent-text);
+}
+
+/* 删除按钮：danger 描边/文字与其它批量动作相区分（悬停加重底色） */
+.bb-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.bb-danger:hover:not(:disabled) {
+  background: var(--danger);
+  color: #fff;
 }
 
 .bb-x {

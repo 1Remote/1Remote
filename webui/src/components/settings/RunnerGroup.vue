@@ -243,13 +243,15 @@ function onAddSave(name) {
   saveNow()
 }
 
-// ---- 删除：仅外部运行器；确认 → splice + selectedRunnerName 回退首项（WPF 同款）→ 保存 ----
+// ---- 删除：仅外部运行器；确认 → splice + selectedRunnerName 回退首项（WPF 同款）→ 保存。
+// autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDeleteRunner(r) {
   dialog.warning({
     title: t('settings.r.deleteTitle'),
     content: t('settings.r.deleteConfirm', { name: r.Name }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
+    autoFocus: false,
     onPositiveClick: () => {
       const cfg = activeCfg.value
       const idx = cfg.runners.indexOf(r)

@@ -210,13 +210,15 @@ export function useFolderOps() {
     const count = holder ? countHolderServers(holder) : 0
     const name = oldPath.split('/').pop()
     // 空文件夹（递归无服务器）：单按钮确认直接删——专用文案
-    //（原先复用 deleteFolderConfirm 传 n=0，会显示"其中 0 台服务器…上移一级"的怪句）
+    //（原先复用 deleteFolderConfirm 传 n=0，会显示"其中 0 台服务器…上移一级"的怪句）。
+    // autoFocus:false——删除类确认不自动聚焦按钮，Enter 不可误触确认（Esc 仍可取消）
     if (!count) {
       dialog.warning({
         title: t('tree.deleteFolder'),
         content: t('tree.deleteFolderEmpty', { name }),
         positiveText: t('editor.deleteYes'),
         negativeText: t('editor.cancel'),
+        autoFocus: false,
         onPositiveClick: () => runDelete(dsName, oldPath, false),
       })
       return
@@ -232,6 +234,7 @@ export function useFolderOps() {
       positiveText: t('tree.deleteWithServers'),
       negativeText: t('tree.deleteKeepContents'),
       positiveButtonProps: { type: 'error' },
+      autoFocus: false, // 同上：删除确认禁键盘 Enter 触发（Esc 仍可取消）
       onPositiveClick: () => runDelete(dsName, oldPath, true),
       onNegativeClick: () => runDelete(dsName, oldPath, false),
     })

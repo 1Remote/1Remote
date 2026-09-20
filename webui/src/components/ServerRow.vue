@@ -1,8 +1,9 @@
 <script setup>
 // 单行：36px flex 行，列宽不自持——由父级 ServerTable 经 CSS
 // 变量（--c-*）下发，表头与行严格对齐；本组件只管渲染与交互 emit。
-// 交互：单击=单选（父级据 event 修饰键做 Ctrl/Shift 多选）、双击=连接、
-// 复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（与菜单「编辑」同链路）。
+// 交互：单击=纯光标（父级据 event 修饰键做 Ctrl/Shift 勾选，裸点击不改勾选集）、
+// 双击=连接、复选框=切换勾选、右键/hover ⋯=菜单、▸=连接、✎=编辑（与菜单「编辑」同链路）。
+// 操作列按钮常显（不随 hover 浮现）——行 hover 变色承担"当前行"提示。
 // 备注列：文本直显（一行 ellipsis），整格悬停弹 Markdown 预览（对齐 WPF 悬停备注弹层）。
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
@@ -188,7 +189,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   padding-right: 0;
 }
 .cell-status {
-  flex: 0 0 var(--c-status, 58px);
+  flex: 0 0 var(--c-status, 42px);
 }
 .cell-name {
   flex: var(--c-name, 2.3) var(--c-name-grow, 1) 0;
@@ -239,12 +240,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   flex: 0 0 var(--c-act, 100px);
   gap: 2px;
   justify-content: flex-end;
-  padding-right: 0;
-  opacity: 0; /* hover 操作浮现 */
-}
-.row:hover .cell-act,
-.row.selected .cell-act {
-  opacity: 1;
+  padding-right: 0; /* 操作按钮常显（hover 浮现会让"这里能操作"不可发现）；行 hover 变色已足够区分 */
 }
 
 .icon {

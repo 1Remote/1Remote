@@ -272,13 +272,14 @@ async function pickSqlitePath(form) {
   }
 }
 
-// ---- 删除：二段确认（409 keepServers 重试）----
+// ---- 删除：二段确认（409 keepServers 重试）。autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDelete(d) {
   dialog.warning({
     title: t('settings.d.deleteTitle'),
     content: t('settings.d.deleteConfirm', { name: d.name }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
+    autoFocus: false,
     onPositiveClick: async () => {
       try {
         await api.deleteDataSource(d.name)
@@ -309,6 +310,7 @@ function confirmKeepServers(d, serverCount) {
       t('settings.d.keepServersHint'),
     positiveText: t('settings.d.keepServers'),
     negativeText: t('editor.cancel'),
+    autoFocus: false, // 同 onDelete：删除流二段确认同样禁 Enter 误触
     onPositiveClick: async () => {
       try {
         await api.deleteDataSource(d.name, true)

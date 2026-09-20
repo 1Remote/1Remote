@@ -53,6 +53,8 @@
   "col.lastConnect": "Last connected",
   "col.actions": "Actions",
   "list.customOrder": "Custom order (drag rows to reorder)",
+  "toast.reorderNeedCustom": "Reordering rows requires custom order mode. You can still drop a server into a folder",
+  "toast.crossDsMove": "Servers cannot be moved across data sources",
   "toast.reorderFailed": "Failed to save custom order",
   "toast.treeMoved": "Moved {n} servers",
   "toast.treeMoveFailed": "Failed to move {n} servers",
@@ -69,10 +71,16 @@
   "batch.editSingleTitle": "Edit the selected server",
   "batch.export": "Export",
   "batch.exportTitle": "Export all selected (plaintext JSON, local verification required)",
+  "batch.delete": "Delete",
+  "batch.deleteTitle": "Delete all selected",
+  "batch.hint": "{n} selected. Use the toolbar above or the context menu for batch actions",
   "batch.clear": "Clear selection",
 
   "batchConnect.confirmTitle": "Connect multiple servers",
   "batchConnect.confirmText": "You are about to connect to {n} servers. Continue?",
+
+  "batchDelete.confirmTitle": "Delete servers",
+  "batchDelete.confirmText": "Delete {n} servers? This cannot be undone.",
 
   "import.title": "Import servers",
   "import.ds": "Import into data source",
@@ -104,6 +112,7 @@
   "row.edit": "Edit",
   "row.note": "Note",
   "row.more": "More",
+  "row.parentFolder": "Parent folder",
   "row.tagSep": ", ",
   "status.never": "Never",
 
@@ -132,6 +141,9 @@
   "toast.connectFailed": "Failed to start connection",
   "toast.batchConnectStarted": "Started {n} connections",
   "toast.batchConnectFailed": "{n} connections failed to start",
+  "toast.batchDeleting": "Deleting {ok}/{n}…",
+  "toast.batchDeleted": "Deleted {n} servers",
+  "toast.batchDeleteFailed": "{n} servers failed to delete",
   "toast.noAddressToCopy": "No address to copy",
   "toast.nothingToCopy": "No {what} to copy",
   "toast.copied": "Copied {what}",

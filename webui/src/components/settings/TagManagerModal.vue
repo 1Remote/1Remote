@@ -131,13 +131,15 @@ async function confirmRename() {
   }
 }
 
-// ---- 删除：确认（计数影响警告）→ DELETE；404=列表过期静默刷新 ----
+// ---- 删除：确认（计数影响警告）→ DELETE；404=列表过期静默刷新。
+// autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDelete(tg) {
   dialog.warning({
     title: t('tagm.deleteTitle'),
     content: t('tagm.deleteConfirm', { name: tg.name, n: tg.count }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
+    autoFocus: false,
     onPositiveClick: async () => {
       try {
         await api.deleteTag(tg.name, props.ds)

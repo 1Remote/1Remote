@@ -1,10 +1,11 @@
 /**
  * 表格行勾选（自 ServerTable.vue 拆出）：checked 勾选集（始终只存服务器 id）+ Shift 范围/
- * Ctrl 切换/单击单选 + 表头三态全选 + 文件夹行勾选（含子孙）+ 数据变化剔除。
+ * Ctrl 切换 + 表头三态全选 + 文件夹行勾选（含子孙）+ 数据变化剔除（裸点击=纯光标，不在此单元）。
  *
- * - 单击=单选、Ctrl/⌘=切换、Shift=范围（锚点 anchorIdx=上次点击行序号；文件夹勾选无行号
- *   语义，作废锚点）。表头全选=「当前视图可见服务器行」（合并而非替换——保留文件夹勾选
- *   展开的隐藏子孙 id；要连子孙一起选请勾文件夹行复选框）。
+ * - 裸点击=纯光标（不改勾选集）、Ctrl/⌘=切换、Shift=范围（锚点 anchorIdx=上次点击行序号；
+ *   裸点击也更新锚点——先点 A 再 Shift 点 B 自然选中区间）。勾选入口：行内复选框 /
+ *   Ctrl+点击 / Shift+点击 / Ctrl+A / 表头与文件夹复选框。表头全选=「当前视图可见服务器行」
+ *   （合并而非替换——保留文件夹勾选展开的隐藏子孙 id；要连子孙一起选请勾文件夹行复选框）。
  * - 文件夹勾选：全部子孙服务器 id（folderPath 等于该文件夹路径或以 '路径/' 开头，深层
  *   子文件夹一并命中）加入/移出 checked，并限定同数据源（防「全部数据」根跨库同名路径互串）。
  *   各文件夹行三态（checked/indeterminate/count）以 servers 域一次算全层并缓存到依赖变化。
@@ -40,7 +41,8 @@ export function useRowChecks({ sorted, servers, folders }) {
     checked.value = next
   }
 
-  // 行点击的勾选分支（单击/Ctrl/Shift；光标落位等行级副作用归调用方，先于本调用执行）
+  // 行点击的勾选分支（Ctrl/Shift；裸点击不改勾选集——单击仅设光标行，勾选只由
+  // 复选框/Ctrl+点击/Shift+点击/Ctrl+A 触发。光标落位等行级副作用归调用方，先于本调用执行）
   function rowClickSelect(ev, idx, id) {
     if (ev.shiftKey && anchorIdx >= 0) {
       const lo = Math.min(anchorIdx, idx)
@@ -50,8 +52,7 @@ export function useRowChecks({ sorted, servers, folders }) {
       toggleChecked(id)
       anchorIdx = idx
     } else {
-      checked.value = new Set([id]) // 单击=单选，清空其余
-      anchorIdx = idx
+      anchorIdx = idx // 裸点击=纯光标：不增删勾选，仅把 Shift 范围锚点移到本行
     }
   }
   // 行内复选框点击：切换 + 锚点落位

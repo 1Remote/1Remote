@@ -230,7 +230,8 @@ async function save() {
 
 // 模态表单回车=保存：共通语义见 utils/formEnter.js（与保存按钮同守卫：名称空/重名/保存中不动作）
 
-// ---- 删除（引用数警告 + 404 静默刷新）----
+// ---- 删除（引用数警告 + 404 静默刷新）。autoFocus:false——删除确认不自动聚焦按钮，
+// Enter 不可误触确认（Esc 仍可取消；naive 默认 autoFocus 会让回车落到 positive 上）----
 function onDelete(c) {
   dialog.warning({
     title: t('cv.deleteTitle'),
@@ -240,6 +241,7 @@ function onDelete(c) {
         : t('cv.deleteConfirm', { name: c.name }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
+    autoFocus: false,
     onPositiveClick: async () => {
       try {
         await api.deleteCredential(c.name, ds.value)

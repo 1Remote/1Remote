@@ -53,6 +53,8 @@
   "col.lastConnect": "最近连接",
   "col.actions": "操作",
   "list.customOrder": "自定义顺序（拖动行重排）",
+  "toast.reorderNeedCustom": "当前非自定义排序模式，只能将服务器拖入文件夹",
+  "toast.crossDsMove": "不能跨数据源移动服务器",
   "toast.reorderFailed": "保存自定义顺序失败",
   "toast.treeMoved": "已移动 {n} 台服务器",
   "toast.treeMoveFailed": "{n} 台服务器移动失败",
@@ -69,10 +71,16 @@
   "batch.editSingleTitle": "编辑已选服务器",
   "batch.export": "导出",
   "batch.exportTitle": "导出全部已选（明文 JSON，需本地验证）",
+  "batch.delete": "删除",
+  "batch.deleteTitle": "删除全部已选",
+  "batch.hint": "已选 {n} 台，可使用上方操作条或右键批量操作",
   "batch.clear": "取消选择",
 
   "batchConnect.confirmTitle": "连接多台服务器",
   "batchConnect.confirmText": "即将连接 {n} 台服务器，是否继续？",
+
+  "batchDelete.confirmTitle": "删除服务器",
+  "batchDelete.confirmText": "确定删除 {n} 台服务器？此操作无法撤销。",
 
   "import.title": "导入服务器",
   "import.ds": "导入到数据源",
@@ -104,6 +112,7 @@
   "row.edit": "编辑",
   "row.note": "备注",
   "row.more": "更多",
+  "row.parentFolder": "上一层",
   "row.tagSep": "、",
   "status.never": "从未",
 
@@ -132,6 +141,9 @@
   "toast.connectFailed": "连接发起失败",
   "toast.batchConnectStarted": "已发起 {n} 个连接",
   "toast.batchConnectFailed": "{n} 个连接发起失败",
+  "toast.batchDeleting": "正在删除 {ok}/{n}…",
+  "toast.batchDeleted": "已删除 {n} 台服务器",
+  "toast.batchDeleteFailed": "{n} 台服务器删除失败",
   "toast.noAddressToCopy": "无地址可复制",
   "toast.nothingToCopy": "无{what}可复制",
   "toast.copied": "已复制{what}",

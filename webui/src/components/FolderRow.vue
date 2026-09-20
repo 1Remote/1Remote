@@ -99,7 +99,7 @@ const disabled = () => !props.checkState?.count
 }
 
 .frow .cell-status {
-  flex: 0 0 var(--c-status, 58px);
+  flex: 0 0 var(--c-status, 42px);
 }
 
 .frow .cell-name {
