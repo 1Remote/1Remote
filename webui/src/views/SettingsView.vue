@@ -169,7 +169,7 @@ onBeforeUnmount(() => {
      同一视觉语系，暗/亮基底各自有低饱和容器变体，保持克制） */
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   flex: none;
   height: 34px;
   padding: 0 10px;
@@ -185,7 +185,6 @@ onBeforeUnmount(() => {
 }
 .s-back:hover {
   border-color: var(--accent-hover);
-  filter: brightness(1.06);
 }
 .s-back-arrow {
   flex: 0 0 auto;

@@ -165,7 +165,10 @@ function applyClassic(name) {
 .base-card.active .base-name {
   color: var(--accent-text);
 }
-/* 迷你预览：贴 data-theme/data-accent 让 CSS 变量按预览基底解析（theme.css 的变量表复用） */
+/* 迷你预览：贴 data-theme/data-accent 让 CSS 变量按预览基底解析（theme.css 的变量表复用）。
+   注意：下方 #0f1011/#fafafa/#565a63/#a1a1aa 是 theme.css 中 --bg/--text-4 值的手工拷贝——
+   迷你图模拟的是「对侧」基底（当前 dark 时渲染 light 缩略），CSS 变量取不到对侧值，
+   只能拷贝；调整 theme.css 的 --bg/--text-4 时需同步此处（同步义务锚点，F21） */
 .mini {
   display: flex;
   width: 120px;
@@ -188,7 +191,7 @@ function applyClassic(name) {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
   padding: 0 10px;
 }
 .mini-line {

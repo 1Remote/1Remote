@@ -187,7 +187,7 @@ function rowFieldFor(row, f) {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: var(--fs-body);
-  font-weight: 500;
+  font-weight: 600; /* 字重收敛 600 档（F23，与行标题全站唯一档统一） */
   color: var(--text-2);
 }
 .sf-del {

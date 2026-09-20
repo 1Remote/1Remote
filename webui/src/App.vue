@@ -296,7 +296,7 @@ function onTopbarDblClick(e) {
 .logo {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   font-weight: 600;
 }
 .logo-mark {
@@ -315,7 +315,7 @@ function onTopbarDblClick(e) {
   align-items: center;
   gap: 6px;
   height: var(--ctrl-h-m);
-  padding: 0 9px;
+  padding: 0 8px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-ctrl);
   font-size: var(--fs-body);

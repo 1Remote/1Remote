@@ -908,7 +908,7 @@ const importModal = ref(false)
 .eg-proto {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   color: var(--text-4);
   font-size: var(--fs-caption);
 }
@@ -1027,7 +1027,7 @@ const importModal = ref(false)
 .sb-ds {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   min-width: 0;
   max-width: 130px;
 }
@@ -1065,7 +1065,7 @@ const importModal = ref(false)
 .sb-sse {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   cursor: help; /* title 说明其语义为后端可达性而非连接会话状态 */
 }
 .sb-lang {

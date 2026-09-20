@@ -172,7 +172,7 @@ const CONTRIBUTE = [
 }
 .hero-name {
   font-size: var(--fs-display);
-  font-weight: 700;
+  font-weight: 600; /* 字重收敛 600 档（F23，全站标题唯一档） */
   color: var(--text-1);
 }
 .hero-tagline {
