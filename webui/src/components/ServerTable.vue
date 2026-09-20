@@ -12,10 +12,11 @@
 //   （=当前视图可见服务器行，不含文件夹的隐藏子孙——要含子孙勾文件夹行复选框）；
 //   勾选集合始终是服务器 id 集，「已选 N 台」与批量编辑/导出/删除自然作用于全集。
 //   勾选/文件夹勾选/剔除的完整语义与口径见 composables/useRowChecks.js 文件头
-// - 键盘：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、Ctrl+A 全选可见、
-//   E 编辑 / Del 删除 / Ctrl+D 复制（目标行 = 恰好单选该台，否则光标行；Ctrl+D 在
-//   多选（>1）时忽略——批量复制无对应后端动作，防误触）；
-//   Esc 不在此处理——全局 Esc 链（菜单→列菜单→勾选→搜索→光标）由 ServerListView
+// - 键盘：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、Ctrl+A 全选可见
+//   （已全选时再按 = 清空，与表头三态复选框同款对称）、Menu/Shift+F10 呼出右键菜单、
+//   E 编辑 / Del 删除 / Ctrl+D 复制（目标行 = 恰好单选该台，否则光标行；Del 在多选
+//   （>1）时转批量删除确认；Ctrl+D 在多选（>1）时忽略——批量复制无对应后端动作，防误触）；
+//   Esc 不在此处理——全局 Esc 链（菜单→列菜单→勾选→搜索→标签→光标）由 ServerListView
 //   统一调度（见其 onGlobalEsc）
 // - 批量条 + ≡ 自定义顺序 / ▦ 列菜单工具簇：TableToolbar 组件承载，Teleport 至面包屑行右侧
 //   （#crumb-actions）；勾选/排序模式/列状态仍归本组件，不上提
@@ -24,7 +25,8 @@
 //   别的文件夹行/「..」上级行 = 移入或上移一级，文件夹行不支持拖拽重排序
 //   （hover 服务器行一次性 toast 说明，重排序归树内拖拽）
 // - 右键菜单：连接/编辑/复制/复制地址/复制用户名/删除可用，其余占位禁用（title 提示）；
-//   点击外部关闭，Esc 经 ServerListView 全局 Esc 链关闭
+//   服务器行与文件夹/空白两类菜单（menu/nfMenu）均点击外部关闭，Esc 经 ServerListView
+//   全局 Esc 链关闭（closeMenuIfOpen/closeNfMenuIfOpen 两级，链序见 ServerListView）
 // - 空态：默认居中提示按「传入列表空=空库 / 非空但过滤后无行=无匹配」二分；
 //   具名插槽 empty 供父级覆写（ServerListView 的引导卡片/无匹配态在表格外层接管）
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
@@ -406,7 +408,6 @@ const {
   allCb,
   rowClickSelect,
   onToggleSelect,
-  addAllVisible,
   toggleAll,
   clearChecked,
   folderChecks,
@@ -534,8 +535,9 @@ function onGlobalKey(e) {
       emit('connect', cursorId.value)
     }
   } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'a') {
-    e.preventDefault() // 抢在浏览器文本全选前，全选当前视图（合并语义同 toggleAll：保留隐藏子孙勾选）
-    addAllVisible()
+    e.preventDefault() // 抢在浏览器文本全选前，全选/清空当前视图（toggleAll 与表头三态同款：
+    // 已全选时清空——键盘/鼠标通道对称；合并语义保留文件夹勾选展开的隐藏子孙）
+    toggleAll()
   } else if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key?.toLowerCase() === 'd') {
     // Ctrl+D 复制：preventDefault 阻断浏览器「添加书签」默认；仅单选（≤1 勾选）生效，
     // 多选（>1）忽略——批量复制无对应动作，防「以为整批复制实际只复制一台」的误触
@@ -544,9 +546,24 @@ function onGlobalKey(e) {
     const s = keyTargetServer()
     if (s) emit('duplicate', s)
   } else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === 'Delete') {
-    // Del 删除：只 emit server 对象，确认对话框由 ServerListView 的 onDelete 统一弹出
+    // Del 删除：勾选 >1 台时与批量条同目标（删除全部已选，批量确认由父级 onBatchDelete
+    // 弹出）——否则「已选 N 台」时 Del 删的是光标行，与批量心智冲突；恰 1 台勾选或
+    // 无勾选 = 单台（keyTargetServer），确认框显示名字可纠错
+    if (checked.value.size > 1) emit('batch-delete', [...checked.value])
+    else {
+      const s = keyTargetServer()
+      if (s) emit('delete', s)
+    }
+  } else if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) {
+    // 键盘呼出右键菜单（Menu 键 / Shift+F10，对齐系统语境菜单惯例）：目标行与
+    // E/Del 同源（keyTargetServer），定位到该行 DOM（无鼠标坐标）
+    e.preventDefault() // 阻断部分平台 Menu 键再触发一次 contextmenu 事件
     const s = keyTargetServer()
-    if (s) emit('delete', s)
+    if (s) {
+      const el = rootEl.value?.querySelector(`[data-id="${CSS.escape(String(s.id))}"]`)
+      const r = el?.getBoundingClientRect()
+      openMenu({ server: s, x: r ? r.left + 40 : 0, y: r ? r.bottom : 0 })
+    }
   } else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key?.toLowerCase() === 'e') {
     // E 编辑（允许 Shift+e）
     const s = keyTargetServer()
@@ -581,6 +598,15 @@ function closeColMenuIfOpen() {
   }
   return false
 }
+function closeNfMenuIfOpen() {
+  // 文件夹/空白右键菜单（nfMenu）与服务器行菜单同级接入 Esc 链（此前只响应外部点击，
+  // 开着菜单按 Esc 会击穿到清勾选——链序见 ServerListView onGlobalEsc）
+  if (nfMenu.value) {
+    nfMenu.value = null
+    return true
+  }
+  return false
+}
 function clearCheckedIfAny() {
   if (checked.value.size) {
     clearChecked()
@@ -595,7 +621,7 @@ function clearCursorIfAny() {
   }
   return false
 }
-defineExpose({ closeMenuIfOpen, closeColMenuIfOpen, clearCheckedIfAny, clearCursorIfAny })
+defineExpose({ closeMenuIfOpen, closeNfMenuIfOpen, closeColMenuIfOpen, clearCheckedIfAny, clearCursorIfAny })
 
 // 搜索框 ↑/↓ 焦点移交（tableBus.focusHandoff）：App.vue 顶栏搜索框按下方向键 →
 // 表格接管键盘（tableFocused 置真——onDocFocusin 不会因这次没有真实 DOM 焦点变化而

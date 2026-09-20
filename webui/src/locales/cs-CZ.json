@@ -61,7 +61,7 @@
   "cols.menu": "Viditelnost a šířka sloupců",
   "cols.fixed": "Vždy zobrazený",
   "cols.hint": "Tažením hrany sloupce změníte šířku; dvojklikem obnovíte",
-  "col.selectAll": "Vybrat vše (Ctrl A)",
+  "col.selectAll": "Vybrat vše (Ctrl+A)",
   "batch.selected": "Vybráno: {n}",
   "batch.connect": "Připojit",
   "batch.connectTitle": "Připojit všechny vybrané",

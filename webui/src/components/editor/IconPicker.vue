@@ -189,7 +189,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
           v-model:value="exePath"
           :placeholder="t('editor.iconExePlaceholder')"
           :input-props="{ spellcheck: false }"
-          @keyup.enter="extractFromExe"
+          @keydown.enter="!$event.isComposing && extractFromExe()"
         />
         <button class="ip-btn" type="button" :disabled="picking" @click="browseExePath">
           {{ t('settings.r.f.browse') }}

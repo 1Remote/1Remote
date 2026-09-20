@@ -61,7 +61,7 @@
   "cols.menu": "列の表示と幅の設定",
   "cols.fixed": "常に表示",
   "cols.hint": "列の端をドラッグして幅を調整、ダブルクリックでリセット",
-  "col.selectAll": "すべて選択（Ctrl A）",
+  "col.selectAll": "すべて選択（Ctrl+A）",
   "batch.selected": "{n} 台選択中",
   "batch.connect": "接続",
   "batch.connectTitle": "選択したすべてに接続",

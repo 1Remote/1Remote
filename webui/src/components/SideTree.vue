@@ -362,6 +362,16 @@ function closeCtx() {
 function onGlobalDownCloseCtx(e) {
   if (ctx.value && !e.target.closest?.('.tree-ctx')) ctx.value = null
 }
+// 供 ServerListView 全局 Esc 链调用：树右键菜单开着时 Esc 只关菜单（返回 true = 消费）。
+// 此前只响应外部 mousedown 关闭，不在链内——开着菜单按 Esc 会击穿去清勾选/搜索
+function closeCtxIfOpen() {
+  if (ctx.value) {
+    ctx.value = null
+    return true
+  }
+  return false
+}
+defineExpose({ closeCtxIfOpen })
 onMounted(() => window.addEventListener('mousedown', onGlobalDownCloseCtx))
 onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseCtx))
 

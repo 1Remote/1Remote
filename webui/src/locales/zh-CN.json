@@ -66,7 +66,7 @@
   "cols.menu": "列显示与列宽设置",
   "cols.fixed": "固定显示",
   "cols.hint": "拖动列右缘调整宽度；双击重置",
-  "col.selectAll": "全选（Ctrl A）",
+  "col.selectAll": "全选（Ctrl+A）",
 
   "batch.selected": "已选 {n} 台",
   "batch.connect": "连接",

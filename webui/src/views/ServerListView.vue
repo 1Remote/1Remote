@@ -131,6 +131,7 @@ const crumbTitle = computed(() => {
 })
 const tableCount = ref(0)
 const table = ref(null) // ServerTable 实例引用：全局 Esc 链需调用其暴露的菜单/勾选/光标回退方法
+const sideTree = ref(null) // SideTree 实例引用：Esc 链调用其树右键菜单回退（closeCtxIfOpen）
 
 // ---- 内容区三态 + 骨架屏：互斥地取代 ServerTable（表格隐藏时 ref 为 null，
 // Esc 链的 tb?. 守卫天然兼容）。SSE 重载时列表已有数据，不闪骨架 ----
@@ -273,9 +274,10 @@ async function onExport(ids) {
   }
 }
 
-// ---- 全局 Esc 链：一次 Esc 只退一级，按 右键菜单 → 列菜单 → 勾选 → 搜索 → 表格光标
-// 逐级回退。菜单/勾选/光标归 ServerTable（经 ref 暴露的 *IfOpen/*IfAny 方法，返回是否消费），
-// 搜索归本组件（useServers 共享态）——三处状态在唯一的 window 级 handler 里按序裁决，
+// ---- 全局 Esc 链：一次 Esc 只退一级，按 右键菜单（服务器行 → 文件夹/空白 → 树）→ 列菜单
+// → 勾选 → 搜索 → 标签 → 表格光标 逐级回退。菜单/勾选/光标归 ServerTable（经 ref 暴露的
+// *IfOpen/*IfAny 方法，返回是否消费），树菜单归 SideTree（closeCtxIfOpen），搜索/标签归本组件
+//（useServers / activeTag 共享态）——各处状态在唯一的 window 级 handler 里按序裁决，
 // 与焦点位置无关（搜索框元素级 handler 在焦点不在输入框时不会触发，无法参与统一链序）。
 // 列菜单开时 Esc 只关列菜单（closeColMenuIfOpen 在勾选/搜索/光标之前——菜单一层）。
 // 编辑抽屉打开时 Esc 归抽屉（关闭/未保存确认，EditorDrawer 自持 window 级 handler，注册在
@@ -288,10 +290,17 @@ function onGlobalEsc(e) {
   if (document.querySelector('.n-dialog')) return // naive 对话框在开（删除/重命名确认等）：Esc 只关框（naive 自持关闭），本链不清搜索/光标
   const tb = table.value // 命名避免遮蔽 i18n 的 t
   if (tb?.closeMenuIfOpen()) e.preventDefault()
+  else if (tb?.closeNfMenuIfOpen()) e.preventDefault()
+  else if (sideTree.value?.closeCtxIfOpen()) e.preventDefault()
   else if (tb?.closeColMenuIfOpen()) e.preventDefault()
   else if (tb?.clearCheckedIfAny()) e.preventDefault()
   else if (searchQuery.value) {
     searchQuery.value = ''
+    e.preventDefault()
+  } else if (activeTag.value) {
+    // 标签过滤与搜索同为过滤意图，链中同级回退（Esc 清标签后下一 Esc 才清光标）；
+    // 树选中（文件夹）仍永不清——导航意图与过滤意图独立
+    activeTag.value = ''
     e.preventDefault()
   } else if (tb?.clearCursorIfAny()) e.preventDefault()
 }
@@ -455,6 +464,7 @@ const importModal = ref(false)
     <aside class="sidebar" :class="{ collapsed }">
       <SideTree
         v-if="!collapsed"
+        ref="sideTree"
         v-model:selection="selection"
         v-model:tag="activeTag"
         @update:collapsed="collapsed = $event"

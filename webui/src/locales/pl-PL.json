@@ -61,7 +61,7 @@
   "cols.menu": "Widoczność i szerokość kolumn",
   "cols.fixed": "Zawsze widoczna",
   "cols.hint": "Przeciągnij krawędź kolumny, aby zmienić szerokość; dwuklik przywraca",
-  "col.selectAll": "Zaznacz wszystko (Ctrl A)",
+  "col.selectAll": "Zaznacz wszystko (Ctrl+A)",
   "batch.selected": "Zaznaczono: {n}",
   "batch.connect": "Połącz",
   "batch.connectTitle": "Połącz wszystkie zaznaczone",

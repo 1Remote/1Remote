@@ -66,7 +66,7 @@
   "cols.menu": "Column visibility & width",
   "cols.fixed": "Always shown",
   "cols.hint": "Drag a column edge to resize; double-click the edge to reset",
-  "col.selectAll": "Select all (Ctrl A)",
+  "col.selectAll": "Select all (Ctrl+A)",
 
   "batch.selected": "{n} selected",
   "batch.connect": "Connect",

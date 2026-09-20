@@ -61,7 +61,7 @@
   "cols.menu": "Visibilidad y ancho de columnas",
   "cols.fixed": "Siempre visible",
   "cols.hint": "Arrastrá el borde de una columna para cambiar el ancho; doble clic para restablecer",
-  "col.selectAll": "Seleccionar todo (Ctrl A)",
+  "col.selectAll": "Seleccionar todo (Ctrl+A)",
   "batch.selected": "{n} seleccionados",
   "batch.connect": "Conectar",
   "batch.connectTitle": "Conectar todos los seleccionados",

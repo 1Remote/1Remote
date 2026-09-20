@@ -61,7 +61,7 @@
   "cols.menu": "欄位顯示與寬度設定",
   "cols.fixed": "固定顯示",
   "cols.hint": "拖曳欄位邊緣調整寬度；雙擊重設",
-  "col.selectAll": "全選（Ctrl A）",
+  "col.selectAll": "全選（Ctrl+A）",
   "batch.selected": "已選 {n} 台",
   "batch.connect": "連線",
   "batch.connectTitle": "連線全部已選",

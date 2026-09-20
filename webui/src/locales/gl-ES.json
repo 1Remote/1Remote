@@ -61,7 +61,7 @@
   "cols.menu": "Visibilidade e largura das columnas",
   "cols.fixed": "Sempre visible",
   "cols.hint": "Arrastra o bordo dunha columna para axustar a largura; duplo clic para restablecer",
-  "col.selectAll": "Seleccionar todo (Ctrl A)",
+  "col.selectAll": "Seleccionar todo (Ctrl+A)",
   "batch.selected": "{n} seleccionados",
   "batch.connect": "Conectar",
   "batch.connectTitle": "Conectar todos os seleccionados",

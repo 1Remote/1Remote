@@ -61,7 +61,7 @@
   "cols.menu": "Visibilità e larghezza colonne",
   "cols.fixed": "Sempre visibile",
   "cols.hint": "Trascina il bordo di una colonna per ridimensionarla; doppio clic per ripristinare",
-  "col.selectAll": "Seleziona tutto (Ctrl A)",
+  "col.selectAll": "Seleziona tutto (Ctrl+A)",
   "batch.selected": "{n} selezionati",
   "batch.connect": "Connetti",
   "batch.connectTitle": "Connetti tutti i selezionati",

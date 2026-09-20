@@ -290,6 +290,8 @@ function requestClose() {
     content: t('editor.unsavedText'),
     positiveText: t('editor.btnDiscard'),
     negativeText: t('editor.btnKeepEditing'),
+    autoFocus: false, // 与删除类确认同款：positive 是 destructive（丢弃），不自动聚焦——
+    // naive 默认聚焦首个可聚焦元素会让 Enter 肌肉记忆直接「丢弃并关闭」（Esc 仍可取消）
     onPositiveClick: () => {
       closing = false
       doClose()
