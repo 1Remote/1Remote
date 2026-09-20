@@ -646,7 +646,7 @@ const importModal = ref(false)
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
   cursor: pointer;
 }
 .expand-rail:hover {
@@ -662,7 +662,7 @@ const importModal = ref(false)
   background: var(--bg);
 }
 .crumb-row {
-  flex: 0 0 34px;
+  flex: 0 0 36px;
   display: flex;
   align-items: center;
   padding: 0 14px;
@@ -674,7 +674,7 @@ const importModal = ref(false)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .crumb-cur {
@@ -685,10 +685,10 @@ const importModal = ref(false)
   background: transparent;
   padding: 1px 2px;
   color: var(--text-3);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1.4;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
 }
 .crumb-btn:hover {
   background: var(--bg-hover);
@@ -711,10 +711,10 @@ const importModal = ref(false)
   margin-left: 10px;
   padding: 2px 4px 2px 9px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg-elevated);
   color: var(--text-2);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1.4;
 }
 .sc-label {
@@ -731,7 +731,7 @@ const importModal = ref(false)
   border-radius: 50%;
   background: transparent;
   color: var(--text-4);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
   line-height: 1;
   cursor: pointer;
 }
@@ -787,7 +787,7 @@ const importModal = ref(false)
 }
 .sk-bar {
   height: 10px;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
 }
 .sk-name {
   flex: 0 0 26%;
@@ -824,7 +824,7 @@ const importModal = ref(false)
   padding: 24px;
 }
 .eg-title {
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--text-2);
 }
@@ -834,29 +834,41 @@ const importModal = ref(false)
 }
 .eg-btn {
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-2);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 8px 14px;
+  padding: 7px 14px;
   cursor: pointer;
 }
 .eg-btn:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
+}
+/* 空态 CTA hover（V4）：与 .ed-btn/.bb-btn 同款反馈（border-strong + bg-hover + text-1） */
+.eg-btn:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  color: var(--text-1);
 }
 .eg-primary {
   border-color: var(--accent);
   color: var(--accent-text);
 }
+/* 主按钮 hover 保留 accent 边框（E3 统一规则：accent 边框 + bg-hover + accent-text） */
+.eg-primary:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--bg-hover);
+  color: var(--accent-text);
+}
 .eg-hint {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
 }
 .eg-import-hint {
   margin-top: 4px;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 /* 支持协议一览：灰阶瓦片（首字母）+名称，小字排一行；身份色留给行内徽章 */
@@ -872,7 +884,7 @@ const importModal = ref(false)
   align-items: center;
   gap: 5px;
   color: var(--text-4);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
 }
 .eg-tile {
   display: inline-flex;
@@ -880,11 +892,11 @@ const importModal = ref(false)
   justify-content: center;
   width: 18px;
   height: 18px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   color: var(--text-3);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
   font-weight: 600;
 }
 
@@ -900,12 +912,12 @@ const importModal = ref(false)
   padding: 24px;
 }
 .eo-title {
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--text-2);
 }
 .eo-hint {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
 }
 
@@ -921,22 +933,22 @@ const importModal = ref(false)
   padding: 24px;
 }
 .en-title {
-  font-size: 1rem;
+  font-size: var(--fs-body);
   color: var(--text-3);
 }
 .en-detail {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
 }
 .en-clear {
   margin-top: 6px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 12px;
+  padding: 7px 12px;
   cursor: pointer;
 }
 .en-clear:hover {
@@ -958,22 +970,22 @@ const importModal = ref(false)
   text-align: center;
 }
 .te-title {
-  font-size: 1rem;
+  font-size: var(--fs-body);
   color: var(--text-3);
 }
 .te-detail {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
 }
 .te-clear {
   margin-top: 6px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 12px;
+  padding: 7px 12px;
   cursor: pointer;
 }
 .te-clear:hover {
@@ -992,7 +1004,7 @@ const importModal = ref(false)
   border-top: 1px solid var(--border);
   background: var(--bg-panel);
   color: var(--text-3);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   white-space: nowrap;
   overflow: hidden; /* 数据源名过长时截断而非把右侧统计挤出可视区 */
 }
@@ -1042,10 +1054,10 @@ const importModal = ref(false)
 }
 .sb-lang {
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   line-height: 1;
   padding: 3px 7px;
   cursor: pointer;

@@ -219,7 +219,7 @@ const SWITCHES = [
   width: min(100%, var(--settings-content-w));
 }
 .hint {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-3);
 }
 .hint.err {
@@ -238,10 +238,10 @@ const SWITCHES = [
   min-height: 28px;
   padding: 4px 12px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-1);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   font-family: inherit;
   text-align: center;
   cursor: pointer;
@@ -269,12 +269,12 @@ const SWITCHES = [
   }
 }
 .hk-hint {
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 .hk-conflict {
   margin: 6px 0 0;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--warning);
 }
 </style>

@@ -276,7 +276,7 @@ function runConnectAll(list) {
 
 <style scoped>
 .hint {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-3);
   margin: 0 0 4px;
 }
@@ -285,7 +285,7 @@ function runConnectAll(list) {
 }
 .empty {
   padding: 20px 0;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
   text-align: center;
 }
@@ -310,9 +310,9 @@ function runConnectAll(list) {
   flex: 0 0 26px;
   height: 24px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   filter: grayscale(1);
   opacity: 0.55;
   cursor: pointer;
@@ -325,7 +325,7 @@ function runConnectAll(list) {
   background: var(--bg-hover);
 }
 .pin-btn:disabled {
-  opacity: 0.35;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 .tag-name {
@@ -334,7 +334,7 @@ function runConnectAll(list) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-1);
 }
 .rename-input {
@@ -344,7 +344,7 @@ function runConnectAll(list) {
 .tag-count {
   flex: 0 0 auto;
   margin-left: auto;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 .tag-actions {
@@ -354,13 +354,13 @@ function runConnectAll(list) {
 }
 .act {
   min-width: 24px;
-  height: 22px;
+  height: var(--ctrl-h-s);
   padding: 0 5px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
@@ -370,10 +370,10 @@ function runConnectAll(list) {
   color: var(--text-1);
 }
 .act:disabled {
-  opacity: 0.45;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 .act.connect {
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
 }
 </style>

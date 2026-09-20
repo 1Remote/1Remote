@@ -33,8 +33,8 @@ const color = computed(() => PROTOCOL_COLORS[props.protocol] || '')
   display: inline-flex;
   align-items: center;
   border: 1px solid transparent;
-  border-radius: 999px;
-  font-size: 0.8077rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-micro);
   line-height: 1;
   padding: 2.5px 9px;
   white-space: nowrap;

@@ -360,7 +360,7 @@ function onFontSize(v) {
 <style scoped>
 .r-card {
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
   padding: 10px 12px;
   display: flex;
@@ -383,15 +383,15 @@ function onFontSize(v) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-1);
 }
 .r-badge {
   flex: 0 0 auto;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   padding: 1px 5px;
-  font-size: 0.8077rem;
+  font-size: var(--fs-micro);
   color: var(--text-4);
 }
 .r-badge.ext {
@@ -404,10 +404,10 @@ function onFontSize(v) {
   width: 22px;
   height: 22px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1;
   cursor: pointer;
 }
@@ -418,7 +418,7 @@ function onFontSize(v) {
 }
 .r-internal-hint {
   margin: 0;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 .f-row {
@@ -428,12 +428,12 @@ function onFontSize(v) {
   align-items: center;
 }
 .f-row label {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .f-hint {
   margin: 4px 0 0;
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 .num-input {
@@ -457,12 +457,12 @@ function onFontSize(v) {
 .act-btn {
   flex: 0 0 auto;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 10px;
+  padding: 7px 10px;
   cursor: pointer;
 }
 .act-btn:hover:not(:disabled) {
@@ -471,7 +471,7 @@ function onFontSize(v) {
   background: var(--bg-hover);
 }
 .act-btn:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -487,16 +487,16 @@ function onFontSize(v) {
   margin-top: 5px;
 }
 .macro-row-label {
-  font-size: 0.8077rem;
+  font-size: var(--fs-micro);
   color: var(--text-4);
   margin-right: 2px;
 }
 .macro-pill {
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.8077rem;
+  font-size: var(--fs-micro);
   line-height: 1.5;
   padding: 1px 8px;
   cursor: pointer;
@@ -515,7 +515,7 @@ function onFontSize(v) {
   gap: 8px;
 }
 .hosting-hint {
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 
@@ -528,7 +528,7 @@ function onFontSize(v) {
 .theme-opt .theme-dot {
   width: 10px;
   height: 10px;
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   border: 1px solid var(--border);
   flex: 0 0 auto;
 }
@@ -564,9 +564,9 @@ function onFontSize(v) {
   flex-wrap: wrap;
   gap: 4px 12px;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   font-family: Consolas, 'Courier New', monospace;
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
 }
 </style>

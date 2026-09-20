@@ -175,10 +175,10 @@ onBeforeUnmount(() => {
   padding: 0 10px;
   margin-bottom: 6px;
   border: 1px solid var(--accent);
-  border-radius: 7px;
+  border-radius: var(--radius-ctrl);
   background: var(--accent-container);
   color: var(--accent-text);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   text-align: left;
   cursor: pointer;
@@ -189,6 +189,10 @@ onBeforeUnmount(() => {
 }
 .s-back-arrow {
   flex: 0 0 auto;
+}
+/* V6 线宽档：viewBox 16 渲染为 12px，2 单位 = 实际 1.5px 控件级描边档 */
+.s-back-arrow path {
+  stroke-width: 2px;
 }
 .s-groups {
   /* 一行一项由 flex column 承载；若无布局规则，button 默认 inline-block
@@ -207,10 +211,10 @@ onBeforeUnmount(() => {
   height: 34px;
   padding: 0 10px;
   border: none;
-  border-radius: 7px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -234,7 +238,7 @@ onBeforeUnmount(() => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: red;
+  background: var(--danger);
 }
 .s-main {
   flex: 1;
@@ -245,7 +249,7 @@ onBeforeUnmount(() => {
 .s-header {
   padding: 14px 24px 12px;
   border-bottom: 1px solid var(--border);
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--text-1);
 }
@@ -274,7 +278,7 @@ onBeforeUnmount(() => {
   background: var(--bg-hover);
 }
 :deep(.row-label) {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 </style>

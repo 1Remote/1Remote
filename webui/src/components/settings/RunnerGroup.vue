@@ -348,7 +348,7 @@ onBeforeUnmount(() => {
   width: min(100%, var(--settings-content-w));
 }
 .hint {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-3);
 }
 .hint.err {
@@ -364,10 +364,10 @@ onBeforeUnmount(() => {
 }
 .r-tab {
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   padding: 5px 12px;
   cursor: pointer;
 }
@@ -388,7 +388,7 @@ onBeforeUnmount(() => {
   margin-bottom: 12px;
 }
 .sel-row label {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .sel-add {

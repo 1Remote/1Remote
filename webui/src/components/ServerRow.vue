@@ -180,7 +180,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   align-items: center;
   min-width: 0;
   padding-right: 10px;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .cell-check {
@@ -247,7 +247,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   flex: 0 0 22px;
   width: 22px;
   height: 22px;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   object-fit: cover;
 }
 .icon-fb {
@@ -256,7 +256,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   justify-content: center;
   background: var(--bg-elevated); /* 无自定义色 → 中性瓦片；有色 → 内联低饱和底+同色字 */
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 .name {
@@ -271,7 +271,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
    主题变量定义在 html[data-theme] 上对 body 全局生效；v-html 子元素不带 scope 属性需 :deep。
    规则集与编辑器预览（MarkdownField .md-body）对齐，尺寸略收敛 */
 .note-md {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--text-1);
   word-break: break-word;
@@ -299,16 +299,16 @@ const barColor = computed(() => opaqueHex(props.server.color))
 }
 .note-md :deep(code) {
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: var(--bg-hover);
   padding: 0 3px;
   font-family: ui-monospace, Consolas, monospace;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
 }
 .note-md :deep(pre) {
   overflow-x: auto;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-hover);
   padding: 6px 8px;
 }
@@ -370,10 +370,10 @@ const barColor = computed(() => opaqueHex(props.server.color))
   text-overflow: ellipsis;
   white-space: nowrap;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 0.8077rem;
+  font-size: var(--fs-micro);
   line-height: 1;
   padding: 2.5px 8px;
 }
@@ -388,11 +388,11 @@ const barColor = computed(() => opaqueHex(props.server.color))
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 1rem;
+  font-size: var(--fs-body);
   line-height: 1;
   width: 26px;
   height: 24px;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   cursor: pointer;
 }
 .act:hover:not(:disabled) {
@@ -400,7 +400,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   color: var(--accent-text);
 }
 .act:disabled {
-  opacity: 0.45;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 </style>

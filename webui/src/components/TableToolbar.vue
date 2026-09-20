@@ -98,7 +98,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
 </template>
 
 <style scoped>
-/* 批量操作条：与面包屑/工具簇同行内联——不自带整条背景/边框（宿主行自有 34px 高与底边线）；
+/* 批量操作条：与面包屑/工具簇同行内联——不自带整条背景/边框（宿主行自有 36px 高与底边线）；
    首次出现（勾选 0→N）滑入 + 淡入，让"批量操作来了"有可感知的入场 */
 .batch-bar {
   display: flex;
@@ -125,16 +125,16 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
 }
 
 .bb-count {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 
 .bb-btn {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
   padding: 5px 10px;
   cursor: pointer;
@@ -146,12 +146,20 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
 }
 
 .bb-btn:disabled {
-  opacity: 0.5;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
 .bb-primary {
   border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+/* 主按钮 hover 守卫（E3，对齐 EditorDrawer .ed-primary）：保住 accent 边框——
+   否则上方 .bb-btn:hover:not(:disabled)（特异性更高）会把边框退化成 --border-strong */
+.bb-primary:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--bg-hover);
   color: var(--accent-text);
 }
 
@@ -171,10 +179,10 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 1rem;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+  font-size: var(--fs-body);
+  width: var(--ctrl-h-s);
+  height: var(--ctrl-h-s);
+  border-radius: var(--radius-ctrl);
   cursor: pointer;
 }
 
@@ -186,7 +194,7 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
 /* 无勾选轻提示：右侧工具簇左侧同行，小字弱化（常驻但克制——不弹 toast 打扰） */
 .tt-hint {
   color: var(--text-4);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   white-space: nowrap;
 }
 
@@ -204,12 +212,12 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   align-items: center;
   justify-content: center;
   width: 24px;
-  height: 22px;
+  height: var(--ctrl-h-s);
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-panel);
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
   cursor: pointer;
 }
@@ -239,9 +247,9 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   min-width: 220px;
   padding: 6px;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
-  box-shadow: 0 6px 24px rgb(0 0 0 / 25%);
+  box-shadow: var(--shadow-menu);
 }
 
 .col-item {
@@ -249,9 +257,9 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   align-items: center;
   gap: 8px;
   padding: 5px 6px;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   color: var(--text-2);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   cursor: pointer;
 }
 
@@ -277,6 +285,6 @@ onBeforeUnmount(() => window.removeEventListener('mousedown', onGlobalDownCloseC
   padding: 4px 6px 0;
   border-top: 1px solid var(--border);
   color: var(--text-4);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
 }
 </style>

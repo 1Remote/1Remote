@@ -222,13 +222,13 @@ function fmtSize(n) {
 <style scoped>
 /* 标题 + 目标行（n-modal card 的 header slot）：目标行小一号、次级色，长路径单行省略 */
 .imp-title {
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--text-1);
 }
 .imp-target {
   margin-top: 2px;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-3);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -243,7 +243,7 @@ function fmtSize(n) {
 }
 .f-row label {
   flex: 0 0 auto;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .f-row .n-select {
@@ -258,7 +258,7 @@ function fmtSize(n) {
   gap: 6px;
   padding: 26px 16px;
   border: 1px dashed var(--border-strong);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
   cursor: pointer;
   user-select: none;
@@ -272,16 +272,16 @@ function fmtSize(n) {
   background: var(--bg-hover);
 }
 .dz-icon {
-  font-size: 1.5385rem;
+  font-size: var(--fs-display);
   color: var(--text-3);
   line-height: 1;
 }
 .dz-hint {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .dz-formats {
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 
@@ -291,12 +291,12 @@ function fmtSize(n) {
   gap: 8px;
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
 }
 .f-icon {
   flex: 0 0 auto;
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
   color: var(--text-3);
 }
 .f-name {
@@ -305,12 +305,12 @@ function fmtSize(n) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-1);
 }
 .f-size {
   flex: 0 0 auto;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 .f-x {
@@ -321,7 +321,7 @@ function fmtSize(n) {
   border-radius: 50%;
   background: transparent;
   color: var(--text-4);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
   line-height: 1;
   cursor: pointer;
 }
@@ -330,7 +330,7 @@ function fmtSize(n) {
   color: var(--text-1);
 }
 .f-x:disabled {
-  opacity: 0.5;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -338,18 +338,18 @@ function fmtSize(n) {
   margin-top: 12px;
   padding: 8px 10px;
   border: 1px solid var(--danger);
-  border-radius: 7px;
+  border-radius: var(--radius-box);
   max-height: 140px;
   overflow: auto;
 }
 .err-title {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--danger);
   margin-bottom: 4px;
 }
 .err-item {
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-3);
   word-break: break-all;
   line-height: 1.5;

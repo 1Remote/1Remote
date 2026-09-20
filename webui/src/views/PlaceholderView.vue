@@ -22,6 +22,6 @@ const { t } = useI18n()
 }
 .placeholder-title {
   color: var(--text-3);
-  font-size: 1rem;
+  font-size: var(--fs-body);
 }
 </style>

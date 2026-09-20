@@ -533,7 +533,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   width: min(100%, var(--settings-content-w));
 }
 .hint {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-3);
 }
 .hint.err {
@@ -553,11 +553,11 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
 }
 .ds-label {
   flex: 0 0 auto;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .ro-flag {
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--warning);
 }
 .new-btn {
@@ -565,14 +565,14 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
 }
 .empty {
   padding: 24px 0;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
 }
 
 /* ---- 表格：4 列网格（名称/用户名/被引用/操作，对齐 WPF 凭据库列集），主题变量取色 ---- */
 .cv-table {
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   overflow: hidden;
 }
 .cv-row {
@@ -583,7 +583,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   min-height: 32px;
   padding: 0 10px;
   border-bottom: 1px solid var(--border);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .cv-row:last-child {
@@ -592,7 +592,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
 .cv-row.head {
   background: var(--bg-panel);
   color: var(--text-4);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
 }
 .cv-row.revealing {
   background: var(--accent-container);
@@ -624,13 +624,13 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
 }
 .act {
   min-width: 24px;
-  height: 22px;
+  height: var(--ctrl-h-s);
   padding: 0 4px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
@@ -640,7 +640,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   color: var(--text-1);
 }
 .act:disabled {
-  opacity: 0.45;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -657,7 +657,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .spin {
@@ -686,18 +686,18 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
 }
 .rv-line label {
   flex: 0 0 110px;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 .rv-line code {
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-1);
 }
 .rv-count {
   align-self: flex-end;
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 
@@ -714,13 +714,13 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   align-items: center;
 }
 .f-row label {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 /* 名称重名即时提示：输入框下方红字 */
 .f-err {
   margin: 4px 0 0;
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   color: var(--danger);
 }
 /* 密码/私钥二选一 segmented（ed-seg 样式模式，EditorDrawer 凭据组同款） */
@@ -728,16 +728,16 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   display: inline-flex;
   align-self: start;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   overflow: hidden;
 }
 .cv-seg button {
   border: none;
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 12px;
+  padding: 7px 12px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -756,7 +756,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   cursor: pointer;
   padding: 0 2px;
 }
@@ -764,12 +764,12 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   color: var(--text-1);
 }
 .eye:disabled {
-  opacity: 0.45;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 /* 私钥"浏览…"：WPF 弹窗 Select 按钮的 web 形态（"…"紧凑形态，title 注明） */
 .eye.browse {
-  font-size: 1rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   line-height: 1;
 }

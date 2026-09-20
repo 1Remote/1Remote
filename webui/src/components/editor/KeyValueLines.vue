@@ -170,7 +170,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
 /* 行列表容器：与 n-input small 同观的边框（对齐 WPF 的 AvalonEdit Border + 行号区） */
 .kvl-box {
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: var(--bg-elevated);
   padding: 6px;
   display: flex;
@@ -211,7 +211,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
   border-radius: 50%;
   background: transparent;
   color: var(--text-4);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
   line-height: 1;
   padding: 3px;
   cursor: pointer;
@@ -223,7 +223,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
 }
 
 .kvl-del:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -231,12 +231,12 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
 .kvl-add {
   align-self: flex-start;
   border: 1px dashed var(--border-strong);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 12px;
+  padding: 5px 12px;
   cursor: pointer;
 }
 
@@ -247,7 +247,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
 }
 
 .kvl-add:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -255,7 +255,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
 .kvl-hint {
   margin: 0;
   color: var(--text-3);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
 }
 

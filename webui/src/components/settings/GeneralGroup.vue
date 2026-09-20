@@ -231,7 +231,7 @@ const SWITCHES_REST = [
   width: min(100%, var(--settings-content-w));
 }
 .hint {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-3);
 }
 .hint.err {

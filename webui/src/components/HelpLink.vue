@@ -95,7 +95,7 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
   align-items: center;
   gap: 4px;
   color: var(--text-3);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   line-height: 1.4;
   text-decoration: none;
   cursor: pointer;
@@ -113,7 +113,7 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
 .help-link:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
 }
 /* 有文字的形态：hover 才下划线（WPF Hyperlink 的 IsMouseOver→Underline 同款） */
 .help-link:hover .hl-text {
@@ -166,7 +166,7 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
   justify-content: center;
   border: 1.5px solid currentColor;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 600;
   line-height: 1;
   font-style: italic;

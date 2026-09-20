@@ -328,10 +328,10 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
 
 .ed-banner {
   border: 1px solid var(--danger);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: color-mix(in srgb, var(--danger) 10%, transparent);
   color: var(--danger);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1.6;
   padding: 8px 10px;
   word-break: break-word;
@@ -344,10 +344,10 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
 /* 混合协议提示：中性色（信息性提示，非错误——跨源禁存才用红色 ed-banner） */
 .bulk-info-banner {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1.6;
   padding: 8px 10px;
   word-break: break-word;
@@ -369,7 +369,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border);
   color: var(--text-2);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   line-height: 1.2;
 }
@@ -377,14 +377,14 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
 .ed-group-desc {
   margin: -4px 0 0;
   color: var(--text-4);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
 }
 
 .ed-group-note {
   margin: 8px 0 0;
   color: var(--accent-text);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
 }
 
@@ -403,10 +403,10 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
 .bulk-toggle {
   flex: 0 0 auto;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1;
   padding: 5px 9px;
   cursor: pointer;
@@ -437,7 +437,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 
@@ -452,7 +452,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-4);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-style: italic;
 }
 </style>

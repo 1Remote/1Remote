@@ -595,7 +595,7 @@ onBeforeUnmount(() => {
   width: clamp(560px, 68vw, 900px);
   background: var(--bg-panel);
   border-left: 1px solid var(--border-strong);
-  box-shadow: -10px 0 28px rgb(0 0 0 / 22%);
+  box-shadow: var(--shadow-overlay);
   transform: translateX(100%);
   transition: transform 0.17s ease;
 }
@@ -631,14 +631,14 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 6px;
   color: var(--text-3);
-  font-size: 1rem;
+  font-size: var(--fs-body);
   padding: 24px;
 }
 
 .ed-state-detail {
   max-width: 80%;
   color: var(--text-4);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   word-break: break-all;
   text-align: center;
 }
@@ -657,10 +657,10 @@ onBeforeUnmount(() => {
 
 .ed-banner {
   border: 1px solid var(--danger);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: color-mix(in srgb, var(--danger) 10%, transparent);
   color: var(--danger);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1.6;
   padding: 8px 10px;
   word-break: break-word;
@@ -688,7 +688,7 @@ onBeforeUnmount(() => {
   /* 滚动内容从标题下穿过时不透底 */
   border-bottom: 1px solid var(--border);
   color: var(--text-2);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   line-height: 1.2;
 }
@@ -696,14 +696,14 @@ onBeforeUnmount(() => {
 .ed-group-desc {
   margin: -4px 0 0;
   color: var(--text-4);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
 }
 /* 组内提示行：WPF VncFormView 的 RFB 警告行——强调色文字（WPF AccentMidBrush 同语义） */
 .ed-group-note {
   margin: 8px 0 0;
   color: var(--accent-text);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
 }
 
@@ -720,7 +720,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 
@@ -728,7 +728,7 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-self: start;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   overflow: hidden;
 }
 
@@ -736,9 +736,9 @@ onBeforeUnmount(() => {
   border: none;
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 12px;
+  padding: 7px 12px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -767,7 +767,7 @@ onBeforeUnmount(() => {
 
 .ed-cred-hint {
   color: var(--text-4);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
 }
 
@@ -789,7 +789,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 
@@ -819,7 +819,7 @@ onBeforeUnmount(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-4);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
 }
 
 .ed-foot-btns {
@@ -829,10 +829,10 @@ onBeforeUnmount(() => {
 
 .ed-btn {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1;
   padding: 7px 14px;
   cursor: pointer;
@@ -845,7 +845,7 @@ onBeforeUnmount(() => {
 }
 
 .ed-btn:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 

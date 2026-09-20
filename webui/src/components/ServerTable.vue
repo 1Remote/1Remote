@@ -963,7 +963,7 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid var(--border-strong);
   background: var(--bg-panel);
   color: var(--text-3);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   user-select: none;
 }
 
@@ -1099,11 +1099,11 @@ onBeforeUnmount(() => {
 .p-icon {
   flex: 0 0 22px;
   text-align: center;
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
 }
 .p-label {
   color: var(--text-1);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
 }
 
 .empty {
@@ -1112,7 +1112,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   height: 160px;
   color: var(--text-4);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
 }
 
 /* 右键菜单浮层 */
@@ -1124,9 +1124,9 @@ onBeforeUnmount(() => {
   min-width: 210px;
   padding: 4px;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
-  box-shadow: 0 6px 24px rgb(0 0 0 / 25%);
+  box-shadow: var(--shadow-menu);
 }
 
 .ctx-item {
@@ -1135,10 +1135,10 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 18px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1;
   padding: 7px 10px;
   cursor: pointer;
@@ -1152,12 +1152,12 @@ onBeforeUnmount(() => {
 
 .ctx-item:disabled {
   color: var(--text-4);
-  opacity: 0.6;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
 .ctx-hint {
   color: var(--text-4);
-  font-size: 0.8077rem;
+  font-size: var(--fs-micro);
 }
 </style>

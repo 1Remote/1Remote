@@ -95,12 +95,12 @@ function save() {
   align-items: center;
 }
 .form .f-row label {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .f-err {
   margin: 4px 0 0;
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   color: var(--danger);
 }
 .modal-actions {

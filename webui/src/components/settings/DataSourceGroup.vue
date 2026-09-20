@@ -606,7 +606,7 @@ bindModalEsc([
 }
 .empty {
   padding: 24px 0;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
 }
 .cards {
@@ -621,7 +621,7 @@ bindModalEsc([
   align-items: center;
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
 }
 .card-main {
@@ -650,16 +650,16 @@ bindModalEsc([
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 1rem;
+  font-size: var(--fs-body);
   color: var(--text-1);
 }
 .type-badge,
 .ro-badge {
   flex: 0 0 auto;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   padding: 1px 5px;
-  font-size: 0.8077rem;
+  font-size: var(--fs-micro);
   color: var(--text-4);
 }
 .ro-badge {
@@ -668,7 +668,7 @@ bindModalEsc([
 }
 .srv-count {
   flex: 0 0 auto;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 .card-config {
@@ -677,7 +677,7 @@ bindModalEsc([
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 .card-actions {
@@ -690,10 +690,10 @@ bindModalEsc([
   height: 24px;
   padding: 0 10px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
@@ -704,7 +704,7 @@ bindModalEsc([
   color: var(--text-1);
 }
 .act:disabled {
-  opacity: 0.5;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -721,7 +721,7 @@ bindModalEsc([
   align-items: center;
 }
 .f-row label {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 /* sqlite 路径行：输入框 + "浏览…"按钮（⑱A；RunnerCard exe 行同款形态） */
@@ -737,13 +737,13 @@ bindModalEsc([
 }
 .act-btn {
   flex: 0 0 auto;
-  height: 28px;
+  height: var(--ctrl-h-m);
   padding: 0 10px;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-2);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
@@ -754,23 +754,23 @@ bindModalEsc([
   background: var(--bg-hover);
 }
 .act-btn:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 .f-hint {
   margin: 4px 0 0;
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 /* 名称重名即时提示：输入框下方红字 */
 .f-err {
   margin: 4px 0 0;
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   color: var(--danger);
 }
 .f-note {
   margin: 2px 0 0;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   color: var(--warning);
 }
 /* 草稿测试结果：成功转 success 色（失败沿用 warning；校验错误也走失败色） */

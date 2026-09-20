@@ -18,6 +18,35 @@ body {
   --accent-text: #7c9bff;
 }
 
+/* ---- 尺寸与效果令牌（主题无关，:root 一处定义；美学报告 2026-09-19 附录 A 落地） ----
+ * 字号五档（rem 随 S/M/L/XL 根字号缩放）：micro 10.5 / caption 11.5 / body 12.5（正文与按钮基准）
+ *   / title 14 / display 18；9px 装饰字形（表头排序箭头/标签 pin 图标）不参与层级，豁免
+ * 圆角三档：xs 3（行内 code/微元素）/ ctrl 6（按钮/输入/菜单项/分段；Naive overrides 已同步）
+ *   / box 8（卡片/浮层/表格框）+ pill 999；搜索命中高亮 2px 属状态指示档
+ * 线条重量三档（V6）：控件描边 1.5 / 状态指示条 2（拖拽线/选中条/命中高亮）/ 文档引用竖线 3
+ * 控件高度两档（V3）：24 行内紧凑 / 28 标准表单与对话框；禁用不透明度统一 0.5（E4）
+ * 阴影按基底分档（E1/S3）：dark 默认值在此，light 更轻的覆盖见 [data-theme='light'] */
+:root {
+  --fs-micro: 0.8077rem; /* 10.5px 微：chip/箭头/计数 */
+  --fs-caption: 0.8846rem; /* 11.5px 辅：时间戳/表头/hint */
+  --fs-body: 0.9615rem; /* 12.5px 正文与按钮 */
+  --fs-title: 1.0769rem; /* 14px 标题 */
+  --fs-display: 1.3846rem; /* 18px hero/大图标 */
+
+  --radius-xs: 3px;
+  --radius-ctrl: 6px;
+  --radius-box: 8px;
+  --radius-pill: 999px;
+
+  --ctrl-h-s: 24px;
+  --ctrl-h-m: 28px;
+
+  --shadow-menu: 0 6px 24px rgb(0 0 0 / 25%);
+  --shadow-overlay: -10px 0 28px rgb(0 0 0 / 22%);
+
+  --opacity-disabled: 0.5;
+}
+
 [data-theme='dark'] {
   color-scheme: dark; /* 让原生滚动条/输入框跟随深色，否则会渲染成浅色 */
   --bg: #0f1011;
@@ -50,6 +79,9 @@ body {
   --danger: #dc2626;
   --success: #16a34a;
   --warning: #d97706;
+  /* 亮色基底阴影更轻（S3）：低透明度 + 依赖边框定义层级，避免 25% 黑显脏 */
+  --shadow-menu: 0 6px 24px rgb(0 0 0 / 10%);
+  --shadow-overlay: -10px 0 28px rgb(0 0 0 / 8%);
 }
 
 [data-accent='blue'] {

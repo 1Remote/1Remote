@@ -168,12 +168,12 @@ defineExpose({ title })
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 7px;
+  border-radius: var(--radius-ctrl);
   border: 1px solid var(--border);
   /* 无色/透明色回退瓦片在暗色下也可见 */
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
   font-weight: 600;
 }
 
@@ -183,7 +183,7 @@ defineExpose({ title })
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
   font-weight: 600;
   color: var(--text-1);
 }
@@ -193,7 +193,7 @@ defineExpose({ title })
 .ed-head-label {
   flex: 0 0 auto;
   color: var(--text-3);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -207,11 +207,11 @@ defineExpose({ title })
   text-overflow: ellipsis;
   white-space: nowrap;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 2px 10px;
   background: var(--bg-elevated);
   color: var(--text-4);
-  font-size: 0.8077rem;
+  font-size: var(--fs-micro);
   line-height: 1.4;
 }
 
@@ -227,12 +227,12 @@ defineExpose({ title })
 .ed-close {
   flex: 0 0 auto;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 1rem;
-  width: 28px;
-  height: 28px;
+  font-size: var(--fs-body);
+  width: var(--ctrl-h-m);
+  height: var(--ctrl-h-m);
   cursor: pointer;
 }
 

@@ -132,7 +132,7 @@ const disabled = () => !props.checkState?.count
 .frow .f-icon {
   flex: 0 0 22px;
   text-align: center;
-  font-size: 1.0769rem;
+  font-size: var(--fs-title);
 }
 
 .frow .name {
@@ -141,14 +141,14 @@ const disabled = () => !props.checkState?.count
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-1);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
 }
 
 .frow .f-ds {
   flex: 0 0 auto;
   margin-left: 6px;
   color: var(--text-4);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
 }
 
 .frow .cell-count {
@@ -156,7 +156,7 @@ const disabled = () => !props.checkState?.count
   margin-left: auto;
   padding-right: 10px;
   color: var(--text-4);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   white-space: nowrap;
 }
 
@@ -172,11 +172,11 @@ const disabled = () => !props.checkState?.count
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 1rem;
+  font-size: var(--fs-body);
   line-height: 1;
   width: 26px;
   height: 24px;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   cursor: pointer;
 }
 
@@ -186,7 +186,7 @@ const disabled = () => !props.checkState?.count
 }
 
 .act:disabled {
-  opacity: 0.45;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -195,7 +195,7 @@ const disabled = () => !props.checkState?.count
   accent-color: var(--accent);
 }
 .cb:disabled {
-  opacity: 0.45;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 </style>

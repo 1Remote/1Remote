@@ -490,7 +490,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 }
 .empty-hint {
   color: var(--text-4);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   padding: 10px 8px;
 }
 
@@ -500,7 +500,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   gap: 4px;
   height: 26px;
   padding-right: 6px;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   white-space: nowrap;
   user-select: none;
 }
@@ -529,7 +529,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 .chevron {
   flex: 0 0 14px;
   color: var(--text-3);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
   line-height: 1;
   text-align: center;
   cursor: pointer;
@@ -542,20 +542,20 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 .ds-icon,
 .folder-icon {
   flex: 0 0 16px;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   text-align: center;
 }
 .label {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 1rem;
+  font-size: var(--fs-body);
   color: var(--text-1);
 }
 .ds-type {
   flex: 0 0 auto;
   color: var(--text-4);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
 }
 
 .dot {
@@ -578,7 +578,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   margin-left: auto;
   flex: 0 0 auto;
   color: var(--text-4);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
 }
 
 /* 标签区容器：标题行 + 滚动区拆分——「标签」标题恒定可见，
@@ -597,7 +597,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   align-items: center;
   justify-content: space-between; /* 「+ 管理」贴标题行右端 */
   color: var(--text-4);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   margin-bottom: 6px;
 }
 /* 标签管理入口：标题行右端的轻量文字按钮（不再混入 chips 列表） */
@@ -605,7 +605,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   line-height: 1;
   padding: 2px 0;
   cursor: pointer;
@@ -629,10 +629,10 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   gap: 3px;
   max-width: 100%;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg-elevated);
   color: var(--text-2);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   line-height: 1;
   padding: 3px 8px;
   cursor: pointer;
@@ -662,12 +662,12 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 
 .collapse-btn {
   flex-shrink: 0;
-  height: 28px;
+  height: var(--ctrl-h-m);
   border: none;
   border-top: 1px solid var(--border);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   cursor: pointer;
 }
 .collapse-btn:hover {
@@ -684,19 +684,19 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   min-width: 130px;
   padding: 4px;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
-  box-shadow: 0 6px 24px rgb(0 0 0 / 25%);
+  box-shadow: var(--shadow-menu);
 }
 .ctx-item {
   display: flex;
   align-items: center;
   gap: 18px;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1;
   padding: 7px 10px;
   cursor: pointer;
@@ -708,7 +708,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 }
 .ctx-item:disabled {
   color: var(--text-4);
-  opacity: 0.6;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 </style>

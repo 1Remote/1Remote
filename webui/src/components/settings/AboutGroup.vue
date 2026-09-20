@@ -168,16 +168,16 @@ const CONTRIBUTE = [
 }
 .hero-logo {
   flex: 0 0 auto;
-  border-radius: 10px;
+  border-radius: var(--radius-box);
 }
 .hero-name {
-  font-size: 1.3846rem;
+  font-size: var(--fs-display);
   font-weight: 700;
   color: var(--text-1);
 }
 .hero-tagline {
   margin-top: 2px;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .hero-meta {
@@ -190,9 +190,9 @@ const CONTRIBUTE = [
   display: inline-block;
   padding: 1px 8px;
   border: 1px solid var(--accent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--accent-text);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
 }
 .ver-badge.soon {
@@ -200,7 +200,7 @@ const CONTRIBUTE = [
   color: var(--text-4);
 }
 .hero-build {
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   color: var(--text-4);
 }
 
@@ -211,20 +211,20 @@ const CONTRIBUTE = [
   gap: 10px;
   padding: 10px 14px;
   border: 1px solid var(--accent);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--accent-container);
   margin-bottom: 4px;
 }
 .update-label {
   flex: 0 0 auto;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--accent-text);
 }
 .upd-link {
   position: relative; /* 红点（.dot）的定位基准 */
   color: var(--accent-text);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   text-decoration: none;
 }
 .upd-link:hover {
@@ -237,14 +237,14 @@ const CONTRIBUTE = [
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: red; /* WPF Path Fill="Red" 同值 */
+  background: var(--danger); /* 更新红点：--danger 主题化（V5，原 WPF Fill="Red" 遗产） */
 }
 
 /* ---- 分组小标题：克制样式（text-2 弱化 + 留白，不再克隆 WPF accent 色标题）；
        #18 紧凑化：上下留白收紧 ---- */
 .sec-title {
   margin: 16px 0 8px;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text-3);
 }
@@ -273,19 +273,19 @@ const CONTRIBUTE = [
   gap: 12px;
   padding: 10px 14px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
   width: fit-content;
 }
 .author-avatar {
   flex: 0 0 auto;
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
 }
 .author-links {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
 }
 
 /* ---- Support / 贡献按钮：统一克制 outline 风格（替代 WPF 三色实心按钮） ---- */
@@ -295,10 +295,10 @@ const CONTRIBUTE = [
   justify-content: center;
   padding: 7px 14px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-1);
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -309,7 +309,7 @@ const CONTRIBUTE = [
 }
 .contribute-text {
   margin: 0 0 10px;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1.5;
   color: var(--text-2);
   max-width: 56ch;
@@ -333,7 +333,7 @@ const CONTRIBUTE = [
   padding: 3px 0;
 }
 .components a {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--accent-text);
   text-decoration: none;
   overflow-wrap: anywhere;

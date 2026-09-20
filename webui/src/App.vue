@@ -314,11 +314,11 @@ function onTopbarDblClick(e) {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 26px;
+  height: var(--ctrl-h-m);
   padding: 0 9px;
   border: 1px solid var(--border-strong);
-  border-radius: 7px;
-  font-size: 0.9231rem;
+  border-radius: var(--radius-ctrl);
+  font-size: var(--fs-body);
   cursor: text;
 }
 .searchbox:focus-within {
@@ -326,7 +326,7 @@ function onTopbarDblClick(e) {
 }
 /* 抽屉/设置页/模态打开时的锁定态：弱化 + 禁用光标（克制，不加边框变色等强提示） */
 .searchbox.disabled {
-  opacity: 0.5;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 .searchbox.disabled .sb-input {
@@ -335,7 +335,7 @@ function onTopbarDblClick(e) {
 .sb-icon {
   flex: 0 0 auto;
   color: var(--text-4);
-  font-size: 1rem;
+  font-size: var(--fs-body);
   line-height: 1;
 }
 .sb-input {
@@ -345,7 +345,7 @@ function onTopbarDblClick(e) {
   outline: none;
   background: transparent;
   color: var(--text-1);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-family: inherit;
   padding: 0;
 }
@@ -387,7 +387,7 @@ function onTopbarDblClick(e) {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: red;
+  background: var(--danger);
   pointer-events: none; /* 红点不吞点击，落点始终是 ⚙ 按钮 */
 }
 /* 窗口控制（Windows 风格）：46×44、hover --bg-hover、close hover #e81123 白图标。
@@ -414,6 +414,11 @@ function onTopbarDblClick(e) {
 .wc-btn:hover {
   background: var(--bg-hover);
   color: var(--text-1);
+}
+/* V6 线宽档：10px 图标 1:1 渲染，1.5px = 控件级描边档（CSS 覆盖模板 stroke-width="1"） */
+.wc-btn svg path,
+.wc-btn svg rect {
+  stroke-width: 1.5px;
 }
 .wc-btn:active {
   opacity: 0.8;

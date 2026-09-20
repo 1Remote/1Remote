@@ -154,7 +154,7 @@ function rowFieldFor(row, f) {
 }
 .sf-row {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   padding: 8px 10px;
 }
@@ -177,7 +177,7 @@ function rowFieldFor(row, f) {
 .sf-chev {
   flex: 0 0 auto;
   color: var(--text-4);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
   line-height: 1;
 }
 .sf-row-title {
@@ -186,7 +186,7 @@ function rowFieldFor(row, f) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--text-2);
 }
@@ -196,7 +196,7 @@ function rowFieldFor(row, f) {
   border-radius: 50%;
   background: transparent;
   color: var(--text-4);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
   line-height: 1;
   padding: 3px;
   cursor: pointer;
@@ -214,12 +214,12 @@ function rowFieldFor(row, f) {
 .sf-add {
   align-self: flex-start;
   border: 1px dashed var(--border-strong);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 12px;
+  padding: 5px 12px;
   cursor: pointer;
 }
 .sf-add:hover {

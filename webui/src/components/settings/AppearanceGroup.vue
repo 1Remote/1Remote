@@ -122,7 +122,7 @@ function applyClassic(name) {
 }
 .sub {
   margin: 16px 0 8px;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text-3);
 }
@@ -131,7 +131,7 @@ function applyClassic(name) {
 }
 .hint {
   margin: 8px 0 0;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
 }
 
@@ -147,7 +147,7 @@ function applyClassic(name) {
   gap: 6px;
   padding: 8px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   background: var(--bg-panel);
   cursor: pointer;
 }
@@ -159,7 +159,7 @@ function applyClassic(name) {
   background: var(--accent-container);
 }
 .base-name {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 .base-card.active .base-name {
@@ -170,7 +170,7 @@ function applyClassic(name) {
   display: flex;
   width: 120px;
   height: 64px;
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   overflow: hidden;
 }
 .mini[data-theme='dark'] {
@@ -234,16 +234,16 @@ function applyClassic(name) {
 .seg {
   display: inline-flex;
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: var(--radius-ctrl);
   overflow: hidden;
 }
 .seg-btn {
   min-width: 44px;
-  height: 28px;
+  height: var(--ctrl-h-m);
   border: none;
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   cursor: pointer;
 }
 .seg-btn + .seg-btn {
@@ -267,10 +267,10 @@ function applyClassic(name) {
   height: 26px;
   padding: 0 12px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg-panel);
   color: var(--text-2);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   cursor: pointer;
 }
 .pill:hover {

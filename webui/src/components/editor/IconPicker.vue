@@ -218,7 +218,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: var(--radius-ctrl);
   border: 1px solid var(--border);
   background: var(--bg-elevated);
   cursor: pointer;
@@ -238,14 +238,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .ip-thumb:disabled {
   cursor: not-allowed;
-  opacity: 0.75;
+  opacity: var(--opacity-disabled);
 }
 .ip-btn {
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
   padding: 5px 10px;
   cursor: pointer;
@@ -256,14 +256,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   color: var(--text-1);
 }
 .ip-btn:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
 /* 弹窗内容（n-modal 传送门内渲染，仍属本组件 scoped 作用域） */
 .ip-section {
   margin: 10px 0 6px;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text-2);
 }
@@ -271,7 +271,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   margin-top: 0;
 }
 .ip-hint {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
   padding: 8px 0;
 }
@@ -290,7 +290,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   cursor: pointer;
   padding: 2px;
@@ -311,12 +311,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 .ip-upload {
   display: inline-block;
   border: 1px dashed var(--border-strong);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 12px;
+  padding: 5px 12px;
   cursor: pointer;
 }
 .ip-upload:hover {
@@ -339,7 +339,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   border: none;
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
   padding: 4px 2px;
   cursor: pointer;

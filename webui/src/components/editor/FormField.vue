@@ -589,7 +589,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   color: var(--text-2);
 }
 
@@ -605,10 +605,10 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   border: none;
   background: transparent;
   color: var(--text-4);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
   padding: 2px;
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
 }
 
@@ -618,7 +618,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-md-toggle:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -657,7 +657,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   border: none;
   background: transparent;
   color: var(--text-4);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
   padding: 2px;
   cursor: pointer;
@@ -685,22 +685,22 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 
 /* 候选 chips：虚线小标签（视觉从属"可点选的候选"，与已选实心 chips 区分），最多 12 个
    （tagSuggestions 截断），无候选/全部已选时整行不渲染。
-   候选区限高两行：行高 = 字号 0.8462rem + 上下 padding 3px*2 +
+   候选区限高两行：行高 = 字号 caption 档 + 上下 padding 3px*2 +
    边框 1px*2，两行 + 一个 4px 行距——超出滚轮（overflow-y:auto），不足两行自适应 */
 .ff-tag-sug {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  max-height: calc(2 * (0.8462rem + 8px) + 4px);
+  max-height: calc(2 * (var(--fs-caption) + 8px) + 4px);
   overflow-y: auto;
 }
 
 .ff-tag-sug-chip {
   border: 1px dashed var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.8462rem;
+  font-size: var(--fs-caption);
   line-height: 1;
   padding: 3px 8px;
   cursor: pointer;
@@ -712,7 +712,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-tag-sug-chip:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -734,8 +734,8 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-ta.onerow :deep(textarea) {
-  height: 28px;
-  min-height: 28px;
+  height: var(--ctrl-h-m);
+  min-height: var(--ctrl-h-m);
   resize: vertical;
 }
 
@@ -747,13 +747,13 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-mini-btn {
-  height: 28px;
+  height: var(--ctrl-h-m);
   padding: 0 10px;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: var(--bg-elevated);
   color: var(--text-2);
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
@@ -766,7 +766,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-mini-btn:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -784,7 +784,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   height: 28px;
   padding: 0 6px;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: var(--bg-elevated);
 }
 
@@ -798,7 +798,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   width: 16px;
   height: 16px;
   border: 1px solid var(--border-strong);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   cursor: default;
 }
 
@@ -812,7 +812,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   padding: 0;
   background: transparent;
   color: var(--text-1);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
 }
 
@@ -835,7 +835,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   width: 14px;
   height: 14px;
   border: 1px solid var(--border-strong);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
   padding: 0;
 }
@@ -864,12 +864,12 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 }
 
 .ff-sw:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
 .ff-unknown {
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   color: var(--text-4);
 }
 </style>

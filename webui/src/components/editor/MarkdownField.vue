@@ -74,7 +74,7 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
 /* 编辑态：等宽字体（Markdown 源文本） */
 .md-editor :deep(textarea) {
   font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
 }
 
 /* 预览态：块级排版（h/p/ul/code 的主题变量配色），高度与 5 行编辑框近似对齐 */
@@ -83,17 +83,17 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
   max-height: 260px;
   overflow-y: auto;
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: var(--radius-box);
   background: var(--bg-elevated);
   padding: 8px 12px;
 }
 .md-preview-empty {
   color: var(--text-4);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   font-style: italic;
 }
 .md-body {
-  font-size: 0.9615rem;
+  font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--text-1);
   word-break: break-word;
@@ -121,16 +121,16 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
 }
 .md-body :deep(code) {
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: var(--bg-hover);
   padding: 0 3px;
   font-family: ui-monospace, Consolas, monospace;
-  font-size: 0.8846rem;
+  font-size: var(--fs-caption);
 }
 .md-body :deep(pre) {
   overflow-x: auto;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: var(--bg-hover);
   padding: 6px 8px;
 }

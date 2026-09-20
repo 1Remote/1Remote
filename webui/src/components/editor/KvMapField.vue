@@ -133,7 +133,7 @@ function updateRow(i, k, v) {
 /* 行列表容器：与 n-input small 同观的边框（KeyValueLines.kvl-box 同款） */
 .kvm-box {
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: var(--bg-elevated);
   padding: 6px;
   display: flex;
@@ -174,7 +174,7 @@ function updateRow(i, k, v) {
   border-radius: 50%;
   background: transparent;
   color: var(--text-4);
-  font-size: 0.7692rem;
+  font-size: var(--fs-micro);
   line-height: 1;
   padding: 3px;
   cursor: pointer;
@@ -186,7 +186,7 @@ function updateRow(i, k, v) {
 }
 
 .kvm-del:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -194,12 +194,12 @@ function updateRow(i, k, v) {
 .kvm-add {
   align-self: flex-start;
   border: 1px dashed var(--border-strong);
-  border-radius: 5px;
+  border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
-  font-size: 0.9231rem;
+  font-size: var(--fs-body);
   line-height: 1;
-  padding: 6px 12px;
+  padding: 5px 12px;
   cursor: pointer;
 }
 
@@ -210,7 +210,7 @@ function updateRow(i, k, v) {
 }
 
 .kvm-add:disabled {
-  opacity: 0.55;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 </style>
