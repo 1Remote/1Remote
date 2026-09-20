@@ -66,11 +66,15 @@ onMounted(() => {
   load() // 共享存储幂等（ServerListView 亦会触发首载）
   // 列表行拖拽的 dragend 在源元素（列表行）上触发并冒泡到 window——树侧经全局监听兜底
   window.addEventListener('dragend', onListDragEndGlobal)
+  // 成功拖放（如拖回列表侧文件夹行放下）也冒泡 drop 到 window：复位跨库标记，
+  // 避免 dragend 兜底在成功操作后误报（评审发现）
+  window.addEventListener('drop', resetCrossDsHover, true)
 })
 onBeforeUnmount(() => {
   clearTimeout(saveTimer)
   if (savePending) flushSave() // 卸载时立即落盘防抖未到的变更（fire-and-forget）
   window.removeEventListener('dragend', onListDragEndGlobal)
+  window.removeEventListener('drop', resetCrossDsHover, true)
 })
 
 function onToggle(key) {
@@ -156,6 +160,9 @@ function onListDragEndGlobal() {
     crossDsHovered = false
     message.warning(t('toast.crossDsMove'))
   }
+}
+function resetCrossDsHover() {
+  crossDsHovered = false
 }
 // 行 dsName（根行持 ds 对象、文件夹行持 dsName 字符串；列表拖入与树内拖共用）
 const rowDsName = (row) => (row.kind === 'root' ? row.ds.name : row.dsName)
