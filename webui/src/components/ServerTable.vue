@@ -1112,7 +1112,8 @@ onBeforeUnmount(() => {
 
 .resizer:hover {
   background: var(--accent);
-  opacity: 0.45;
+  /* hover 反馈不低于 --opacity-hint（0.7）：此前 0.45 弱到像失效，且与禁用 0.5 仅差 0.05 */
+  opacity: var(--opacity-hint);
 }
 
 .sortable {
@@ -1125,7 +1126,7 @@ onBeforeUnmount(() => {
 
 .arrow {
   font-size: 0.6923rem;
-  opacity: 0.7;
+  opacity: var(--opacity-hint); /* 装饰性弱化统一档（F16） */
 }
 
 .tbody {

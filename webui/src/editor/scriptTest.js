@@ -22,7 +22,7 @@ import { h } from 'vue'
  */
 export function showScriptTestResult({ dialog, t, fieldKey, command, resp }) {
   const line = (text) =>
-    h('div', { style: 'font-size:13px;line-height:1.6;color:var(--text-2);word-break:break-all;' }, text)
+    h('div', { style: 'font-size:var(--fs-body);line-height:1.6;color:var(--text-2);word-break:break-all;' }, text)
   const rows = [line(t('editor.scriptTestCmd', { cmd: command }))]
   if (resp?.error) {
     rows.push(line(`${t('editor.scriptTestStartFailed')}: ${resp.error}`))
@@ -33,7 +33,9 @@ export function showScriptTestResult({ dialog, t, fieldKey, command, resp }) {
         {
           style:
             'margin:8px 0;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-all;' +
-            'border:1px solid var(--border);border-radius:4px;background:var(--bg-hover);padding:8px;font-size:12px;',
+            // 字号/圆角走令牌（与 .note-md pre 同款 ctrl 档），仅剩布局属性内联——
+            // 弹窗内容 teleport 到 body，scoped 样式作用不到（见文件头）
+            'border:1px solid var(--border);border-radius:var(--radius-ctrl);background:var(--bg-hover);padding:8px;font-size:var(--fs-caption);',
         },
         resp?.output || ' '
       )

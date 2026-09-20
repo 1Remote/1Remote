@@ -833,7 +833,7 @@ const importModal = ref(false)
 @media (prefers-reduced-motion: reduce) {
   .sk {
     animation: none;
-    opacity: 0.7;
+    opacity: var(--opacity-hint); /* 静态弱化档与装饰性弱化同源（F16） */
   }
 }
 

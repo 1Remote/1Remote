@@ -167,10 +167,10 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
   gap: 6px;
 }
 
-/* 行列表容器：与 n-input small 同观的边框（对齐 WPF 的 AvalonEdit Border + 行号区） */
+/* 行列表容器：边框容器（高 28 档、--radius-ctrl 控件档；对齐 WPF 的 AvalonEdit Border + 行号区） */
 .kvl-box {
   border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   padding: 6px;
   display: flex;

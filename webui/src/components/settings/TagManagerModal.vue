@@ -314,7 +314,8 @@ function runConnectAll(list) {
   background: transparent;
   font-size: var(--fs-body);
   filter: grayscale(1);
-  opacity: 0.55;
+  /* 未选 pin 的弱化档：--opacity-hint(0.7) 与禁用 0.5 拉开（此前 0.55 撞值像禁用） */
+  opacity: var(--opacity-hint);
   cursor: pointer;
 }
 .pin-btn.pinned {

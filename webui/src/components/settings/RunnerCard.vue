@@ -366,7 +366,7 @@ function onFontSize(v) {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: border-color 0.4s;
+  transition: border-color var(--dur-med) ease;
 }
 /* 新建卡短暂高亮（class 由 RunnerGroup 传入：创建并选中新卡）——高亮 3s 后熄灭，transition 平滑回落 */
 .r-card.flash {

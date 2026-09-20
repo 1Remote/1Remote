@@ -263,8 +263,8 @@ function fmtSize(n) {
   cursor: pointer;
   user-select: none;
   transition:
-    border-color 0.15s,
-    background 0.15s;
+    border-color var(--dur-med) ease,
+    background-color var(--dur-med) ease;
 }
 .dropzone:hover,
 .dropzone.drag {

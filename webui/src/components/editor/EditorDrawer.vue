@@ -582,9 +582,10 @@ onBeforeUnmount(() => {
 .ed-scrim {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 40%);
+  /* 遮罩按基底分档（F14）：light 32% 与 8% 轻阴影的层级语言配套（见 theme.css --scrim） */
+  background: var(--scrim);
   opacity: 0;
-  transition: opacity 0.17s ease;
+  transition: opacity var(--dur-med) ease;
 }
 
 .ed-panel {
@@ -599,7 +600,7 @@ onBeforeUnmount(() => {
   border-left: 1px solid var(--border-strong);
   box-shadow: var(--shadow-overlay);
   transform: translateX(100%);
-  transition: transform 0.17s ease;
+  transition: transform var(--dur-med) ease;
 }
 
 .ed-root.open .ed-scrim {

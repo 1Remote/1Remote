@@ -750,7 +750,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
   height: var(--ctrl-h-m);
   padding: 0 10px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
   color: var(--text-2);
   font-size: var(--fs-caption);
@@ -772,19 +772,19 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
 
 /* icon 选择器自带缩略图 + 按钮样式（IconPicker.vue），此处无需行内样式 */
 
-/* color（单输入组）：与 n-input small 同观的边框容器——高 28px、1px 边框、3px 圆角、
-   focus-within 亮边（naive 的 --n-* 变量不外泄到兄弟节点，用主题变量近似即可）；
-   内部 [当前色块][hex 文本][竖分隔线][8 色板小点]。容器由上方
+/* color（单输入组）：边框容器（高 28 档、1px 边框、--radius-ctrl 6px 控件档、focus-within
+   亮边——naive 的 --n-* 变量不外泄到兄弟节点，用主题变量近似即可）；内部
+   [当前色块][hex 文本][竖分隔线][8 色板小点]。容器由上方
    .ff-control > :deep(*) 的 100% 规则撑满控件列 → 与其他输入框左对齐同宽。
    类名避开根行的 ff-color（见模板注释） */
 .ff-color-box {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 28px;
+  height: var(--ctrl-h-m);
   padding: 0 6px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-ctrl);
   background: var(--bg-elevated);
 }
 

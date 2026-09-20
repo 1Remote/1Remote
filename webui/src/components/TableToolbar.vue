@@ -119,7 +119,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
   display: flex;
   align-items: center;
   gap: 8px;
-  animation: bb-in 0.18s ease-out;
+  animation: bb-in var(--dur-med) ease-out;
 }
 
 @keyframes bb-in {

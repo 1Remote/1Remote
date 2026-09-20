@@ -129,9 +129,9 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
   color: var(--text-2);
   border-radius: 50%;
   transition:
-    transform 0.12s ease,
-    background-color 0.12s ease,
-    color 0.12s ease;
+    transform var(--dur-fast) ease,
+    background-color var(--dur-fast) ease,
+    color var(--dur-fast) ease;
 }
 .hl-badge svg {
   display: block;

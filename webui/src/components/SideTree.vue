@@ -592,7 +592,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   line-height: 1;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.12s ease;
+  transition: transform var(--dur-fast) ease;
 }
 .chevron.open {
   transform: rotate(90deg);
