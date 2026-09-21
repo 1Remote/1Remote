@@ -169,8 +169,6 @@
   "toast.exportFailed": "Falha na exportação",
   "toast.exportNeedVerify": "Verificação necessária: conclua a verificação de credenciais do Windows no aplicativo desktop e tente novamente",
   "page.settings": "Opções",
-  "page.editor": "Editor",
-  "placeholder.comingSoon": "Em breve — {title}",
   "topbar.newServer": "Novo servidor",
   "topbar.addServer": "Adicionar servidor",
   "settings.back": "Voltar",

@@ -101,7 +101,21 @@ export function useServers() {
       }
     }, 30000)
   }
-  return { servers, datasources, tags, loading, connected, reload: loadAll, searchQuery, searchedIds, searching }
+  // 数据源可写判定（SideTree/folderOps/ServerTable 三处共用同一规则——只读源禁止
+  // 改结构/拖拽，J36① 收敛为单实现防漂移）
+  const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
+  return {
+    servers,
+    datasources,
+    tags,
+    loading,
+    connected,
+    reload: loadAll,
+    searchQuery,
+    searchedIds,
+    searching,
+    dsWritable,
+  }
 }
 
 // buildTree 定义在 ./folders（物化空文件夹需与键换算纯函数同居，且 node 断言

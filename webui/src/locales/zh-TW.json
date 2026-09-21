@@ -169,8 +169,6 @@
   "toast.exportFailed": "匯出失敗",
   "toast.exportNeedVerify": "需要驗證：請在桌面端完成 Windows 憑證驗證後重試",
   "page.settings": "設定",
-  "page.editor": "編輯器",
-  "placeholder.comingSoon": "敬請期待 — {title}",
   "topbar.newServer": "新建伺服器",
   "topbar.addServer": "新增伺服器",
   "settings.back": "返回",

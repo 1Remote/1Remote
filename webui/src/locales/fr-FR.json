@@ -169,8 +169,6 @@
   "toast.exportFailed": "Échec de l'exportation",
   "toast.exportNeedVerify": "Vérification requise : effectuez la vérification des identifiants Windows dans l'application de bureau, puis réessayez",
   "page.settings": "Choix",
-  "page.editor": "Éditeur",
-  "placeholder.comingSoon": "Bientôt disponible — {title}",
   "topbar.newServer": "Nouveau serveur",
   "topbar.addServer": "Ajouter un serveur",
   "settings.back": "Retour",

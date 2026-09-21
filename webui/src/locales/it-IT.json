@@ -169,8 +169,6 @@
   "toast.exportFailed": "Esportazione non riuscita",
   "toast.exportNeedVerify": "Verifica richiesta: completa la verifica delle credenziali Windows nell'app desktop, poi riprova",
   "page.settings": "Opzioni",
-  "page.editor": "Editor",
-  "placeholder.comingSoon": "Prossimamente — {title}",
   "topbar.newServer": "Nuovo server",
   "topbar.addServer": "Aggiungi server",
   "settings.back": "Indietro",

@@ -14,18 +14,10 @@
 //   字典状态收在 useTreeState 共享存储（列表文件夹行/新建文件夹也消费，侧栏收起不丢）
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useDialog, useMessage } from 'naive-ui'
-import { api } from '../api'
+import { useMessage } from 'naive-ui'
 import { progressToast } from '../utils/progressToast'
 import { useServers } from '../composables/useServers'
-import {
-  buildTree,
-  countHolderServers,
-  fullKey,
-  holderAt,
-  isDescendantPath,
-  rewriteTreeStateKeys,
-} from '../composables/folders'
+import { buildTree, countHolderServers, fullKey, holderAt, isDescendantPath } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import {
@@ -44,11 +36,9 @@ const props = defineProps({
 const emit = defineEmits(['update:selection', 'update:tag', 'update:collapsed', 'manage-tags'])
 const { t } = useI18n()
 const message = useMessage()
-const dialog = useDialog()
 
-const { servers, datasources, tags, reload } = useServers()
-const { orderMap, folderPathsByDs, load, isExpanded, toggleExpand, persist, knownExpanded, setLocalKeys } =
-  useTreeState()
+const { servers, datasources, tags, reload, dsWritable } = useServers()
+const { orderMap, folderPathsByDs, load, isExpanded, toggleExpand, persist } = useTreeState()
 const folderOps = useFolderOps()
 const tree = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
 
@@ -143,7 +133,6 @@ const dropHint = ref(null) // { key, zone } zone: 'before' | 'after' | 'into'
 const ZONE_RATIO = 0.25
 const moving = ref(false) // 逐台 PUT 进行中（防重入拖拽）
 
-const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
 function isDraggable(row) {
   if (row.kind !== 'folder' || moving.value) return false // 仅文件夹可拖（根/全部数据源不可）
   return dsWritable(row.dsName) // 只读数据源禁止改结构
@@ -263,28 +252,8 @@ function targetParentPath(row, zone) {
   return p
 }
 
-// H3：目标层同名文件夹的合并确认（resolve true=确认合并）。对齐 WPF 语义
-//（ServerTreeViewModel.cs:637-646 同名 → 子项逐一移入既有文件夹）与 owner 2026-09-21
-// 决策（弹窗确认而非静默合并/拒绝）。resolve 幂等（重复调用无害），onAfterLeave
-// 兜底任何关闭路径（promptName 同款安全网）
-function confirmFolderMerge(name) {
-  return new Promise((resolve) => {
-    dialog.create({
-      title: t('tree.mergeFolderTitle'),
-      content: t('tree.mergeFolderConfirm', { name }),
-      // 非破坏性确认（合并两侧内容）：无图标 + 中性按钮（folderOps 文件头配色策略）
-      showIcon: false,
-      positiveText: t('tree.mergeFolderYes'),
-      negativeText: t('editor.cancel'),
-      positiveButtonProps: { type: 'default' },
-      autoFocus: false,
-      onPositiveClick: () => resolve(true),
-      onNegativeClick: () => resolve(false),
-      onClose: () => resolve(false),
-      onAfterLeave: () => resolve(false),
-    })
-  })
-}
+// H3：目标层同名文件夹的合并确认已收进 folderOps.confirmFolderMerge（J27：树内/
+// 列表两路共用一份——SideTree 持有 folderOps 实例，dialog 上下文同源，删本地拷贝）。
 
 // 落点执行：算受影响服务器集合的新 TreeNodes → 逐台 GET config → 改 TreeNodes → PUT
 //（UpdateServer 不触发 SSE——由前端显式 reload() 刷新）。
@@ -298,6 +267,9 @@ function confirmFolderMerge(name) {
 //     序号键（排末尾，与 WPF AddChild 后语义一致）。
 // H3：目标层已有同名文件夹（非自身）→ 先弹窗确认合并；确认后两侧服务器/键归一到
 // 同一路径，天然合并。大子树逐台串行耗时——loading 进度 toast（原地更新+终态转换）
+// J28：①②的执行体改调 folderOps.rewriteServerPaths / rewriteKeys（前缀替换与
+// 「父层+名+余量」逐路径等价，见 folders.rewriteServerPath）——不再持有同构拷贝，
+// 核心写库逻辑单实现防漂移。
 async function applyTreeMove(src, row, zone) {
   const parentPath = targetParentPath(row, zone)
   const name = src.folder.name
@@ -307,36 +279,19 @@ async function applyTreeMove(src, row, zone) {
   if (newPath !== src.folder.path) {
     const holder = holderAt(tree.value, src.dsName, parentPath.join('/'))
     if (holder?.folders.some((f) => f.name === name && f.path !== src.folder.path)) {
-      if (!(await confirmFolderMerge(name))) return
+      if (!(await folderOps.confirmFolderMerge(name))) return
     }
   }
-  const prefix = src.folder.path + '/'
-  const affected = servers.value
-    .filter((s) => s.dataSourceName === src.dsName && (s.folderPath ? s.folderPath + '/' : '').startsWith(prefix))
-    .map((s) => ({ server: s, rest: s.folderPath.slice(prefix.length).split('/').filter(Boolean) }))
-
+  const total = folderOps.countAffectedServers(src.dsName, src.folder.path)
   let moved = 0
-  const failed = []
+  let failed = 0
   // 空子树（0 台受影响，纯键迁移/顺序调整）不弹「0/0」进度，终态直接常规 toast
-  const toast = progressToast(message, affected.length, (done) =>
-    t('toast.treeWorking', { ok: done, n: affected.length })
-  )
+  const toast = progressToast(message, total, (done) => t('toast.treeWorking', { ok: done, n: total }))
   moving.value = true
   try {
-    for (const { server, rest } of affected) {
-      const newPathSegs = [...parentPath, name, ...rest]
-      if ((server.folderPath || '') === newPathSegs.join('/')) continue // 位置未变（仅顺序调整）
-      try {
-        const cfg = await api.getServerConfig(server.id, src.dsName)
-        cfg.json.TreeNodes = newPathSegs // 编辑器配置域 PascalCase 直通（勿做命名转换）
-        await api.updateServer(server.id, cfg.json, src.dsName)
-        moved++
-      } catch (err) {
-        console.warn('[SideTree] move failed:', server.id, err?.message || err)
-        failed.push(server.displayName)
-      }
-      toast.step(moved + failed.length)
-    }
+    ;({ moved, failed } = await folderOps.rewriteServerPaths(src.dsName, src.folder.path, newPath, () =>
+      toast.step(moved + failed + 1)
+    ))
 
     // 同级顺序写回（仅 before/after 重排；into 清键排末尾）
     let orderChanged = false
@@ -365,33 +320,24 @@ async function applyTreeMove(src, row, zone) {
       }
     }
 
-    // H1②：虚拟文件夹键前缀重写（folderOps.rewriteKeys 同款：本地即时物化 + 合并基底
-    // PUT 落盘，orderMap 已含上面的顺序变更、随同一次 PUT 携带）。纯重排不动键。
+    // H1②：虚拟文件夹键前缀重写（folderOps.rewriteKeys：本地即时物化 + 合并基底 PUT，
+    // orderMap 已含上面的顺序变更、随同一次 PUT 携带）。纯重排不动键。
     let keysAction = 'none' // 'none' | 'moved' | 'failed'
     if (newPath !== src.folder.path) {
-      const { remove, add } = rewriteTreeStateKeys(knownExpanded.value, src.dsName, src.folder.path, newPath)
-      if (remove.length || Object.keys(add).length) {
-        setLocalKeys(add, remove)
-        keysAction = (await persist((m) => {
-          for (const k of remove) delete m[k]
-          Object.assign(m, add)
-        }))
-          ? 'moved'
-          : 'failed'
-      }
+      keysAction = (await folderOps.rewriteKeys(src.dsName, src.folder.path, newPath)) ? 'moved' : 'failed'
     } else if (orderChanged) {
       await flushSave()
     }
 
-    if (moved === 0 && failed.length === 0 && !orderChanged && keysAction === 'none') {
+    if (moved === 0 && failed === 0 && !orderChanged && keysAction === 'none') {
       toast.cancel() // 完全无变化（原位放下）：撤下进度，无终态文案
       return
     }
     await reload() // UpdateServer 路径不触发 SSE（见上），显式刷新列表/树
     // 终态四档：键落盘失败或服务器失败 / 常规移动（moved>0）/ 纯键迁移（空文件夹移动，
     // H1 后可达）/ 纯重排（第三轮 G11：moved=0 的纯重排此前显示「已移动 0 台服务器」）
-    if (failed.length || keysAction === 'failed')
-      toast.finish('error', t('toast.treeMoveFailed', { n: failed.length + (keysAction === 'failed' ? 1 : 0) }))
+    if (failed || keysAction === 'failed')
+      toast.finish('error', t('toast.treeMoveFailed', { n: failed + (keysAction === 'failed' ? 1 : 0) }))
     else if (moved > 0 || keysAction === 'moved') toast.finish('success', t('tree.folderMoved', { name }))
     else toast.finish('success', t('tree.folderReordered'))
   } finally {
@@ -537,7 +483,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
           <span class="count">{{ row.count }}</span>
         </template>
 
-        <!-- 文件夹：📁 名称 + 直接子级服务器计数（与列表同口径；虚拟文件夹可为 0） -->
+        <!-- 文件夹：📁 名称 + 子树服务器计数（含子文件夹，与列表/面包屑同口径；虚拟文件夹可为 0） -->
         <template v-else>
           <span class="folder-icon">📁</span>
           <span class="label" :title="row.folder.path">{{ row.folder.name }}</span>

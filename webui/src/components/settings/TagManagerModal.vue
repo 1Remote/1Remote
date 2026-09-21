@@ -16,7 +16,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
-import { BATCH_CONNECT_THRESHOLD, useServers } from '../../composables/useServers'
+import { useBatchConnect } from '../../composables/useBatchConnect'
+import { useServers } from '../../composables/useServers'
 import { useUiLockWhileMounted } from '../../composables/editorBus'
 
 // 模态存在期间持有通用 UI 锁：App.vue 顶栏（搜索/「+」/⚙）随之禁用
@@ -33,6 +34,7 @@ const { t } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
 const { servers, datasources, reload } = useServers()
+const { batchConnect } = useBatchConnect()
 
 // 数据源过滤：初值 = 打开时树选中的数据源（「全部数据」视图回落 Local），模态内可切换
 //（第三轮 G8：chips 计数是全库口径而管理器单库——之前「全部数据」下静默回落 Local，
@@ -174,8 +176,8 @@ function onDelete(tg) {
   })
 }
 
-// ---- 连接全部：该数据源下带此标签的服务器，逐个串行 connect（批量连接同款节流）。
-// 超过 BATCH_CONNECT_THRESHOLD 台先弹确认（Plan 4 Task 3，与 ServerListView 批量条同款）----
+// ---- 连接全部：该数据源下带此标签的服务器（执行体走 useBatchConnect——J33 与
+// ServerListView 批量条共用，含阈值确认/串行/双 toast）----
 function connectAll(tg) {
   const target = tg.name.toLowerCase()
   const list = servers.value.filter(
@@ -185,39 +187,7 @@ function connectAll(tg) {
     message.warning(t('tagm.connectNone'))
     return
   }
-  if (list.length > BATCH_CONNECT_THRESHOLD) {
-    dialog.create({
-      title: t('batchConnect.confirmTitle'),
-      content: t('batchConnect.confirmText', { n: list.length }),
-      // 非破坏性确认：无图标 + 中性按钮（与 ServerListView.onBatchConnect 同款）
-      showIcon: false,
-      positiveButtonProps: { type: 'default' },
-      positiveText: t('batch.connect'),
-      negativeText: t('editor.cancel'),
-      // H10：不自动聚焦确认按钮——Enter 肌肉记忆误确认会拉起 N 个会话
-      //（与 ServerListView.onBatchConnect 的同款补丁，两处必须一致）
-      autoFocus: false,
-      onPositiveClick: () => runConnectAll(list),
-    })
-    return
-  }
-  runConnectAll(list)
-}
-
-function runConnectAll(list) {
-  ;(async () => {
-    let ok = 0
-    for (const s of list) {
-      try {
-        await api.connect(s.id)
-        ok++
-      } catch (e) {
-        console.warn('[TagManagerModal] connect failed:', s.id, e?.message || e)
-      }
-    }
-    if (ok) message.success(t('toast.batchConnectStarted', { n: ok }))
-    if (ok < list.length) message.error(t('toast.batchConnectFailed', { n: list.length - ok }))
-  })()
+  batchConnect(list.map((s) => s.id))
 }
 </script>
 

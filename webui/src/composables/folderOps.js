@@ -34,12 +34,10 @@ export function useFolderOps() {
   const { t } = useI18n()
   const message = useMessage()
   const dialog = useDialog()
-  const { servers, datasources, reload } = useServers()
+  const { servers, datasources, reload, dsWritable } = useServers()
   const { folderPathsByDs, knownExpanded, setLocalKeys, persist } = useTreeState()
 
   const busy = ref(false) // 逐台 PUT / 键迁移进行中（防重入：SideTree 拖拽与本操作互斥参考）
-
-  const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
 
   // 同级既有文件夹名（新建/重命名查重；物化后的空文件夹也在树模型里，一并算重名）
   function siblingNames(dsName, parent) {
@@ -167,11 +165,21 @@ export function useFolderOps() {
     )
   }
 
+  // 受影响台数（进度 toast 的 total 用；SideTree.applyTreeMove 经共享接口消费）
+  function countAffectedServers(dsName, oldPath) {
+    return affectedServers(dsName, oldPath).length
+  }
+
   // 受影响服务器（oldPath 前缀下）逐台 config GET → TreeNodes 重写 → PUT。
-  // 返回失败台数；newPathFn(null=删除上移) 语义由 rewriteServerPath 统一；
-  // onProgress 每台完成后回调（进度 toast 原地更新用，可选）
+  // 返回 {moved, failed}；newPath 的 null=删除上移语义由 rewriteServerPath 统一
+  //（前缀替换与「目标父层+文件夹名+余量」逐路径等价，见 rewriteServerPath）；
+  // onProgress 每台处理后回调（进度 toast 原地更新用，可选；原位置跳过的不回调——
+  // 两调用方（runPrefixRewrite/树内拖拽）的既有口径均为「已处理台数」不含跳过）。
+  // J28：自 SideTree.applyTreeMove 收敛回共享实现——此前树内拖拽持有一份逐行同构
+  // 的拷贝（H1 修复时复制），核心写库逻辑双份会在未来单侧修 bug 时静默分叉
   async function rewriteServerPaths(dsName, oldPath, newPath, onProgress) {
     const affected = affectedServers(dsName, oldPath)
+    let moved = 0
     let failed = 0
     for (const s of affected) {
       const next = rewriteServerPath(s.folderPath, oldPath, newPath)
@@ -180,16 +188,17 @@ export function useFolderOps() {
         const cfg = await api.getServerConfig(s.id, dsName)
         cfg.json.TreeNodes = next ? next.split('/') : [] // 编辑器配置域 PascalCase 直通（勿做命名转换）
         await api.updateServer(s.id, cfg.json, dsName)
+        moved++
       } catch (err) {
         console.warn('[folderOps] server rewrite failed:', s.id, err?.message || err)
         failed++
       }
       onProgress?.()
     }
-    return failed
+    return { moved, failed }
   }
 
-  // tree-state 键前缀重写并落盘（本地即时物化 + 合并基底 PUT）
+  // tree-state 键前缀重写并落盘（本地即时物化 + 合并基底 PUT）。J28：同上收敛共享
   async function rewriteKeys(dsName, oldPath, newPath) {
     const { remove, add } = rewriteTreeStateKeys(knownExpanded.value, dsName, oldPath, newPath)
     setLocalKeys(add, remove)
@@ -213,7 +222,7 @@ export function useFolderOps() {
     const toast = progressToast(message, total, (done) => t('toast.treeWorking', { ok: done, n: total }))
     let done = 0
     try {
-      const failed = await rewriteServerPaths(dsName, oldPath, serverTo, () => toast.step(++done))
+      const { failed } = await rewriteServerPaths(dsName, oldPath, serverTo, () => toast.step(++done))
       const persistOk = await rewriteKeys(dsName, oldPath, keysTo)
       await reload()
       if (!persistOk) toast.finish('error', fail())
@@ -426,5 +435,19 @@ export function useFolderOps() {
     })
   }
 
-  return { busy, createFolder, renameFolder, deleteFolder, moveServersToFolder, moveFolder }
+  return {
+    busy,
+    createFolder,
+    renameFolder,
+    deleteFolder,
+    moveServersToFolder,
+    moveFolder,
+    // J27/J28 共享原语：confirmFolderMerge（树内/列表两路合并确认共用——双份实现
+    // 会在下次调整确认形态时裂成两种）与 rewriteServerPaths/rewriteKeys/countAffectedServers
+    //（树内拖拽 applyTreeMove 的执行体，自拷贝收敛）
+    confirmFolderMerge,
+    rewriteServerPaths,
+    rewriteKeys,
+    countAffectedServers,
+  }
 }

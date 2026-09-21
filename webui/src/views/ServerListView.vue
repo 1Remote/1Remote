@@ -19,10 +19,11 @@ import EditorDrawer from '../components/editor/EditorDrawer.vue'
 import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
 import { progressToast } from '../utils/progressToast'
-import { applyServerFilters, BATCH_CONNECT_THRESHOLD, useServers } from '../composables/useServers'
+import { applyServerFilters, useServers } from '../composables/useServers'
 import { buildTree, countHolderServers, holderAt } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
+import { useBatchConnect } from '../composables/useBatchConnect'
 import { useEditorBus } from '../composables/editorBus'
 import { setLocale } from '../locales'
 import { LANGUAGES } from '../locales/languages.js'
@@ -62,6 +63,7 @@ const viewSel = computed(() => {
 //（SideTree 卸载）时也须可用；useTreeState 幂等（SideTree 挂载时同调不重复请求）
 const { folderPathsByDs, load: loadTreeState } = useTreeState()
 const folderOps = useFolderOps()
+const { batchConnect } = useBatchConnect()
 onMounted(() => loadTreeState())
 
 // 树模型（含空文件夹物化）与「当前层级文件夹行」：
@@ -236,42 +238,11 @@ async function onConnect(id) {
   }
 }
 
+// 批量连接（J33）：阈值确认+串行循环+双 toast 的执行体已收敛到 useBatchConnect
+//（与 TagManagerModal「连接全部」共用——此前两份同构拷贝，H10 的 autoFocus 补丁被迫
+// 打了两遍）
 async function onBatchConnect(ids) {
-  if (!ids?.length) return
-  // 批量连接阈值（产品决策项）：超过 BATCH_CONNECT_THRESHOLD 台先弹确认
-  //（TagManagerModal「连接全部」同款），防误点一次拉起整屏会话
-  if (ids.length > BATCH_CONNECT_THRESHOLD) {
-    dialog.create({
-      title: t('batchConnect.confirmTitle'),
-      content: t('batchConnect.confirmText', { n: ids.length }),
-      // 非破坏性确认：无图标 + 中性按钮（删除类才用红 positive，见 folderOps 文件头策略）
-      showIcon: false,
-      positiveText: t('batch.connect'),
-      negativeText: t('editor.cancel'),
-      positiveButtonProps: { type: 'default' },
-      // H10（G7 两轮遗留）：确认框不自动聚焦 positive 按钮——默认 autoFocus 下 Enter
-      // 肌肉记忆会直接确认并串行拉起 N 个远程会话（同界面删除类确认均已关，此处漏网）
-      autoFocus: false,
-      onPositiveClick: () => runBatchConnect(ids),
-    })
-    return
-  }
-  await runBatchConnect(ids)
-}
-
-async function runBatchConnect(ids) {
-  let ok = 0
-  for (const id of ids) {
-    // 逐个串行 await：批量并发轰炸后端/桌面端连接管线不友好
-    try {
-      await api.connect(id)
-      ok++
-    } catch (e) {
-      console.warn('[ServerListView] batch connect failed:', id, e?.message || e)
-    }
-  }
-  if (ok) message.success(t('toast.batchConnectStarted', { n: ok }))
-  if (ok < ids.length) message.error(t('toast.batchConnectFailed', { n: ids.length - ok }))
+  await batchConnect(ids)
 }
 
 // ---- 导出：批量条「导出」→ blob 下载；403 = 桌面端已弹二次验证

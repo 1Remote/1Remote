@@ -83,7 +83,7 @@ const emit = defineEmits([
 ])
 const { t } = useI18n()
 const message = useMessage()
-const { datasources, searchedIds } = useServers() // 文件夹右键菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）
+const { datasources, searchedIds, dsWritable } = useServers() // 文件夹右键菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）
 
 // ---- 过滤 ----
 const filtered = computed(() => {
@@ -359,7 +359,6 @@ function onFolderDrop(f, e) {
 //   新建服务器/导入交父级（openCreate 带当前 selection 的 initialFolder / 打开导入模态）；
 //   全部数据源根无确定数据源 → 新建文件夹禁用并提示先选数据源----
 const nfMenu = ref(null) // { x, y, target: { dsName, parentPath, folderPath? } | null } —— folderPath 有值=来自文件夹行
-const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
 // 禁用判据并入 opsBusy（第三轮 G15：动作执行在父级 folderOps，busy 期间点击只被静默
 // return 吞掉——列表侧与树右键菜单同口径禁用，两侧行为一致）
 const nfMenuOk = computed(() => !!nfMenu.value?.target && dsWritable(nfMenu.value.target.dsName) && !props.opsBusy)
@@ -663,8 +662,8 @@ function onGlobalKey(e) {
   }
 }
 
-// 键盘操作目标行（E/Del/Ctrl+D 共用，「勾选优先单台」）：恰好勾选 1 台 → 该台；
-// 否则光标行（Enter 连接同源）；两者皆无 → null 不动作
+// 键盘操作目标行（E/Del/Ctrl+D/Menu 共用，「勾选优先单台」）：恰好勾选 1 台 → 该台；
+// 否则光标行（Enter 连接不同源——直用 cursorId，H23 遗留待裁决）；两者皆无 → null 不动作
 function keyTargetServer() {
   if (checked.value.size === 1) {
     const id = [...checked.value][0]

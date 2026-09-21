@@ -184,8 +184,6 @@
   "toast.exportNeedVerify": "Verification required: complete the Windows credential verification on the desktop app, then retry",
 
   "page.settings": "Settings",
-  "page.editor": "Editor",
-  "placeholder.comingSoon": "Coming soon — {title}",
   "topbar.newServer": "New server",
   "topbar.addServer": "Add server",
 

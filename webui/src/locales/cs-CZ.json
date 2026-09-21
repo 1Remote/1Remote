@@ -169,8 +169,6 @@
   "toast.exportFailed": "Export se nezdařil",
   "toast.exportNeedVerify": "Vyžadováno ověření: dokončete ověření pověření systému Windows v desktopové aplikaci a zkuste to znovu",
   "page.settings": "Předvolby",
-  "page.editor": "Editor",
-  "placeholder.comingSoon": "Brzy — {title}",
   "topbar.newServer": "Nový server",
   "topbar.addServer": "Přidat server",
   "settings.back": "Zpět",

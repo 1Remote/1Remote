@@ -169,8 +169,6 @@
   "toast.exportFailed": "Ошибка экспорта",
   "toast.exportNeedVerify": "Требуется проверка: завершите проверку учетных данных Windows в настольном приложении и повторите попытку",
   "page.settings": "Параметры",
-  "page.editor": "Редактор",
-  "placeholder.comingSoon": "Скоро будет доступно — {title}",
   "topbar.newServer": "Новый сервер",
   "topbar.addServer": "Добавить сервер",
   "settings.back": "Назад",

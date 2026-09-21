@@ -184,8 +184,6 @@
   "toast.exportNeedVerify": "需要验证：请在桌面端完成 Windows 凭据验证后重试",
 
   "page.settings": "设置",
-  "page.editor": "编辑器",
-  "placeholder.comingSoon": "敬请期待 — {title}",
   "topbar.newServer": "新建服务器",
   "topbar.addServer": "添加服务器",
 

@@ -514,8 +514,6 @@ const OVERRIDES = {
     'toast.exportFailed': '\u532f\u51fa\u5931\u6557',
     'toast.exportNeedVerify':
       '\u9700\u8981\u9a57\u8b49\uff1a\u8acb\u5728\u684c\u9762\u7aef\u5b8c\u6210 Windows \u6191\u8b49\u9a57\u8b49\u5f8c\u91cd\u8a66',
-    'page.editor': '\u7de8\u8f2f\u5668',
-    'placeholder.comingSoon': '\u656c\u8acb\u671f\u5f85 \u2014 {title}',
     'topbar.addServer': '\u65b0\u589e\u4f3a\u670d\u5668',
     'settings.backTitle': '\u8fd4\u56de\u4f3a\u670d\u5668\u6e05\u55ae\uff08Esc\uff09',
     'settings.placeholder': '\u6b64\u5206\u7d44\u5373\u5c07\u63a8\u51fa',
@@ -857,8 +855,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Export se nezdařil',
     'toast.exportNeedVerify':
       'Vyžadováno ověření: dokončete ověření pověření systému Windows v desktopové aplikaci a zkuste to znovu',
-    'page.editor': 'Editor',
-    'placeholder.comingSoon': 'Brzy — {title}',
     'topbar.addServer': 'Přidat server',
     'settings.backTitle': 'Zpět na seznam serverů (Esc)',
     'settings.placeholder': 'Tato skupina bude brzy k dispozici',
@@ -1171,8 +1167,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Export fehlgeschlagen',
     'toast.exportNeedVerify':
       'Verifizierung erforderlich: Schließen Sie die Windows-Anmeldeinformationsverifizierung in der Desktop-App ab und versuchen Sie es erneut',
-    'page.editor': 'Editor',
-    'placeholder.comingSoon': 'Demnächst verfügbar — {title}',
     'topbar.addServer': 'Server hinzufügen',
     'settings.backTitle': 'Zurück zur Serverliste (Esc)',
     'settings.placeholder': 'Diese Gruppe ist bald verfügbar',
@@ -1492,8 +1486,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Error al exportar',
     'toast.exportNeedVerify':
       'Se requiere verificación: completá la verificación de credenciales de Windows en la app de escritorio y reintentá',
-    'page.editor': 'Editor',
-    'placeholder.comingSoon': 'Próximamente — {title}',
     'topbar.addServer': 'Agregar servidor',
     'settings.backTitle': 'Volver a la lista de servidores (Esc)',
     'settings.placeholder': 'Este grupo estará disponible pronto',
@@ -1807,8 +1799,6 @@ const OVERRIDES = {
     'toast.exportFailed': "Échec de l'exportation",
     'toast.exportNeedVerify':
       "Vérification requise : effectuez la vérification des identifiants Windows dans l'application de bureau, puis réessayez",
-    'page.editor': 'Éditeur',
-    'placeholder.comingSoon': 'Bientôt disponible — {title}',
     'topbar.addServer': 'Ajouter un serveur',
     'settings.backTitle': 'Retour à la liste des serveurs (Esc)',
     'settings.placeholder': 'Cette section arrive bientôt',
@@ -2128,8 +2118,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Fallou a exportación',
     'toast.exportNeedVerify':
       'Requírese verificación: completa a verificación de credenciais de Windows na aplicación de escritorio e volve intentalo',
-    'page.editor': 'Editor',
-    'placeholder.comingSoon': 'En breve — {title}',
     'topbar.addServer': 'Engadir servidor',
     'settings.backTitle': 'Volver á lista de servidores (Esc)',
     'settings.placeholder': 'Este grupo estará dispoñible en breve',
@@ -2444,8 +2432,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Esportazione non riuscita',
     'toast.exportNeedVerify':
       "Verifica richiesta: completa la verifica delle credenziali Windows nell'app desktop, poi riprova",
-    'page.editor': 'Editor',
-    'placeholder.comingSoon': 'Prossimamente — {title}',
     'topbar.addServer': 'Aggiungi server',
     'settings.backTitle': "Torna all'elenco dei server (Esc)",
     'settings.placeholder': 'Questo gruppo arriverà presto',
@@ -2761,8 +2747,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Eksport nie powiódł się',
     'toast.exportNeedVerify':
       'Wymagana weryfikacja: ukończ weryfikację poświadczeń Windows w aplikacji desktopowej i spróbuj ponownie',
-    'page.editor': 'Edytor',
-    'placeholder.comingSoon': 'Wkrótce dostępne — {title}',
     'topbar.addServer': 'Dodaj serwer',
     'settings.backTitle': 'Wróć do listy serwerów (Esc)',
     'settings.placeholder': 'Ta grupa będzie wkrótce dostępna',
@@ -3074,8 +3058,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Falha na exportação',
     'toast.exportNeedVerify':
       'Verificação necessária: conclua a verificação de credenciais do Windows no aplicativo desktop e tente novamente',
-    'page.editor': 'Editor',
-    'placeholder.comingSoon': 'Em breve — {title}',
     'topbar.addServer': 'Adicionar servidor',
     'settings.backTitle': 'Voltar à lista de servidores (Esc)',
     'settings.placeholder': 'Este grupo chegará em breve',
@@ -3389,8 +3371,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Falha na exportação',
     'toast.exportNeedVerify':
       'Verificação necessária: conclua a verificação de credenciais do Windows na aplicação de ambiente de trabalho e tente novamente',
-    'page.editor': 'Editor',
-    'placeholder.comingSoon': 'Brevemente — {title}',
     'topbar.addServer': 'Adicionar servidor',
     'settings.backTitle': 'Voltar à lista de servidores (Esc)',
     'settings.placeholder': 'Este grupo chegará em breve',
@@ -3706,8 +3686,6 @@ const OVERRIDES = {
     'toast.exportFailed': 'Ошибка экспорта',
     'toast.exportNeedVerify':
       'Требуется проверка: завершите проверку учетных данных Windows в настольном приложении и повторите попытку',
-    'page.editor': 'Редактор',
-    'placeholder.comingSoon': 'Скоро будет доступно — {title}',
     'topbar.addServer': 'Добавить сервер',
     'settings.backTitle': 'Вернуться к списку серверов (Esc)',
     'settings.placeholder': 'Этот раздел скоро появится',
@@ -4055,8 +4033,6 @@ const OVERRIDES = {
     'toast.exportFailed': '\u30a8\u30af\u30b9\u30dd\u30fc\u30c8\u306b\u5931\u6557\u3057\u307e\u3057\u305f',
     'toast.exportNeedVerify':
       '\u8a8d\u8a3c\u304c\u5fc5\u8981\u3067\u3059\uff1a\u30c7\u30b9\u30af\u30c8\u30c3\u30d7\u30a2\u30d7\u30ea\u3067 Windows \u8cc7\u683c\u60c5\u5831\u306e\u78ba\u8a8d\u3092\u5b8c\u4e86\u3057\u3066\u304b\u3089\u518d\u8a66\u884c\u3057\u3066\u304f\u3060\u3055\u3044',
-    'page.editor': '\u30a8\u30c7\u30a3\u30bf\u30fc',
-    'placeholder.comingSoon': '\u8fd1\u65e5\u516c\u958b \u2014 {title}',
     'topbar.addServer': '\u30b5\u30fc\u30d0\u30fc\u3092\u8ffd\u52a0',
     'settings.backTitle': '\u30b5\u30fc\u30d0\u30fc\u4e00\u89a7\u306b\u623b\u308b\uff08Esc\uff09',
     'settings.placeholder': '\u3053\u306e\u30b0\u30eb\u30fc\u30d7\u306f\u8fd1\u65e5\u516c\u958b',

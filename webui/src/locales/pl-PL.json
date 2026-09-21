@@ -169,8 +169,6 @@
   "toast.exportFailed": "Eksport nie powiódł się",
   "toast.exportNeedVerify": "Wymagana weryfikacja: ukończ weryfikację poświadczeń Windows w aplikacji desktopowej i spróbuj ponownie",
   "page.settings": "Opcje",
-  "page.editor": "Edytor",
-  "placeholder.comingSoon": "Wkrótce dostępne — {title}",
   "topbar.newServer": "Nowy serwer",
   "topbar.addServer": "Dodaj serwer",
   "settings.back": "Cofnij",

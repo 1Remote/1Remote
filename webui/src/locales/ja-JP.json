@@ -169,8 +169,6 @@
   "toast.exportFailed": "エクスポートに失敗しました",
   "toast.exportNeedVerify": "認証が必要です：デスクトップアプリで Windows 資格情報の確認を完了してから再試行してください",
   "page.settings": "オプション",
-  "page.editor": "エディター",
-  "placeholder.comingSoon": "近日公開 — {title}",
   "topbar.newServer": "新しいサーバー",
   "topbar.addServer": "サーバーを追加",
   "settings.back": "戻る",

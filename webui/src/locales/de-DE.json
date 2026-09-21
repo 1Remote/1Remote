@@ -169,8 +169,6 @@
   "toast.exportFailed": "Export fehlgeschlagen",
   "toast.exportNeedVerify": "Verifizierung erforderlich: Schließen Sie die Windows-Anmeldeinformationsverifizierung in der Desktop-App ab und versuchen Sie es erneut",
   "page.settings": "Optionen",
-  "page.editor": "Editor",
-  "placeholder.comingSoon": "Demnächst verfügbar — {title}",
   "topbar.newServer": "Neuer Server",
   "topbar.addServer": "Server hinzufügen",
   "settings.back": "Zurück",

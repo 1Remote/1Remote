@@ -169,8 +169,6 @@
   "toast.exportFailed": "Error al exportar",
   "toast.exportNeedVerify": "Se requiere verificación: completá la verificación de credenciales de Windows en la app de escritorio y reintentá",
   "page.settings": "Opciones",
-  "page.editor": "Editor",
-  "placeholder.comingSoon": "Próximamente — {title}",
   "topbar.newServer": "Nuevo servidor",
   "topbar.addServer": "Agregar servidor",
   "settings.back": "Atrás",
