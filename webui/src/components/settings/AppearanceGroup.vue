@@ -10,9 +10,20 @@
  * 界面字体选择器（themeState.font）WPF 侧依赖系统字体枚举，归后续任务，此处不暴露。
  */
 import { useI18n } from 'vue-i18n'
-import { ACCENTS, ACCENT_HEX, CLASSIC_THEMES, setAppearance, themeState } from '../../themes'
+import { useMessage } from 'naive-ui'
+import { watch } from 'vue'
+import { ACCENTS, ACCENT_HEX, CLASSIC_THEMES, appearanceSaveFailedTick, setAppearance, themeState } from '../../themes'
+import { useServers } from '../../composables/useServers'
 
 const { t } = useI18n()
+const message = useMessage()
+const { connected } = useServers()
+
+// K15：外观持久化失败与常规/启动器/运行器组同口径提示（此前外观组静默——界面即时
+// 变色看似成功，重启回旧值）。connected 豁免纯浏览器预览（后端从未可达，保持静默）
+watch(appearanceSaveFailedTick, (n) => {
+  if (n > 0 && connected.value) message.error(t('settings.saveFailed'))
+})
 
 const BASES = ['dark', 'light', 'system']
 const FONT_SIZES = ['S', 'M', 'L', 'XL']

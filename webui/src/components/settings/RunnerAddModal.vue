@@ -74,7 +74,7 @@ function save() {
     <template #footer>
       <div class="modal-actions">
         <n-button size="small" @click="emit('update:show', false)">{{ t('editor.cancel') }}</n-button>
-        <n-button size="small" type="primary" :disabled="!valid" @click="save">
+        <n-button size="small" type="primary" ghost :disabled="!valid" @click="save">
           {{ t('editor.save') }}
         </n-button>
       </div>

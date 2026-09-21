@@ -91,6 +91,10 @@ function onEscCapture(e) {
 }
 function onKey(e) {
   if (e.key !== 'Escape' || e.defaultPrevented) return
+  // K5（round6）：naive 对话框/模态开着时让位——确认框在 document 层被同步关闭，
+  // 事件冒泡到 window 时组件状态已空，但离场动画期间 DOM 仍在，存在性判断天然免疫
+  //（ServerListView onGlobalEsc 同款守卫；此前漏了它，Esc 关确认框会连设置页一起退出）
+  if (document.querySelector('.n-dialog, .n-modal')) return
   if (escShieldAtStart > 0 || escShield.open > 0) {
     escShield.open = 0 // 本键用于关（或刚关掉）下拉/浮层：消费一次，计数归零自愈
     return

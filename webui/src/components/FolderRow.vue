@@ -18,6 +18,7 @@ const props = defineProps({
   dropActive: { type: Boolean, default: false }, // 拖拽悬停高亮（父级 dropFolder 命中本行时置真）
   checkState: { type: Object, default: null }, // { checked, indeterminate, count } | null（无子孙=禁用未选）
   writable: { type: Boolean, default: true }, // 数据源可写：只读源禁用 重命名/删除 按钮（title 提示）
+  busy: { type: Boolean, default: false }, // 父级文件夹长操作进行中（K10）：✎/✕ 同右键菜单口径禁用
 })
 const emit = defineEmits([
   'open',
@@ -77,20 +78,21 @@ watchEffect(() => {
     </div>
     <div class="cell cell-count">{{ t('folder.contains', { n: folder.count }) }}</div>
     <!-- 操作列：与 ServerRow 同款常显小按钮（✎ 重命名 / ✕ 删除，叉图标与批量删除一致），接父级 folderOps；
-         只读数据源禁用（title 说明）。点击不冒泡到行级点击/双击 -->
+         只读数据源禁用（title 说明）。点击不冒泡到行级点击/双击。busy（K10）：文件夹长操作
+         进行中与右键菜单同口径禁用（title 改提示进行中，避免「点了没反应」无解释） -->
     <div class="cell cell-act" @click.stop @dblclick.stop>
       <button
         class="act"
-        :title="writable ? t('tree.renameFolder') : t('cv.readOnly')"
-        :disabled="!writable"
+        :title="busy ? t('tree.folderBusyHint') : writable ? t('tree.renameFolder') : t('cv.readOnly')"
+        :disabled="!writable || busy"
         @click="emit('rename', folder)"
       >
         ✎
       </button>
       <button
         class="act"
-        :title="writable ? t('tree.deleteFolder') : t('cv.readOnly')"
-        :disabled="!writable"
+        :title="busy ? t('tree.folderBusyHint') : writable ? t('tree.deleteFolder') : t('cv.readOnly')"
+        :disabled="!writable || busy"
         @click="emit('delete', folder)"
       >
         ✕

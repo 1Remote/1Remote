@@ -83,7 +83,7 @@ const emit = defineEmits([
 ])
 const { t } = useI18n()
 const message = useMessage()
-const { datasources, searchedIds, dsWritable } = useServers() // 文件夹右键菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）
+const { datasources, searchedIds, dsWritable, servers: allServers } = useServers() // 文件夹右键菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）；allServers=未过滤整库（K1 重排基准用）
 
 // ---- 过滤 ----
 const filtered = computed(() => {
@@ -172,11 +172,14 @@ function toggleCustomSort() {
 }
 // custom 比较器挂在 comparators 上（sorted 统一经 comparators[key] 分发）
 comparators.custom = (a, b) => (customKey(a.id) ?? Infinity) - (customKey(b.id) ?? Infinity)
-// 整库自定义序（拖拽重排的基准列表：树选中/标签/搜索过滤只是它的子序列，
-// POST 全量整库顺序与 WPF ServerCustomOrderSave 存完整列表同语义）
+// 整库自定义序（拖拽重排的 POST 基准列表：必须取共享单例的**未过滤整库**
+// allServers——props.servers 已被父级标签/搜索过滤收窄，若以它为基准，过滤状态下
+// 重排会把「部分列表」当整库顺序全量落库，其余服务器的顺序记录被后端清空
+//（K1，round6 P1）；树选中过滤在组件内做、不影响 allServers。POST 全量整库顺序
+// 与 WPF ServerCustomOrderSave 存完整列表同语义）
 const fullOrder = computed(() => {
-  if (!customOrder.value) return props.servers.slice()
-  return props.servers.slice().sort(comparators.custom)
+  if (!customOrder.value) return allServers.value.slice()
+  return allServers.value.slice().sort(comparators.custom)
 })
 
 // ---- 行拖拽：两条互斥链路，以被拖行种类分发（快照互斥，同时至多一条在拖）----
@@ -313,6 +316,9 @@ async function onRowDrop(server, e) {
 // preventDefault → 浏览器拒绝 drop；目标父层同名文件夹的查重在 drop 执行层
 //（folderOps.moveFolder——dragover 逐次 buildTree 查重不划算，罕见场景接受高亮后被拦）
 function folderDropOk(f) {
+  // K10：长操作进行中整体拒绝（不 preventDefault → 无悬停高亮，拖放即时呈现「不可放」，
+  // 杜绝「高亮承诺了动作、松手静默毁约」；与右键菜单/行内按钮的 busy 禁用同口径）
+  if (props.opsBusy) return false
   const s = dragServer.value
   if (s) return s.dataSourceName === f.dsName && (s.folderPath || '') !== f.path
   const d = dragFolder.value
@@ -966,6 +972,7 @@ onBeforeUnmount(() => {
             @open="emit('open-folder', $event)"
             @context="onFolderContext"
             :writable="dsWritable(row.folder.dsName)"
+            :busy="opsBusy"
             @toggle-check="onFolderToggleCheck(row.folder)"
             @dragstart="onFolderRowDragStart(row.folder, $event)"
             @dragover="onFolderDragOver(row.folder, $event)"

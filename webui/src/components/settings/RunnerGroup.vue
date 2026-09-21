@@ -306,7 +306,7 @@ onBeforeUnmount(() => {
           @update:value="onRunnerSelect"
         />
         <span class="sel-add">
-          <n-button size="small" type="primary" @click="adding = true">
+          <n-button size="small" type="primary" ghost @click="adding = true">
             {{ t('settings.r.add') }}
           </n-button>
           <!-- 添加行 (?)：WPF 添加运行器按钮旁 (?) → 运行器文档（url 照抄） -->

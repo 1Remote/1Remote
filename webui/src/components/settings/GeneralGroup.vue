@@ -40,6 +40,7 @@ const form = reactive({
   confirmBeforeClosingSession: false,
   showSessionIconInSessionWindow: false,
   requireSecondaryVerification: false,
+  appStartAutomatically: false,
   logLevel: 0,
   tabWindowCloseButtonOnLeft: false,
   tabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow: false,
@@ -65,6 +66,7 @@ onMounted(async () => {
     form.language = backendToWeb(g.language)
     for (const k of FIELD_KEYS) form[k] = g[k]
     form.requireSecondaryVerification = g.requireSecondaryVerification
+    form.appStartAutomatically = g.appStartAutomatically
   } catch {
     loadError.value = true
   } finally {
@@ -126,9 +128,12 @@ async function onVerificationToggle(next) {
 }
 
 // 开关行清单（模板循环渲染，避免逐个手写重复标记）。requireSecondaryVerification 不在列
-//（立即生效行单独渲染，位置保持在原第 3 个开关处），故拆两段循环夹住单独行
+//（立即生效行单独渲染，位置保持在原第 3 个开关处），故拆两段循环夹住单独行。
+// appStartAutomatically（K27）：与其它开关同款差量自动保存——后端写注册表/启动文件夹
+//（WPF 同入口），读值即机器实况，无需额外验证门
 const SWITCHES = [{ key: 'confirmBeforeClosingSession' }, { key: 'showSessionIconInSessionWindow' }]
 const SWITCHES_REST = [
+  { key: 'appStartAutomatically' },
   { key: 'tabWindowCloseButtonOnLeft' },
   { key: 'tabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow' },
   { key: 'copyPortWhenCopyAddress' },

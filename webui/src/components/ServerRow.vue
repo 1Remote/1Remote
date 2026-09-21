@@ -162,7 +162,9 @@ const barColor = computed(() => opaqueHex(props.server.color))
     <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="absTime(server)">
       {{ relTime(server) }}
     </div>
-    <div class="cell cell-act" @click.stop>
+    <!-- 操作列：单击/双击均不冒泡到行（cell-act 补 dblclick.stop，K6：双击 ▸ 会由
+         2×click + 1×dblclick 冒泡合计触发 3 次连接；与 .cell-check 的排除同模式） -->
+    <div class="cell cell-act" @click.stop @dblclick.stop>
       <button class="act" :title="t('row.connect')" @click="emit('connect')">▸</button>
       <!-- 编辑按钮：与右键菜单「编辑」同一 emit 链路，经 ServerTable 转发 server 对象 -->
       <button class="act" :title="t('row.edit')" @click="emit('edit')">✎</button>

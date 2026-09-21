@@ -21,7 +21,9 @@ namespace _1RM.Service.WebUi
     /// ─ POST   /api/settings/verify   requireSecondaryVerification 翻转前的 WPF 平价安全门
     ///
     /// 安全域（白名单语义）：只暴露非破坏性字段（语言/关闭行为/确认开关/日志级别/tab 选项/
-    /// 复制选项）；开机自启（写注册表）、便携模式、SQLite 路径不进白名单。
+    /// 复制选项）；便携模式、SQLite 路径不进白名单。开机自启原在排除清单，K27（owner
+    /// 2026-09-21 决策）入白名单——读写均走 WPF 既有入口（IsSelfStart 探测 / SetSelfStart
+    /// 写注册表），与桌面端设置页同一行为面。
     ///
     /// requireSecondaryVerification 不在 GeneralConfig：真实状态在 SecondaryVerificationHelper——
     /// 读 await GetEnabled()，写 await SetEnabledAsync(bool)（写注册表/凭据管理器机器状态；
@@ -35,15 +37,16 @@ namespace _1RM.Service.WebUi
     /// </summary>
     public static partial class WebUiSettingsService
     {
-        /// <summary>读取 general 设置快照（requireSecondaryVerification 读 SecondaryVerificationHelper）。</summary>
+        /// <summary>读取 general 设置快照（requireSecondaryVerification 读 SecondaryVerificationHelper；appStartAutomatically 读注册表/启动文件夹实况）。</summary>
         public static async Task<GeneralSettingsDto> ReadGeneralAsync(ConfigurationService cs)
         {
             var dto = ReadGeneralConfig(cs);
             dto.RequireSecondaryVerification = await SecondaryVerificationHelper.GetEnabled();
+            dto.AppStartAutomatically = SetSelfStartingHelper.IsSelfStart(Assert.APP_NAME);
             return dto;
         }
 
-        /// <summary>GeneralConfig → DTO 字段映射（不含 requireSecondaryVerification——它不在 GeneralConfig，由调用方单独读 SecondaryVerificationHelper）。</summary>
+        /// <summary>GeneralConfig → DTO 字段映射（不含 requireSecondaryVerification/appStartAutomatically——它们不在 GeneralConfig，由调用方单独读机器实况）。</summary>
         private static GeneralSettingsDto ReadGeneralConfig(ConfigurationService cs)
         {
             return new GeneralSettingsDto
@@ -117,12 +120,20 @@ namespace _1RM.Service.WebUi
                 // 消除 async void fire-and-forget 的竞态窗口
                 await SecondaryVerificationHelper.SetEnabledAsync(input.RequireSecondaryVerification.Value);
             }
+            if (input.AppStartAutomatically != null)
+            {
+                // K27：与 WPF GeneralSettingViewModel.AppStartAutomatically setter 完全同一
+                // 入口（ConfigurationService.SetSelfStart → 注册表/启动文件夹），不落
+                // GeneralConfig——GET 回读的即是机器实况
+                ConfigurationService.SetSelfStart(input.AppStartAutomatically.Value);
+            }
 
             cs.Save();
             var dto = ReadGeneralConfig(cs);
             // 写入已 await 完成，回读即为真值（部分写入失败时 SetEnabledAsync 已按机器
             // 实际状态刷新缓存，回读与重启后的首读一致）
             dto.RequireSecondaryVerification = await SecondaryVerificationHelper.GetEnabled();
+            dto.AppStartAutomatically = SetSelfStartingHelper.IsSelfStart(Assert.APP_NAME);
             return GeneralSettingsResult.Ok(dto);
         }
 

@@ -136,10 +136,11 @@ export function buildTree(servers, datasources, folderPathsByDs) {
   return roots
 }
 
-/** holder（根/文件夹）下的服务器总数（含全部后代）——树徽标/文件夹行计数/删除确认
- *  （影响整个子树）与「全部数据」根徽标（全库总览）共用口径；H38 后「选中文件夹 =
- *  列表显示含子文件夹的全部服务器」，徽标与列表/面包屑「N 台」同口径才自洽
- *  （第五轮 E5-1：直接子级口径曾在同屏呈现两个矛盾数字）。 */
+/** holder（根/文件夹）下的服务器总数（含全部后代）——计数口径的单一来源（owner
+ * 2026-09-21 定案，K2）：「文件夹内服务器数量」一律为**递归总数（含子文件夹）**。
+ * 消费方：树徽标、列表文件夹行「内含 N 台」、面包屑「N 台」、删除确认（影响整个
+ * 子树）。注意与显示语义区分：列表**行**只显示直接子级（资源管理器模型，见下），
+ * 但所有「数量」均为递归口径——行集与计数是两个语义，勿再合并。 */
 export function countHolderServers(holder) {
   return holder.servers.length + holder.folders.reduce((n, f) => n + countHolderServers(f), 0)
 }

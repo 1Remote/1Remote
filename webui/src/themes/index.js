@@ -1,4 +1,4 @@
-import { reactive, computed } from 'vue'
+import { reactive, computed, ref } from 'vue'
 import { darkTheme, lightTheme } from 'naive-ui'
 import { api } from '../api'
 import './theme.css'
@@ -60,6 +60,21 @@ const ACCENT_SOLID_PRESSED_HEX = {
   slate: '#35404f',
 }
 
+// 强调文字档（--accent-text 的 JS 镜像，L4）：亮色基底的 --accent-text 与 solid 同表
+//（theme.css data-accent 块逐值一致）；暗色基底是提亮变体表（theme.css 同源照抄）。
+// 供 naive ghost 主按钮文字族使用——与自绘描边主按钮（bb-primary/ed-primary/eg-primary
+// 的 --accent 边框 + --accent-text 文字）同一来源，L4 统一后不分家
+const ACCENT_TEXT_DARK_HEX = {
+  blue: '#7c9bff',
+  violet: '#b8a6f7',
+  pink: '#f5a8cd',
+  red: '#f5a09a',
+  orange: '#f0b25f',
+  green: '#5fd38d',
+  slate: '#9aa8bb',
+}
+const accentTextHex = () => (resolvedMode() === 'dark' ? ACCENT_TEXT_DARK_HEX : ACCENT_SOLID_HEX)[themeState.accent]
+
 // 旧 9 主题 → 预设组合（spec §4）
 export const CLASSIC_THEMES = {
   Light: { themeMode: 'light', accent: 'blue' },
@@ -94,6 +109,10 @@ export function applyTheme() {
   document.documentElement.style.fontFamily = themeState.font || '' // 空 = 继承/系统字体
 }
 
+// 外观持久化失败信号（K15）：每次 PUT 失败 +1。themes 模块无组件上下文不能直接弹
+// 提示——AppearanceGroup watch 此信号 toast；「后端曾可达」豁免纯浏览器预览场景
+export const appearanceSaveFailedTick = ref(0)
+
 export function setAppearance(patch) {
   Object.assign(themeState, patch)
   applyTheme()
@@ -105,7 +124,12 @@ export function setAppearance(patch) {
       fontSize: themeState.fontSize,
       font: themeState.font,
     })
-    .catch(() => {}) // 桌面后端未运行（纯浏览器预览）时静默
+    .catch(() => {
+      // 桌面后端未运行（纯浏览器预览）与运行中网络故障都落在这里——本地即时生效
+      // 的变色在两种场景下看似成功，后者重启会回旧值；失败信号交消费方按连接状态
+      // 决定是否提示（K15：此前无条件静默，外观组是设置页唯一不报保存失败的分组）
+      appearanceSaveFailedTick.value++
+    })
 }
 
 export async function initTheme() {
@@ -200,6 +224,23 @@ export function useNaiveTheme() {
         textColorPressedError: '#FFFFFF',
         textColorFocusError: '#FFFFFF',
         textColorDisabledError: '#FFFFFF',
+        // L4（owner 2026-09-21 定案：主按钮统一描边）：ghost 主按钮（type="primary" ghost）
+        // 的文字族 = --accent-text 同源表（暗基提亮/亮基 solid），hover/pressed 文字不换色
+        //（ghost 底恒透明，避免出现与自绘描边主按钮不同的第二种 hover 语言）；边框走
+        // borderPrimary = common.primaryColor = --accent，与自绘款同源。危险按钮（对话框
+        // 红色确认）维持 error 实底——「删除/危险可用红色」的锚点不受本项影响
+        textColorGhostPrimary: accentTextHex(),
+        textColorGhostHoverPrimary: accentTextHex(),
+        textColorGhostPressedPrimary: accentTextHex(),
+        textColorGhostFocusPrimary: accentTextHex(),
+        textColorGhostDisabledPrimary: accentTextHex(),
+        // L4「其他按钮用统一的描边颜色」：naive 默认钮（取消等）边框从自带灰系归到
+        // 令牌 --border 档（hover --border-strong），与全站自绘带边框按钮同色
+        border: '1px solid var(--border)',
+        borderHover: '1px solid var(--border-strong)',
+        borderPressed: '1px solid var(--border-strong)',
+        borderFocus: '1px solid var(--border-strong)',
+        borderDisabled: '1px solid var(--border)',
       },
       // 下拉选中项文字（第三轮 G1，本轮唯一 P1）：common.primaryColor 仍喂亮 accent，而
       // naive select-menu 的 optionTextColorActive/optionCheckColor 直接取 primaryColor

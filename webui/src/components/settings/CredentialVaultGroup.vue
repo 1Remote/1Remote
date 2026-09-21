@@ -325,7 +325,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
           <n-select size="small" :value="ds" :options="dsOptions" @update:show="shield" @update:value="ds = $event" />
         </div>
         <span v-if="isReadOnly" class="ro-flag">{{ t('cv.readOnly') }}</span>
-        <n-button class="new-btn" size="small" type="primary" :disabled="isReadOnly" @click="openCreate">
+        <n-button class="new-btn" size="small" type="primary" ghost :disabled="isReadOnly" @click="openCreate">
           {{ t('cv.new') }}
         </n-button>
       </div>
@@ -518,6 +518,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
           <n-button
             size="small"
             type="primary"
+            ghost
             :disabled="!form.name.trim() || nameExists"
             :loading="saving"
             @click="save"

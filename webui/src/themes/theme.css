@@ -17,8 +17,10 @@ body {
   --accent-container: #16203a;
   --accent-text: #7c9bff;
   /* 实底强调变体（深色阶，双基底同值）：白字在其上全 7 色 ≥5.18 AA——亮 --accent
-     （如 orange/green）作实底时白字仅 2.80/2.54 FAIL；实底强调场景（搜索高亮/主按钮/
-     HelpLink 徽标 hover）一律用 solid，文字用 --text-on-accent */
+     （如 orange/green）作实底时白字仅 2.80/2.54 FAIL；实底强调场景（搜索高亮/
+     HelpLink 徽标 hover）一律用 solid，文字用 --text-on-accent。主按钮不在此列：
+     L4 定案（2026-09-21）主按钮统一**描边**形态（--accent 边框 + --accent-text 文字，
+     naive 侧 type="primary" ghost + themes/index.js 同源覆盖），仅危险按钮保留红色实底 */
   --accent-solid: #2c5aff;
   --text-on-accent: #fff;
 }

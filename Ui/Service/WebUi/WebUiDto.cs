@@ -168,7 +168,11 @@ namespace _1RM.Service.WebUi
 
     /// <summary>
     /// GET /api/settings/general 响应（camelCase 序列化）。
-    /// 安全白名单域：只暴露非破坏性字段——开机自启（注册表）、便携模式、SQLite 路径不在此列。
+    /// 安全白名单域：只暴露非破坏性字段——便携模式、SQLite 路径不在此列。开机自启
+    /// （K27，owner 2026-09-21 决策入白名单）：真实状态在注册表/启动文件夹而非
+    /// GeneralConfig——读 SetSelfStartingHelper.IsSelfStart() 探测，写经
+    /// ConfigurationService.SetSelfStart()（与 WPF GeneralSettingViewModel.AppStartAutomatically
+    /// setter 完全同一入口，不落配置文件）。
     /// requireSecondaryVerification 不在 GeneralConfig（那是 XAML 控件名）：真实状态在
     /// SecondaryVerificationHelper（凭据管理器/注册表/locality 文件），读 GetEnabled()、
     /// 写 SetEnabled(bool)（async void，fire-and-forget）。
@@ -185,6 +189,7 @@ namespace _1RM.Service.WebUi
         public bool CopyPortWhenCopyAddress { get; set; }
         public bool DoNotCheckNewVersion { get; set; }
         public bool RequireSecondaryVerification { get; set; }    // SecondaryVerificationHelper.GetEnabled()
+        public bool AppStartAutomatically { get; set; }           // SetSelfStartingHelper.IsSelfStart()（注册表/启动文件夹实况）
     }
 
     /// <summary>
@@ -205,6 +210,8 @@ namespace _1RM.Service.WebUi
         public bool? DoNotCheckNewVersion { get; set; }
         /// <summary>写路径走 SecondaryVerificationHelper.SetEnabledAsync（可等待，注册表/凭据管理器机器状态，返回前完成并刷新缓存）。</summary>
         public bool? RequireSecondaryVerification { get; set; }
+        /// <summary>开机自启（K27）：写 ConfigurationService.SetSelfStart（注册表/启动文件夹，与 WPF 同入口，不落 GeneralConfig）。</summary>
+        public bool? AppStartAutomatically { get; set; }
     }
 
     /// <summary>

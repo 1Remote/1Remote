@@ -58,6 +58,9 @@ dotnet build Ui/Ui.csproj   # 同时把 dist/ 刷新进 wwwroot（运行 1Remote
 | TC-TREE-13M | 人工：列表文件夹拖入树；树内跨层移动遇同名弹合并确认（取消不动/确认合并） | H3 | round4-H3 | **M** |
 | TC-TREE-14M | 树/列表右键 新建/重命名/删除文件夹：重名拦截、重命名预填全选、空文件夹直删确认、含服务器两选一确认（红=连删，蓝=上移，Esc 不动作） | folderOps；第三轮 G10 | — | **M** |
 | TC-TREE-15M | 人工：展开状态与自定义顺序重启后保持（与 WPF 共用 tree-state 文件） | spec §3.2 | — | **M** |
+| TC-TREE-16 | 树内同级重排落盘失败：回滚本地序 + 报错（不再假成功） | K11 | round6-K11 | L3 |
+| TC-TREE-17 | 文件夹长操作 busy：行内 ✎/✕ 禁用（title 解释）；拖放落区 busy 前置拒绝（无高亮） | K10 | round6-K10 | L3 |
+| TC-TREE-18M | 人工：树徽标 N = 面包屑 N（递归含子文件夹）；列表行=直接子级（两个语义并存） | K2 owner 定案 | round6-K2 | **M** |
 
 ### 3.2 行列表（spec §3.4）
 
@@ -83,6 +86,11 @@ dotnet build Ui/Ui.csproj   # 同时把 dist/ 刷新进 wwwroot（运行 1Remote
 | TC-LIST-20M | 人工：备注列 Markdown 悬停弹层；时间列相对时间+悬停绝对时间；标签胶囊最多 2+溢出计数 | spec §3.4 | — | **M** |
 | TC-LIST-21M | 人工：空态三态（空库引导卡/空文件夹/无匹配逐层清除）；空库引导卡协议一览 | spec §8.5 | 第三轮 G16 | **M** |
 | TC-LIST-22M | 人工：批量导出下载、批量连接超阈值确认 | spec §3.4 | — | **M** |
+| TC-LIST-23 | 标签/搜索过滤下拖拽重排：POST 基准 = 全量库列表（allServers），不破坏其余服务器顺序 | K1（round6 P1） | round6-K1 | L3 |
+| TC-LIST-24 | 面包屑计数：无过滤 = 递归口径（与树徽标同函数）；搜索/标签激活 = 命中行数 | K2 owner 定案 | round6-K2 | L3 |
+| TC-LIST-25 | 标签过滤隐藏文件夹行（沿用搜索做法，计数不再误导） | K23 | round6-K23 | L3 |
+| TC-LIST-26 | 搜索请求失败：保留旧过滤态 + toast「搜索失败」（不再伪装零命中） | K13 | round6-K13 | L3 |
+| TC-LIST-27 | 服务器行操作列双击不冒泡（双击 ▸ 不再 2×click+1×dblclick 触发 3 次连接） | K6 | round6-K6 | L3 |
 
 ### 3.3 键盘流与浮层（spec §8.2）
 
@@ -96,6 +104,8 @@ dotnet build Ui/Ui.csproj   # 同时把 dist/ 刷新进 wwwroot（运行 1Remote
 | TC-KBD-04 | Esc 链序：行菜单→文件夹菜单→树菜单→列菜单→勾选→搜索→标签→光标，唯一 window 级 handler 按序裁决 | 第三轮 Esc 链 | 连续三轮 | L3 |
 | TC-KBD-05 | 模态在开时 Esc 整链让位（编辑抽屉/标签管理/导入/n-dialog） | 第三轮 | — | L3 |
 | TC-KBD-06 | Ctrl+S 确认框让位 | H21 | round4-H21 | L3 |
+| TC-KBD-13 | 设置页 Esc 在 naive 对话框/模态开着时让位（不再连设置页一起退出） | K5 | round6-K5 | L3 |
+| TC-KBD-14 | 搜索框 ↓/↑ 移交前判输入法组字（isComposing，选词键不抢焦点） | K8 | round6-K8 | L3 |
 | TC-KBD-07M | 人工：Ctrl+K 聚焦搜索；Ctrl+F→↓→Enter 连接流（搜索框移交表格焦点） | spec §8 | 第三轮 G2 | **M** |
 | TC-KBD-08M | 人工：Menu/Shift+F10 呼出行菜单；↑↓ 移动光标行（外框可见+滚入可视区） | spec §8.2 | 第三轮 G3 | **M** |
 | TC-KBD-09M | 人工：Ctrl+A 全选可见/清空；E 编辑；Ctrl+D 复制预填「(副本)」不叠加后缀 | spec §8.2/H26 | round4-H26 | **M** |
@@ -122,14 +132,23 @@ dotnet build Ui/Ui.csproj   # 同时把 dist/ 刷新进 wwwroot（运行 1Remote
 | TC-ED-11M | 导入：保留 JSON 内层级（目标文件夹作前缀）；CSV/RDP 平铺入目标；三处格式说明口径一致（含 .db/.sqlite） | H15/H28 | round4-H15/H28 | **M** |
 | TC-ED-11Z | 后端导入前缀拼接 + 前端 folder 参数存在 | H15 | round4-H15 | L3 |
 | TC-ED-12M | 导出：跨数据源 ids 导出 JSON attachment（403 提示验证） | spec §6 | — | **M** |
+| TC-ED-13 | 数据源模态必填星标（mysql/pgsql 五项 + sqlite 路径；编辑态密码留空=保持不标） | K9 | round6-K9 | **M** |
+| TC-ED-14 | Web 自启开关：GET=注册表实况（IsSelfStart），PUT 走 WPF 同入口（SetSelfStart） | K27 | round6-K27 | L3 |
+| TC-ED-15 | 外观保存失败 toast（connected 豁免纯浏览器预览） | K15 | round6-K15 | L3 |
+| TC-ED-16 | 导出前明文密码警告确认框（引用桌面版同义警告） | K26 | round6-K26 | L3 |
+| TC-ED-17 | 导入进行中 Esc/遮罩/卡片 × 三路不可关 | K14 | round6-K14 | L3 |
+| TC-ED-18 | 数据源卡片状态点悬停 title 走词条（不直出英文枚举） | K16 | round6-K16 | L3 |
+| TC-ED-19M | 人工：后端失联 ≥3s 全屏不可关闭警告出现、恢复自动消失；exe 冷启动不误报 | K17 | round6-K17 | **M** |
+| TC-ED-20M | 人工：主按钮统一描边形态（设置页/模态保存=描边；对话框红色确认保留实底） | L4 | round6-L4 | **M** |
 
 ### 3.5 i18n（spec §7）
 
 | ID | 判据 | 设计依据 | 历史缺陷 | 自动化 |
 |---|---|---|---|---|
-| TC-I18N-01 | 14 语言键集平价（580 键 × 14） | spec §7 | — | L4 |
+| TC-I18N-01 | 14 语言键集平价（583 键 × 14） | spec §7 | — | L4 |
 | TC-I18N-02 | 源码引用的每个键在 en-US/zh-CN 中存在（死键/拼错即红）。**实测战果**：首轮运行即抓到 DataSourceGroup 引用已删键 tree.noDatasources（H32 改名漏改），已修为 tree.noDsHint | spec §7 | H16/死键类 | L4 |
 | TC-I18N-03 | zh-CN 基准无三词以上英文句（漏翻译判据；其余 12 语言按 spec §7 允许 en 回退，不算缺陷） | spec §7 | H16 类 | L4 |
+| TC-I18N-06 | 组件库语言映射集中 locales/naive.js（14 语言全配 + enUS 回落）；自绘词条 K18-K21 改写后由键平价/漏翻门覆盖 | K24/K18-K21 | round6 | L3+L4 |
 | TC-I18N-03A | **已知遗留**：`about.tagline` zh-CN 仍为英文「Your personal remote manager!」（allowlist；owner 裁决补译或确认为品牌语后处理） | spec §7 | H16 类 | L4 allowlist |
 | TC-I18N-04 | 全部 .vue 模板（剥注释后）零硬编码 CJK | spec §7「零硬编码文案」 | H16 | L4 |
 | TC-I18N-05 | 脚本字符串字面量无 CJK（console 调试串除外） | spec §7 | — | L4 |
@@ -144,6 +163,7 @@ dotnet build Ui/Ui.csproj   # 同时把 dist/ 刷新进 wwwroot（运行 1Remote
 | TC-BE-02 | 导入=目标文件夹前缀拼接（按 JSON 原有层级放进当前文件夹） | H15 | round4-H15 | L3 |
 | TC-BE-02M | 人工：桌面端连接发起/密码询问弹窗/need_password 续答流正常（Web 侧只发 api.connect） | spec §10 | — | **M** |
 | TC-BE-03M | 人工：`dotnet test` 全量（197+ 用例）；既有失败清单见 round4 报告 §一 | — | — | L5 |
+| TC-BE-04 | 自启开关 DTO 双向字段 + 写走 ConfigurationService.SetSelfStart（WPF 同入口） | K27 | round6-K27 | L3 |
 
 ## 4. 人工冒烟清单（每日 5 分钟，按序）
 
@@ -156,7 +176,9 @@ dotnet build Ui/Ui.csproj   # 同时把 dist/ 刷新进 wwwroot（运行 1Remote
 7. 双击行连接（复选框列连点不误触）；Esc 逐级回退（菜单→勾选→搜索→光标）。
 8. 右键复制密码（验证门按配置走）；E 打开抽屉 Ctrl+S 保存 toast；Esc 脏确认。
 9. 设置页：数据源测试连接（草稿路径）；凭据库明文查看验证门。
-10. 切语言 zh⇄en 即时生效；切主题即时生效。
+10. 切语言 zh⇄en 即时生效；切主题即时生效（主按钮描边形态随主题正常）。
+11. 设置→常规→开机自启开关翻转后，任务管理器「启动」页出现/消失 1Remote（K27）。
+12. 关闭后端进程 → 3 秒后全屏失联警告；重启后端 → 自动消失（K17）。
 
 ## 4.5 已知遗留
 

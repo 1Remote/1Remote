@@ -11,7 +11,8 @@ const servers = ref([])
 const datasources = ref([])
 const tags = ref([])
 const loading = ref(false)
-const connected = ref(false) // 后端可达状态（最近一次拉取/轮询成功为 true，供状态栏指示）
+const connected = ref(false) // 后端可达状态（最近一次拉取/轮询成功为 true）
+const everConnected = ref(false) // 后端曾经可达过（K17：断开警告仅在后端曾可达后出现——exe 冷启动后端未起时不误报）
 let unsubscribe = null
 let pollTimer = null
 let gen = 0 // 乱序完成保护：SSE 事件风暴下多个 loadAll 并发，晚发起的批次可能先返回
@@ -24,6 +25,7 @@ async function loadAll() {
     if (my !== gen) return // 落后批次整体丢弃（乱序完成保护），不覆盖新批次数据
     ;[servers.value, datasources.value, tags.value] = results
     connected.value = true
+    everConnected.value = true
   } catch (e) {
     // 后端不可达是可预期状态（如开发时代理目标未启动）：保持旧数据、标记断连并记日志，
     // 不向上抛——初始加载与 SSE 回调都是 fire-and-forget 调用，抛出只会变成未处理 rejection
@@ -40,6 +42,7 @@ async function loadAll() {
 const searchQuery = ref('')
 const searchedIds = ref(null) // Set<serverId> | null；null=未启用搜索过滤（区别于空集=搜了但零命中）
 const searching = ref(false)
+const searchFailedTick = ref(0) // K13：每次搜索请求失败 +1（消费方 watch 弹「搜索失败」，与零命中二分）
 let searchTimer = null
 let searchGen = 0 // 乱序完成保护（与 loadAll 的 gen 同思路）：防抖后连发多请求，晚发的可能先返回
 
@@ -65,7 +68,11 @@ async function doSearch(q) {
   } catch (e) {
     if (my === searchGen) {
       console.warn('[useServers] search failed:', e?.message || e)
-      searchedIds.value = new Set() // 失败按零命中呈现：过滤结果与输入框中可见的查询保持一致，不用旧结果误导
+      // K13：失败 ≠ 零命中——不再清成空集（空集会把后端故障伪装成「未找到 xxx」，
+      // 误导用户以为服务器不存在甚至去新建重复项）。保留上一版过滤态（首次搜索则
+      // 维持未过滤），searchFailedTick +1 由消费方 watch 弹「搜索失败」提示，
+      // 列表与输入框查询的差异由该提示解释
+      searchFailedTick.value++
     }
   } finally {
     if (my === searchGen) searching.value = false
@@ -92,6 +99,7 @@ export function useServers() {
         if (!loading.value) {
           datasources.value = ds
           connected.value = true
+          everConnected.value = true
           // 断连恢复：servers/tags 仍是断连前的旧值（初载失败时为空），补一次全量重载，
           // 让离线提示（ServerListView）真正自动切回内容而非停留在空态
           if (wasDown) await loadAll()
@@ -110,10 +118,12 @@ export function useServers() {
     tags,
     loading,
     connected,
+    everConnected,
     reload: loadAll,
     searchQuery,
     searchedIds,
     searching,
+    searchFailedTick,
     dsWritable,
   }
 }

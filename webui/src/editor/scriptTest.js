@@ -53,9 +53,14 @@ export function showScriptTestResult({ dialog, t, fieldKey, command, resp }) {
       )
     )
   }
-  dialog.info({
+  // L3：dialog.info 预设自带蓝色 ⓘ 图标，是全站唯一违反「无图标」三档策略的对话框
+  //（round2 J29 清点时它走 info 预设未被数入）——改标准 create + showIcon:false，
+  // 并补 autoFocus:false 对齐全库「禁回车误触」纪律（信息框仅一个确定钮，属低风险顺带）
+  dialog.create({
     title: t('editor.scriptTestTitle'),
     content: () => h('div', null, rows),
+    showIcon: false,
     positiveText: t('common.ok'),
+    autoFocus: false,
   })
 }

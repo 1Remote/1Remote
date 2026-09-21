@@ -45,7 +45,8 @@ watch(
   { immediate: true }
 )
 
-const { servers, datasources, tags, loading, connected, reload, searchQuery, searchedIds } = useServers()
+const { servers, datasources, tags, loading, connected, reload, searchQuery, searchedIds, searchFailedTick } =
+  useServers()
 
 // 单数据源根（owner 需求，通用化按「数据源总数 === 1」判定，不认死 Local 名）：
 // 只有一个数据源时 SideTree 不再显示「全部数据」虚拟根（深度整体上移一级），列表/面包屑
@@ -71,10 +72,10 @@ onMounted(() => loadTreeState())
 // 全库服务器总览里文件夹行只添噪音，来源上下文由行内 folder 列（数据源 / 路径前缀）承担
 const treeModel = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
 const currentFolders = computed(() => {
-  // 搜索过滤激活时隐藏文件夹行：搜索只命中服务器（useServers
-  // searchedIds 为 server id 集），文件夹名不参与匹配——保留会在命中结果上方悬浮一层
-  // 与查询无关的文件夹，误导导航；空 Set（零命中）同样隐藏。
-  if (searchedIds.value != null) return []
+  // 搜索/标签过滤激活时隐藏文件夹行（K23：标签过滤沿用搜索的做法）：过滤只命中
+  // 服务器（文件夹不参与匹配），保留文件夹行会让「内含 N 台」的未过滤计数与过滤后
+  // 所见脱节（写着 5 台、进去 0 台）；进文件夹在过滤期间仍可走侧栏树
+  if (searchedIds.value != null || activeTag.value) return []
   const sel = viewSel.value
   // 「全部数据」根（viewSel 无数据源，仅多源可达）：只列服务器行（全库递归，
   // ServerTable 对 null selection 不过滤），不生成文件夹行
@@ -82,8 +83,8 @@ const currentFolders = computed(() => {
   const out = []
   const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
   if (holder) {
-    // 文件夹行计数与树徽标同口径（E5-1/H38 后为递归口径）：行内数字 = 进入该
-    // 文件夹后列表显示的台数（含子文件夹全部，与面包屑「N 台」一致）
+    // 文件夹行计数 = 递归总数（countHolderServers，与树徽标/面包屑「N 台」同函数同数字，
+    // K2 定案）；注意列表行本身只显示直接子级——计数与行集是两个语义
     for (const f of holder.folders)
       out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
   }
@@ -168,8 +169,23 @@ const showGuide = computed(() => connected.value && !loading.value && !servers.v
 const GUIDE_PROTOCOLS = ['RDP', 'SSH', 'SFTP', 'FTP', 'VNC', 'Telnet', 'Serial', 'APP', 'RemoteApp']
 const showNoMatch = computed(() => servers.value.length > 0 && !visibleServers.value.length) // 标签/搜索交集为空
 const tableHidden = computed(() => showSkeleton.value || showOffline.value || showGuide.value || showNoMatch.value)
-// 表格卸载后 counted 不再上报，面包屑计数跟随空态归零（骨架期如实显示 0）
-const listCount = computed(() => (tableHidden.value ? 0 : tableCount.value))
+// 表格卸载后 counted 不再上报，面包屑计数跟随空态归零（骨架期如实显示 0）。
+// K2（owner 2026-09-21 定案）：文件夹/数据源视图的「N 台」= **含子文件夹的递归总数**，
+// 与树徽标同源（holderAt + countHolderServers 同一函数同一数字，不再出现树 5 / 面包屑 3
+// 的口径分裂）；列表行本身仍只显示直接子级（资源管理器模型），但「这个文件夹里有多少台
+// 服务器」的数字答案是全部子孙。搜索/标签过滤激活时数字描述**命中结果集**，仍用表格
+// 上报的可见行数；「全部数据」根 = 全库总数。
+const folderTotal = computed(() => {
+  const sel = viewSel.value
+  if (!sel?.dataSourceName) return servers.value.length
+  const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
+  return holder ? countHolderServers(holder) : 0 // holder 短暂缺失（外部删除竞态）如实归零
+})
+const listCount = computed(() => {
+  if (tableHidden.value) return 0
+  if (searchActive.value || activeTag.value) return tableCount.value
+  return folderTotal.value
+})
 const noMatchDetail = computed(() => {
   if (searchActive.value) return t('empty.searchedFor', { q: searchQuery.value })
   if (activeTag.value) return t('empty.taggedNone', { tag: activeTag.value })
@@ -245,10 +261,30 @@ async function onBatchConnect(ids) {
   await batchConnect(ids)
 }
 
-// ---- 导出：批量条「导出」→ blob 下载；403 = 桌面端已弹二次验证
-//（未通过/取消），提示引导重试（通过后 30s 窗口内重试免验证）----
+// ---- 导出：批量条「导出」→ 先确认（产物含明文密码）→ blob 下载；403 = 桌面端已弹
+// 二次验证（未通过/取消），提示引导重试（通过后 30s 窗口内重试免验证）----
+// K26：导出前加确认框——明文警告此前只藏在按钮 hover title（触屏完全不可见）；WPF 版
+// 的保存对话框标题级警告在 Web 迁移时丢了，此处平价补回（非破坏性确认：无图标+中性钮）
+function confirmExport(n) {
+  return new Promise((resolve) => {
+    dialog.create({
+      title: t('batch.export'),
+      content: t('batch.exportConfirm', { n }),
+      showIcon: false, // 非破坏性确认（folderOps 文件头三档策略）
+      positiveText: t('batch.export'),
+      negativeText: t('editor.cancel'),
+      positiveButtonProps: { type: 'default' },
+      autoFocus: false,
+      onPositiveClick: () => resolve(true),
+      onNegativeClick: () => resolve(false),
+      onClose: () => resolve(false),
+      onAfterLeave: () => resolve(false),
+    })
+  })
+}
 async function onExport(ids) {
   if (!ids?.length) return
+  if (!(await confirmExport(ids.length))) return
   try {
     const { blob, filename } = await api.exportServers(ids)
     const url = URL.createObjectURL(blob)
@@ -312,6 +348,12 @@ const { createRequest, importRequest, setEditorOpen } = useEditorBus()
 // 统一同步到 editorBus，App.vue 顶栏消费（编辑期间禁用搜索/「+」/⚙）。immediate
 // 覆盖首挂载（null → false，保证总线初值与本视图一致）
 watch(editor, (v) => setEditorOpen(!!v), { immediate: true })
+// K13：搜索请求失败与零命中二分——失败时保留上一版过滤态（useServers 不清空命中集），
+// 这里对失败计数 watch 弹一次提示；连续失败每次 +1 各弹一次（不刷屏：防抖 200ms +
+// 乱序保护下同一次输入只会有一次失败）
+watch(searchFailedTick, (n) => {
+  if (n > 0) message.error(t('toast.searchFailed'))
+})
 watch(createRequest, () => {
   if (!editor.value) openCreate()
 })
@@ -663,10 +705,7 @@ const importModal = ref(false)
             >{{ t('statusbar.serverCount', servers.length) }} ·
             {{ t('statusbar.tagCount', { m: tags.length }, tags.length) }}</span
           >
-          <span class="sb-sse" :title="t('statusbar.sseTip')">
-            <span class="sb-dot" :class="connected ? 'ok' : 'bad'"></span>
-            {{ connected ? t('statusbar.sseOk') : t('statusbar.sseOff') }}
-          </span>
+          <!-- K17：SSE 状态小字已删（后端失联改由 App.vue 全屏不可关闭警告承载，冷启动不误报） -->
           <button class="sb-lang" :title="t('statusbar.langSwitch')" @click="toggleLocale">{{ nextLang }}</button>
         </div>
       </footer>
@@ -1098,12 +1137,6 @@ const importModal = ref(false)
   gap: 12px;
   min-width: 0;
   overflow: hidden; /* 左侧数据源名撑满时不被顶出，内部整体截断 */
-}
-.sb-sse {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: help; /* title 说明其语义为后端可达性而非连接会话状态 */
 }
 .sb-lang {
   height: var(--ctrl-h-s);

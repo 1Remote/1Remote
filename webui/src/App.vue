@@ -1,8 +1,8 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
-import { enUS, zhCN } from 'naive-ui'
+import { naiveLocaleOf } from './locales/naive.js'
 import { useNaiveTheme } from './themes'
 import { useServers } from './composables/useServers'
 import { useEditorBus } from './composables/editorBus'
@@ -14,20 +14,38 @@ const { requestNewServer, requestImport, editorOpen, uiLock } = useEditorBus()
 // 顶栏占用态：编辑抽屉或任一整屏/模态界面（设置页/标签管理/导入，见 editorBus.uiLock）
 // 打开时顶栏整体禁用——两层状态在此合并供模板与快捷键统一消费
 const overlayActive = computed(() => editorOpen.value || uiLock.value)
-// naive-ui 内建文案（弹窗按钮/分页等）跟随 i18n 语言（dateZhCN/dateEnUS 暂未用到日期组件，不引入）。
+// naive-ui 内建文案（空下拉「无数据」、弹窗按钮等）跟随 i18n 语言——14 语言全配齐
+//（K24：此前只有 中/英 二选一，其余 12 语言回落中文与界面混排；映射集中收在
+// locales/naive.js，与其余国际化文本同目录）。dateZhCN 等 date 系暂未用到不引入。
 // Input/Select 的默认 placeholder（enUS "Please Input"/"Please Select"、zhCN "请输入"/"请选择"）
 // 清空为 ''：WPF 表单无 Tag 的输入框不显示任何提示文本，web 未提供 placeholderKey 的字段
 // 同样应为空才对齐；有键的字段由 FormField 显式传 :placeholder，不受该默认影响。
 const naiveLocale = computed(() => {
-  const base = locale.value === 'en-US' ? enUS : zhCN
+  const base = naiveLocaleOf(locale.value)
   return {
     ...base,
     Input: { ...base.Input, placeholder: '' },
     Select: { ...base.Select, placeholder: '' },
   }
 })
-const { searchQuery, searching } = useServers()
+const { searchQuery, searching, connected, everConnected } = useServers()
 const searchInput = ref(null)
+
+// ---- 后端失联全屏警告（K17，owner 2026-09-21 决策：取代状态栏 SSE 小字指示）----
+// 后端曾可达（everConnected）后持续失联 ≥3s → 全屏不可关闭警告；恢复立即消失。
+// 两个不误报设计：① exe 冷启动后端未起（从未可达）不弹——列表侧离线空态已有引导；
+// ② 3s 滞回——瞬时抖动（SSE 退避重连窗口内 connected 短暂为 false）不闪全屏。
+const backendLost = ref(false)
+let lostTimer = null
+watch(connected, (ok) => {
+  clearTimeout(lostTimer)
+  if (ok) {
+    backendLost.value = false
+  } else if (everConnected.value) {
+    lostTimer = setTimeout(() => (backendLost.value = true), 3000)
+  }
+})
+onBeforeUnmount(() => clearTimeout(lostTimer))
 
 // Ctrl+F / Cmd+F 全局聚焦搜索框（快捷键仅此一条，无 Ctrl+K）：
 // keydown 于 window（冒泡），preventDefault 让位浏览器默认（如地址栏搜索 / 页内查找栏）；
@@ -213,6 +231,8 @@ function onTopbarDblClick(e) {
               @click="searchInput?.focus()"
             >
               <span class="sb-icon">⌕</span>
+              <!-- K8：组字中的 ↓/↑ 是输入法选词键，不移交焦点（移交会 blur 输入框、
+                   强制中断组字）——与回车处理的 isComposing 守卫同一标准 -->
               <input
                 ref="searchInput"
                 v-model="searchQuery"
@@ -220,8 +240,8 @@ function onTopbarDblClick(e) {
                 type="text"
                 :disabled="overlayActive"
                 :placeholder="t('search.placeholder')"
-                @keydown.down.prevent="handoffTableFocus(1)"
-                @keydown.up.prevent="handoffTableFocus(-1)"
+                @keydown.down.prevent="!$event.isComposing && handoffTableFocus(1)"
+                @keydown.up.prevent="!$event.isComposing && handoffTableFocus(-1)"
               />
               <!-- 常驻占位仅切 visibility（不 v-if）：避免 spinner 出现/消失时输入框宽度跳动 -->
               <span class="sb-spin" :class="{ on: searching }" :title="t('search.searching')"></span>
@@ -272,6 +292,17 @@ function onTopbarDblClick(e) {
             <router-view />
           </div>
         </div>
+        <!-- 后端失联全屏警告（K17）：不可关闭、阻断交互（后端已不可达，任何操作都会
+             失败——阻断比允许点击后逐个报错更诚实）；恢复连接自动消失 -->
+        <Transition name="off-fade">
+          <div v-if="backendLost" class="offline-overlay" role="alert" aria-live="assertive">
+            <div class="off-card">
+              <div class="off-icon">⚠</div>
+              <div class="off-title">{{ t('common.offlineTitle') }}</div>
+              <div class="off-hint">{{ t('common.offlineHint') }}</div>
+            </div>
+          </div>
+        </Transition>
       </n-dialog-provider>
     </n-message-provider>
   </n-config-provider>
@@ -475,5 +506,57 @@ function onTopbarDblClick(e) {
   display: flex;
   min-height: 0;
   min-width: 0; /* 防止内容区宽内容横向撑破外壳 */
+}
+
+/* ---- 后端失联全屏警告（K17）：蒙层 + 居中卡片，阻断交互、恢复自动消失 ---- */
+.offline-overlay {
+  position: fixed;
+  inset: 0;
+  /* 比常规蒙层（--scrim 32%）深一档：失联是全屏级状态，旧数据半透明可见但明确压暗 */
+  background: color-mix(in srgb, #000 55%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000; /* 盖过编辑抽屉(60)与 naive 浮层族——最高层级的全局状态 */
+}
+.off-card {
+  max-width: min(420px, 86vw);
+  padding: 24px 28px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-box);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-overlay);
+  text-align: center;
+}
+.off-icon {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--warning);
+}
+.off-title {
+  margin-top: 10px;
+  font-size: var(--fs-title);
+  font-weight: 600;
+  color: var(--text-1);
+}
+.off-hint {
+  margin-top: 6px;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-3);
+}
+.off-fade-enter-active,
+.off-fade-leave-active {
+  transition: opacity var(--dur-med) ease;
+}
+.off-fade-enter-from,
+.off-fade-leave-to {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .off-fade-enter-active,
+  .off-fade-leave-active {
+    transition: none;
+  }
 }
 </style>

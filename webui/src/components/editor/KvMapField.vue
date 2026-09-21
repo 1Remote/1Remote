@@ -182,7 +182,7 @@ function updateRow(i, k, v) {
 
 .kvm-del:hover:not(:disabled) {
   background: var(--bg-hover);
-  color: var(--danger);
+  color: var(--text-1); /* L2：移除钮 hover 中性（J9/J10 定案同款），危险性由 title 承载 */
 }
 
 .kvm-del:disabled {

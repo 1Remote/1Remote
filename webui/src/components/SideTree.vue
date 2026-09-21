@@ -6,9 +6,9 @@
 // - 数据源根（🗄 名称 · 类型 + 状态点）→ 递归文件夹树；不再渲染服务器叶（列表承担）
 // - 虚拟文件夹：tree-state expansion 键即存在（空文件夹物化，与 WPF BuildView 一致）；
 //   右键菜单 新建/重命名/删除（folderOps 统一实现，列表侧共用）
-// - 节点右侧子服务器计数与列表同口径（E5-1/H38 后统一为递归口径）：数据源根/文件夹
-//   = 该子树全部服务器数（含子文件夹）——与 H38 后「点进去的列表行数/面包屑 N 台」
-//   一致；「全部数据」= 全库服务器总数（各源徽标之和与之相等，H37 矛盾随之消解）
+// - 节点右侧计数（owner 2026-09-21 K2 定案）：数据源根/文件夹 = 该子树全部服务器数
+//   （含子文件夹，递归口径）——与列表文件夹行、面包屑「N 台」同一口径同一函数
+//   （countHolderServers）；「全部数据」= 全库服务器总数（各源徽标之和与之相等）
 // - 树下方「标签」chips（置顶在前）；底部「« 收起边栏」emit update:collapsed
 // - 展开/折叠与拖拽经 /api/ui-state/tree 持久化（防抖 500ms），与 WPF 共用 .tree_view.json；
 //   字典状态收在 useTreeState 共享存储（列表文件夹行/新建文件夹也消费，侧栏收起不丢）
@@ -64,7 +64,8 @@ function scheduleSave() {
 }
 
 async function flushSave() {
-  await persist((m) => {
+  // K11：透传 persist 的落盘成败（重排分支据此判定，不再无条件报成功）
+  return persist((m) => {
     for (const row of rows.value) {
       if (row.kind === 'folder' || row.kind === 'root') m[row.key] = isExpanded(row.key)
     }
@@ -280,12 +281,20 @@ async function applyTreeMove(src, row, zone) {
     const idx = siblings.findIndex((f) => f.path === row.folder.path)
     if (idx < 0) return
     siblings.splice(zone === 'before' ? idx : idx + 1, 0, src.folder)
-    const next = { ...orderMap.value }
+    const prev = orderMap.value
+    const next = { ...prev }
     siblings.forEach((f, i) => {
       next[FOLDER_ID + f.name] = i + 1
     })
     orderMap.value = next
-    await flushSave() // orderMap 随合并基底 PUT 落盘
+    const persistOk = await flushSave() // orderMap 随合并基底 PUT 落盘
+    if (!persistOk) {
+      // K11：落盘失败不再假成功——回滚本地序（与后端一致，刷新前后所见相同），复用
+      // 列表侧重排失败同词条
+      orderMap.value = prev
+      message.error(t('toast.reorderFailed'))
+      return
+    }
     await reload()
     message.success(t('tree.folderReordered'))
   } finally {
@@ -433,7 +442,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
           <span class="count">{{ row.count }}</span>
         </template>
 
-        <!-- 文件夹：📁 名称 + 子树服务器计数（含子文件夹，与列表/面包屑同口径；虚拟文件夹可为 0） -->
+        <!-- 文件夹：📁 名称 + 子树服务器计数（含子文件夹，递归口径见 countHolderServers；与面包屑/文件夹行同数；虚拟文件夹可为 0） -->
         <template v-else>
           <span class="folder-icon">📁</span>
           <span class="label" :title="row.folder.path">{{ row.folder.name }}</span>

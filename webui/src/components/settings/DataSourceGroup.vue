@@ -44,6 +44,14 @@ const { shield, bindModalEsc } = useSettingsEsc()
 
 // ---- 展示辅助 ----
 const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
+// K16：卡片状态点悬停 title 走 i18n（SideTree dsDotTitle 同款，复用状态栏三词条）——
+// 此前 :title="d.status" 直出英文裸枚举，同一颗点在树/状态栏是中文、这里是英文
+const dsDotTitle = (d) => {
+  if (d.status === 'connected') return t('statusbar.dsConnected', { name: d.name })
+  if (d.status === 'reconnecting')
+    return t('statusbar.dsReconnecting', { name: d.name }) + (d.reconnectInfo ? ' · ' + d.reconnectInfo : '')
+  return t('statusbar.dsDisconnected', { name: d.name })
+}
 const typeLabel = (d) => t('settings.d.type.' + (d.type || 'sqlite'))
 const configSummary = (d) => {
   const c = d.config || {}
@@ -344,7 +352,7 @@ bindModalEsc([
          (?) → 团队共享文档（url 照抄 WPF） -->
     <div class="toolbar">
       <span class="add-wrap">
-        <n-button size="small" type="primary" @click="openAdd">{{ t('settings.d.add') }}</n-button>
+        <n-button size="small" type="primary" ghost @click="openAdd">{{ t('settings.d.add') }}</n-button>
         <HelpLink href="https://1remote.github.io/usage/team/team-sharing/" />
       </span>
     </div>
@@ -353,7 +361,7 @@ bindModalEsc([
     <div v-else class="cards">
       <div v-for="d in datasources" :key="d.name" class="ds-card">
         <div class="card-main">
-          <span class="dot" :class="dotClass(d.status)" :title="d.status"></span>
+          <span class="dot" :class="dotClass(d.status)" :title="dsDotTitle(d)"></span>
           <span class="ds-name" :title="d.name">{{ d.name }}</span>
           <span class="type-badge">{{ typeLabel(d) }}</span>
           <span v-if="d.writable === false" class="ro-badge">{{ t('settings.d.readOnly') }}</span>
@@ -418,7 +426,8 @@ bindModalEsc([
           </div>
         </div>
         <div class="f-row">
-          <label>{{ t('settings.d.name') }}</label>
+          <!-- K9：必填星标（与凭据库「名称 *」同语言）；sqlite 名称可缺省（按路径文件名推导） -->
+          <label>{{ t('settings.d.name') }}<template v-if="addForm.type !== 'sqlite'"> *</template></label>
           <div>
             <n-input
               size="small"
@@ -431,7 +440,7 @@ bindModalEsc([
           </div>
         </div>
         <div v-if="addForm.type === 'sqlite'" class="f-row">
-          <label>{{ t('settings.d.f.path') }}</label>
+          <label>{{ t('settings.d.f.path') }} *</label>
           <!-- 路径 + "浏览…"（⑱A：WPF SqliteSettingView Select 按钮的 web 平价） -->
           <div class="path-wrap">
             <n-input size="small" v-model:value="addForm.path" :input-props="{ spellcheck: false }" />
@@ -442,7 +451,7 @@ bindModalEsc([
         </div>
         <template v-else>
           <div class="f-row">
-            <label>{{ t('settings.d.f.host') }}</label>
+            <label>{{ t('settings.d.f.host') }} *</label>
             <n-input size="small" v-model:value="addForm.host" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
@@ -450,15 +459,15 @@ bindModalEsc([
             <n-input size="small" v-model:value="addForm.port" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.database') }}</label>
+            <label>{{ t('settings.d.f.database') }} *</label>
             <n-input size="small" v-model:value="addForm.databaseName" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.user') }}</label>
+            <label>{{ t('settings.d.f.user') }} *</label>
             <n-input size="small" v-model:value="addForm.userName" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.password') }}</label>
+            <label>{{ t('settings.d.f.password') }} *</label>
             <n-input
               size="small"
               type="password"
@@ -484,7 +493,7 @@ bindModalEsc([
             {{ t('settings.d.test') }}
           </n-button>
           <n-button size="small" @click="adding = false">{{ t('editor.cancel') }}</n-button>
-          <n-button size="small" type="primary" :disabled="!addValid" :loading="addSaving" @click="addSave">
+          <n-button size="small" type="primary" ghost :disabled="!addValid" :loading="addSaving" @click="addSave">
             {{ t('settings.save') }}
           </n-button>
         </div>
@@ -502,9 +511,9 @@ bindModalEsc([
       aria-modal="true"
     >
       <div class="form" @keydown="onFormEnter($event, editSave)">
-        <!-- 名称行：WPF 弹窗 Name 编辑平价（改名走 PUT body.name） -->
+        <!-- 名称行：WPF 弹窗 Name 编辑平价（改名走 PUT body.name）；编辑态名称恒必填 -->
         <div class="f-row">
-          <label>{{ t('settings.d.name') }}</label>
+          <label>{{ t('settings.d.name') }} *</label>
           <div>
             <n-input
               size="small"
@@ -516,7 +525,7 @@ bindModalEsc([
           </div>
         </div>
         <div v-if="editing?.type === 'sqlite'" class="f-row">
-          <label>{{ t('settings.d.f.path') }}</label>
+          <label>{{ t('settings.d.f.path') }} *</label>
           <!-- 路径 + "浏览…"（⑱A，同添加模态） -->
           <div class="path-wrap">
             <n-input size="small" v-model:value="editForm.path" :input-props="{ spellcheck: false }" />
@@ -527,7 +536,7 @@ bindModalEsc([
         </div>
         <template v-else>
           <div class="f-row">
-            <label>{{ t('settings.d.f.host') }}</label>
+            <label>{{ t('settings.d.f.host') }} *</label>
             <n-input size="small" v-model:value="editForm.host" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
@@ -535,11 +544,11 @@ bindModalEsc([
             <n-input size="small" v-model:value="editForm.port" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.database') }}</label>
+            <label>{{ t('settings.d.f.database') }} *</label>
             <n-input size="small" v-model:value="editForm.databaseName" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.user') }}</label>
+            <label>{{ t('settings.d.f.user') }} *</label>
             <n-input size="small" v-model:value="editForm.userName" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
@@ -573,7 +582,7 @@ bindModalEsc([
             {{ t('settings.d.test') }}
           </n-button>
           <n-button size="small" @click="editing = null">{{ t('editor.cancel') }}</n-button>
-          <n-button size="small" type="primary" :disabled="!editValid" :loading="editSaving" @click="editSave">
+          <n-button size="small" type="primary" ghost :disabled="!editValid" :loading="editSaving" @click="editSave">
             {{ t('settings.save') }}
           </n-button>
         </div>

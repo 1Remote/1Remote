@@ -78,6 +78,7 @@ const MAPPING = {
   'settings.f.tabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow':
     'Set focus to local desktop when the mouse is moved out of RDP desktop',
   'settings.f.copyPortWhenCopyAddress': 'Copy the port along with the address when copying',
+  'settings.f.appStartAutomatically': 'Run automatically at OS startup',
   'settings.f.doNotCheckNewVersion': 'Do not check for new version',
   'settings.o.close.exit': 'Exit',
   'settings.o.close.minimize': 'Minimize to system tray',
@@ -123,7 +124,6 @@ const MAPPING = {
   'editor.f.EnableRedirectDrivesPlugIn': 'Drives plug in later',
   'editor.f.EnableSmartCardsAndWinHello': 'server_editor_advantage_smart_cards',
   'editor.f.ExePath': 'Exe path',
-  'editor.f.GatewayHostName': 'server_editor_gateway_server_host_name',
   'editor.f.GatewayLogonMethod': 'server_editor_gateway_logon_method',
   'editor.f.GatewayMode': 'server_editor_gateway_mode',
   'editor.f.GatewayPassword': 'Password',
@@ -322,6 +322,17 @@ const WRAP = {
 // "非注释 CJK=0"门禁（可读形式见上一行注释）。
 const OVERRIDES = {
   'zh-TW': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': '搜尋失敗，請重試',
+    'tree.folderBusyHint': '資料夾操作進行中，請稍候',
+    'common.offlineTitle': '與後端服務的連線已中斷',
+    'common.offlineHint': '畫面顯示的可能是過期資料；連線恢復後自動繼續。請確認 1Remote 應用程式正在執行',
+    'batch.exportConfirm': '匯出的 JSON 檔案包含明文密碼（未加密），請妥善保管。確定匯出 {n} 台伺服器嗎？',
+    'editor.headProtocolTip': '連線協定。切換將保留通用欄位（名稱、位址、登入資訊等），協定專屬設定重設為預設',
+    'tagm.empty': '此資料來源尚無標籤。編輯伺服器時，可在「標籤」欄位中新增',
+    'settings.r.addTitle': '新增 Runner',
+    'settings.r.nameRequired': '名稱不能為空',
+    'editor.f.GatewayHostName': '閘道伺服器位址',
     // batch12 Task C #1：保存被攔截的 warning toast（可讀形式：有 {n} 項需要修正，請檢查表單頂部提示）
     'editor.fixBeforeSave':
       '\u6709 {n} \u9805\u9700\u8981\u4fee\u6b63\uff0c\u8acb\u6aa2\u67e5\u8868\u55ae\u9802\u90e8\u63d0\u793a',
@@ -496,10 +507,6 @@ const OVERRIDES = {
       '\u7121\u6cd5\u9023\u7dda 1Remote \u5f8c\u7aef\u670d\u52d9\uff0c\u8acb\u78ba\u8a8d\u61c9\u7528\u7a0b\u5f0f\u6b63\u5728\u57f7\u884c\uff1b\u6062\u5fa9\u5f8c\u5c07\u81ea\u52d5\u8f09\u5165',
     'statusbar.serverCount': '{n} \u53f0\u4f3a\u670d\u5668',
     'statusbar.tagCount': '{m} \u500b\u6a19\u7c64',
-    'statusbar.sseOk': 'SSE \u5df2\u9023\u7dda',
-    'statusbar.sseOff': 'SSE \u672a\u9023\u7dda',
-    'statusbar.sseTip':
-      '\u6307\u793a\u5f8c\u7aef\u53ef\u9023\u6027\uff08\u6700\u8fd1\u4e00\u6b21\u64f7\u53d6/\u8f2a\u8a62\u7d50\u679c\uff0c\u4e0d\u4ee3\u8868\u9023\u7dda\u5de5\u4f5c\u968e\u6bb5\u72c0\u614b\uff09',
     'statusbar.dsMore': '\u5c1a\u6709 {n} \u500b\u8cc7\u6599\u4f86\u6e90\u672a\u986f\u793a',
     'statusbar.langSwitch': '\u5207\u63db\u8a9e\u8a00',
     'toast.connectStarted': '\u5df2\u958b\u59cb\u9023\u7dda\uff1a{name}',
@@ -634,8 +641,6 @@ const OVERRIDES = {
     'editor.title.create': '\u65b0\u589e {protocol}',
     'editor.title.edit': '\u7de8\u8f2f\uff1a{name}',
     'editor.title.duplicate': '\u8907\u88fd\u81ea\uff1a{name}',
-    'editor.headProtocolTip':
-      '\u9023\u7dda\u5354\u5b9a\uff08\u5207\u63db\u5c07\u6309\u516c\u5171\u57fa\u5e95\u4fdd\u7559\u6b04\u4f4d\uff09',
     'editor.headDsTip': '\u4f3a\u670d\u5668\u6240\u5c6c\u8cc7\u6599\u4f86\u6e90',
     'editor.headDsLabel': '\u8cc7\u6599\u4f86\u6e90',
     'editor.dataSourceLabel': '\u8cc7\u6599\u4f86\u6e90',
@@ -724,6 +729,20 @@ const OVERRIDES = {
   },
   // -- cs-CZ（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'cs-CZ': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'Vyhledávání se nezdařilo, zkuste to znovu',
+    'tree.folderBusyHint': 'Probíhá operace se složkou, čekejte prosím',
+    'common.offlineTitle': 'Spojení se serverovou službou bylo ztraceno',
+    'common.offlineHint':
+      'Zobrazená data mohou být zastaralá; po obnovení spojení upozornění zmizí. Ověřte, že aplikace 1Remote běží.',
+    'batch.exportConfirm':
+      'Exportovaný JSON obsahuje nešifrovaná hesla v prostém textu. Uložte jej bezpečně. Exportovat {n} serverů?',
+    'editor.headProtocolTip':
+      'Protokol připojení (při přepnutí zůstanou společná pole jako název, adresa či přihlašovací údaje)',
+    'tagm.empty': 'V tomto zdroji dat nejsou žádné štítky. Přidáte je v poli Štítky při úpravě serveru.',
+    'settings.r.addTitle': 'Přidat Runner',
+    'settings.r.nameRequired': 'Název nesmí být prázdný',
+    'editor.f.GatewayHostName': 'Adresa serveru brány',
     // batch12 Task C #1/#2：保存攔截 toast / 複製後綴
     'editor.fixBeforeSave': 'Uložení zablokováno: opravte {n} položku(y) — viz upozornění v horní části formuláře',
     'editor.copySuffix': '(kopie)',
@@ -838,9 +857,6 @@ const OVERRIDES = {
       'Nelze se spojit s backendem 1Remote. Ověřte, že aplikace běží; tato stránka se obnoví automaticky.',
     'statusbar.serverCount': '{n} server | {n} servery | {n} serverů',
     'statusbar.tagCount': '{m} štítek | {m} štítky | {m} štítků',
-    'statusbar.sseOk': 'SSE připojeno',
-    'statusbar.sseOff': 'SSE odpojeno',
-    'statusbar.sseTip': 'Ukazuje dostupnost backendu (výsledek posledního dotazu, nikoli stav relací)',
     'statusbar.dsMore': '{n} dalších zdrojů dat není zobrazeno',
     'statusbar.langSwitch': 'Přepnout jazyk',
     'toast.connectStarted': 'Připojování zahájeno: {name}',
@@ -1033,6 +1049,21 @@ const OVERRIDES = {
   },
   // -- de-DE（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'de-DE': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'Suche fehlgeschlagen. Bitte erneut versuchen',
+    'tree.folderBusyHint': 'Eine Ordneroperation läuft. Bitte warten',
+    'common.offlineTitle': 'Verbindung zum Backend-Dienst verloren',
+    'common.offlineHint':
+      'Die angezeigten Daten können veraltet sein; der Hinweis verschwindet automatisch nach Wiederherstellung der Verbindung. Stellen Sie sicher, dass die 1Remote-App ausgeführt wird.',
+    'batch.exportConfirm':
+      'Die exportierte JSON-Datei enthält unverschlüsselte Passwörter im Klartext. Bewahren Sie sie sicher auf. {n} Server exportieren?',
+    'editor.headProtocolTip':
+      'Verbindungsprotokoll (beim Wechsel bleiben gemeinsame Felder wie Name, Adresse und Anmeldedaten erhalten)',
+    'tagm.empty':
+      'Keine Tags in dieser Datenquelle. Tags können beim Bearbeiten eines Servers im Feld Tags hinzugefügt werden.',
+    'settings.r.addTitle': 'Runner hinzufügen',
+    'settings.r.nameRequired': 'Der Name darf nicht leer sein',
+    'editor.f.GatewayHostName': 'Gateway-Serveradresse',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave':
       'Speichern blockiert: {n} Punkte müssen korrigiert werden — siehe Hinweis am oberen Rand des Formulars',
@@ -1149,10 +1180,6 @@ const OVERRIDES = {
       'Das 1Remote-Backend ist nicht erreichbar. Stellen Sie sicher, dass die App läuft; diese Seite stellt sich automatisch wieder her.',
     'statusbar.serverCount': '{n} Server',
     'statusbar.tagCount': '{m} Tag | {m} Tags',
-    'statusbar.sseOk': 'SSE verbunden',
-    'statusbar.sseOff': 'SSE getrennt',
-    'statusbar.sseTip':
-      'Zeigt die Erreichbarkeit des Backends an (Ergebnis der letzten Abfrage, nicht der Sitzungsstatus)',
     'statusbar.dsMore': '{n} weitere Datenquellen werden nicht angezeigt',
     'statusbar.langSwitch': 'Sprache wechseln',
     'toast.connectStarted': 'Verbindung gestartet: {name}',
@@ -1352,6 +1379,20 @@ const OVERRIDES = {
   },
   // -- es-AR（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'es-AR': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'La búsqueda falló. Inténtelo de nuevo',
+    'tree.folderBusyHint': 'Hay una operación de carpeta en curso. Espere',
+    'common.offlineTitle': 'Se perdió la conexión con el servicio backend',
+    'common.offlineHint':
+      'Los datos mostrados pueden estar desactualizados; el aviso desaparece automáticamente al restaurarse la conexión. Compruebe que la aplicación 1Remote se está ejecutando.',
+    'batch.exportConfirm':
+      'El JSON exportado contiene contraseñas en texto sin cifrar. Consérvelo en un lugar seguro. ¿Exportar {n} servidores?',
+    'editor.headProtocolTip':
+      'Protocolo de conexión (al cambiar se conservan los campos comunes: nombre, dirección, credenciales, etc.)',
+    'tagm.empty': 'No hay etiquetas en esta fuente de datos. Añádalas en el campo Etiquetas al editar un servidor.',
+    'settings.r.addTitle': 'Añadir Runner',
+    'settings.r.nameRequired': 'El nombre no puede estar vacío',
+    'editor.f.GatewayHostName': 'Dirección del servidor de puerta de enlace',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave':
       'Guardado bloqueado: hay que corregir {n} elemento(s) — vea el aviso en la parte superior del formulario',
@@ -1468,10 +1509,6 @@ const OVERRIDES = {
       'No se puede conectar al backend de 1Remote. Verificá que la app esté ejecutándose; esta página se recupera automáticamente.',
     'statusbar.serverCount': '{n} servidor | {n} servidores',
     'statusbar.tagCount': '{m} etiqueta | {m} etiquetas',
-    'statusbar.sseOk': 'SSE conectado',
-    'statusbar.sseOff': 'SSE desconectado',
-    'statusbar.sseTip':
-      'Indica la disponibilidad del backend (resultado de la última consulta, no el estado de las sesiones)',
     'statusbar.dsMore': '{n} fuentes de datos más no mostradas',
     'statusbar.langSwitch': 'Cambiar idioma',
     'toast.connectStarted': 'Conexión iniciada: {name}',
@@ -1668,6 +1705,21 @@ const OVERRIDES = {
   },
   // -- fr-FR（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'fr-FR': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'Échec de la recherche. Veuillez réessayer',
+    'tree.folderBusyHint': 'Une opération de dossier est en cours. Veuillez patienter',
+    'common.offlineTitle': 'Connexion au service backend perdue',
+    'common.offlineHint':
+      "Les données affichées peuvent être obsolètes ; l'avertissement disparaît automatiquement une fois la connexion rétablie. Vérifiez que l'application 1Remote est en cours d'exécution.",
+    'batch.exportConfirm':
+      'Le JSON exporté contient des mots de passe en clair non chiffrés. Conservez-le en lieu sûr. Exporter {n} serveurs ?',
+    'editor.headProtocolTip':
+      'Protocole de connexion (le changement conserve les champs communs : nom, adresse, identifiants, etc.)',
+    'tagm.empty':
+      'Aucun tag dans cette source de données. Ajoutez-en dans le champ Tags lors de la modification d’un serveur.',
+    'settings.r.addTitle': 'Ajouter un Runner',
+    'settings.r.nameRequired': 'Le nom ne peut pas être vide',
+    'editor.f.GatewayHostName': 'Adresse du serveur de passerelle',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave': 'Enregistrement bloqué : {n} élément(s) à corriger — voir le bandeau en haut du formulaire',
     'editor.copySuffix': '(copie)',
@@ -1782,9 +1834,6 @@ const OVERRIDES = {
       "Impossible de joindre le backend 1Remote. Vérifiez que l'application est en cours d'exécution ; cette page se rétablit automatiquement.",
     'statusbar.serverCount': '{n} serveur | {n} serveurs',
     'statusbar.tagCount': '{m} mot clé | {m} mots clés',
-    'statusbar.sseOk': 'SSE connecté',
-    'statusbar.sseOff': 'SSE déconnecté',
-    'statusbar.sseTip': "Indique la joignabilité du backend (résultat du dernier fetch/poll, pas l'état des sessions)",
     'statusbar.dsMore': '{n} autres sources de données non affichées',
     'statusbar.langSwitch': 'Changer de langue',
     'toast.connectStarted': 'Connexion lancée : {name}',
@@ -1985,6 +2034,20 @@ const OVERRIDES = {
   },
   // -- gl-ES（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'gl-ES': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'Fallou a busca. Ténteo de novo',
+    'tree.folderBusyHint': 'Hai unha operación de cartafol en curso. Agarde',
+    'common.offlineTitle': 'Perdeuse a conexión co servizo backend',
+    'common.offlineHint':
+      'Os datos amosados poden estar desactualizados; o aviso desaparecerá automaticamente ao restaurarse a conexión. Comprobe que a aplicación 1Remote está en execución.',
+    'batch.exportConfirm':
+      'O JSON exportado contén contrasinais en texto simple sen cifrar. Gárdeo nun lugar seguro. Exportar {n} servidores?',
+    'editor.headProtocolTip':
+      'Protocolo de conexión (ao cambiar consérvanse os campos comúns: nome, enderezo, credenciais etc.)',
+    'tagm.empty': 'Non hai etiquetas nesta fonte de datos. Engádeas no campo Etiquetas ao editar un servidor.',
+    'settings.r.addTitle': 'Engadir Runner',
+    'settings.r.nameRequired': 'O nome non pode estar baleiro',
+    'editor.f.GatewayHostName': 'Enderezo do servidor de pasarela',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave':
       'Gardado bloqueado: hai que corrixir {n} elemento(s) — vexa o aviso na parte superior do formulario',
@@ -2101,9 +2164,6 @@ const OVERRIDES = {
       'Non se pode conectar co backend de 1Remote. Comproba que a aplicación está en execución; esta páxina recupérase automaticamente.',
     'statusbar.serverCount': '{n} servidor | {n} servidores',
     'statusbar.tagCount': '{m} etiqueta | {m} etiquetas',
-    'statusbar.sseOk': 'SSE conectado',
-    'statusbar.sseOff': 'SSE desconectado',
-    'statusbar.sseTip': 'Indica a dispoñibilidade do backend (resultado da última consulta, non o estado das sesións)',
     'statusbar.dsMore': '{n} fontes de datos máis sen mostrar',
     'statusbar.langSwitch': 'Cambiar de idioma',
     'toast.connectStarted': 'Conexión iniciada: {name}',
@@ -2299,6 +2359,20 @@ const OVERRIDES = {
   },
   // -- it-IT（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'it-IT': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'Ricerca non riuscita. Riprovare',
+    'tree.folderBusyHint': 'Operazione su cartella in corso. Attendere',
+    'common.offlineTitle': 'Connessione al servizio backend persa',
+    'common.offlineHint':
+      "I dati mostrati potrebbero non essere aggiornati; l'avviso scompare automaticamente al ripristino della connessione. Verificare che l'app 1Remote sia in esecuzione.",
+    'batch.exportConfirm':
+      'Il JSON esportato contiene password in chiaro non cifrate. Conservalo in modo sicuro. Esportare {n} server?',
+    'editor.headProtocolTip':
+      'Protocollo di connessione (il passaggio conserva i campi comuni: nome, indirizzo, credenziali, ecc.)',
+    'tagm.empty': 'Nessun tag in questa origine dati. Aggiungine nel campo Tag quando modifichi un server.',
+    'settings.r.addTitle': 'Aggiungi Runner',
+    'settings.r.nameRequired': 'Il nome non può essere vuoto',
+    'editor.f.GatewayHostName': 'Indirizzo del server gateway',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave': 'Salvataggio bloccato: correggere {n} elemento/i — vedi l’avviso in alto nel modulo',
     'editor.copySuffix': '(copia)',
@@ -2414,10 +2488,6 @@ const OVERRIDES = {
       "Impossibile raggiungere il backend di 1Remote. Assicurati che l'app sia in esecuzione; questa pagina si ripristina automaticamente.",
     'statusbar.serverCount': '{n} server',
     'statusbar.tagCount': '{m} tag',
-    'statusbar.sseOk': 'SSE connesso',
-    'statusbar.sseOff': 'SSE disconnesso',
-    'statusbar.sseTip':
-      "Indica la raggiungibilità del backend (risultato dell'ultimo fetch/poll, non lo stato delle sessioni)",
     'statusbar.dsMore': '{n} altre origini dati non mostrate',
     'statusbar.langSwitch': 'Cambia lingua',
     'toast.connectStarted': 'Connessione avviata: {name}',
@@ -2615,6 +2685,20 @@ const OVERRIDES = {
   },
   // -- pl-PL（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'pl-PL': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'Wyszukiwanie nie powiodło się. Spróbuj ponownie',
+    'tree.folderBusyHint': 'Trwa operacja na folderze. Czekaj',
+    'common.offlineTitle': 'Utracono połączenie z usługą zaplecza',
+    'common.offlineHint':
+      'Wyświetlane dane mogą być nieaktualne; powiadomienie zniknie automatycznie po przywróceniu połączenia. Sprawdź, czy aplikacja 1Remote jest uruchomiona.',
+    'batch.exportConfirm':
+      'Wyeksportowany plik JSON zawiera niezaszyfrowane hasła w postaci jawnej. Przechowuj go bezpiecznie. Wyeksportować {n} serwerów?',
+    'editor.headProtocolTip':
+      'Protokół połączenia (po zmianie zachowywane są wspólne pola: nazwa, adres, dane logowania itd.)',
+    'tagm.empty': 'Brak tagów w tym źródle danych. Dodasz je w polu Tagi podczas edycji serwera.',
+    'settings.r.addTitle': 'Dodaj Runner',
+    'settings.r.nameRequired': 'Nazwa nie może być pusta',
+    'editor.f.GatewayHostName': 'Adres serwera bramy',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave': 'Zapis zablokowany: popraw {n} element(y) — zobacz baner u góry formularza',
     'editor.copySuffix': '(kopia)',
@@ -2730,9 +2814,6 @@ const OVERRIDES = {
       'Nie można połączyć się z backendem 1Remote. Upewnij się, że aplikacja jest uruchomiona; strona przywróci się automatycznie.',
     'statusbar.serverCount': '{n} serwer | {n} serwery | {n} serwerów',
     'statusbar.tagCount': '{m} tag | {m} tagi | {m} tagów',
-    'statusbar.sseOk': 'SSE połączony',
-    'statusbar.sseOff': 'SSE rozłączony',
-    'statusbar.sseTip': 'Wskazuje osiągalność backendu (wynik ostatniego zapytania, nie stan sesji połączeń)',
     'statusbar.dsMore': '{n} kolejnych źródeł danych nie jest pokazanych',
     'statusbar.langSwitch': 'Zmień język',
     'toast.connectStarted': 'Rozpoczęto połączenie: {name}',
@@ -2927,6 +3008,20 @@ const OVERRIDES = {
   },
   // -- pt-BR（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'pt-BR': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'A busca falhou. Tente novamente',
+    'tree.folderBusyHint': 'Uma operação de pasta está em andamento. Aguarde',
+    'common.offlineTitle': 'Conexão com o serviço de backend perdida',
+    'common.offlineHint':
+      'Os dados exibidos podem estar desatualizados; o aviso desaparece automaticamente quando a conexão é restaurada. Verifique se o aplicativo 1Remote está em execução.',
+    'batch.exportConfirm':
+      'O JSON exportado contém senhas em texto sem criptografia. Guarde-o com segurança. Exportar {n} servidores?',
+    'editor.headProtocolTip':
+      'Protocolo de conexão (a troca mantém os campos comuns: nome, endereço, credenciais etc.)',
+    'tagm.empty': 'Nenhuma tag nesta fonte de dados. Adicione tags no campo Tags ao editar um servidor.',
+    'settings.r.addTitle': 'Adicionar Runner',
+    'settings.r.nameRequired': 'O nome não pode ficar vazio',
+    'editor.f.GatewayHostName': 'Endereço do servidor de gateway',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave': 'Salvamento bloqueado: corrija {n} item(ns) — veja o aviso no topo do formulário',
     'editor.copySuffix': '(cópia)',
@@ -3041,9 +3136,6 @@ const OVERRIDES = {
       'Não é possível acessar o backend do 1Remote. Verifique se o aplicativo está em execução; esta página se recupera automaticamente.',
     'statusbar.serverCount': '{n} servidor | {n} servidores',
     'statusbar.tagCount': '{m} marcação | {m} marcações',
-    'statusbar.sseOk': 'SSE conectado',
-    'statusbar.sseOff': 'SSE desconectado',
-    'statusbar.sseTip': 'Indica a acessibilidade do backend (resultado da última consulta, não o estado das sessões)',
     'statusbar.dsMore': '{n} outras fontes de dados não exibidas',
     'statusbar.langSwitch': 'Trocar idioma',
     'toast.connectStarted': 'Conexão iniciada: {name}',
@@ -3240,6 +3332,20 @@ const OVERRIDES = {
   },
   // -- pt-PT（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'pt-PT': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'A pesquisa falhou. Tente novamente',
+    'tree.folderBusyHint': 'Uma operação de pasta está em curso. Aguarde',
+    'common.offlineTitle': 'Ligação ao serviço de backend perdida',
+    'common.offlineHint':
+      'Os dados apresentados podem estar desatualizados; o aviso desaparece automaticamente quando a ligação é restaurada. Verifique se a aplicação 1Remote está em execução.',
+    'batch.exportConfirm':
+      'O JSON exportado contém palavras-passe em texto simples não cifradas. Guarde-o em segurança. Exportar {n} servidores?',
+    'editor.headProtocolTip':
+      'Protocolo de ligação (a troca mantém os campos comuns: nome, endereço, credenciais, etc.)',
+    'tagm.empty': 'Sem etiquetas nesta fonte de dados. Adicione etiquetas no campo Etiquetas ao editar um servidor.',
+    'settings.r.addTitle': 'Adicionar Runner',
+    'settings.r.nameRequired': 'O nome não pode estar vazio',
+    'editor.f.GatewayHostName': 'Endereço do servidor gateway',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave': 'Gravação bloqueada: corrija {n} item(ns) — veja o aviso no topo do formulário',
     'editor.copySuffix': '(cópia)',
@@ -3354,9 +3460,6 @@ const OVERRIDES = {
       'Não é possível contactar o backend do 1Remote. Confirme que a aplicação está a correr; esta página recupera automaticamente.',
     'statusbar.serverCount': '{n} servidor | {n} servidores',
     'statusbar.tagCount': '{m} etiqueta | {m} etiquetas',
-    'statusbar.sseOk': 'SSE ligado',
-    'statusbar.sseOff': 'SSE desligado',
-    'statusbar.sseTip': 'Indica a acessibilidade do backend (resultado da última consulta, não o estado das sessões)',
     'statusbar.dsMore': '{n} outras fontes de dados não apresentadas',
     'statusbar.langSwitch': 'Mudar idioma',
     'toast.connectStarted': 'Ligação iniciada: {name}',
@@ -3553,6 +3656,20 @@ const OVERRIDES = {
   },
   // -- ru-RU（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'ru-RU': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': 'Поиск не выполнен. Повторите попытку',
+    'tree.folderBusyHint': 'Выполняется операция с папкой. Подождите',
+    'common.offlineTitle': 'Потеряна связь со службой сервера',
+    'common.offlineHint':
+      'Показанные данные могут быть устаревшими; уведомление исчезнет автоматически после восстановления связи. Убедитесь, что приложение 1Remote запущено.',
+    'batch.exportConfirm':
+      'Экспортированный JSON содержит незашифрованные пароли в открытом виде. Храните его в надёжном месте. Экспортировать серверов: {n}?',
+    'editor.headProtocolTip':
+      'Протокол подключения (при смене сохраняются общие поля: имя, адрес, учётные данные и т. д.)',
+    'tagm.empty': 'В этом источнике данных нет тегов. Добавляйте их в поле «Теги» при редактировании сервера.',
+    'settings.r.addTitle': 'Добавить Runner',
+    'settings.r.nameRequired': 'Имя не может быть пустым',
+    'editor.f.GatewayHostName': 'Адрес сервера шлюза',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀
     'editor.fixBeforeSave': 'Сохранение заблокировано: исправьте {n} пункт(ов) — см. предупреждение вверху формы',
     'editor.copySuffix': '(копия)',
@@ -3668,10 +3785,6 @@ const OVERRIDES = {
       'Не удается связаться с бэкендом 1Remote. Убедитесь, что приложение запущено; страница восстановится автоматически.',
     'statusbar.serverCount': '{n} сервер | {n} сервера | {n} серверов',
     'statusbar.tagCount': '{m} тег | {m} тега | {m} тегов',
-    'statusbar.sseOk': 'SSE подключен',
-    'statusbar.sseOff': 'SSE отключен',
-    'statusbar.sseTip':
-      'Указывает на доступность бэкенда (результат последнего запроса/опроса, а не состояние сеанса подключения)',
     'statusbar.dsMore': 'Еще {n} источников данных не отображается',
     'statusbar.langSwitch': 'Сменить язык',
     'toast.connectStarted': 'Подключение запущено: {name}',
@@ -3868,6 +3981,20 @@ const OVERRIDES = {
   },
   // -- ja-JP（batch8 Task B：web 专有键人工翻译，术语与该语言 XAML 词条对齐）--
   'ja-JP': {
+    // ---- round6（2026-09-21）：K 系列新增/改写词条 ----
+    'toast.searchFailed': '検索に失敗しました。もう一度お試しください',
+    'tree.folderBusyHint': 'フォルダ操作を実行中です。お待ちください',
+    'common.offlineTitle': 'バックエンドサービスとの接続が切断されました',
+    'common.offlineHint':
+      '表示中のデータは最新でない可能性があります。接続が回復すると自動的に消えます。1Remote アプリが実行中か確認してください。',
+    'batch.exportConfirm':
+      'エクスポートされた JSON には暗号化されていない平文のパスワードが含まれます。厳重に保管してください。{n} 台のサーバーをエクスポートしますか？',
+    'editor.headProtocolTip':
+      '接続プロトコル（切り替えると名前・アドレス・ログイン情報などの共通フィールドが保持されます）',
+    'tagm.empty': 'このデータソースにはタグがありません。サーバー編集時の「タグ」フィールドで追加できます。',
+    'settings.r.addTitle': 'Runner を追加',
+    'settings.r.nameRequired': '名前を入力してください',
+    'editor.f.GatewayHostName': 'ゲートウェイサーバーアドレス',
     // batch12 Task C #1/#2：保存拦截 toast / 复制后缀（可読形式：保存できません：{n} 項目を修正して下さい——フォーム上部の警告を確認 / (コピー)）
     'editor.fixBeforeSave':
       '\u4fdd\u5b58\u3067\u304d\u307e\u305b\u3093\uff1a{n} \u9805\u76ee\u3092\u4fee\u6b63\u3057\u3066\u4e0b\u3055\u3044\u2014\u2014\u30d5\u30a9\u30fc\u30e0\u4e0a\u90e8\u306e\u8b66\u544a\u3092\u78ba\u8a8d',
@@ -4012,10 +4139,6 @@ const OVERRIDES = {
       '1Remote \u306e\u30d0\u30c3\u30af\u30a8\u30f3\u30c9\u306b\u63a5\u7d9a\u3067\u304d\u307e\u305b\u3093\u3002\u30a2\u30d7\u30ea\u304c\u8d77\u52d5\u3057\u3066\u3044\u308b\u304b\u78ba\u8a8d\u3057\u3066\u304f\u3060\u3055\u3044\u3002\u5fa9\u65e7\u3059\u308b\u3068\u81ea\u52d5\u7684\u306b\u518d\u8aad\u307f\u8fbc\u307f\u3055\u308c\u307e\u3059\u3002',
     'statusbar.serverCount': '{n} \u30b5\u30fc\u30d0\u30fc',
     'statusbar.tagCount': '{m} \u30bf\u30b0',
-    'statusbar.sseOk': 'SSE \u63a5\u7d9a\u6e08\u307f',
-    'statusbar.sseOff': 'SSE \u672a\u63a5\u7d9a',
-    'statusbar.sseTip':
-      '\u30d0\u30c3\u30af\u30a8\u30f3\u30c9\u306e\u5230\u9054\u6027\u3092\u793a\u3057\u307e\u3059\uff08\u6700\u5f8c\u306e\u53d6\u5f97/\u30dd\u30fc\u30ea\u30f3\u30b0\u306e\u7d50\u679c\u3067\u3042\u308a\u3001\u63a5\u7d9a\u30bb\u30c3\u30b7\u30e7\u30f3\u306e\u72b6\u614b\u3067\u306f\u3042\u308a\u307e\u305b\u3093\uff09',
     'statusbar.dsMore':
       '\u4ed6 {n} \u500b\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u306f\u975e\u8868\u793a\u3067\u3059',
     'statusbar.langSwitch': '\u8a00\u8a9e\u3092\u5207\u308a\u66ff\u3048\u308b',
@@ -4139,8 +4262,6 @@ const OVERRIDES = {
     'editor.title.create': '\u65b0\u898f {protocol}',
     'editor.title.edit': '\u7de8\u96c6\uff1a{name}',
     'editor.title.duplicate': '\u8907\u88fd\u5143\uff1a{name}',
-    'editor.headProtocolTip':
-      '\u63a5\u7d9a\u30d7\u30ed\u30c8\u30b3\u30eb\uff08\u5207\u308a\u66ff\u3048\u3066\u3082\u5171\u901a\u306e\u57fa\u672c\u9805\u76ee\u306f\u4fdd\u6301\u3055\u308c\u307e\u3059\uff09',
     'editor.headDsTip': '\u30b5\u30fc\u30d0\u30fc\u304c\u5c5e\u3059\u308b\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9',
     'editor.headDsLabel': '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9',
     'editor.dataSourceLabel': '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9',
@@ -4182,8 +4303,6 @@ const OVERRIDES = {
     'cv.autoHide': '{n} \u79d2\u5f8c\u306b\u81ea\u52d5\u7684\u306b\u96a0\u3057\u307e\u3059',
     'cv.loadFailed': '\u8cc7\u683c\u60c5\u5831\u306e\u8aad\u307f\u8fbc\u307f\u306b\u5931\u6557\u3057\u307e\u3057\u305f',
     'tagm.title': '\u30bf\u30b0\u3092\u7ba1\u7406',
-    'tagm.empty':
-      '\u3053\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u306b\u30bf\u30b0\u304c\u3042\u308a\u307e\u305b\u3093',
     'tagm.col.count': '\u30b5\u30fc\u30d0\u30fc',
     'tagm.renamePlaceholder':
       '\u65b0\u3057\u3044\u540d\u524d\u3092\u5165\u529b\u3057\u3066 Enter \u3092\u62bc\u3057\u3066\u304f\u3060\u3055\u3044',

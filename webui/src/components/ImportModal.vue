@@ -161,7 +161,13 @@ function fmtSize(n) {
     :style="{ width: 'min(460px, 92vw)' }"
     role="dialog"
     aria-modal="true"
+    :mask-closable="!importing"
+    :close-on-esc="!importing"
+    :closable="!importing"
   >
+    <!-- K14：导入进行中 Esc / 点遮罩 / 卡片 × 三条用户关闭路径全拦（「取消」按钮已禁用）——
+         进度指示不消失，杜绝「以为已取消换文件重导→后台跑完凭空弹已导入」的重复导入。
+         程序化关闭（成功路径 showBind=false）不受这三属性影响 -->
     <!-- 标题 + 目标行："导入到：ds/文件夹"——folder 空 = 只显示数据源；
          数据源切换实时跟随下拉（文件夹路径是打开时的树选中快照） -->
     <template #header>
@@ -209,7 +215,7 @@ function fmtSize(n) {
     <template #footer>
       <div class="imp-actions">
         <n-button size="small" :disabled="importing" @click="showBind = false">{{ t('editor.cancel') }}</n-button>
-        <n-button size="small" type="primary" :loading="importing" :disabled="!file" @click="doImport">
+        <n-button size="small" type="primary" ghost :loading="importing" :disabled="!file" @click="doImport">
           {{ importing ? t('import.importing') : t('import.button') }}
         </n-button>
       </div>
