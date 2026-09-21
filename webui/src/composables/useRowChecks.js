@@ -17,7 +17,7 @@
  *   cursorId 等纯视觉焦点不属本单元，由调用方在自身 watch 中处理。
  */
 import { computed, ref, watch, watchEffect } from 'vue'
-import { isInSubtreeOf } from './folders'
+import { isInSubtreeOf } from './folders.js'
 
 /**
  * @param {Object} opts

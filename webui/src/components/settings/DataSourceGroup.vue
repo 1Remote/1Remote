@@ -349,7 +349,7 @@ bindModalEsc([
       </span>
     </div>
 
-    <div v-if="!datasources.length" class="empty">{{ t('tree.noDatasources') }}</div>
+    <div v-if="!datasources.length" class="empty">{{ t('tree.noDsHint') }}</div>
     <div v-else class="cards">
       <div v-for="d in datasources" :key="d.name" class="ds-card">
         <div class="card-main">

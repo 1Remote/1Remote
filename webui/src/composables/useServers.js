@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue'
-import { api, subscribeEvents } from '../api'
+import { api, subscribeEvents } from '../api/index.js'
 
 // 批量连接确认阈值（产品决策项）：一次连接超过该台数时前端先弹确认（显示 N 台）
 // 再逐台发起；ServerListView 批量条与 TagManagerModal「连接全部」共用，
@@ -120,7 +120,7 @@ export function useServers() {
 
 // buildTree 定义在 ./folders（物化空文件夹需与键换算纯函数同居，且 node 断言
 // 要求模块无浏览器依赖）；此处转发保持既有 import 路径兼容
-export { buildTree } from './folders'
+export { buildTree } from './folders.js'
 
 /**
  * 组合应用边栏过滤：基础列表 → 标签过滤 → 搜索命中集逐层收窄。

@@ -7,8 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "prettier --write src scripts *.js",
-    "format:check": "prettier --check src scripts *.js"
+    "test": "node --test \"../Tests/WebUI/*.test.mjs\"",
+    "check": "npm run test && npm run format:check && node scripts/convert-locales.mjs --check",
+    "format": "prettier --write src scripts *.js \"../Tests/WebUI/**/*.mjs\"",
+    "format:check": "prettier --check src scripts *.js \"../Tests/WebUI/**/*.mjs\""
   },
   "dependencies": {
     "@vueuse/core": "^14.4.0",

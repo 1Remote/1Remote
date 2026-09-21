@@ -42,3 +42,17 @@ csproj 会把 `webui/dist/**` 复制到输出目录的 `wwwroot/`，根路径 `/
 - dist 不存在时 csproj 通配符匹配 0 项，桌面端 Debug 构建不受影响（仅无静态页可托管）。
 - 排障：Release 运行时页面 404/空白 → webui/dist 未构建（先执行 `npm run build` 再
   `dotnet build`/`dotnet publish`；CI 已在 publish 前自动构建 webui，不会出现此问题）。
+
+## 测试与每日回归
+
+```bash
+npm run test    # 93 条自动化用例（node:test 零依赖：语义/勾选/schema/接线锚点/i18n）
+npm run check   # test + prettier + 14 语言键集平价（每日迭代完成后的最低门禁）
+```
+
+- 用例文件在 **`Tests/WebUI/`**（与 C# 测试同级的 WebUI 测试目录；npm 入口仍在本包，
+  依赖解析经 `Tests/WebUI/helpers.mjs` 定位到本包的 node_modules）。
+- 用例清单、分层说明（L1 逻辑 / L2 组件模型 / L3 源码不变量 / L4 i18n / M 人工）、
+  每日回归流程与人工冒烟清单：**`Tests/WebUI/README.md`**。
+- 既有语义断言入口 `node scripts/semantics-test.mjs`（12 条）保留在 webui/scripts/，
+  内容为 `Tests/WebUI/folders.test.mjs` 的子集。
