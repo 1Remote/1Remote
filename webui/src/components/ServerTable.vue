@@ -369,7 +369,7 @@ function nfDelete() {
   nfMenu.value = null
   if (m?.target?.folderPath) emit('delete-folder', m.target)
 }
-// FolderRow 行内 ✎/🗑 按钮：与右键菜单 重命名/删除 同一目标形状（dsName 定位数据源、
+// FolderRow 行内 ✎/✕ 按钮：与右键菜单 重命名/删除 同一目标形状（dsName 定位数据源、
 // folderPath 定位文件夹本身），经同一 emit 链路由 ServerListView 的 folderOps 执行
 const folderTarget = (f) => ({ dsName: f.dsName, parentPath: f.path, folderPath: f.path })
 

@@ -47,6 +47,15 @@ export function useFolderOps() {
     return holder ? holder.folders.map((f) => f.name) : []
   }
 
+  // ---- 对话框配色统一策略（owner 第三轮反馈：重命名弹窗红色误读 / 删除弹窗橙色惊叹号）----
+  // - 命名输入（新建/重命名）：完全中性——无图标 + positive 用 default 按钮。accent 实心
+  //   positive 在红/橙系强调色主题（如 Wine）下整颗读成红色，被误读为危险操作；
+  // - 删除类确认：无图标 + positive 用 error 红（颜色本身承载危险语义，替代 naive
+  //   dialog.warning 的橙色 ⚠ 图标——图标与红色按钮双重警示反而喧哗）；
+  // - 非破坏性确认（批量连接等）：无图标 + 中性按钮。
+  // naive 的 dialog.create 默认带蓝色 ⓘ 图标（iconRenderMap.default = Info），须显式
+  // showIcon:false；positive 默认渲染 primary 型，须经 positiveButtonProps.type 覆盖。
+
   // 名称输入对话框（naive dialog + NInput 渲染函数）：resolve(名称) | resolve(null)；
   // onPositiveClick 返回 false 保持打开（校验失败就地提示）。
   // 回车=确认走三层冗余（宿主 WebView2 的焦点到达路径存在环境差异，不依赖任何单一环节）：
@@ -92,6 +101,7 @@ export function useFolderOps() {
       window.addEventListener('keydown', onWinEnter, { capture: true })
       dia = dialog.create({
         title,
+        showIcon: false, // 命名输入走中性形态（见上方对话框配色策略）
         content: () =>
           h(NInput, {
             value: name.value,
@@ -106,6 +116,7 @@ export function useFolderOps() {
           }),
         positiveText: t('common.ok'),
         negativeText: t('editor.cancel'),
+        positiveButtonProps: { type: 'default' }, // 中性 OK：accent 实心在红/橙强调色下误读为危险操作
         onPositiveClick: () => submit() || false,
         onNegativeClick: () => settle(null),
         onClose: () => settle(null),
@@ -246,11 +257,13 @@ export function useFolderOps() {
     //（原先复用 deleteFolderConfirm 传 n=0，会显示"其中 0 台服务器…上移一级"的怪句）。
     // autoFocus:false——删除类确认不自动聚焦按钮，Enter 不可误触确认（Esc 仍可取消）
     if (!count) {
-      dialog.warning({
+      dialog.create({
         title: t('tree.deleteFolder'),
         content: t('tree.deleteFolderEmpty', { name }),
+        showIcon: false, // 删除类确认统一形态：无图标 + 红 positive（见文件头配色策略）
         positiveText: t('editor.deleteYes'),
         negativeText: t('editor.cancel'),
+        positiveButtonProps: { type: 'error' },
         autoFocus: false,
         onPositiveClick: () => runDelete(dsName, oldPath, false),
       })
@@ -263,9 +276,10 @@ export function useFolderOps() {
     //（仅删文件夹，内容上移一级）。两个按钮都是执行动作、无取消位（第三轮 G10）——
     // Esc / 遮罩 / 右上 ✕ = 不动作退出，文案（deleteFolderHasServers）显式注明这一点，
     // 防"习惯点非红按钮求取消"的用户误执行删除
-    dialog.warning({
+    dialog.create({
       title: t('tree.deleteFolder'),
       content: t('tree.deleteFolderHasServers', { name, n: count }),
+      showIcon: false, // 删除类确认统一形态：无图标 + 红 positive（见文件头配色策略）
       positiveText: t('tree.deleteWithServers'),
       negativeText: t('tree.deleteKeepContents'),
       positiveButtonProps: { type: 'error' },

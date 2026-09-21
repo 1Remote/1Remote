@@ -179,6 +179,21 @@ export function useNaiveTheme() {
         textColorPressedPrimary: '#FFFFFF',
         textColorFocusPrimary: '#FFFFFF',
         textColorDisabledPrimary: '#FFFFFF',
+        // error 实心按钮（对话框删除确认的 positive）同规则：naive 派生 errorColor 系在
+        // 暗色基底偏亮（dark errorHover 比 errorDefault 更亮，白字 <4.5），亮色基底白字虽过
+        // 但双色不一致——统一收敛到 light --danger 同值 #dc2626 阶梯（白字 4.83/5.74/6.47
+        // 全 AA；hover/pressed 加深与 accent-solid 族同向，白字对比只增不减）。
+        // 文字固定白：dark 基底 baseColor=#000 会派生黑字（同 textColorPrimary 的理由）
+        colorError: '#dc2626',
+        colorHoverError: '#c81e1e',
+        colorPressedError: '#b91c1c',
+        colorFocusError: '#c81e1e',
+        colorDisabledError: '#dc2626',
+        textColorError: '#FFFFFF',
+        textColorHoverError: '#FFFFFF',
+        textColorPressedError: '#FFFFFF',
+        textColorFocusError: '#FFFFFF',
+        textColorDisabledError: '#FFFFFF',
       },
     },
   }))

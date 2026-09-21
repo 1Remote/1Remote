@@ -274,9 +274,12 @@ async function pickSqlitePath(form) {
 
 // ---- 删除：二段确认（409 keepServers 重试）。autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDelete(d) {
-  dialog.warning({
+  dialog.create({
     title: t('settings.d.deleteTitle'),
     content: t('settings.d.deleteConfirm', { name: d.name }),
+    // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
+    showIcon: false,
+    positiveButtonProps: { type: 'error' },
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
     autoFocus: false,
@@ -300,8 +303,11 @@ function onDelete(d) {
 
 // 二段：仍有服务器 → keepServers=true 重试（服务器留在库文件中，重新添加即可找回）
 function confirmKeepServers(d, serverCount) {
-  dialog.warning({
+  dialog.create({
     title: t('settings.d.deleteTitle'),
+    // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
+    showIcon: false,
+    positiveButtonProps: { type: 'error' },
     content:
       t('settings.d.deleteConfirm', { name: d.name }) +
       ' ' +

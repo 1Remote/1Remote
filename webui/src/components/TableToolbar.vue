@@ -70,7 +70,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
       <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export')">⤓ {{ t('batch.export') }}</button>
       <!-- 删除：danger 样式与连接主按钮相区分；确认对话框（含逐台删除进度）由 ServerListView 执行 -->
       <button class="bb-btn bb-danger" :title="t('batch.deleteTitle')" @click="emit('batch-delete')">
-        🗑 {{ t('batch.delete') }}
+        ✕ {{ t('batch.delete') }}
       </button>
       <button class="bb-x" :title="t('batch.clear')" @click="emit('clear-checked')">✕</button>
     </div>

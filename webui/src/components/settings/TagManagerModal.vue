@@ -7,7 +7,7 @@
  *   ds 初值 = 打开时树选中的数据源（「全部数据」回落 Local），模态内可切换（G8：
  *   边栏 chips 计数是全库口径，管理器单库——「全部数据」下不再静默钉死 Local）。
  * - 行操作：📌 置顶/取消（PUT tags/manage，幂等）｜名称｜计数｜✎ 内联重命名（回车确认 →
- *   POST tags/rename，Esc 取消）｜🗑 删除（确认 → DELETE tags/{name}）｜「连接全部」
+ *   POST tags/rename，Esc 取消）｜✕ 删除（确认 → DELETE tags/{name}）｜「连接全部」
  *   （从 useServers 列表按 tags 命中该数据源的服务器，逐个串行 connect——与批量连接同款节流）。
  * - rename/delete 改的是服务器数据：成功后 reload()（useServers）刷新边栏标签区，
  *   并重载本列表（SSE 兜底之外的主动刷新）。
@@ -151,8 +151,11 @@ async function confirmRename() {
 // ---- 删除：确认（计数影响警告）→ DELETE；404=列表过期静默刷新。
 // autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDelete(tg) {
-  dialog.warning({
+  dialog.create({
     title: t('tagm.deleteTitle'),
+    // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
+    showIcon: false,
+    positiveButtonProps: { type: 'error' },
     content: t('tagm.deleteConfirm', { name: tg.name, n: tg.count }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
@@ -183,9 +186,12 @@ function connectAll(tg) {
     return
   }
   if (list.length > BATCH_CONNECT_THRESHOLD) {
-    dialog.warning({
+    dialog.create({
       title: t('batchConnect.confirmTitle'),
       content: t('batchConnect.confirmText', { n: list.length }),
+      // 非破坏性确认：无图标 + 中性按钮（与 ServerListView.onBatchConnect 同款）
+      showIcon: false,
+      positiveButtonProps: { type: 'default' },
       positiveText: t('batch.connect'),
       negativeText: t('editor.cancel'),
       onPositiveClick: () => runConnectAll(list),
@@ -283,7 +289,7 @@ function runConnectAll(list) {
             :title="t('editor.deleteYes')"
             @click="onDelete(tg)"
           >
-            🗑
+            ✕
           </button>
           <button
             class="act connect"

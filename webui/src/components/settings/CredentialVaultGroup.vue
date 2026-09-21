@@ -233,8 +233,11 @@ async function save() {
 // ---- 删除（引用数警告 + 404 静默刷新）。autoFocus:false——删除确认不自动聚焦按钮，
 // Enter 不可误触确认（Esc 仍可取消；naive 默认 autoFocus 会让回车落到 positive 上）----
 function onDelete(c) {
-  dialog.warning({
+  dialog.create({
     title: t('cv.deleteTitle'),
+    // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
+    showIcon: false,
+    positiveButtonProps: { type: 'error' },
     content:
       c.refCount > 0
         ? t('cv.deleteConfirm', { name: c.name }) + ' ' + t('cv.deleteRefWarning', { n: c.refCount })
@@ -373,7 +376,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
                 :title="t('editor.deleteYes')"
                 @click="onDelete(c)"
               >
-                🗑
+                ✕
               </button>
             </span>
           </div>

@@ -227,11 +227,14 @@ async function onBatchConnect(ids) {
   // 批量连接阈值（产品决策项）：超过 BATCH_CONNECT_THRESHOLD 台先弹确认
   //（TagManagerModal「连接全部」同款），防误点一次拉起整屏会话
   if (ids.length > BATCH_CONNECT_THRESHOLD) {
-    dialog.warning({
+    dialog.create({
       title: t('batchConnect.confirmTitle'),
       content: t('batchConnect.confirmText', { n: ids.length }),
+      // 非破坏性确认：无图标 + 中性按钮（删除类才用红 positive，见 folderOps 文件头策略）
+      showIcon: false,
       positiveText: t('batch.connect'),
       negativeText: t('editor.cancel'),
+      positiveButtonProps: { type: 'default' },
       onPositiveClick: () => runBatchConnect(ids),
     })
     return
@@ -356,11 +359,14 @@ function openDuplicate(server) {
 // SSE（已知后端行为），前端兜底 reload 刷新列表。autoFocus:false——删除确认不自动聚焦
 // positive 按钮，Enter 不可误触确认（Esc 仍可取消；naive 默认 autoFocus 会让回车落到按钮上）
 function onDelete(server) {
-  dialog.warning({
+  dialog.create({
     title: t('editor.deleteTitle'),
     content: t('editor.deleteConfirm', { name: server.displayName }),
+    // 删除类确认统一形态：无图标 + 红 positive（替代 warning 橙色惊叹号，folderOps 文件头策略）
+    showIcon: false,
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
+    positiveButtonProps: { type: 'error' },
     autoFocus: false,
     onPositiveClick: async () => {
       try {
@@ -376,18 +382,21 @@ function onDelete(server) {
   })
 }
 
-// ---- 批量删除：批量条「🗑 删除」→ 确认（autoFocus:false 同 onDelete——回车不可误触）→
+// ---- 批量删除：批量条「✕ 删除」→ 确认（autoFocus:false 同 onDelete——回车不可误触）→
 // 逐台串行 DELETE + 进度 toast（loading 句柄原地更新 content）→ reload。
 // 删除后指向已删行的树叶选中态回退；勾选集由 useRowChecks 的数据剔除 watch 自动收敛 ----
 function onBatchDelete(ids) {
   if (!ids?.length) return
   const list = (ids || []).map((id) => servers.value.find((s) => s.id === id)).filter(Boolean)
   if (!list.length) return
-  dialog.warning({
+  dialog.create({
     title: t('batchDelete.confirmTitle'),
     content: t('batchDelete.confirmText', { n: list.length }),
+    // 删除类确认统一形态：无图标 + 红 positive（同 onDelete）
+    showIcon: false,
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
+    positiveButtonProps: { type: 'error' },
     autoFocus: false,
     onPositiveClick: () => runBatchDelete(list),
   })

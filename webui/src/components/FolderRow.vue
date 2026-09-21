@@ -76,7 +76,7 @@ const disabled = () => !props.checkState?.count
       <span v-if="showDs" class="f-ds">{{ folder.dsName }}</span>
     </div>
     <div class="cell cell-count">{{ t('folder.contains', { n: folder.count }) }}</div>
-    <!-- 操作列：与 ServerRow 同款常显小按钮（✎ 重命名 / 🗑 删除），接父级 folderOps；
+    <!-- 操作列：与 ServerRow 同款常显小按钮（✎ 重命名 / ✕ 删除，叉图标与批量删除一致），接父级 folderOps；
          只读数据源禁用（title 说明）。点击不冒泡到行级点击/双击 -->
     <div class="cell cell-act" @click.stop @dblclick.stop>
       <button
@@ -93,7 +93,7 @@ const disabled = () => !props.checkState?.count
         :disabled="!writable"
         @click="emit('delete', folder)"
       >
-        🗑
+        ✕
       </button>
     </div>
   </div>

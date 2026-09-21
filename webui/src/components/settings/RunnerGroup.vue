@@ -246,8 +246,11 @@ function onAddSave(name) {
 // ---- 删除：仅外部运行器；确认 → splice + selectedRunnerName 回退首项（WPF 同款）→ 保存。
 // autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDeleteRunner(r) {
-  dialog.warning({
+  dialog.create({
     title: t('settings.r.deleteTitle'),
+    // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
+    showIcon: false,
+    positiveButtonProps: { type: 'error' },
     content: t('settings.r.deleteConfirm', { name: r.Name }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),

@@ -285,11 +285,15 @@ function requestClose() {
     return
   }
   closing = true
-  dialog.warning({
+  dialog.create({
     title: t('editor.unsavedTitle'),
     content: t('editor.unsavedText'),
+    // 删除类确认统一形态（丢弃编辑同为破坏性）：无图标 + 红 positive，
+    // 见 folderOps 文件头的对话框配色策略
+    showIcon: false,
     positiveText: t('editor.btnDiscard'),
     negativeText: t('editor.btnKeepEditing'),
+    positiveButtonProps: { type: 'error' },
     autoFocus: false, // 与删除类确认同款：positive 是 destructive（丢弃），不自动聚焦——
     // naive 默认聚焦首个可聚焦元素会让 Enter 肌肉记忆直接「丢弃并关闭」（Esc 仍可取消）
     onPositiveClick: () => {
