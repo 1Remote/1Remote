@@ -17,6 +17,7 @@
  *   cursorId 等纯视觉焦点不属本单元，由调用方在自身 watch 中处理。
  */
 import { computed, ref, watch, watchEffect } from 'vue'
+import { isInSubtreeOf } from './folders'
 
 /**
  * @param {Object} opts
@@ -82,11 +83,9 @@ export function useRowChecks({ sorted, servers, folders }) {
 
   // ---- 文件夹行勾选（批量操作含子孙）----
   function folderDescendantIds(f) {
-    const prefix = f.path + '/'
+    // 勾选=全部子孙（isInSubtreeOf 单一语义源；显示语义是 isDirectChildOf——两者有意不同）
     return servers()
-      .filter(
-        (s) => s.dataSourceName === f.dsName && (s.folderPath === f.path || (s.folderPath || '').startsWith(prefix))
-      )
+      .filter((s) => s.dataSourceName === f.dsName && isInSubtreeOf(s.folderPath, f.path))
       .map((s) => s.id)
   }
   // 空文件夹勾选（owner 2026-09-21 第二轮反馈）：无子孙服务器的文件夹复选框此前禁用，

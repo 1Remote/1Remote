@@ -52,7 +52,7 @@ import {
   listDragServer,
   listDragFolder,
 } from '../composables/tableBus'
-import { fullKey, isDescendantPath } from '../composables/folders'
+import { fullKey, isDirectChildOf, isDescendantPath } from '../composables/folders'
 import { naturalIpCompare } from '../utils/compare'
 
 const props = defineProps({
@@ -92,21 +92,15 @@ const filtered = computed(() => {
   if (searchedIds.value != null) return props.servers
   const sel = props.selection
   if (!sel || !sel.dataSourceName) return props.servers // 「全部数据」虚拟根 = 跨库总览（递归，无文件夹行）
-  // 数据源根（folderPath 空）：只列根级服务器——根是导航层（子文件夹以文件夹行呈现，
-  // 其内部台数由各自徽标承载）。H38 的递归摊平曾把子树服务器全部平铺进根视图（owner
-  // 实测反馈：勾选 323 文件夹会把「同级平铺显示的 323 内 8 台」一起勾走，观感即数据
-  // 错位）——恢复根=直接子级。folderPath 两侧归一化（'' 或 undefined）。
-  const fp = (s) => s.folderPath || ''
+  // 资源管理器模型（owner 2026-09-21 第三轮反馈定案）：进入数据源根/文件夹一律只列
+  // **直接子级**服务器——深层服务器由各自所在层的文件夹行/徽标承载，一台服务器不会
+  // 同时出现在父与子两级视图（上一轮的「文件夹视图=含子文件夹全部」递归显示会让
+  // 323/67 里的 2389 同时出现在 323 与 323/67 两级，owner 判为 BUG）。文件夹的
+  // 「包含子孙」语义由勾选承载：勾文件夹复选框 = 级联勾选全部子孙服务器
+  //（useRowChecks.folderDescendantIds，owner H38 注记「选文件夹=勾选所有子级」）。
+  // folderPath 两侧归一化（根选中/根级服务器的 folderPath 可能是 '' 或 undefined）
   const target = sel.folderPath || ''
-  if (!target) return props.servers.filter((s) => s.dataSourceName === sel.dataSourceName && fp(s) === '')
-  // 选中文件夹（spec §3.2）：显示该文件夹下（含子文件夹）全部服务器——等值（直接
-  // 子级）或前缀（深层子孙）都命中。第五轮后续修复：此前漏掉等值分支，直接子级
-  // （folderPath === '323'，不含 '/'）被 startsWith('323/') 排除——「进入 323 只看到
-  // 深层那台、67 里明明有服务器却显示空」即此因。子文件夹仍以文件夹行呈现导航入口。
-  const prefix = target + '/'
-  return props.servers.filter(
-    (s) => s.dataSourceName === sel.dataSourceName && (fp(s) === target || fp(s).startsWith(prefix))
-  )
+  return props.servers.filter((s) => s.dataSourceName === sel.dataSourceName && isDirectChildOf(s.folderPath, target))
 })
 // H9：搜索激活时强制显示文件夹列——搜索是全库递归语义（后端跨数据源/跨文件夹匹配），
 // 子文件夹视图内搜索的结果可能来自任意位置，文件夹列（数据源/路径）是唯一来处标注，

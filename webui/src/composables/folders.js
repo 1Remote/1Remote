@@ -144,6 +144,26 @@ export function countHolderServers(holder) {
   return holder.servers.length + holder.folders.reduce((n, f) => n + countHolderServers(f), 0)
 }
 
+/**
+ * 文件夹视图的显示语义（资源管理器模型，owner 2026-09-21 第三轮反馈定案）——单一来源：
+ * 进入文件夹只列**直接子级**（folderPath 全等），深层由各层文件夹行/徽标承载；
+ * 一台服务器不会同时出现在父与子两级视图（「323/67 的 2389 同时出现在 323 与
+ * 323/67」曾被判 BUG）。ServerTable.filtered 与 scripts/semantics-test.mjs 共用。
+ */
+export const isDirectChildOf = (folderPath, target) => (folderPath || '') === (target || '')
+
+/**
+ * 「包含子孙」语义（勾选/级联/受影响集共用）——等值或前缀（含子文件夹全部）。
+ * useRowChecks.folderDescendantIds、folderOps.affectedServers、semantics-test 共用；
+ * 与 isDirectChildOf 是**两个不同语义**（显示=直接子级 / 勾选=全部子孙），
+ * 防止未来再混用（H38 一轮反复的根源即此二义）。
+ */
+export const isInSubtreeOf = (folderPath, target) => {
+  const fp = folderPath || ''
+  const t = target || ''
+  return fp === t || fp.startsWith(t + '/')
+}
+
 /** 在树模型中按数据源 + 路径段下钻取 holder；不存在返回 null */
 export function holderAt(roots, dsName, folderPath) {
   let node = roots.find((r) => r.name === dsName)
