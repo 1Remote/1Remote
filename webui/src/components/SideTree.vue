@@ -17,6 +17,7 @@ import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { useServers } from '../composables/useServers'
 import { buildTree, countHolderServers, fullKey, holderAt, isDescendantPath } from '../composables/folders'
+import { makeDsDotTitle } from '../utils/dsTitle'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import {
@@ -100,7 +101,8 @@ const rows = computed(() => {
   const out = []
   if (!singleDs.value) {
     // 「全部数据」= 全库服务器总数（与该视图列表同口径；直接用 servers 长度——buildTree
-    // 会丢弃数据源快照错配的孤儿服务器，树内求和会把它们漏计）
+    // 会丢弃数据源快照错配的孤儿服务器，树内求和会把它们漏计。注意：存在孤儿时
+    // 「全部数据 ≠ 各源徽标之和」（孤儿行只在全部数据视图可见），无孤儿时两者相等）
     out.push({ kind: 'all', key: 'all', depth: 0, count: servers.value.length })
     if (!allOpen.value) return out
   }
@@ -374,14 +376,9 @@ function ctxDelete() {
 
 // ---- 展示辅助
 const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
-// H31：树根状态点悬停 title 走 i18n（复用底部状态栏三词条，含数据源名）——此前
-// connected/disconnected 直出英文裸枚举（重连分支倒是配了翻译），同一颗点两套口径
-const dsDotTitle = (ds) => {
-  if (ds.status === 'connected') return t('statusbar.dsConnected', { name: ds.name })
-  if (ds.status === 'reconnecting')
-    return t('statusbar.dsReconnecting', { name: ds.name }) + (ds.reconnectInfo ? ' · ' + ds.reconnectInfo : '')
-  return t('statusbar.dsDisconnected', { name: ds.name })
-}
+// H31：树根状态点悬停 title 走 i18n——单一实现在 utils/dsTitle.js（三处消费共用：
+// 树根行/底部状态栏/设置页卡片），此前三份逐行同构拷贝已收敛（round8 重构）
+const dsDotTitle = makeDsDotTitle(t)
 
 // 置顶标签在前，组内保持 API 顺序（稳定排序；重命名/删除等管理操作走标签管理模态）
 const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isPinned) - Number(a.isPinned)))

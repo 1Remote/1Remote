@@ -66,9 +66,12 @@ describe('SideTree 树内拖拽', () => {
   it('树右键菜单纵向防溢出（J2，对齐 ServerTable 定位标准）', () => {
     assert.ok(tree.includes('Math.min(py, r.height - 130)'))
   })
-  it('数据源状态点 title 走 i18n（H31：不再直出英文裸枚举）', () => {
-    const fn = between(tree, 'const dsDotTitle', 'sortedTags', 'dsDotTitle')
-    assert.ok(fn.includes('statusbar.dsConnected'))
+  it('数据源状态点 title 走 i18n（H31：不再直出英文裸枚举）——round8 起三处共用 utils/dsTitle 单一实现', () => {
+    assert.ok(tree.includes('makeDsDotTitle(t)'), 'SideTree 应经 makeDsDotTitle 构造')
+    const dst = read('src/utils/dsTitle.js')
+    assert.ok(dst.includes('statusbar.dsConnected'))
+    assert.ok(read('src/views/ServerListView.vue').includes('makeDsDotTitle(t)'))
+    assert.ok(read('src/components/settings/DataSourceGroup.vue').includes('makeDsDotTitle(t)'))
   })
   it('无标签整区隐藏（H32 owner 决策）；真无数据源给引导', () => {
     assert.ok(tree.includes('v-if="tags.length"'))

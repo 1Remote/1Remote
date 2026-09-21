@@ -26,8 +26,8 @@ import {
   glES,
 } from 'naive-ui'
 
-/** Web 语言码（locales/ 文件名同码）→ naive-ui 语言包 */
-export const NAIVE_LOCALES = {
+/** Web 语言码（locales/ 文件名同码）→ naive-ui 语言包（内部表：消费方一律经 naiveLocaleOf 取包） */
+const NAIVE_LOCALES = {
   'zh-CN': zhCN,
   'zh-TW': zhTW,
   'en-US': enUS,

@@ -6,7 +6,8 @@
 // 右键菜单/树叶双击/批量条/Enter 光标行）emit 到本组件统一走 api.connect；
 // 全局 Esc 链是唯一的 window 级 Esc 处理器（App.vue 搜索框与 ServerTable 均不本地拦截，
 // 避免焦点位置不同导致链序漂移或双触发）。
-// 内容区三态（骨架屏/空库引导/无匹配）+ 底部状态栏（数据源状态点/统计/SSE/语言切换）
+// 内容区三态（骨架屏/空库引导/无匹配）+ 底部状态栏（数据源状态点/统计/语言切换；
+// 后端可达性的 SSE 小字指示已删——K17 定案改由 App.vue 全屏失联警告承载）
 // + <900px 自动收起边栏。
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -21,6 +22,7 @@ import { api } from '../api'
 import { progressToast } from '../utils/progressToast'
 import { applyServerFilters, useServers } from '../composables/useServers'
 import { buildTree, countHolderServers, holderAt } from '../composables/folders'
+import { makeDsDotTitle } from '../utils/dsTitle'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import { useBatchConnect } from '../composables/useBatchConnect'
@@ -74,7 +76,8 @@ const treeModel = computed(() => buildTree(servers.value, datasources.value, fol
 const currentFolders = computed(() => {
   // 搜索/标签过滤激活时隐藏文件夹行（K23：标签过滤沿用搜索的做法）：过滤只命中
   // 服务器（文件夹不参与匹配），保留文件夹行会让「内含 N 台」的未过滤计数与过滤后
-  // 所见脱节（写着 5 台、进去 0 台）；进文件夹在过滤期间仍可走侧栏树
+  // 所见脱节（写着 5 台、进去 0 台）；进文件夹在**标签**过滤期间仍可走侧栏树（搜索态
+  // 树导航让位全库语义——点树只动面包屑不动行集，属已知边界见 round7 M22）
   if (searchedIds.value != null || activeTag.value) return []
   const sel = viewSel.value
   // 「全部数据」根（viewSel 无数据源，仅多源可达）：只列服务器行（全库递归，
@@ -204,22 +207,15 @@ function clearNextFilter() {
 }
 
 // ---- 状态栏（内容区底部 26px）：左=数据源状态点+名称（最多 3 个，超出 +N），
-// 右=统计 + SSE 可达性 + 语言切换。状态点语义与 SideTree 根节点一致（绿=connected /
+// 右=统计 + 语言切换（SSE 可达性小字已删，K17）。状态点语义与 SideTree 根节点一致（绿=connected /
 // 红=reconnecting / 灰=其余）；title 用状态文案（i18n）而非裸枚举——重连时附后端的
 // 重连信息（reconnectInfo）----
 const MAX_DS = 3
 const dsShown = computed(() => datasources.value.slice(0, MAX_DS))
 const dsHidden = computed(() => Math.max(0, datasources.value.length - MAX_DS))
 const dsDotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
-const dsTitle = (ds) => {
-  const base =
-    ds.status === 'connected'
-      ? t('statusbar.dsConnected', { name: ds.name })
-      : ds.status === 'reconnecting'
-        ? t('statusbar.dsReconnecting', { name: ds.name })
-        : t('statusbar.dsDisconnected', { name: ds.name })
-  return ds.status === 'reconnecting' && ds.reconnectInfo ? base + ' · ' + ds.reconnectInfo : base
-}
+// 状态栏状态点 title——单一实现在 utils/dsTitle.js（与树根行/设置页卡片共用，round8 收敛）
+const dsTitle = makeDsDotTitle(t)
 function toggleLocale() {
   setLocale(locale.value === 'en-US' ? nonEnglishLocale : 'en-US')
 }
@@ -691,7 +687,7 @@ const importModal = ref(false)
         @saved="onSaved"
       />
 
-      <!-- 底部状态栏：数据源状态点 · 台数/标签数 · SSE 可达性 · 语言切换 -->
+      <!-- 底部状态栏：数据源状态点 · 台数/标签数 · 语言切换（SSE 指示已删，失联走全屏警告） -->
       <footer class="status-bar">
         <span v-for="ds in dsShown" :key="ds.name" class="sb-ds" :title="dsTitle(ds)">
           <span class="sb-dot" :class="dsDotClass(ds.status)"></span>

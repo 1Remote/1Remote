@@ -29,6 +29,7 @@ import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
+import { makeDsDotTitle } from '../../utils/dsTitle'
 import { useServers } from '../../composables/useServers'
 import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import { onFormEnter } from '../../utils/formEnter'
@@ -44,14 +45,9 @@ const { shield, bindModalEsc } = useSettingsEsc()
 
 // ---- 展示辅助 ----
 const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
-// K16：卡片状态点悬停 title 走 i18n（SideTree dsDotTitle 同款，复用状态栏三词条）——
-// 此前 :title="d.status" 直出英文裸枚举，同一颗点在树/状态栏是中文、这里是英文
-const dsDotTitle = (d) => {
-  if (d.status === 'connected') return t('statusbar.dsConnected', { name: d.name })
-  if (d.status === 'reconnecting')
-    return t('statusbar.dsReconnecting', { name: d.name }) + (d.reconnectInfo ? ' · ' + d.reconnectInfo : '')
-  return t('statusbar.dsDisconnected', { name: d.name })
-}
+// K16：卡片状态点悬停 title 走 i18n——单一实现在 utils/dsTitle.js（与树根行/状态栏共用），
+// 此前 :title="d.status" 直出英文裸枚举
+const dsDotTitle = makeDsDotTitle(t)
 const typeLabel = (d) => t('settings.d.type.' + (d.type || 'sqlite'))
 const configSummary = (d) => {
   const c = d.config || {}
