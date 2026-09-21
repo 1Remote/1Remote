@@ -233,8 +233,11 @@ function onRowDrop(row, e) {
   if (!dragRow.value || moving.value || !hint || hint.key !== row.key) return
   const zone = zoneFor(row, e)
   const src = dragRow.value
-  dragRow.value = null
+  // BUG 根因（owner 2026-09-21 第三轮反馈定位）：置空必须在 canDrop 之后——canDrop 内部
+  // 读 dragRow.value 作源行，先置空则 canDrop 恒见 null 直接拒绝，drop 永远空转
+  //（树内拖拽自最初即坏、列表→树不依赖 dragRow 一直正常的唯一差异点）
   if (!canDrop(row, zone)) return
+  dragRow.value = null
   e.preventDefault()
   applyTreeMove(src, row, zone)
 }

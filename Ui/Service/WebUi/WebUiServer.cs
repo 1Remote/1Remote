@@ -47,7 +47,17 @@ namespace _1RM.Service.WebUi
             builder.WebHost.ConfigureKestrel(o => o.Listen(IPAddress.Loopback, Port));
             var app = builder.Build();
             app.UseDefaultFiles(); // GET / → wwwroot/index.html（Web UI 构建产物入口；须在 UseStaticFiles 前注册）
-            app.UseStaticFiles(); // wwwroot 静态资源（/assets/* 等）。TokenMiddleware 仅守卫 /api，静态资源自由通行
+            // index.html 禁缓存（2026-09-21：WebView2/浏览器对无 Cache-Control 的响应做启发式缓存，
+            // 升级前端后旧 index.html 引用旧哈希资源，出现「已修复却仍复现旧 bug」；带哈希的
+            // /assets/* 反向允许长缓存——内容变即换名，天然免失效问题）
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    if (Path.GetFileName(ctx.File.Name) == "index.html")
+                        ctx.Context.Response.Headers.CacheControl = "no-cache";
+                },
+            });
             app.UseMiddleware<TokenMiddleware>(Token);
             WebUiEndpoints.MapAll(app);
             _app = app;
