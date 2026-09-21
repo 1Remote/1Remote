@@ -319,7 +319,9 @@ function onRowContext(row, e) {
   const py = r ? e.clientY - r.top : e.clientY
   ctx.value = {
     x: r ? Math.max(0, Math.min(px, r.width - 150)) : px, // 防溢出内收（菜单约 140px 宽）
-    y: r ? Math.max(0, py) : py,
+    // y 同款防溢出（J2，对齐 ServerTable 定位标准）：菜单最高 3 项约 110px，预算 130——
+    // 树最后一行右键时菜单整体上移入屏（「删除」不再被视口底裁掉）；极端矮窗回落贴顶
+    y: r ? Math.max(0, Math.min(py, r.height - 130)) : py,
     dsName: row.kind === 'root' ? row.ds.name : row.dsName,
     parentPath: row.kind === 'folder' ? row.folder.path : '',
     folderPath: row.kind === 'folder' ? row.folder.path : null,

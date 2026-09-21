@@ -1092,6 +1092,10 @@ onBeforeUnmount(() => {
   min-width: 0;
   padding-right: 10px;
   white-space: nowrap;
+  /* J14：列压缩时表头文字溢出格外会与相邻列重叠（nowrap 无 overflow 的必然后果），
+     裁掉保持格内——与行内同列单元格的裁剪行为一致（进一步 <720px 隐藏 tags/note 列的
+     密度降级方案可后置） */
+  overflow: hidden;
 }
 
 .h-check {

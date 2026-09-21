@@ -68,7 +68,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
         :title="t('batch.connectTitle')"
         @click="emit('batch-connect')"
       >
-        ▶ {{ t('batch.connect') }}
+        ▸ {{ t('batch.connect') }}
       </button>
       <!-- 批量编辑：emit 勾选 id 数组；恰勾 1 台时按钮显「编辑」（ctx.edit，14 语言有译），
            抽屉转单台编辑由 ServerListView.openBulkEdit 判 1 台分流，>1 台才进 bulk 模式 -->
@@ -217,15 +217,18 @@ onBeforeUnmount(() => clearInterval(hintTimer))
   color: var(--text-on-accent);
 }
 
+/* 清除勾选 ✕：对齐全站移除小钮多数派（J9，sc-x/f-x/kvl-del/kvm-del/sf-del）——
+   圆形 24 档 + micro/text-4，hover bg-hover+text-1；此处方角+大一号是异类 */
 .bb-x {
   margin-left: auto;
   border: none;
   background: transparent;
-  color: var(--text-3);
-  font-size: var(--fs-body);
+  color: var(--text-4);
+  font-size: var(--fs-micro);
+  line-height: 1;
   width: var(--ctrl-h-s);
   height: var(--ctrl-h-s);
-  border-radius: var(--radius-ctrl);
+  border-radius: 50%;
   cursor: pointer;
 }
 

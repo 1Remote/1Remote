@@ -150,8 +150,9 @@ async function addSave() {
     adding.value = false
     await reload()
     // 创建即连接失败不回滚（WPF 同款）：如实提示 + 指引到卡片测试
+    // （失败档位统一 error，J12：与卡片测试按钮/模态草稿测试同档）
     if (r?.dataSource && r.dataSource.status === 'connected') message.success(t('settings.d.testOk'))
-    else message.warning(t('settings.d.testFailed') + (r?.connectError ? ` (${r.connectError})` : ''))
+    else message.error(t('settings.d.testFailed') + (r?.connectError ? ` (${r.connectError})` : ''))
   } catch (e) {
     const detail = errDetail(e)
     message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
@@ -228,7 +229,7 @@ async function editSave() {
     editing.value = null
     await reload()
     if (r?.dataSource && r.dataSource.status === 'connected') message.success(t('settings.saved'))
-    else message.warning(t('settings.d.testFailed') + (r?.connectError ? ` (${r.connectError})` : ''))
+    else message.error(t('settings.d.testFailed') + (r?.connectError ? ` (${r.connectError})` : ''))
   } catch (e) {
     const detail = errDetail(e)
     message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
@@ -781,9 +782,10 @@ bindModalEsc([
 .f-note {
   margin: 2px 0 0;
   font-size: var(--fs-caption);
-  color: var(--warning);
+  color: var(--danger);
 }
-/* 草稿测试结果：成功转 success 色（失败沿用 warning；校验错误也走失败色） */
+/* 草稿测试结果：成功转 success 色（失败 danger——J12 与卡片/保存后提示的失败档统一；
+   校验错误也走失败色） */
 .f-note.ok {
   color: var(--success);
 }

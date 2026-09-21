@@ -85,7 +85,8 @@ const errorPulse = ref(false)
 const rootRef = ref(null)
 let pulseTimer = 0
 function announceSaveError(n) {
-  message.warning(t('editor.fixBeforeSave', { n }))
+  // 失败档位 error（J12）：与 danger 横幅/保存钮脉动同档——同一事件同一严重性
+  message.error(t('editor.fixBeforeSave', { n }))
   errorPulse.value = false
   clearTimeout(pulseTimer)
   requestAnimationFrame(() =>
@@ -586,7 +587,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* 蒙层 + 右滑面板：width clamp(560px, 68vw, 900px)。覆盖范围从顶栏下沿开始
+/* 蒙层 + 右滑面板：width clamp(min(560px,100%), 68vw, 900px)——下限取 min 防窄窗
+   裁切（<824px 时 68vw 已小于 560，恒取 560 会占满小窗；<560px 时面板左缘出屏，
+   148px 标签列被裁）。100% 相对 .ed-root（fixed 全宽）= 视口宽，等价 100vw 且不受
+   滚动条占宽影响。覆盖范围从顶栏下沿开始
    （top: var(--topbar-h)）而非 inset:0——抽屉打开时顶栏（窗口拖拽区/最小化-最大化-
    关闭）不再被蒙层盖住、保持可交互。--topbar-h 定义于 App.vue 的 .shell（44px）；
    .ed-root 是 .shell 的 DOM 后代（ServerListView 内），自定义属性沿 DOM 树继承；
@@ -617,7 +621,7 @@ onBeforeUnmount(() => {
   bottom: 0;
   display: flex;
   flex-direction: column;
-  width: clamp(560px, 68vw, 900px);
+  width: clamp(min(560px, 100%), 68vw, 900px);
   background: var(--bg-panel);
   border-left: 1px solid var(--border-strong);
   box-shadow: var(--shadow-overlay);
@@ -677,7 +681,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 8px 18px 20px;
+  /* 横向 16 与 ed-head/ed-foot 共线（J17，BulkEditForm 同名拷贝同步） */
+  padding: 8px 16px 20px;
 }
 
 .ed-banner {

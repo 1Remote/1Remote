@@ -718,7 +718,7 @@ const importModal = ref(false)
   flex: 0 0 36px;
   display: flex;
   align-items: center;
-  padding: 0 14px;
+  padding: 0 12px; /* 横栏左右内距统一 12（J18，与顶栏/底部状态栏同值） */
   border-bottom: 1px solid var(--border);
   background: var(--bg-panel);
 }

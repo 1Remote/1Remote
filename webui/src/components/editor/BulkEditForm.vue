@@ -336,7 +336,8 @@ defineExpose({ save, saving, dirty: bulkDirty })
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 8px 18px 20px;
+  /* 横向 16 与 ed-head/ed-foot 共线（J17，与 EditorDrawer 同名拷贝同步） */
+  padding: 8px 16px 20px;
 }
 
 .ed-banner {

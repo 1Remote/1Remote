@@ -56,7 +56,8 @@ watchEffect(() => {
     @drop="emit('drop', $event)"
     @dragend="emit('dragend')"
   >
-    <div class="cell cell-check">
+    <!-- 双击进入的识别区域不含本列（与 ServerRow .cell-check 同款排除） -->
+    <div class="cell cell-check" @dblclick.stop>
       <input
         ref="cbEl"
         type="checkbox"

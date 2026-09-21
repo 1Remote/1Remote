@@ -132,7 +132,7 @@ function onFontSize(v) {
         :title="t('settings.r.deleteTitle')"
         @click="emit('delete')"
       >
-        ×
+        ✕
       </button>
     </div>
 
@@ -398,12 +398,14 @@ function onFontSize(v) {
   border-color: var(--accent);
   color: var(--accent-text);
 }
+/* 删除小钮（J10）：对齐全站删除钮统一语言——✕ 字形 + 无边框 + 中性 hover
+   （bg-hover+text-1；辨别由 title 承载，红字 hover 是异类，实心底仅批量条 bb-danger） */
 .r-head .del {
   margin-left: auto;
   flex: 0 0 auto;
   width: var(--ctrl-h-s);
   height: var(--ctrl-h-s);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-3);
@@ -411,10 +413,9 @@ function onFontSize(v) {
   line-height: 1;
   cursor: pointer;
 }
-/* 删除类行内钮 hover 统一：bg-hover + danger 字（边框保持中性，实心底仅批量条 bb-danger） */
 .r-head .del:hover {
   background: var(--bg-hover);
-  color: var(--danger);
+  color: var(--text-1);
 }
 .r-internal-hint {
   margin: 0;

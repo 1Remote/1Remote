@@ -47,6 +47,17 @@ const addressText = (s) => {
   if (s.userName) text += ' (' + s.userName + ')'
   return text
 }
+// 地址列主段/用户名段拆分（J5）：'(userName)' 是凭据辅助信息，弱化到 --text-3 提升扫读
+// 效率（与列内备注/时间弱化档同语言；两主题下 --text-3 对比均 AA）。两段各自跑
+// splitHighlight——搜索命中用户名时该段内仍高亮
+const addrParts = computed(() => {
+  const s = props.server
+  if (!s.address) return { main: s.subTitle || s.protocol, user: '' }
+  return {
+    main: s.address + (s.port ? ':' + s.port : ''),
+    user: s.userName ? ' (' + s.userName + ')' : '',
+  }
+})
 // 文件夹列：「全部数据」根视图无文件夹行，此列是
 // 唯一来源上下文——「数据源 / 路径」定位信息（额外前缀数据源名，同名路径跨数据源区分）；
 // 进入文件夹后列隐藏（面包屑承载路径）
@@ -61,10 +72,11 @@ const relTime = (s) => formatRelativeTime(s.lastConnectTime, Date.now(), locale.
 // 从未连接（0）返回 null 时回退到与显示文本相同的「从未连接」文案
 const absTime = (s) => formatAbsoluteTime(s.lastConnectTime, locale.value) || t('status.never')
 
-// 搜索命中高亮分段：查询非空时名称/地址同时高亮；拼音等无法定位原文的
+// 搜索命中高亮分段：查询非空时名称/地址（主段+用户名段）同时高亮；拼音等无法定位原文的
 // 命中不高亮（splitHighlight 内处理，见其文件头注释）
 const nameSegs = computed(() => splitHighlight(props.server.displayName, props.query))
-const addrSegs = computed(() => splitHighlight(addressText(props.server), props.query))
+const addrSegs = computed(() => splitHighlight(addrParts.value.main, props.query))
+const userSegs = computed(() => splitHighlight(addrParts.value.user, props.query))
 // 行左色条：服务器自定义色（C# #AARRGGBB → opaqueHex 归一为不透明 #RRGGBB）
 // 的实色竖条，对齐 WPF 列表行色条——列表中颜色直接可见；无色/全透明 → null 不渲染（无占位）
 const barColor = computed(() => opaqueHex(props.server.color))
@@ -80,7 +92,10 @@ const barColor = computed(() => opaqueHex(props.server.color))
   >
     <!-- 左侧颜色条：absolute 定位不占 flex 布局，列对齐零位移 -->
     <span v-if="barColor" class="cbar" :style="{ background: barColor }"></span>
-    <div class="cell cell-check">
+    <!-- 双击连接的识别区域不含本列（cell-check 上 dblclick.stop）：复选框快速连点勾选多台
+         服务器时，dblclick 不冒泡到行——不误触双击=连接（与 .cell-act 的 click.stop 同一
+         「交互区排除」模式） -->
+    <div class="cell cell-check" @dblclick.stop>
       <input
         type="checkbox"
         class="cb"
@@ -102,9 +117,18 @@ const barColor = computed(() => opaqueHex(props.server.color))
       >
     </div>
     <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)">
-      <template v-for="(seg, i) in addrSegs" :key="i"
-        ><span v-if="seg.hit" class="hl">{{ seg.text }}</span
-        ><template v-else>{{ seg.text }}</template></template
+      <!-- 内层 .addr-text 承载省略号三件套（J3）：text-overflow 对 flex 容器不生效，
+           裸文本在 .cell 上截断无 "…"；主段与弱化用户名段（J5）同在内层 -->
+      <span class="addr-text"
+        ><template v-for="(seg, i) in addrSegs" :key="i"
+          ><span v-if="seg.hit" class="hl">{{ seg.text }}</span
+          ><template v-else>{{ seg.text }}</template></template
+        ><span v-if="addrParts.user" class="addr-user"
+          ><template v-for="(seg, i) in userSegs" :key="i"
+            ><span v-if="seg.hit" class="hl">{{ seg.text }}</span
+            ><template v-else>{{ seg.text }}</template></template
+          ></span
+        ></span
       >
     </div>
     <div v-if="!hiddenCols || !hiddenCols.proto" class="cell cell-proto">
@@ -136,7 +160,8 @@ const barColor = computed(() => opaqueHex(props.server.color))
       <div v-else class="cell cell-note"></div>
     </template>
     <div v-if="showFolder && (!hiddenCols || !hiddenCols.folder)" class="cell cell-folder" :title="folderText(server)">
-      {{ folderText(server) }}
+      <!-- 内层 .folder-text 承载省略号三件套（J3，同 .addr-text 理由） -->
+      <span class="folder-text">{{ folderText(server) }}</span>
     </div>
     <!-- 时间列：显示保持相对时间，悬停 title 为绝对时间（精确到秒，随语言本地化） -->
     <div v-if="!hiddenCols || !hiddenCols.time" class="cell cell-time" :title="absTime(server)">
@@ -211,9 +236,6 @@ const barColor = computed(() => opaqueHex(props.server.color))
 }
 .cell-addr {
   flex: var(--c-addr, 1.6) var(--c-addr-grow, 1) 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   /* 地址与协议徽章间舒适间距（.cell 通用 10px 视觉上仍贴住徽章，
      提到 16px；.h-addr 同值保持表头/行同缩进） */
   padding-right: 16px;
@@ -241,9 +263,14 @@ const barColor = computed(() => opaqueHex(props.server.color))
 .cell-folder {
   flex: var(--c-folder, 1.4) var(--c-folder-grow, 1) 0;
   overflow: hidden;
+  color: var(--text-4);
+}
+/* 文件夹列内层文本（J3，同 .addr-text 理由）：三件套在文本层生效 */
+.folder-text {
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--text-4);
 }
 .cell-time {
   flex: 0 0 var(--c-time, 104px);
@@ -279,6 +306,18 @@ const barColor = computed(() => opaqueHex(props.server.color))
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-1);
+}
+/* 地址列内层文本（J3）：flex 容器上的 text-overflow 不生效——三件套移到本层，
+   超长出 "…"（title 全文兜底）；.cell-addr 是 flex 容器（.cell 基座） */
+.addr-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 地址列用户名段（J5）：'(userName)' 弱化到 --text-3（列内次级信息统一弱化语言） */
+.addr-user {
+  color: var(--text-3);
 }
 
 /* 弹层内 Markdown 排版：内容 teleport 到 body，但 slot 元素携带本组件 scope 属性（scoped 可达），

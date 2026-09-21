@@ -332,7 +332,7 @@ function onTopbarDblClick(e) {
   gap: 6px;
   height: var(--ctrl-h-m);
   padding: 0 8px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border); /* 输入控件统一边框档（J25，全站唯一 border-strong 输入框） */
   border-radius: var(--radius-ctrl);
   font-size: var(--fs-body);
   cursor: text;
