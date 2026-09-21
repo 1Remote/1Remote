@@ -342,7 +342,7 @@ const OVERRIDES = {
     // batch9 #4：刪除有內容文件夾的二選一對話框（web 專有鍵——WPF 無對應條目）
     // 資料夾「{name}」內含 {n} 台伺服器（含子資料夾）。請選擇刪除方式：
     'tree.deleteFolderHasServers':
-      '\u8cc7\u6599\u593e\u300c{name}\u300d\u5167\u542b {n} \u53f0\u4f3a\u670d\u5668\uff08\u542b\u5b50\u8cc7\u6599\u593e\uff09\u3002\u8acb\u9078\u64c7\u522a\u9664\u65b9\u5f0f\uff1a',
+      '\u8cc7\u6599\u593e\u300c{name}\u300d\u5167\u542b {n} \u53f0\u4f3a\u670d\u5668\uff08\u542b\u5b50\u8cc7\u6599\u593e\uff09\u3002\u8acb\u9078\u64c7\u522a\u9664\u65b9\u5f0f\uff08\u95dc\u9589\u5c0d\u8a71\u6846\u5247\u4e0d\u522a\u9664\uff09\uff1a',
     'tree.deleteWithServers': '\u522a\u9664\u8cc7\u6599\u593e\u53ca\u5176\u4e2d\u4f3a\u670d\u5668',
     'tree.deleteKeepContents': '\u50c5\u522a\u9664\u8cc7\u6599\u593e\uff0c\u5167\u5bb9\u4e0a\u79fb\u4e00\u7d1a',
     'tree.folderDeleteServerFailed': '\u8cc7\u6599\u593e\u5167 {n} \u53f0\u4f3a\u670d\u5668\u522a\u9664\u5931\u6557',
@@ -384,6 +384,8 @@ const OVERRIDES = {
     'sidebar.expand': '\u5c55\u958b\u5074\u6b04',
     'tree.noDatasources': '\uff08\u7121\u8cc7\u6599\u4f86\u6e90\uff09',
     'tree.manageTags': '+ \u7ba1\u7406',
+    // 標籤 chip 計數口徑（可讀形式：{name} · 全庫 {n} 台）——第三輪 G8
+    'tree.tagChipTitle': '{name} \u00b7 \u5168\u5eab {n} \u53f0',
     'tree.collapse': '\u00ab \u6536\u5408',
     'tree.collapseTitle': '\u6536\u5408\u5074\u6b04',
     'tree.deleteFolder': '\u522a\u9664\u8cc7\u6599\u593e',
@@ -400,6 +402,8 @@ const OVERRIDES = {
     'tree.folderRenameFailed': '\u91cd\u65b0\u547d\u540d\u8cc7\u6599\u593e\u5931\u6557',
     // batch13 Task B\uff1a\u5217\u8868\u6587\u4ef6\u5939\u884c\u62d6\u62fd\uff08\u6210\u529f/\u5931\u8d25 toast\u3001\u8de8\u5e93\u3001\u4e0d\u652f\u6301\u91cd\u6392\u5e8f\u63d0\u793a\uff09
     'tree.folderMoved': '\u5df2\u79fb\u52d5\u8cc7\u6599\u593e\u300c{name}\u300d',
+    // 樹內純重排終態（可讀形式：已調整資料夾順序）——第三輪 G11
+    'tree.folderReordered': '\u5df2\u8abf\u6574\u8cc7\u6599\u593e\u9806\u5e8f',
     'tree.folderMoveFailed': '\u79fb\u52d5\u8cc7\u6599\u593e\u5931\u6557',
     'tree.folderDeleted': '\u8cc7\u6599\u593e\u5df2\u522a\u9664',
     'tree.folderDeleteFailed': '\u522a\u9664\u8cc7\u6599\u593e\u5931\u6557',
@@ -470,6 +474,12 @@ const OVERRIDES = {
     'empty.noMatch': '\u7121\u7b26\u5408\u7d50\u679c',
     'empty.searchedFor': '\u641c\u5c0b\u300c{q}\u300d\u672a\u547d\u4e2d\u4f3a\u670d\u5668',
     'empty.taggedNone': '\u6a19\u7c64\u300c{tag}\u300d\u4e0b\u6c92\u6709\u4f3a\u670d\u5668',
+    // 資料來源根空態（可讀形式：此資料來源為空。點右上角 + 新增伺服器，或右鍵新增資料夾。）——第三輪 G16
+    'empty.dsRoot':
+      '\u6b64\u8cc7\u6599\u4f86\u6e90\u70ba\u7a7a\u3002\u9ede\u53f3\u4e0a\u89d2 + \u65b0\u589e\u4f3a\u670d\u5668\uff0c\u6216\u53f3\u9375\u65b0\u589e\u8cc7\u6599\u593e\u3002',
+    // 全部資料根空態（可讀形式：所有資料來源都沒有伺服器。點右上角 + 新增第一台伺服器。）
+    'empty.allRoot':
+      '\u6240\u6709\u8cc7\u6599\u4f86\u6e90\u90fd\u6c92\u6709\u4f3a\u670d\u5668\u3002\u9ede\u53f3\u4e0a\u89d2 + \u65b0\u589e\u7b2c\u4e00\u53f0\u4f3a\u670d\u5668\u3002',
     'empty.clearFilters': '\u6e05\u9664\u7be9\u9078',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': '\u6e05\u9664\u641c\u5c0b\u8a5e',
@@ -816,7 +826,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Rychlé připojení můžete provést i spouštěčem na ploše (Alt+M)',
     'empty.noMatch': 'Žádné odpovídající výsledky',
     'empty.searchedFor': 'Výrazu „{q}“ neodpovídá žádný server',
-    'empty.taggedNone': 'Pod štítkem „{tag}“ nejsou žádné servery',
+    'empty.taggedNone': 'V aktuálním zobrazení nejsou žádné servery se štítkem „{tag}“',
     'empty.clearFilters': 'Vymazat filtry',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Vymazat hledání',
@@ -1131,7 +1141,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Sie können auch den Desktop-Starter (Alt+M) für schnelle Verbindungen nutzen',
     'empty.noMatch': 'Keine übereinstimmenden Ergebnisse',
     'empty.searchedFor': 'Keine Server entsprechen „{q}“',
-    'empty.taggedNone': 'Keine Server unter Tag „{tag}“',
+    'empty.taggedNone': 'Keine Server mit Tag „{tag}“ in der aktuellen Ansicht',
     'empty.clearFilters': 'Filter löschen',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Suche löschen',
@@ -1455,7 +1465,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'También podés usar el lanzador del escritorio (Alt+M) para conectarte rápido',
     'empty.noMatch': 'Sin resultados coincidentes',
     'empty.searchedFor': 'Ningún servidor coincide con “{q}”',
-    'empty.taggedNone': 'No hay servidores con la etiqueta “{tag}”',
+    'empty.taggedNone': 'No hay servidores con la etiqueta “{tag}” en la vista actual',
     'empty.clearFilters': 'Limpiar filtros',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Limpiar búsqueda',
@@ -1774,7 +1784,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Vous pouvez aussi utiliser le lanceur du bureau (Alt+M) pour vous connecter rapidement',
     'empty.noMatch': 'Aucun résultat correspondant',
     'empty.searchedFor': 'Aucun serveur ne correspond à « {q} »',
-    'empty.taggedNone': 'Aucun serveur sous le mot clé « {tag} »',
+    'empty.taggedNone': 'Aucun serveur avec le mot clé « {tag} » dans la vue actuelle',
     'empty.clearFilters': 'Effacer les filtres',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Effacer la recherche',
@@ -2097,7 +2107,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Tamén podes usar o lanzador do escritorio (Alt+M) para conectar rapidamente',
     'empty.noMatch': 'Sen resultados coincidentes',
     'empty.searchedFor': 'Ningún servidor coincide con «{q}»',
-    'empty.taggedNone': 'Non hai servidores coa etiqueta «{tag}»',
+    'empty.taggedNone': 'Non hai servidores coa etiqueta «{tag}» na vista actual',
     'empty.clearFilters': 'Limpar os filtros',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Limpar a busca',
@@ -2414,7 +2424,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Puoi anche usare il launcher del desktop (Alt+M) per connetterti rapidamente',
     'empty.noMatch': 'Nessun risultato corrispondente',
     'empty.searchedFor': 'Nessun server corrisponde a “{q}”',
-    'empty.taggedNone': 'Nessun server con il tag “{tag}”',
+    'empty.taggedNone': 'Nessun server con il tag “{tag}” nella visualizzazione corrente',
     'empty.clearFilters': 'Cancella filtri',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Cancella ricerca',
@@ -2735,7 +2745,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Możesz też użyć launchera pulpitu (Alt+M), aby szybko się połączyć',
     'empty.noMatch': 'Brak pasujących wyników',
     'empty.searchedFor': 'Żaden serwer nie pasuje do „{q}”',
-    'empty.taggedNone': 'Brak serwerów z tagiem „{tag}”',
+    'empty.taggedNone': 'Brak serwerów z tagiem „{tag}” w bieżącym widoku',
     'empty.clearFilters': 'Wyczyść filtry',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Wyczyść wyszukiwanie',
@@ -3050,7 +3060,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Você também pode usar o launcher da área de trabalho (Alt+M) para conectar rapidamente',
     'empty.noMatch': 'Nenhum resultado correspondente',
     'empty.searchedFor': 'Nenhum servidor corresponde a “{q}”',
-    'empty.taggedNone': 'Nenhum servidor com a marcação “{tag}”',
+    'empty.taggedNone': 'Nenhum servidor com a marcação “{tag}” na exibição atual',
     'empty.clearFilters': 'Limpar filtros',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Limpar busca',
@@ -3367,7 +3377,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Também pode usar o iniciador do ambiente de trabalho (Alt+M) para ligar rapidamente',
     'empty.noMatch': 'Sem resultados correspondentes',
     'empty.searchedFor': 'Nenhum servidor corresponde a “{q}”',
-    'empty.taggedNone': 'Sem servidores com a etiqueta “{tag}”',
+    'empty.taggedNone': 'Sem servidores com a etiqueta “{tag}” na vista atual',
     'empty.clearFilters': 'Limpar filtros',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Limpar pesquisa',
@@ -3685,7 +3695,7 @@ const OVERRIDES = {
     'empty.launcherHint': 'Можно также использовать лаунчер на рабочем столе (Alt+M) для быстрого подключения',
     'empty.noMatch': 'Нет совпадений',
     'empty.searchedFor': 'По запросу «{q}» серверов не найдено',
-    'empty.taggedNone': 'Под тегом «{tag}» нет серверов',
+    'empty.taggedNone': 'В текущем представлении нет серверов с тегом «{tag}»',
     'empty.clearFilters': 'Очистить фильтры',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': 'Очистить поиск',
@@ -4030,7 +4040,7 @@ const OVERRIDES = {
     'empty.searchedFor':
       '\u300c{q}\u300d\u306b\u4e00\u81f4\u3059\u308b\u30b5\u30fc\u30d0\u30fc\u304c\u3042\u308a\u307e\u305b\u3093',
     'empty.taggedNone':
-      '\u30bf\u30b0\u300c{tag}\u300d\u306b\u30b5\u30fc\u30d0\u30fc\u304c\u3042\u308a\u307e\u305b\u3093',
+      '\u73fe\u5728\u306e\u30d3\u30e5\u30fc\u306b\u30bf\u30b0\u300c{tag}\u300d\u306e\u30b5\u30fc\u30d0\u30fc\u304c\u3042\u308a\u307e\u305b\u3093',
     'empty.clearFilters': '\u30d5\u30a3\u30eb\u30bf\u30fc\u3092\u30af\u30ea\u30a2',
     // batch12 Task B: empty states, per-dimension filter clearing, status titles
     'empty.clearSearch': '\u691c\u7d22\u8a9e\u3092\u30af\u30ea\u30a2',
