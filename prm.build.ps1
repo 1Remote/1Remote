@@ -26,7 +26,9 @@ task Deps {
         #choco install -y windows-sdk-10-version-1809-all
 
         choco install -y visualstudio2022community
-        choco install -y dotnet-6.0-sdk
+        choco install -y dotnet-9.0-sdk
+        choco install -y dotnet-10.0-sdk
+        # .NET 11 SDK: RC until 2026-11-10 GA, install from https://dotnet.microsoft.com/download/dotnet/11.0
         choco install -y visualstudio2022-workload-manageddesktop
         choco install -y visualstudio2022-workload-universal
 

@@ -9,7 +9,7 @@ It assumes no local tools and empty Windows 10 OS.
 1. `Windows 10` 1703 or later
 2. `Microsoft Visual Studio 2022` or higher, with the following workloads:
     - .NET desktop development
-    - `.NET6 SDK` (may included in vs2022)
+    - `.NET 9 / 10 / 11 SDK` (the main line builds on the latest stable, currently `.NET 10`; `ReleaseNet9` / `ReleaseNet11` configurations build the other targets)
     - Windows 10 SDK 10.0.17763.0
 
 The build task `Deps` automates entire installation locally (except OS). More details on running tasks are given bellow.
