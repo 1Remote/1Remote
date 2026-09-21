@@ -191,11 +191,17 @@ function onTopbarDblClick(e) {
       <!-- n-dialog-provider：编辑抽屉的未保存确认/删除确认（useDialog）与全局 toast 同层提供 -->
       <n-dialog-provider>
         <div class="shell">
-          <header class="topbar" @mousedown="onTopbarMouseDown" @dblclick="onTopbarDblClick">
-            <!-- LOGO：程序真实图标（Ui/LOGO.ico 提取的 256px PNG，public/logo.png） -->
+          <header
+            class="topbar"
+            :class="{ hosted: isHosted }"
+            @mousedown="onTopbarMouseDown"
+            @dblclick="onTopbarDblClick"
+          >
+            <!-- LOGO：程序真实图标（Ui/LOGO.ico 提取的 256px PNG，public/logo.png）；
+                 文字包 .logo-text 供极窄窗收成纯图标（见样式区 media query） -->
             <div class="logo">
               <img class="logo-mark" src="/logo.png" width="16" height="16" alt="" />
-              1Remote
+              <span class="logo-text">1Remote</span>
             </div>
             <!-- 顶栏搜索框：⌕ + 输入 + 搜索中 spinner；Ctrl F 聚焦全选 / Esc 由全局链清空（见 setup）；
                  ↑/↓ 把键盘焦点移交给服务器列表（tableBus.handoffTableFocus：光标落首/末行，此后 ↑↓/Enter 归表格）。
@@ -303,14 +309,24 @@ function onTopbarDblClick(e) {
   flex: 0 0 auto; /* 真实彩色图标，不随强调色着色 */
 }
 /* 视觉居中：绝对定位脱离 flex 流，logo 与右侧动作/窗口按钮布局不受影响。
-   窄窗保护：100vw-360px ≈ 左 logo + 右侧动作/窗口按钮/内边距所占宽度；内层 max(…,160px)
-   兜底——视口 <360px 时 calc 为负会使整条 max-width 失效退回 420px，反而更容易压到 logo */
+   窄窗防遮挡（owner 反馈：拉窄窗口时 +/⚙/搜索框互相遮挡——旧公式
+   max-width:min(420px, 100vw-360px) 的 360px 预算按浏览器直开估，宿主态右侧固定
+   占位 ≈212px（窗口控制 3×46 + 8 间距 + 两个 28px 钮 + gap），~824px 起即溢出）：
+   - 两锚点预算：--sb-left = logo 区；--sb-right = 右侧动作钮（浏览器态）/ 动作钮 +
+     窗口控制（宿主态，.topbar.hosted 覆盖）；
+   - 宽窗（宿主 ≥860px / 浏览器 ≥588px）：宽度吃满 420px，left 取「窗口几何居中位」，
+     与旧行为逐像素一致；
+   - 窄窗：宽度 = 两锚点间空隙，left 取「居中位」与「右锚点约束位」的较小值——
+     min() 两式在 420px 满宽处相等（连续无跳变），收紧后自动左移贴住 logo 锚点，
+     只缩不叠（宽度公式保证 left+width ≤ 100vw-右锚点）；
+   - 极窄（<600px）logo 收成纯图标，左预算 96→48（见样式区末 media query）。 */
 .searchbox {
+  --sb-left: 96px;
+  --sb-right: 84px;
+  --sb-w: min(420px, calc(100vw - var(--sb-left) - var(--sb-right)));
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 420px; /* absolute+left 定位下 width:auto 会 shrink-to-fit，须显式定宽 */
-  max-width: min(420px, max(calc(100vw - 360px), 160px));
+  left: min(calc((100vw - var(--sb-w)) / 2), calc(100vw - var(--sb-right) - var(--sb-w)));
+  width: var(--sb-w); /* absolute+left 定位下 width:auto 会 shrink-to-fit，须显式定宽 */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -331,6 +347,20 @@ function onTopbarDblClick(e) {
 }
 .searchbox.disabled .sb-input {
   cursor: not-allowed; /* input 自身 cursor:text 需覆盖，整个框统一 not-allowed */
+}
+/* 宿主态（WebView2）右预算加窗口控制 3×46px + 8px 间距（≈212px，含余量取 220） */
+.topbar.hosted .searchbox {
+  --sb-right: 220px;
+}
+/* 极窄窗：logo 收成纯图标（1Remote 文字隐藏），左预算 96→48——搜索框相应变宽。
+   断点 600px 处布局有一次约 48px 的跳变，属 logo 文字消失的自然档位切换 */
+@media (max-width: 599px) {
+  .logo-text {
+    display: none;
+  }
+  .searchbox {
+    --sb-left: 48px;
+  }
 }
 .sb-icon {
   flex: 0 0 auto;

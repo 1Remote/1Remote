@@ -264,6 +264,11 @@ namespace _1RM.View
             WinTitleBar.Visibility = webTakesOverTitleBar ? Visibility.Collapsed : Visibility.Visible;
             WinSysButtons.Visibility = webTakesOverTitleBar ? Visibility.Collapsed : Visibility.Visible;
             WebUI.Margin = webTakesOverTitleBar ? new Thickness(0) : new Thickness(0, 40, 0, 0);
+            // Web 引擎时网页 topbar 接管标题栏，窄窗防遮挡的最小宽度比 WPF 自绘标题栏高一档：
+            // 右侧窗口控制 3×46px + 「+」「⚙」两钮固定占位 ≈212px，搜索框至少还要 ~210px——
+            // XAML 的 MinWidth=300 是 WPF 自绘标题栏时代的值（网页 topbar 在 300px 下搜索框
+            // 只剩 ~30px 且互相叠压）；桌面引擎/回退时恢复 XAML 原值。
+            MinWidth = webTakesOverTitleBar ? 480 : 300;
         }
 
         /// <summary>
