@@ -145,19 +145,25 @@ export function useNaiveTheme() {
         primaryColorPressed: ACCENT_HEX[themeState.accent],
         primaryColorSuppl: ACCENT_HOVER_HEX[themeState.accent],
         // 组件字号改用 rem：applyTheme 改 documentElement.fontSize 时 naive 组件文字
-        // 同步缩放。默认值取自 naive common（_common.mjs），仅换单位
+        // 同步缩放。默认值取自 naive common（_common.mjs），仅换单位。
+        // fontSizeSmall 对齐 CSS --fs-body（12.5px，第三轮 G27）：naive 默认 14px 与同屏的
+        // 自绘表单控件（kvl/kvm/ff 系、bb-btn/act 系均 fs-body）字号差一档——编辑抽屉里
+        // naive small 输入与自绘输入混排时文字大小不一致；small 是 naive 组件在表单里的
+        // 主力档位，对齐后 12.5 < 14(medium) 档序不变
         fontSize: px2rem(14),
         fontSizeMini: px2rem(12),
         fontSizeTiny: px2rem(12),
-        fontSizeSmall: px2rem(14),
+        fontSizeSmall: px2rem(12.5),
         fontSizeMedium: px2rem(14),
         fontSizeLarge: px2rem(15),
         fontSizeHuge: px2rem(16),
         // 圆角对齐 theme.css 三档：Naive 默认 3px 与自定义控件 6/5px 会同屏混用（工具栏
-        // n-button 3px + bb-btn 6px + tt-btn 5px）；控件档对齐 --radius-ctrl=6px，
-        // 小档 4px 介于 radius-xs(3) 与 ctrl(6) 之间（小输入/标签）
+        // n-button 3px + bb-btn 6px + tt-btn 5px）；控件档对齐 --radius-ctrl=6px。
+        // 小档同样 6px（第三轮 G7）：4px 不在 CSS 圆角档（3/6/8）内——naive 侧唯一消费面
+        // 是 small/tiny 按钮（对话框按钮、模态页脚钮），与同屏自绘按钮（bb-btn/ed-btn 6px）
+        // 并排差 2px；n-input 无 small 圆角变体（单一 borderRadius），不受影响
         borderRadius: '6px',
-        borderRadiusSmall: '4px',
+        borderRadiusSmall: '6px',
       },
       // primary 实心按钮底色改喂深变体 solid（--accent-solid 同值）：白字在原亮 accent 上
       // orange/green 仅 2.80/2.54 FAIL，在 solid/hover/pressed 上全组合 ≥5.18 AA。仅覆盖
@@ -194,6 +200,18 @@ export function useNaiveTheme() {
         textColorPressedError: '#FFFFFF',
         textColorFocusError: '#FFFFFF',
         textColorDisabledError: '#FFFFFF',
+      },
+      // 下拉选中项文字（第三轮 G1，本轮唯一 P1）：common.primaryColor 仍喂亮 accent，而
+      // naive select-menu 的 optionTextColorActive/optionCheckColor 直接取 primaryColor
+      //（node_modules/_internal/select-menu/styles/light.mjs 派生关系），亮 accent 作弹层
+      // 小文字在 14 组合里 12 个 <4.5（默认 dark+blue 仅 1.74，light orange/green 2.80/2.54）。
+      // 覆盖为：light 基 = ACCENT_SOLID 深变体（×白弹层底 5.18-7.58 全 AA，与 F1 高亮族
+      // 同一深变体来源）；dark 基 = #e8e9ea（×弹层底 #48484e = 7.47）。optionTextColorPressed
+      // 同源（naive 取 primaryColorPressed=亮 accent，同为选中项按下瞬态文字）
+      InternalSelectMenu: {
+        optionTextColorActive: resolvedMode() === 'dark' ? '#e8e9ea' : ACCENT_SOLID_HEX[themeState.accent],
+        optionCheckColor: resolvedMode() === 'dark' ? '#e8e9ea' : ACCENT_SOLID_HEX[themeState.accent],
+        optionTextColorPressed: resolvedMode() === 'dark' ? '#e8e9ea' : ACCENT_SOLID_HEX[themeState.accent],
       },
     },
   }))
