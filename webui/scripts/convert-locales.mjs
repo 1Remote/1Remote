@@ -4315,6 +4315,10 @@ const bcp47 = (lower) =>
 // （合并同名文件夹确认/无数据源引导/搜索范围标注/复制密码/凭据空态指引/设置分组副标题）。
 const ROUND4 = {
   'de-DE': {
+    'row.selectEmptyFolder': 'Diesen leeren Ordner ausw\u00e4hlen (Sammell\u00f6schung)',
+    'batch.selectedFolders': '{m} leere Ordner',
+    'batchDelete.confirmFolders': '{m} leere Ordner l\u00f6schen? Dies kann nicht widerrufen werden.',
+    'batchDelete.confirmMixed': '{n} Server und {m} leere Ordner l\u00f6schen? Dies kann nicht widerrufen werden.',
     'tree.noDsHint':
       'Noch keine Datenquellen. F\u00fcgen Sie eine unter Optionen > Datenbank hinzu, um Server zu verwalten.',
     'editor.credEmptyHint':
@@ -4358,6 +4362,10 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Externe Protokoll-Runner',
   },
   'fr-FR': {
+    'row.selectEmptyFolder': 'S\u00e9lectionner ce dossier vide (suppression par lot)',
+    'batch.selectedFolders': '{m} dossier vide | {m} dossiers vides',
+    'batchDelete.confirmFolders': 'Supprimer {m} dossiers vides ? Cette action est irr\u00e9versible.',
+    'batchDelete.confirmMixed': 'Supprimer {n} serveurs et {m} dossiers vides ? Cette action est irr\u00e9versible.',
     'tree.noDsHint':
       'Aucune source de donn\u00e9es pour le moment. Ajoutez-en une dans Choix > Base de donn\u00e9es pour g\u00e9rer des serveurs.',
     'editor.credEmptyHint':
@@ -4401,6 +4409,11 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocoles externes',
   },
   'es-AR': {
+    'row.selectEmptyFolder': 'Seleccionar esta carpeta vac\u00eda (eliminaci\u00f3n por lotes)',
+    'batch.selectedFolders': '{m} carpeta vac\u00eda | {m} carpetas vac\u00edas',
+    'batchDelete.confirmFolders': '\u00bfEliminar {m} carpetas vac\u00edas? Esta acci\u00f3n no se puede deshacer.',
+    'batchDelete.confirmMixed':
+      '\u00bfEliminar {n} servidores y {m} carpetas vac\u00edas? Esta acci\u00f3n no se puede deshacer.',
     'tree.noDsHint':
       'A\u00fan no hay fuentes de datos. Agregue una en Opciones > Base de datos para empezar a administrar servidores.',
     'editor.credEmptyHint':
@@ -4444,6 +4457,11 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'it-IT': {
+    'row.selectEmptyFolder': 'Seleziona questa cartella vuota (eliminazione in blocco)',
+    'batch.selectedFolders': '{m} cartella vuota | {m} cartelle vuote',
+    'batchDelete.confirmFolders': 'Eliminare {m} cartelle vuote? Questa azione non pu\u00f2 essere annullata.',
+    'batchDelete.confirmMixed':
+      'Eliminare {n} server e {m} cartelle vuote? Questa azione non pu\u00f2 essere annullata.',
     'tree.noDsHint':
       'Non ci sono ancora sorgenti dati. Aggiungine una in Opzioni > Database per iniziare a gestire i server.',
     'editor.credEmptyHint':
@@ -4487,6 +4505,11 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runner di protocolli esterni',
   },
   'pt-BR': {
+    'row.selectEmptyFolder': 'Selecionar esta pasta vazia (exclus\u00e3o em lote)',
+    'batch.selectedFolders': '{m} pasta vazia | {m} pastas vazias',
+    'batchDelete.confirmFolders': 'Excluir {m} pastas vazias? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.',
+    'batchDelete.confirmMixed':
+      'Excluir {n} servidores e {m} pastas vazias? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.',
     'tree.noDsHint':
       'Ainda n\u00e3o h\u00e1 fontes de dados. Adicione uma em Op\u00e7\u00f5es > Base de dados para come\u00e7ar a gerenciar servidores.',
     'editor.credEmptyHint':
@@ -4531,6 +4554,11 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'pt-PT': {
+    'row.selectEmptyFolder': 'Selecionar esta pasta vazia (elimina\u00e7\u00e3o em lote)',
+    'batch.selectedFolders': '{m} pasta vazia | {m} pastas vazias',
+    'batchDelete.confirmFolders': 'Eliminar {m} pastas vazias? Esta a\u00e7\u00e3o n\u00e3o pode ser anulada.',
+    'batchDelete.confirmMixed':
+      'Eliminar {n} servidores e {m} pastas vazias? Esta a\u00e7\u00e3o n\u00e3o pode ser anulada.',
     'tree.noDsHint':
       'Ainda n\u00e3o h\u00e1 fontes de dados. Adicione uma em Op\u00e7\u00f5es > Base de dados para come\u00e7ar a gerir servidores.',
     'editor.credEmptyHint':
@@ -4574,6 +4602,14 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'ru-RU': {
+    'row.selectEmptyFolder':
+      '\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u044d\u0442\u0443 \u043f\u0443\u0441\u0442\u0443\u044e \u043f\u0430\u043f\u043a\u0443 (\u043c\u0430\u0441\u0441\u043e\u0432\u043e\u0435 \u0443\u0434\u0430\u043b\u0435\u043d\u0438\u0435)',
+    'batch.selectedFolders':
+      '{m} \u043f\u0443\u0441\u0442\u0430\u044f \u043f\u0430\u043f\u043a\u0430 | {m} \u043f\u0443\u0441\u0442\u044b\u0435 \u043f\u0430\u043f\u043a\u0438 | {m} \u043f\u0443\u0441\u0442\u044b\u0445 \u043f\u0430\u043f\u043e\u043a',
+    'batchDelete.confirmFolders':
+      '\u0423\u0434\u0430\u043b\u0438\u0442\u044c {m} \u043f\u0443\u0441\u0442\u044b\u0445 \u043f\u0430\u043f\u043e\u043a? \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u043d\u0435\u043b\u044c\u0437\u044f \u043e\u0442\u043c\u0435\u043d\u0438\u0442\u044c.',
+    'batchDelete.confirmMixed':
+      '\u0423\u0434\u0430\u043b\u0438\u0442\u044c {n} \u0441\u0435\u0440\u0432\u0435\u0440\u043e\u0432 \u0438 {m} \u043f\u0443\u0441\u0442\u044b\u0445 \u043f\u0430\u043f\u043e\u043a? \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u043d\u0435\u043b\u044c\u0437\u044f \u043e\u0442\u043c\u0435\u043d\u0438\u0442\u044c.',
     'tree.noDsHint':
       '\u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u043e\u0432 \u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442. \u0414\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0438\u0445 \u0432 \u0440\u0430\u0437\u0434\u0435\u043b\u0435 \u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b > \u0411\u0430\u0437\u0430 \u0434\u0430\u043d\u043d\u044b\u0445, \u0447\u0442\u043e\u0431\u044b \u043d\u0430\u0447\u0430\u0442\u044c \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u0435\u0440\u0432\u0435\u0440\u0430\u043c\u0438.',
     'editor.credEmptyHint':
@@ -4636,6 +4672,12 @@ const ROUND4 = {
       '\u0412\u043d\u0435\u0448\u043d\u0438\u0435 Runner \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432',
   },
   'pl-PL': {
+    'row.selectEmptyFolder': 'Zaznacz ten pusty folder (usuwanie wsadowe)',
+    'batch.selectedFolders': '{m} pusty folder | {m} puste foldery | {m} pustych folder\u00f3w',
+    'batchDelete.confirmFolders':
+      'Usun\u0105\u0107 {m} pustych folder\u00f3w? Tej operacji nie mo\u017cna cofn\u0105\u0107.',
+    'batchDelete.confirmMixed':
+      'Usun\u0105\u0107 {n} serwer\u00f3w i {m} pustych folder\u00f3w? Tej operacji nie mo\u017cna cofn\u0105\u0107.',
     'tree.noDsHint':
       'Brak jeszcze \u017ar\u00f3de\u0142 danych. Dodaj je w Opcje > Baza danych, aby zarz\u0105dza\u0107 serwerami.',
     'editor.credEmptyHint':
@@ -4680,6 +4722,12 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Zewn\u0119trzne Runner protoko\u0142\u00f3w',
   },
   'cs-CZ': {
+    'row.selectEmptyFolder': 'Vybrat tuto pr\u00e1zdnou slo\u017eku (hromadn\u00e9 odstran\u011bn\u00ed)',
+    'batch.selectedFolders':
+      '{m} pr\u00e1zdn\u00e1 slo\u017eka | {m} pr\u00e1zdn\u00e9 slo\u017eky | {m} pr\u00e1zdn\u00fdch slo\u017eek',
+    'batchDelete.confirmFolders': 'Odstranit {m} pr\u00e1zdn\u00fdch slo\u017eek? Tuto akci nelze vr\u00e1tit.',
+    'batchDelete.confirmMixed':
+      'Odstranit {n} server\u016f a {m} pr\u00e1zdn\u00fdch slo\u017eek? Tuto akci nelze vr\u00e1tit.',
     'tree.noDsHint':
       'Zat\u00edm \u017e\u00e1dn\u00e9 zdroje dat. P\u0159idejte je v P\u0159edvolby > Datab\u00e1ze a za\u010dn\u011bte spravovat servery.',
     'editor.credEmptyHint':
@@ -4724,6 +4772,10 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Extern\u00ed Runnery protokol\u016f',
   },
   'gl-ES': {
+    'row.selectEmptyFolder': 'Seleccionar este cartafol baleiro (eliminaci\u00f3n por lotes)',
+    'batch.selectedFolders': '{m} cartafol baleiro | {m} cartafoles baleiros',
+    'batchDelete.confirmFolders': '\u00bfEliminar {m} cartafoles baleiros? Non se pode desfacer.',
+    'batchDelete.confirmMixed': '\u00bfEliminar {n} servidores e {m} cartafoles baleiros? Non se pode desfacer.',
     'tree.noDsHint':
       'A\u00ednda non hai fontes de datos. Engada unha en Opci\u00f3ns > Base de datos para comezar a xestionar servidores.',
     'editor.credEmptyHint':
@@ -4767,6 +4819,13 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'ja-JP': {
+    'row.selectEmptyFolder':
+      '\u3053\u306e\u7a7a\u30d5\u30a9\u30eb\u30c0\u30fc\u3092\u9078\u629e\uff08\u4e00\u62ec\u524a\u9664\uff09',
+    'batch.selectedFolders': '{m} \u500b\u306e\u7a7a\u30d5\u30a9\u30eb\u30c0\u30fc',
+    'batchDelete.confirmFolders':
+      '{m} \u500b\u306e\u7a7a\u30d5\u30a9\u30eb\u30c0\u30fc\u3092\u524a\u9664\u3057\u307e\u3059\u304b\uff1f\u3053\u306e\u64cd\u4f5c\u306f\u5143\u306b\u623b\u305b\u307e\u305b\u3093\u3002',
+    'batchDelete.confirmMixed':
+      '{n} \u53f0\u306e\u30b5\u30fc\u30d0\u30fc\u3068 {m} \u500b\u306e\u7a7a\u30d5\u30a9\u30eb\u30c0\u30fc\u3092\u524a\u9664\u3057\u307e\u3059\u304b\uff1f\u3053\u306e\u64cd\u4f5c\u306f\u5143\u306b\u623b\u305b\u307e\u305b\u3093\u3002',
     'tree.noDsHint':
       '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u304c\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002\u30aa\u30d7\u30b7\u30e7\u30f3 > \u30c7\u30fc\u30bf\u30d9\u30fc\u30b9 \u3067\u8ffd\u52a0\u3059\u308b\u3068\u30b5\u30fc\u30d0\u30fc\u7ba1\u7406\u3092\u59cb\u3081\u3089\u308c\u307e\u3059\u3002',
     'editor.credEmptyHint':
@@ -4820,6 +4879,12 @@ const ROUND4 = {
     'settings.nav.runnersSub': '\u5916\u90e8\u30d7\u30ed\u30c8\u30b3\u30eb\u306e Runner',
   },
   'zh-TW': {
+    'row.selectEmptyFolder': '\u9078\u53d6\u6b64\u7a7a\u8cc7\u6599\u593e\uff08\u53ef\u6279\u6b21\u522a\u9664\uff09',
+    'batch.selectedFolders': '{m} \u500b\u7a7a\u8cc7\u6599\u593e',
+    'batchDelete.confirmFolders':
+      '\u78ba\u5b9a\u522a\u9664 {m} \u500b\u7a7a\u8cc7\u6599\u593e\uff1f\u6b64\u64cd\u4f5c\u7121\u6cd5\u5fa9\u539f\u3002',
+    'batchDelete.confirmMixed':
+      '\u78ba\u5b9a\u522a\u9664 {n} \u53f0\u4f3a\u670d\u5668\u8207 {m} \u500b\u7a7a\u8cc7\u6599\u593e\uff1f\u6b64\u64cd\u4f5c\u7121\u6cd5\u5fa9\u539f\u3002',
     'tree.noDsHint':
       '\u9084\u6c92\u6709\u8cc7\u6599\u4f86\u6e90\uff1a\u8acb\u5230 \u8a2d\u5b9a \u2192 \u8cc7\u6599\u5eab \u65b0\u589e\u5f8c\u958b\u59cb\u7ba1\u7406\u4f3a\u670d\u5668',
     'editor.credEmptyHint':

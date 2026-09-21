@@ -76,6 +76,7 @@ export function useRowChecks({ sorted, servers, folders }) {
   }
   function clearChecked() {
     checked.value = new Set()
+    checkedFolders.value = new Map()
     anchorIdx = -1
   }
 
@@ -88,7 +89,14 @@ export function useRowChecks({ sorted, servers, folders }) {
       )
       .map((s) => s.id)
   }
-  // 各文件夹行三态派生（checked=全选 / indeterminate=半选 / count=子孙数，0=空文件夹禁用）。
+  // 空文件夹勾选（owner 2026-09-21 第二轮反馈）：无子孙服务器的文件夹复选框此前禁用，
+  // 无法勾选几个不用的空文件夹后直接删除。checkedFolders 只收空文件夹（键与 rowKey
+  // 同构 'f:ds:path'，值存 {dsName,path} 供批量删除直接消费）；有子孙的文件夹仍走
+  // 「勾选=级联全部子孙服务器」（owner H38 注记「选文件夹=勾选所有子级」的语义）。
+  const checkedFolders = ref(new Map())
+
+  // 各文件夹行三态派生（checked=全选 / indeterminate=半选 / count=子孙数）。
+  // 空文件夹（count=0）的 checked 来自 checkedFolders（可勾选待批量删除）。
   // Map 键与调用方 rowKey 同构（'f:ds:path'）；O(文件夹×服务器) 一次算全层并缓存到依赖
   // 变化——若逐行内联计算会随虚拟滚动窗口反复重算
   const folderChecks = computed(() => {
@@ -97,8 +105,9 @@ export function useRowChecks({ sorted, servers, folders }) {
       const ids = folderDescendantIds(f)
       let n = 0
       for (const id of ids) if (checked.value.has(id)) n++
-      m.set('f:' + f.dsName + ':' + f.path, {
-        checked: ids.length > 0 && n === ids.length,
+      const key = 'f:' + f.dsName + ':' + f.path
+      m.set(key, {
+        checked: ids.length > 0 ? n === ids.length : checkedFolders.value.has(key),
         indeterminate: n > 0 && n < ids.length,
         count: ids.length,
       })
@@ -106,10 +115,18 @@ export function useRowChecks({ sorted, servers, folders }) {
     return m
   })
   // 勾选文件夹 = 全部子孙 id 加入 checked（未选/半选态点击都补全），已全选 = 移除全部子孙。
-  // checked 始终只存服务器 id，计数与批量编辑/导出自然作用于全集
+  // checked 始终只存服务器 id，计数与批量编辑/导出自然作用于全集。
+  // 空文件夹（0 子孙）= 切换 checkedFolders（勾选待批量删除的文件夹本身）
   function onFolderToggleCheck(f) {
     const ids = folderDescendantIds(f)
-    if (!ids.length) return
+    if (!ids.length) {
+      const key = 'f:' + f.dsName + ':' + f.path
+      const next = new Map(checkedFolders.value)
+      if (next.has(key)) next.delete(key)
+      else next.set(key, { dsName: f.dsName, path: f.path })
+      checkedFolders.value = next
+      return
+    }
     const uncheck = ids.every((id) => checked.value.has(id))
     const next = new Set(checked.value)
     for (const id of ids) uncheck ? next.delete(id) : next.add(id)
@@ -131,6 +148,7 @@ export function useRowChecks({ sorted, servers, folders }) {
 
   return {
     checked,
+    checkedFolders,
     allChecked,
     someChecked,
     allCb,

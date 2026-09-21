@@ -373,20 +373,30 @@ function onDelete(server) {
 // ---- 批量删除：批量条「✕ 删除」→ 确认（autoFocus:false 同 onDelete——回车不可误触）→
 // 逐台串行 DELETE + 进度 toast（loading 句柄原地更新 content）→ reload。
 // 删除后指向已删行的树叶选中态回退；勾选集由 useRowChecks 的数据剔除 watch 自动收敛 ----
-function onBatchDelete(ids) {
-  if (!ids?.length) return
+function onBatchDelete(ids, folders = []) {
   const list = (ids || []).map((id) => servers.value.find((s) => s.id === id)).filter(Boolean)
-  if (!list.length) return
+  const emptyFolders = folders.filter((f) => f && f.dsName && f.path != null)
+  if (!list.length && !emptyFolders.length) return
+  // 混合确认文案：仅服务器 / 仅空文件夹 / 两者（空文件夹删除不可逆且与服务器同批，一并确认）
+  const content =
+    list.length && emptyFolders.length
+      ? t('batchDelete.confirmMixed', { n: list.length, m: emptyFolders.length })
+      : list.length
+        ? t('batchDelete.confirmText', { n: list.length })
+        : t('batchDelete.confirmFolders', { m: emptyFolders.length })
   dialog.create({
     title: t('batchDelete.confirmTitle'),
-    content: t('batchDelete.confirmText', { n: list.length }),
+    content,
     // 删除类确认统一形态：无图标 + 红 positive（同 onDelete）
     showIcon: false,
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
     positiveButtonProps: { type: 'error' },
     autoFocus: false,
-    onPositiveClick: () => runBatchDelete(list),
+    onPositiveClick: () => {
+      if (list.length) runBatchDelete(list)
+      if (emptyFolders.length) folderOps.deleteEmptyFolders(emptyFolders)
+    },
   })
 }
 

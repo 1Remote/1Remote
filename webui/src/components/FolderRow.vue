@@ -39,8 +39,8 @@ const cbEl = ref(null)
 watchEffect(() => {
   if (cbEl.value) cbEl.value.indeterminate = !!props.checkState?.indeterminate
 })
-// 空（虚拟）文件夹无子孙可勾：禁用置灰（勾选空集无意义）
-const disabled = () => !props.checkState?.count
+// 空（虚拟）文件夹：复选框可用——勾选的是「文件夹本身」（checkedFolders，批量删除
+// 空文件夹的通道，owner 2026-09-21 第二轮反馈）；有子孙时仍为级联勾选服务器
 </script>
 
 <template>
@@ -62,8 +62,7 @@ const disabled = () => !props.checkState?.count
         type="checkbox"
         class="cb"
         :checked="!!checkState?.checked"
-        :disabled="disabled()"
-        :title="t('row.selectFolder')"
+        :title="checkState?.count ? t('row.selectFolder') : t('row.selectEmptyFolder')"
         @click.stop
         @dblclick.stop
         @change="emit('toggle-check')"

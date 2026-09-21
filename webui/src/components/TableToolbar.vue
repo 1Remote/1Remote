@@ -9,7 +9,8 @@ import { useI18n } from 'vue-i18n'
 import { HIDEABLE_COLS } from '../composables/useColumns'
 
 const props = defineProps({
-  checkedCount: { type: Number, default: 0 }, // 勾选服务器数（≥1 显示批量条）
+  checkedCount: { type: Number, default: 0 }, // 勾选服务器数（与 folderCount 合计 ≥1 显示批量条）
+  folderCount: { type: Number, default: 0 }, // 勾选的空文件夹数（批量删除通道）
   isCustom: { type: Boolean, default: false }, // ≡ 自定义顺序模式激活（行可拖拽重排）
   colMenu: { type: Boolean, default: false }, // ▦ 列菜单展开态
   hiddenCols: { type: Object, default: () => ({}) }, // { colKey: bool }（true=隐藏）
@@ -53,22 +54,36 @@ onBeforeUnmount(() => clearInterval(hintTimer))
 <template>
   <Teleport to="#crumb-actions">
     <!-- 批量条：勾选 ≥1 时出现；连接/批量编辑/导出 emit 到 ServerTable 转发父级执行 -->
-    <div v-if="checkedCount" class="batch-bar">
-      <span class="bb-count">{{ t('batch.selected', { n: checkedCount }) }}</span>
-      <button class="bb-btn bb-primary" :title="t('batch.connectTitle')" @click="emit('batch-connect')">
+    <div v-if="checkedCount || folderCount" class="batch-bar">
+      <span class="bb-count">{{
+        checkedCount && folderCount
+          ? t('batch.selected', { n: checkedCount }) + ' · ' + t('batch.selectedFolders', { m: folderCount })
+          : checkedCount
+            ? t('batch.selected', { n: checkedCount })
+            : t('batch.selectedFolders', { m: folderCount })
+      }}</span>
+      <button
+        class="bb-btn bb-primary"
+        :disabled="!checkedCount"
+        :title="t('batch.connectTitle')"
+        @click="emit('batch-connect')"
+      >
         ▶ {{ t('batch.connect') }}
       </button>
       <!-- 批量编辑：emit 勾选 id 数组；恰勾 1 台时按钮显「编辑」（ctx.edit，14 语言有译），
            抽屉转单台编辑由 ServerListView.openBulkEdit 判 1 台分流，>1 台才进 bulk 模式 -->
       <button
         class="bb-btn"
+        :disabled="!checkedCount"
         :title="checkedCount === 1 ? t('batch.editSingleTitle') : t('batch.editTitle', { n: checkedCount })"
         @click="emit('bulk-edit')"
       >
         ✎ {{ checkedCount === 1 ? t('ctx.edit') : t('batch.edit') }}
       </button>
       <!-- 导出：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
-      <button class="bb-btn" :title="t('batch.exportTitle')" @click="emit('export')">⤓ {{ t('batch.export') }}</button>
+      <button class="bb-btn" :disabled="!checkedCount" :title="t('batch.exportTitle')" @click="emit('export')">
+        ⤓ {{ t('batch.export') }}
+      </button>
       <!-- 删除：danger 样式与连接主按钮相区分；确认对话框（含逐台删除进度）由 ServerListView 执行 -->
       <button class="bb-btn bb-danger" :title="t('batch.deleteTitle')" @click="emit('batch-delete')">
         ✕ {{ t('batch.delete') }}
@@ -78,7 +93,9 @@ onBeforeUnmount(() => clearInterval(hintTimer))
     <!-- 无勾选时的常驻轻提示（--text-4 小字，克制）：双击连接与 Ctrl/Shift 多选两条
          6s 轮换（发现位唯一化，见 script）；有勾选时让位给批量条（同位置互斥，不叠加噪音） -->
     <Transition name="hint-fade" mode="out-in">
-      <span v-if="!checkedCount" :key="HINT_KEYS[hintIdx]" class="tt-hint">{{ t(HINT_KEYS[hintIdx]) }}</span>
+      <span v-if="!checkedCount && !folderCount" :key="HINT_KEYS[hintIdx]" class="tt-hint">{{
+        t(HINT_KEYS[hintIdx])
+      }}</span>
     </Transition>
     <!-- ≡ = 自定义顺序模式开关（开启后行可拖拽重排）；
          ▦ = 列菜单（显隐 + 列宽说明），下拉以本簇为锚向下展开 -->

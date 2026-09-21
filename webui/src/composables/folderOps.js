@@ -435,6 +435,34 @@ export function useFolderOps() {
     })
   }
 
+  // 空文件夹批量删除（owner 2026-09-21 第二轮反馈：勾选几个不用的空文件夹后直接删除——
+  // 此前空文件夹复选框禁用无此通道）。确认框由调用方（ServerListView）统一弹一次；
+  // 本函数只做执行：逐个「键删除」——空文件夹无服务器，rewriteServerPaths 为 0 台防御性
+  // 调用，键走 null 删除语义（子键上移，空文件夹无子键则整体消失），一次 reload 收尾。
+  async function deleteEmptyFolders(folders) {
+    if (busy.value) return
+    if (!folders?.length) return
+    busy.value = true
+    let failed = 0
+    try {
+      for (const f of folders) {
+        try {
+          await rewriteServerPaths(f.dsName, f.path, parentPath(f.path))
+          const okKeys = await rewriteKeys(f.dsName, f.path, null)
+          if (!okKeys) failed++
+        } catch (err) {
+          console.warn('[folderOps] delete empty folder failed:', f.path, err?.message || err)
+          failed++
+        }
+      }
+      await reload()
+      if (failed) message.error(t('tree.folderDeleteFailed'))
+      else message.success(t('tree.folderDeleted'))
+    } finally {
+      busy.value = false
+    }
+  }
+
   return {
     busy,
     createFolder,
@@ -446,6 +474,7 @@ export function useFolderOps() {
     // 会在下次调整确认形态时裂成两种）与 rewriteServerPaths/rewriteKeys/countAffectedServers
     //（树内拖拽 applyTreeMove 的执行体，自拷贝收敛）
     confirmFolderMerge,
+    deleteEmptyFolders,
     rewriteServerPaths,
     rewriteKeys,
     countAffectedServers,

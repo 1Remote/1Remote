@@ -87,18 +87,26 @@ const { datasources, searchedIds, dsWritable } = useServers() // 文件夹右键
 
 // ---- 过滤 ----
 const filtered = computed(() => {
-  // 搜索激活：列表已由 searchedIds 收窄，且搜索本就是全库递归语义（后端跨数据源/子文件夹
+  // 搜索激活：列表已由 searchedIds 收窄，且搜索本就是全库递归语义（后端跨数据源/跨文件夹
   // 匹配）——树选中过滤整体让位，子文件夹深处的命中一律可见
   if (searchedIds.value != null) return props.servers
   const sel = props.selection
   if (!sel || !sel.dataSourceName) return props.servers // 「全部数据」虚拟根 = 跨库总览（递归，无文件夹行）
-  // H38（spec §3.2「选中文件夹节点：列表显示该文件夹下（含子文件夹）全部服务器」）：
-  // 前缀匹配含全部子孙服务器，不再只列直接子级；子文件夹仍以文件夹行呈现导航入口
-  //（资源管理器式的浏览捷径保留），文件夹行复选框级联勾选子孙的语义与列表内容对齐。
-  // folderPath 两侧归一化（根选中/根级服务器的 folderPath 可能是 '' 或 undefined）
+  // 数据源根（folderPath 空）：只列根级服务器——根是导航层（子文件夹以文件夹行呈现，
+  // 其内部台数由各自徽标承载）。H38 的递归摊平曾把子树服务器全部平铺进根视图（owner
+  // 实测反馈：勾选 323 文件夹会把「同级平铺显示的 323 内 8 台」一起勾走，观感即数据
+  // 错位）——恢复根=直接子级。folderPath 两侧归一化（'' 或 undefined）。
+  const fp = (s) => s.folderPath || ''
   const target = sel.folderPath || ''
-  const prefix = target ? target + '/' : ''
-  return props.servers.filter((s) => s.dataSourceName === sel.dataSourceName && (s.folderPath || '').startsWith(prefix))
+  if (!target) return props.servers.filter((s) => s.dataSourceName === sel.dataSourceName && fp(s) === '')
+  // 选中文件夹（spec §3.2）：显示该文件夹下（含子文件夹）全部服务器——等值（直接
+  // 子级）或前缀（深层子孙）都命中。第五轮后续修复：此前漏掉等值分支，直接子级
+  // （folderPath === '323'，不含 '/'）被 startsWith('323/') 排除——「进入 323 只看到
+  // 深层那台、67 里明明有服务器却显示空」即此因。子文件夹仍以文件夹行呈现导航入口。
+  const prefix = target + '/'
+  return props.servers.filter(
+    (s) => s.dataSourceName === sel.dataSourceName && (fp(s) === target || fp(s).startsWith(prefix))
+  )
 })
 // H9：搜索激活时强制显示文件夹列——搜索是全库递归语义（后端跨数据源/跨文件夹匹配），
 // 子文件夹视图内搜索的结果可能来自任意位置，文件夹列（数据源/路径）是唯一来处标注，
@@ -460,6 +468,7 @@ const rowKey = (row) =>
 // 掉的行不进勾选集，两端口径一致（完整语义见 useRowChecks.js 文件头）----
 const {
   checked,
+  checkedFolders,
   allChecked,
   allCb,
   rowClickSelect,
@@ -833,13 +842,14 @@ onBeforeUnmount(() => {
          （#crumb-actions），勾选/列状态仍归本组件；连接/批量编辑/导出经此转发到父级执行 -->
     <TableToolbar
       :checked-count="checked.size"
+      :folder-count="checkedFolders.size"
       :is-custom="isCustom"
       :col-menu="colMenu"
       :hidden-cols="hiddenCols"
       :col-labels="COL_LABELS"
       :folder-col-locked="!showFolder"
       @batch-connect="emit('batch-connect', [...checked])"
-      @batch-delete="emit('batch-delete', [...checked])"
+      @batch-delete="emit('batch-delete', [...checked], [...checkedFolders.values()])"
       @bulk-edit="emit('bulk-edit', [...checked])"
       @export="emit('export', [...checked])"
       @clear-checked="clearChecked"

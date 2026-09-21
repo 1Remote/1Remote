@@ -89,10 +89,13 @@
   "batch.delete": "Delete",
   "batch.deleteTitle": "Delete all selected",
   "batch.clear": "Clear selection",
+"batch.selectedFolders": "{m} empty folder | {m} empty folders",
 
   "batchConnect.confirmTitle": "Connect multiple servers",
   "batchConnect.confirmText": "You are about to connect to {n} servers. Continue?",
 
+  "batchDelete.confirmFolders": "Delete {m} empty folders? This cannot be undone.",
+  "batchDelete.confirmMixed": "Delete {n} servers and {m} empty folders? This cannot be undone.",
   "batchDelete.confirmTitle": "Delete servers",
   "batchDelete.confirmText": "Delete {n} servers? This cannot be undone.",
 
@@ -123,6 +126,7 @@
 
   "row.select": "Select",
   "row.selectFolder": "Select all servers in this folder (including subfolders)",
+"row.selectEmptyFolder": "Select this empty folder (batch delete)",
   "row.connect": "Connect",
   "row.edit": "Edit",
   "row.note": "Note",

@@ -89,10 +89,13 @@
   "batch.delete": "删除",
   "batch.deleteTitle": "删除全部已选",
   "batch.clear": "取消选择",
+"batch.selectedFolders": "{m} 个空文件夹",
 
   "batchConnect.confirmTitle": "连接多台服务器",
   "batchConnect.confirmText": "即将连接 {n} 台服务器，是否继续？",
 
+  "batchDelete.confirmFolders": "确定删除 {m} 个空文件夹？此操作无法撤销。",
+  "batchDelete.confirmMixed": "确定删除 {n} 台服务器与 {m} 个空文件夹？此操作无法撤销。",
   "batchDelete.confirmTitle": "删除服务器",
   "batchDelete.confirmText": "确定删除 {n} 台服务器？此操作无法撤销。",
 
@@ -123,6 +126,7 @@
 
   "row.select": "选择",
   "row.selectFolder": "选择文件夹内所有服务器（含子文件夹）",
+"row.selectEmptyFolder": "选择此空文件夹（可批量删除）",
   "row.connect": "连接",
   "row.edit": "编辑",
   "row.note": "备注",

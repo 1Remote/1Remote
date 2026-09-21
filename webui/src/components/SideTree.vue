@@ -15,7 +15,6 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
-import { progressToast } from '../utils/progressToast'
 import { useServers } from '../composables/useServers'
 import { buildTree, countHolderServers, fullKey, holderAt, isDescendantPath } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
@@ -252,94 +251,40 @@ function targetParentPath(row, zone) {
   return p
 }
 
-// H3：目标层同名文件夹的合并确认已收进 folderOps.confirmFolderMerge（J27：树内/
-// 列表两路共用一份——SideTree 持有 folderOps 实例，dialog 上下文同源，删本地拷贝）。
-
-// 落点执行：算受影响服务器集合的新 TreeNodes → 逐台 GET config → 改 TreeNodes → PUT
-//（UpdateServer 不触发 SSE——由前端显式 reload() 刷新）。
-// H1（+树内拖拽失效 bug）：文件夹「整节点迁移」三件缺一不可——
-//  ① 服务器新路径 = 目标父层 + 被拖文件夹名 + 余量（此前 newPath 漏掉文件夹名一段，
-//     「移入」实际把被拖文件夹的内容打散进目标、文件夹本身消失）；
-//  ② tree-state 虚拟文件夹键随前缀重写迁移（此前只搬服务器不动键：旧位置物化出
-//     幽灵空文件夹、纯空文件夹原地不动、含空子文件夹的子树被拆散）——对齐 WPF
-//     整节点移动 + 展开字典重建（ServerTreeViewModel.cs:667 / LocalityTreeViewService.cs:74）；
-//  ③ 同级顺序：before/after 重排目标层兄弟文件夹序号（1 起）；into 删除被拖文件夹的
-//     序号键（排末尾，与 WPF AddChild 后语义一致）。
-// H3：目标层已有同名文件夹（非自身）→ 先弹窗确认合并；确认后两侧服务器/键归一到
-// 同一路径，天然合并。大子树逐台串行耗时——loading 进度 toast（原地更新+终态转换）
-// J28：①②的执行体改调 folderOps.rewriteServerPaths / rewriteKeys（前缀替换与
-// 「父层+名+余量」逐路径等价，见 folders.rewriteServerPath）——不再持有同构拷贝，
-// 核心写库逻辑单实现防漂移。
+// 落点执行（owner 2026-09-21 第二轮反馈：树内拖文件夹仍不动——列表→树路径可用而
+// 树内不可用，两者的差异只在执行体；据此把跨层移动整体委托给 folderOps.moveFolder
+// ——与列表→树完全同一条已验证路径（H3 合并确认 + 前缀重写 + 键迁移 + 进度 toast
+// 都在其内），树内不再自持执行体，任何一侧的修复自然双侧生效）：
+// - into（文件夹/数据源根行中部）→ moveFolder 到目标文件夹/根；
+// - before/after 且跨层（目标在同层的其它父层）→ moveFolder 到目标的父层（落到该层
+//   末尾，与 WPF 保留旧序号同语义）；
+// - before/after 且同层 → 纯重排（仅写同级序号键，不动服务器不动键，原逻辑保留）。
 async function applyTreeMove(src, row, zone) {
   const parentPath = targetParentPath(row, zone)
-  const name = src.folder.name
-  const newPath = [...parentPath, name].join('/')
-  // H3：跨层移动且目标层已有同名文件夹 → 合并确认（同层 before/after 重排不触发：
-  // 同层同名只有 src 自己，folderOps.moveFolder 的同名分支同款口径）
+  const newPath = [...parentPath, src.folder.name].join('/')
   if (newPath !== src.folder.path) {
-    const holder = holderAt(tree.value, src.dsName, parentPath.join('/'))
-    if (holder?.folders.some((f) => f.name === name && f.path !== src.folder.path)) {
-      if (!(await folderOps.confirmFolderMerge(name))) return
-    }
+    // 跨层移动：与列表文件夹行拖拽同款（同名校验/合并确认/整子树前缀重写全在 moveFolder）
+    await folderOps.moveFolder(src.dsName, src.folder.path, parentPath.join('/'))
+    return
   }
-  const total = folderOps.countAffectedServers(src.dsName, src.folder.path)
-  let moved = 0
-  let failed = 0
-  // 空子树（0 台受影响，纯键迁移/顺序调整）不弹「0/0」进度，终态直接常规 toast
-  const toast = progressToast(message, total, (done) => t('toast.treeWorking', { ok: done, n: total }))
+
+  // 同层 before/after 纯重排：目标层兄弟文件夹序号重写（1 起），不动服务器与键
   moving.value = true
   try {
-    ;({ moved, failed } = await folderOps.rewriteServerPaths(src.dsName, src.folder.path, newPath, () =>
-      toast.step(moved + failed + 1)
-    ))
-
-    // 同级顺序写回（仅 before/after 重排；into 清键排末尾）
-    let orderChanged = false
-    if (zone === 'before' || zone === 'after') {
-      const holder = holderAt(tree.value, src.dsName, parentPath.join('/'))
-      if (holder) {
-        const siblings = levelChildren(holder).filter((f) => f.path !== src.folder.path)
-        const idx = siblings.findIndex((f) => f.path === row.folder.path)
-        if (idx >= 0) {
-          siblings.splice(zone === 'before' ? idx : idx + 1, 0, src.folder)
-          const next = { ...orderMap.value }
-          siblings.forEach((f, i) => {
-            next[FOLDER_ID + f.name] = i + 1
-          })
-          orderMap.value = next
-          orderChanged = true
-        }
-      }
-    } else {
-      const id = FOLDER_ID + src.folder.name
-      if (orderMap.value[id] != null) {
-        const next = { ...orderMap.value }
-        delete next[id]
-        orderMap.value = next
-        orderChanged = true
-      }
-    }
-
-    // H1②：虚拟文件夹键前缀重写（folderOps.rewriteKeys：本地即时物化 + 合并基底 PUT，
-    // orderMap 已含上面的顺序变更、随同一次 PUT 携带）。纯重排不动键。
-    let keysAction = 'none' // 'none' | 'moved' | 'failed'
-    if (newPath !== src.folder.path) {
-      keysAction = (await folderOps.rewriteKeys(src.dsName, src.folder.path, newPath)) ? 'moved' : 'failed'
-    } else if (orderChanged) {
-      await flushSave()
-    }
-
-    if (moved === 0 && failed === 0 && !orderChanged && keysAction === 'none') {
-      toast.cancel() // 完全无变化（原位放下）：撤下进度，无终态文案
-      return
-    }
-    await reload() // UpdateServer 路径不触发 SSE（见上），显式刷新列表/树
-    // 终态四档：键落盘失败或服务器失败 / 常规移动（moved>0）/ 纯键迁移（空文件夹移动，
-    // H1 后可达）/ 纯重排（第三轮 G11：moved=0 的纯重排此前显示「已移动 0 台服务器」）
-    if (failed || keysAction === 'failed')
-      toast.finish('error', t('toast.treeMoveFailed', { n: failed + (keysAction === 'failed' ? 1 : 0) }))
-    else if (moved > 0 || keysAction === 'moved') toast.finish('success', t('tree.folderMoved', { name }))
-    else toast.finish('success', t('tree.folderReordered'))
+    const holder = holderAt(tree.value, src.dsName, parentPath.join('/'))
+    if (!holder) return
+    const siblings = levelChildren(holder).filter((f) => f.path !== src.folder.path)
+    const idx = siblings.findIndex((f) => f.path === row.folder.path)
+    if (idx < 0) return
+    siblings.splice(zone === 'before' ? idx : idx + 1, 0, src.folder)
+    const next = { ...orderMap.value }
+    siblings.forEach((f, i) => {
+      next[FOLDER_ID + f.name] = i + 1
+    })
+    orderMap.value = next
+    await flushSave() // orderMap 随合并基底 PUT 落盘
+    await reload()
+    message.success(t('tree.folderReordered'))
   } finally {
     moving.value = false
   }
