@@ -165,11 +165,6 @@ export function useFolderOps() {
     )
   }
 
-  // 受影响台数（进度 toast 的 total 用；SideTree.applyTreeMove 经共享接口消费）
-  function countAffectedServers(dsName, oldPath) {
-    return affectedServers(dsName, oldPath).length
-  }
-
   // 受影响服务器（oldPath 前缀下）逐台 config GET → TreeNodes 重写 → PUT。
   // 返回 {moved, failed}；newPath 的 null=删除上移语义由 rewriteServerPath 统一
   //（前缀替换与「目标父层+文件夹名+余量」逐路径等价，见 rewriteServerPath）；
@@ -471,12 +466,11 @@ export function useFolderOps() {
     moveServersToFolder,
     moveFolder,
     // J27/J28 共享原语：confirmFolderMerge（树内/列表两路合并确认共用——双份实现
-    // 会在下次调整确认形态时裂成两种）与 rewriteServerPaths/rewriteKeys/countAffectedServers
-    //（树内拖拽 applyTreeMove 的执行体，自拷贝收敛）
+    // 会在下次调整确认形态时裂成两种）与 rewriteServerPaths/rewriteKeys（树内拖拽
+    // applyTreeMove 的执行体，自拷贝收敛；受影响台数在执行体内直接算，不再外发）
     confirmFolderMerge,
     deleteEmptyFolders,
     rewriteServerPaths,
     rewriteKeys,
-    countAffectedServers,
   }
 }

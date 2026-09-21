@@ -40,16 +40,9 @@ const tileStyle = (s) => {
 // 有地址时「address[:port] + ' (userName)'」（ProtocolBaseWithAddressPortUserPwd.GetSubTitle
 // 的 "address:port (user)" 格式；端口为空时省略 ":port" 免得出现悬挂冒号）；用户名为空退化
 // 为纯地址（WPF 同款不带空括号）。无地址协议（Serial）回退 SubTitle（"COM1(9600)"），
-// 旧后端无该字段时再退协议名
-const addressText = (s) => {
-  if (!s.address) return s.subTitle || s.protocol
-  let text = s.address + (s.port ? ':' + s.port : '')
-  if (s.userName) text += ' (' + s.userName + ')'
-  return text
-}
-// 地址列主段/用户名段拆分（J5）：'(userName)' 是凭据辅助信息，弱化到 --text-3 提升扫读
-// 效率（与列内备注/时间弱化档同语言；两主题下 --text-3 对比均 AA）。两段各自跑
-// splitHighlight——搜索命中用户名时该段内仍高亮
+// 旧后端无该字段时再退协议名。
+// J5：'(userName)' 段是凭据辅助信息，显示时弱化到 --text-3；两段各自跑 splitHighlight——
+// 搜索命中用户名时该段内仍高亮。
 const addrParts = computed(() => {
   const s = props.server
   if (!s.address) return { main: s.subTitle || s.protocol, user: '' }
@@ -58,6 +51,8 @@ const addrParts = computed(() => {
     user: s.userName ? ' (' + s.userName + ')' : '',
   }
 })
+// 悬停 title 全文 = 主段 + 用户名段拼接（与显示同源，避免两处拼串逻辑漂移）
+const addressText = computed(() => addrParts.value.main + addrParts.value.user)
 // 文件夹列：「全部数据」根视图无文件夹行，此列是
 // 唯一来源上下文——「数据源 / 路径」定位信息（额外前缀数据源名，同名路径跨数据源区分）；
 // 进入文件夹后列隐藏（面包屑承载路径）
@@ -116,7 +111,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
         ></span
       >
     </div>
-    <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText(server)">
+    <div v-if="!hiddenCols || !hiddenCols.addr" class="cell cell-addr" :title="addressText">
       <!-- 内层 .addr-text 承载省略号三件套（J3）：text-overflow 对 flex 容器不生效，
            裸文本在 .cell 上截断无 "…"；主段与弱化用户名段（J5）同在内层 -->
       <span class="addr-text"
