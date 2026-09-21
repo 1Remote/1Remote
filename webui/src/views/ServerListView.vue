@@ -145,9 +145,11 @@ const showOffline = computed(() => !connected.value && !loading.value && !server
 // 的用户误以为库丢了）。文件夹全集以 tree-state 物化键为准（folderPathsByDs）
 const anyFolders = computed(() => [...folderPathsByDs.value.values()].some((set) => set.size > 0))
 const showGuide = computed(() => connected.value && !loading.value && !servers.value.length && !anyFolders.value)
-// 引导卡协议一览（与 ProtocolBadge 协议集一致）：9 协议灰阶瓦片——身份色仅用于行内徽章，
-// 引导卡只表"支持这些"，克制灰阶
-const GUIDE_PROTOCOLS = ['RDP', 'SSH', 'SFTP', 'FTP', 'VNC', 'Telnet', 'Serial', 'APP', 'RdpApp']
+// 引导卡协议一览（与 ProtocolBadge 协议集一致，键 = 后端 ProtocolName）：9 协议灰阶
+// 瓦片——身份色仅用于行内徽章，引导卡只表"支持这些"，克制灰阶。RemoteApp 而非
+// 类名 RdpApp（第三轮 G4：与编辑器下拉/行内徽章同一名字，建立"引导卡→编辑器→列表"
+// 的同一事物映射）
+const GUIDE_PROTOCOLS = ['RDP', 'SSH', 'SFTP', 'FTP', 'VNC', 'Telnet', 'Serial', 'APP', 'RemoteApp']
 const showNoMatch = computed(() => servers.value.length > 0 && !visibleServers.value.length) // 标签/搜索交集为空
 const tableHidden = computed(() => showSkeleton.value || showOffline.value || showGuide.value || showNoMatch.value)
 // 表格卸载后 counted 不再上报，面包屑计数跟随空态归零（骨架期如实显示 0）
@@ -454,6 +456,15 @@ function openTagManager() {
   tagManager.value = { ds: selection.value?.dataSourceName || 'Local' }
 }
 
+// 表内空态文案（无过滤的真空视图）：按选中层级分（第三轮 G16——数据源根/「全部数据」
+// 根不是文件夹，固定 empty.folder 的「此文件夹为空…右键新建文件夹」文案失准，且
+// 「全部数据」根的空白右键「新建文件夹」禁用（无确定数据源），引导了不可达的动作）
+const tableEmptyText = computed(() => {
+  const sel = selection.value
+  if (!sel || !sel.dataSourceName) return t('empty.allRoot') // 全部数据根：只引导 +
+  return sel.folderPath ? t('empty.folder') : t('empty.dsRoot') // 文件夹 / 数据源根（右键可用）
+})
+
 // ---- 导入模态：空库引导卡「导入」与顶栏「+ ▾ 导入」两个入口共用；
 // 默认目标数据源 = 当前树选中（模态打开时取快照，关闭即销毁不跨次残留）----
 const importModal = ref(false)
@@ -552,6 +563,7 @@ const importModal = ref(false)
         :selection="selection"
         :folders="currentFolders"
         :query="searchQuery"
+        :ops-busy="folderOps.busy.value"
         @counted="tableCount = $event"
         @connect="onConnect"
         @batch-connect="onBatchConnect"
@@ -573,7 +585,7 @@ const importModal = ref(false)
         <!-- 表内空态（表格可见、当前视图 0 行）覆写默认文案，按致因二分统一：
              ① 标签过滤致空（当前文件夹没有任何带该标签的服务器）→ 与表外无匹配态同款
              「无匹配结果 + 标签说明 + 清除标签」——有过滤器致空一律归无匹配，不再说"此视图暂无服务器"；
-             ② 无任何过滤的真空文件夹 → 引导文案（#empty.folder，指向 + / 右键两个入口）。
+             ② 无任何过滤的真空视图 → 按层级分文案（folder / dsRoot / allRoot，见 tableEmptyText）。
              搜索致空不会到这（零命中在表外 showNoMatch 接管；有命中则行集非空） -->
         <template #empty>
           <div v-if="activeTag" class="table-empty">
@@ -582,7 +594,7 @@ const importModal = ref(false)
             <button class="te-clear" @click="clearNextFilter">{{ clearFilterLabel }}</button>
           </div>
           <div v-else class="table-empty">
-            <div class="te-detail">{{ t('empty.folder') }}</div>
+            <div class="te-detail">{{ tableEmptyText }}</div>
           </div>
         </template>
       </ServerTable>

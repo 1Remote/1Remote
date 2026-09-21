@@ -112,10 +112,14 @@ export function useFolderOps() {
         // 关闭动画结束的安全网（任一 hide 路径）：确保 settle 与监听移除，防泄漏悬挂
         onAfterLeave: () => settle(null),
       })
-      // 打开即显式聚焦（不依赖 autofocus 属性的宿主差异，见上）：取最新挂载的对话框输入框
+      // 打开即显式聚焦（不依赖 autofocus 属性的宿主差异，见上）：取最新挂载的对话框输入框。
+      // 重命名预填旧名时 select() 全选（第三轮 G18：系统惯例——资源管理器/WPF 重命名
+      // 预填文本全选，直接输入即覆盖，免三击；新建分支 initial 为空串，全选无意义不调）
       nextTick(() => {
         const inputs = document.querySelectorAll('.n-dialog input')
-        inputs[inputs.length - 1]?.focus()
+        const el = inputs[inputs.length - 1]
+        el?.focus()
+        if (initial) el?.select()
       })
     })
   }
@@ -256,7 +260,9 @@ export function useFolderOps() {
     // 确认后实际删除文件夹及全部内含服务器（AppData.DeleteServer），但其确认文案写的是
     // "move its contents to parent folder"（文不符实）。web 给两种语义显式选择：
     // positive（红）= WPF 实际行为（连服务器一起删）；negative = WPF 文案所述/web 原行为
-    //（仅删文件夹，内容上移一级）；右上 ✕ / 取消链接 = 不动作。
+    //（仅删文件夹，内容上移一级）。两个按钮都是执行动作、无取消位（第三轮 G10）——
+    // Esc / 遮罩 / 右上 ✕ = 不动作退出，文案（deleteFolderHasServers）显式注明这一点，
+    // 防"习惯点非红按钮求取消"的用户误执行删除
     dialog.warning({
       title: t('tree.deleteFolder'),
       content: t('tree.deleteFolderHasServers', { name, n: count }),

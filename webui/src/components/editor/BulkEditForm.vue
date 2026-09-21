@@ -27,7 +27,8 @@
  *
  * 与抽屉的接缝（保持既有事件序与按钮态）：
  *  - 保存入口统一在抽屉（底部保存按钮 / Ctrl+S）：抽屉经模板 ref 调本组件 save()，
- *    内部含 saving 防重入、必填校验与服务端错误内联展示；
+ *    内部含 saving 防重入、必填校验与服务端错误内联展示；save() 返回错误项数，
+ *    抽屉据此触发保存错误三联动（同单机模式）；
  *  - 保存成功：message.success → emit('saved', { mode:'bulk', ids }) → 抽屉转发父级并
  *    执行关闭动画（列表刷新由 SSE reload 自动完成）；
  *  - saving / dirty（有字段处于覆盖态即脏）/ dsMixed（跨数据源勾选禁存）经 defineExpose
@@ -203,15 +204,20 @@ const iconTint = computed(() => {
 })
 
 // ---- 保存（抽屉经模板 ref 调用；成功后由抽屉转发 saved 并执行关闭）----
+// 返回值 = 需修正的错误项数（校验失败/服务端 400），0 = 成功或无需联动提示——抽屉
+// 据此调它自己的 announceSaveError（toast + 保存按钮脉动 + 滚动到横幅，第三轮 G9：
+// 批量同为长表单写操作，失败感知与单机模式对齐；横幅类名 .ed-banner 两边同名，
+// 抽屉 rootRef 的 querySelector 能滚到本组件横幅）
 async function save() {
-  if (saving.value || bulkDsMixed.value) return
+  if (saving.value || bulkDsMixed.value) return 0
   missingRequired.value = validateBulkRequired()
-  if (missingRequired.value.length) return
+  if (missingRequired.value.length) return missingRequired.value.length
   const patch = buildBulkPatch()
   if (!Object.keys(patch).length) {
     // 后端空 patch 400（"patch must contain at least one field"）——前端先行提示
+    //（专属文案说明原因，无错误横幅，不进三联动）
     message.warning(t('editor.bulkNoChanges'))
-    return
+    return 0
   }
   saveErrors.value = []
   saving.value = true
@@ -219,12 +225,15 @@ async function save() {
     await api.batchUpdate(props.bulkIds, patch, bulkDs.value)
     message.success(t('editor.bulkUpdated', { n: bulkCount.value }))
     emit('saved', { mode: 'bulk', ids: props.bulkIds })
+    return 0
   } catch (e) {
     if (e?.status === 400) {
       const errs = e.body?.errors || (e.body?.error ? [e.body.error] : [])
       saveErrors.value = errs.length ? errs : [`${e.message}`]
+      return saveErrors.value.length
     } else {
       message.error(t('editor.saveFailed') + (e?.message ? ` (${e.message})` : ''))
+      return 0
     }
   } finally {
     saving.value = false

@@ -330,8 +330,11 @@ async function applyTreeMove(src, row, zone) {
     }
     if (orderChanged) await flushSave()
     await reload() // UpdateServer 路径不触发 SSE（见上），显式刷新列表/树
+    // 终态三档（第三轮 G11：moved=0 的纯重排此前显示「已移动 0 台服务器」——确定性
+    // 错误文案；有移动时报文件夹名与列表侧 folderOps.moveFolder 同款 tree.folderMoved）
     if (failed.length) toast.finish('error', t('toast.treeMoveFailed', { n: failed.length }))
-    else toast.finish('success', t('toast.treeMoved', { n: moved }))
+    else if (moved > 0) toast.finish('success', t('tree.folderMoved', { name: src.folder.name }))
+    else toast.finish('success', t('tree.folderReordered'))
   } finally {
     moving.value = false
   }
@@ -480,7 +483,9 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 
     <!-- 标签区：标题行恒定不随列表滚动（.tags 拆 head 固定 + .tag-list 独占滚动）；
          「+ 管理」入口在标题行右端（原为列表区末尾的 chip——混在标签里不显眼）；
-         chips+计数，置顶在前；点击=过滤条件；超长名截断（title 恒为全名） -->
+         chips+计数，置顶在前；点击=过滤条件；超长名截断（title 含全名）。
+         chip 计数来自 /api/tags 全库聚合（G8：点击过滤的是当前视图，两口径不同——
+         title 注明「全库 {n} 台」，消除「chip 显示 5、界面说没有」的自相矛盾） -->
     <div class="tags">
       <div class="tags-head">
         <span>{{ t('tree.tags') }}</span>
@@ -495,7 +500,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
           :key="tg.name"
           class="tag-chip"
           :class="{ active: tg.name === tag }"
-          :title="tg.name"
+          :title="t('tree.tagChipTitle', { name: tg.name, n: tg.count })"
           @click="emit('update:tag', tg.name === tag ? '' : tg.name)"
         >
           <span v-if="tg.isPinned" class="pin">📌</span><span class="tag-name">{{ tagName(tg.name) }}</span

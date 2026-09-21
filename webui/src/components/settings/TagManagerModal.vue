@@ -4,7 +4,8 @@
  * 独立于设置页——标签是列表页的过滤维度，从边栏直接进出更顺（spec §3.3）。
  *
  * - 列表来自 GET /api/tags/manage?ds=（权威置顶态 + 计数，服务端聚合）；
- *   ds = 打开时边栏树选中的数据源（未选 = Local）。
+ *   ds 初值 = 打开时树选中的数据源（「全部数据」回落 Local），模态内可切换（G8：
+ *   边栏 chips 计数是全库口径，管理器单库——「全部数据」下不再静默钉死 Local）。
  * - 行操作：📌 置顶/取消（PUT tags/manage，幂等）｜名称｜计数｜✎ 内联重命名（回车确认 →
  *   POST tags/rename，Esc 取消）｜🗑 删除（确认 → DELETE tags/{name}）｜「连接全部」
  *   （从 useServers 列表按 tags 命中该数据源的服务器，逐个串行 connect——与批量连接同款节流）。
@@ -31,7 +32,23 @@ const emit = defineEmits(['update:show'])
 const { t } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
-const { servers, reload } = useServers()
+const { servers, datasources, reload } = useServers()
+
+// 数据源过滤：初值 = 打开时树选中的数据源（「全部数据」视图回落 Local），模态内可切换
+//（第三轮 G8：chips 计数是全库口径而管理器单库——之前「全部数据」下静默回落 Local，
+// 看得到其他源的标签 chip 却点不进管理器；凭据库模态同款 n-select 过滤行）
+const currentDs = ref(props.ds)
+watch(
+  () => props.ds,
+  (v) => {
+    currentDs.value = v
+  }
+)
+const dsOptions = computed(() => datasources.value.map((d) => ({ label: d.name, value: d.name })))
+watch(currentDs, () => {
+  renaming.value = null // 切数据源时收起内联重命名（草稿属于旧 ds）
+  load()
+})
 
 const tags = ref([])
 const loading = ref(false)
@@ -45,7 +62,7 @@ async function load() {
   loading.value = true
   loadError.value = false
   try {
-    const list = await api.getTagsManage(props.ds)
+    const list = await api.getTagsManage(currentDs.value)
     if (my !== loadGen) return
     tags.value = Array.isArray(list) ? list : []
   } catch {
@@ -78,7 +95,7 @@ async function togglePin(tg) {
   if (busy.value) return
   busy.value = tg.name
   try {
-    const updated = await api.saveTagPin(tg.name, !tg.pinned, props.ds)
+    const updated = await api.saveTagPin(tg.name, !tg.pinned, currentDs.value)
     const row = tags.value.find((x) => x.name === tg.name)
     if (row && updated) {
       row.pinned = !!updated.pinned
@@ -117,7 +134,7 @@ async function confirmRename() {
   }
   busy.value = r.from
   try {
-    await api.renameTag(r.from, to, props.ds)
+    await api.renameTag(r.from, to, currentDs.value)
     renaming.value = null
     await reload() // 边栏标签 + 服务器 Tags 已变（SSE 兜底之外的主动刷新）
     await load()
@@ -142,7 +159,7 @@ function onDelete(tg) {
     autoFocus: false,
     onPositiveClick: async () => {
       try {
-        await api.deleteTag(tg.name, props.ds)
+        await api.deleteTag(tg.name, currentDs.value)
         if (renaming.value?.from === tg.name) renaming.value = null
         await reload()
         await load()
@@ -159,7 +176,7 @@ function onDelete(tg) {
 function connectAll(tg) {
   const target = tg.name.toLowerCase()
   const list = servers.value.filter(
-    (s) => s.dataSourceName === props.ds && (s.tags || []).some((x) => x.toLowerCase() === target)
+    (s) => s.dataSourceName === currentDs.value && (s.tags || []).some((x) => x.toLowerCase() === target)
   )
   if (!list.length) {
     message.warning(t('tagm.connectNone'))
@@ -199,12 +216,17 @@ function runConnectAll(list) {
   <n-modal
     v-model:show="showBind"
     preset="card"
-    :title="t('tagm.title') + ' · ' + ds"
+    :title="t('tagm.title') + ' · ' + currentDs"
     :bordered="false"
     :style="{ width: 'min(560px, 92vw)' }"
     role="dialog"
     aria-modal="true"
   >
+    <!-- 数据源过滤行：与凭据库模态同款（cv.ds 词条通用名词，复用不新造） -->
+    <div class="ds-filter">
+      <span class="ds-label">{{ t('cv.ds') }}</span>
+      <n-select size="small" :value="currentDs" :options="dsOptions" @update:value="currentDs = $event" />
+    </div>
     <p v-if="loading && !tags.length" class="hint">{{ t('settings.loading') }}</p>
     <p v-else-if="loadError" class="hint err">{{ t('tagm.loadFailed') }}</p>
     <div v-else-if="!tags.length" class="empty">{{ t('tagm.empty') }}</div>
@@ -224,6 +246,10 @@ function runConnectAll(list) {
 
         <!-- 名称：内联重命名（编辑态换输入框，回车/Esc/失焦收起） -->
         <template v-if="renaming?.from === tg.name">
+          <!-- 重命名输入框的 esc 加 .stop：vueuc focus-trap 的 document keydown 只判
+               e.code 不查 defaultPrevented——元素级 .prevent 拦不住它，一次 Esc 会
+               「取消重命名 + 关闭模态」双动作（第三轮 G6）。stopPropagation 截断冒泡到
+               document，Esc 只取消内联重命名（IconPicker 的 window 捕获拦截同思路轻量版） -->
           <n-input
             class="rename-input"
             size="small"
@@ -232,7 +258,7 @@ function runConnectAll(list) {
             :placeholder="t('tagm.renamePlaceholder')"
             autofocus
             @keydown.enter.prevent="!$event.isComposing && confirmRename()"
-            @keydown.esc.prevent="cancelRename"
+            @keydown.esc.prevent.stop="cancelRename"
             @blur="onRenameBlur"
           />
         </template>
@@ -275,6 +301,19 @@ function runConnectAll(list) {
 </template>
 
 <style scoped>
+/* 数据源过滤行：与凭据库模态的 .ds-select/.ds-label 同参数（label + 紧凑下拉） */
+.ds-filter {
+  width: 240px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+.ds-label {
+  flex: 0 0 auto;
+  font-size: var(--fs-body);
+  color: var(--text-2);
+}
 .hint {
   font-size: var(--fs-body);
   color: var(--text-3);

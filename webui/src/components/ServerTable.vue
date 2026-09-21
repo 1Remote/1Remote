@@ -57,6 +57,7 @@ const props = defineProps({
   selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据源
   query: { type: String, default: '' }, // 搜索过滤词：透传给行做命中高亮
   folders: { type: Array, default: () => [] }, // 当前层级文件夹行：{name, path, dsName, count}
+  opsBusy: { type: Boolean, default: false }, // 父级 folderOps 长操作进行中（nfMenu 禁用，与树右键同口径）
 })
 const emit = defineEmits([
   'connect',
@@ -319,7 +320,9 @@ function onFolderDrop(f, e) {
 //   全部数据源根无确定数据源 → 新建文件夹禁用并提示先选数据源----
 const nfMenu = ref(null) // { x, y, target: { dsName, parentPath, folderPath? } | null } —— folderPath 有值=来自文件夹行
 const dsWritable = (dsName) => datasources.value.find((d) => d.name === dsName)?.writable !== false
-const nfMenuOk = computed(() => !!nfMenu.value?.target && dsWritable(nfMenu.value.target.dsName))
+// 禁用判据并入 opsBusy（第三轮 G15：动作执行在父级 folderOps，busy 期间点击只被静默
+// return 吞掉——列表侧与树右键菜单同口径禁用，两侧行为一致）
+const nfMenuOk = computed(() => !!nfMenu.value?.target && dsWritable(nfMenu.value.target.dsName) && !props.opsBusy)
 const nfMenuTip = computed(() => {
   if (!nfMenu.value?.target) return t('tree.selectDsFirst')
   return dsWritable(nfMenu.value.target.dsName) ? '' : t('cv.readOnly')
@@ -639,11 +642,16 @@ defineExpose({ closeMenuIfOpen, closeNfMenuIfOpen, closeColMenuIfOpen, clearChec
 
 // 搜索框 ↑/↓ 焦点移交（tableBus.focusHandoff）：App.vue 顶栏搜索框按下方向键 →
 // 表格接管键盘（tableFocused 置真——onDocFocusin 不会因这次没有真实 DOM 焦点变化而
-// 感知），并把光标落到首/末行（已有光标则按方向步进）
+// 感知），并把光标落到首/末行（已有光标则按方向步进）。同时 blur 搜索框：方向键的
+// prevent 只挡了光标在 input 内移动，焦点仍留在 input——随后 Enter 的 e.target 还是
+// 搜索框，会被上方 onGlobalKey 的控件守卫吞掉（Ctrl+F → ↓ → Enter 连接流断链，
+// 第三轮 G2）；blur 后焦点落 body（onDocFocusin 对 body 不算离开），Enter/↑↓ 从此
+// 进入表格键盘域，与 App.vue 搜索框注释宣称的行为一致
 watch(focusHandoff, (req) => {
   if (!req) return
   tableFocused.value = true
   moveCursor(req.delta)
+  document.activeElement?.blur()
 })
 
 // ---- 列状态：列宽（拖右缘调整/双击重置）+ 列显隐（▦ 列菜单），经 useColumns 持久化

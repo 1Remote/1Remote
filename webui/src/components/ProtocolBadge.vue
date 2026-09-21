@@ -7,7 +7,9 @@
 import { computed } from 'vue'
 import { isDarkMode } from '../themes'
 
-// 身份色（底色/边框来源，双基底恒定）
+// 身份色（底色/边框来源，双基底恒定）。键 = 列表 protocol 字段值 = 后端 ProtocolName
+//（RdpApp.cs:13 为 "RemoteApp"，非类名）——第三轮 G4：旧键 'RdpApp' 从不匹配任何
+// 行，RemoteApp 徽章一直走 badge-unknown 灰兜底；RemoteApp 属 RDP 家族，配色沿用 RDP 蓝
 const PROTOCOL_COLORS = {
   RDP: '#2c5aff',
   SSH: '#26a269',
@@ -17,7 +19,7 @@ const PROTOCOL_COLORS = {
   Telnet: '#14b8a6',
   Serial: '#64748b',
   APP: '#6b7a99',
-  RdpApp: '#2c5aff',
+  RemoteApp: '#2c5aff',
 }
 
 // 文字色·暗色基底（身份色过深的换浅一档，其余保持身份色）
@@ -30,7 +32,7 @@ const PROTOCOL_TEXT_DARK = {
   Telnet: '#14b8a6',
   Serial: '#9aa8bb',
   APP: '#94a3b8',
-  RdpApp: '#7c9bff',
+  RemoteApp: '#7c9bff',
 }
 
 // 文字色·亮色基底（身份色过浅的换深一档）
@@ -43,7 +45,7 @@ const PROTOCOL_TEXT_LIGHT = {
   Telnet: '#0c6a63',
   Serial: '#475569',
   APP: '#46536e',
-  RdpApp: '#2148c8',
+  RemoteApp: '#2148c8',
 }
 
 const props = defineProps({ protocol: { type: String, default: '' } })

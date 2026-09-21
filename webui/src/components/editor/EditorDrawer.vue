@@ -353,7 +353,10 @@ function displayName() {
 }
 async function save() {
   if (isBulk.value) {
-    bulkFormRef.value?.save() // 批量保存流在 BulkEditForm（含 saving 防重入/校验/错误展示）
+    // 批量保存流在 BulkEditForm（含 saving 防重入/校验/错误展示）；返回需修正的错误
+    // 项数，>0 时与单机模式同款三联动（第三轮 G9：批量失败感知不再只靠视口外横幅）
+    const errs = await bulkFormRef.value?.save()
+    if (errs > 0) announceSaveError(errs)
     return
   }
   if (saving.value || loading.value || loadError.value) return
