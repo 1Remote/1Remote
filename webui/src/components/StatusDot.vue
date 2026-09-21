@@ -39,6 +39,8 @@ const title = computed(() =>
   gap: 5px;
 }
 .dot {
+  /* 服务器状态点 8px 档（G19）：宿主为 36px 行列表，比数据源状态点（6px，紧凑行/
+     状态栏语境）大一档；骨架屏占位点同 8px 对齐真实行视觉 */
   width: 8px;
   height: 8px;
   border-radius: 50%;

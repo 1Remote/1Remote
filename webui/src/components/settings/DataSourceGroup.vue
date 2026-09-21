@@ -637,9 +637,11 @@ bindModalEsc([
   min-width: 0;
 }
 .dot {
-  flex: 0 0 7px;
-  width: 7px;
-  height: 7px;
+  /* 数据源状态点 6px 紧凑档（G19）：与 SideTree 根行/底部状态栏同值同义；
+     服务器级状态点为 8px（StatusDot），按宿主行高一档区分 */
+  flex: 0 0 6px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
 }
 .dot.ok {

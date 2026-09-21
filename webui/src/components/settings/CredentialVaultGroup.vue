@@ -667,7 +667,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   width: 12px;
   height: 12px;
   border: 2px solid var(--border-strong);
-  border-top-color: var(--accent);
+  border-top-color: var(--accent-focus); /* 状态指示弧走焦点档深变体（G6，与 App .sb-spin 同源） */
   border-radius: 50%;
   animation: cv-spin 0.8s linear infinite;
 }

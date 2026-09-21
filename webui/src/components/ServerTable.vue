@@ -972,17 +972,18 @@ onBeforeUnmount(() => {
   min-height: 0;
 }
 
-/* 行拖拽指示线（作用于 ServerRow 根节点；custom 模式行可抓取） */
+/* 行拖拽指示线（作用于 ServerRow 根节点；custom 模式行可抓取）。
+   落点线为状态指示（G6）：走 --accent-focus（light 橙/绿亮 accent ×bg <3:1，dark 等值不变） */
 :deep(.row[draggable='true']) {
   cursor: grab;
 }
 
 :deep(.row.drop-before) {
-  box-shadow: inset 0 2px 0 var(--accent);
+  box-shadow: inset 0 2px 0 var(--accent-focus);
 }
 
 :deep(.row.drop-after) {
-  box-shadow: inset 0 -2px 0 var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent-focus);
 }
 
 /* 表头：列宽与 ServerRow/FolderRow 的 --c-* 同源；sticky 于滚动容器内首行（背景必须不透明，防行内容透出） */
@@ -1113,7 +1114,7 @@ onBeforeUnmount(() => {
 }
 .prow.drop-into {
   background: var(--accent-container);
-  outline: 1px dashed var(--accent);
+  outline: 1px dashed var(--accent-focus); /* 拖入虚线轮廓同为状态指示（G6） */
   outline-offset: -1px;
 }
 .prow .cell {

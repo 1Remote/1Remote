@@ -387,17 +387,26 @@ function onTopbarDblClick(e) {
   width: 12px;
   height: 12px;
   border: 2px solid var(--border-strong);
-  border-top-color: var(--accent);
+  border-top-color: var(
+    --accent-focus
+  ); /* 状态指示弧走焦点档深变体（G6）：亮 accent ×bg orange/green <3:1，dark 基 --accent-focus===--accent 观感不变 */
   border-radius: 50%;
   visibility: hidden; /* 常驻占位防宽度跳动（见模板注释） */
 }
 .sb-spin.on {
   visibility: visible;
-  animation: sb-rotate 0.7s linear infinite;
+  /* 循环 spinner 周期与 CredentialVaultGroup .spin 同值 0.8s（G20：同语义 spinner
+     不同步会显得各自为政）；reduced-motion 守卫与 CVG 同款 */
+  animation: sb-rotate 0.8s linear infinite;
 }
 @keyframes sb-rotate {
   to {
     transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sb-spin.on {
+    animation: none;
   }
 }
 .topbar-actions {
@@ -451,11 +460,11 @@ function onTopbarDblClick(e) {
   stroke-width: 1.5px;
 }
 .wc-btn:active {
-  opacity: 0.8;
+  opacity: var(--opacity-hint); /* 按下弱化归装饰性弱化档（G30，此前 0.8 自成一档） */
 }
 .wc-close:hover {
-  background: #e81123;
-  color: #fff;
+  background: #e81123; /* Windows 关闭钮红为平台模拟色（豁免令牌），文字色走令牌 */
+  color: var(--text-on-accent);
 }
 .wc-close:active {
   background: #f1707a;

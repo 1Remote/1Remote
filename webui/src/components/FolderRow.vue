@@ -122,7 +122,7 @@ const disabled = () => !props.checkState?.count
 
 .frow.drop-into {
   background: var(--accent-container);
-  outline: 1px dashed var(--accent);
+  outline: 1px dashed var(--accent-focus); /* 拖入虚线轮廓同为状态指示（G6），与树侧同源 */
   outline-offset: -1px;
 }
 

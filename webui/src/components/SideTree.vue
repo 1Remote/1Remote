@@ -578,19 +578,21 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 .row.selected {
   background: var(--accent-container);
 }
-/* 拖拽：可拖行 grab；指示线/容器高亮用主题强调色，与选中底色区分 */
+/* 拖拽：可拖行 grab；指示线/容器高亮用主题强调色，与选中底色区分。
+   落点线/虚线轮廓为状态指示（G6）：走 --accent-focus（light 橙/绿亮 accent ×bg <3:1，
+   深变体 4.96/5.25；dark 基该变量===--accent 观感不变） */
 .row[draggable='true'] {
   cursor: grab;
 }
 .row.drop-before {
-  box-shadow: inset 0 2px 0 var(--accent);
+  box-shadow: inset 0 2px 0 var(--accent-focus);
 }
 .row.drop-after {
-  box-shadow: inset 0 -2px 0 var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent-focus);
 }
 .row.drop-into {
   background: var(--accent-container);
-  outline: 1px dashed var(--accent);
+  outline: 1px dashed var(--accent-focus);
   outline-offset: -1px;
 }
 
@@ -627,6 +629,8 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 }
 
 .dot {
+  /* 数据源状态点 6px 紧凑档（G19）：与设置页数据源卡/底部状态栏同值同义；
+     服务器级状态点 8px（StatusDot），按宿主行高一档区分 */
   flex: 0 0 6px;
   width: 6px;
   height: 6px;

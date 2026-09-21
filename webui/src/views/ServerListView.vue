@@ -1076,6 +1076,7 @@ const importModal = ref(false)
   text-overflow: ellipsis;
 }
 .sb-dot {
+  /* 数据源状态点 6px 紧凑档（G19）：与 SideTree 根行/设置页数据源卡同值同义 */
   flex: 0 0 6px;
   width: 6px;
   height: 6px;

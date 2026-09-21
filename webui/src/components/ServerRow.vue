@@ -170,7 +170,9 @@ const barColor = computed(() => opaqueHex(props.server.color))
   background: var(--accent-container);
 }
 .row.highlighted {
-  box-shadow: inset 2px 0 0 var(--accent); /* 树叶选中行：左侧强调色细条 */
+  /* 树叶选中行：左侧强调色细条。状态指示条走 --accent-focus（G6）：light 基橙/绿亮
+     accent ×bg 仅 2.69/2.43 不达非文本 3:1，深变体 4.96/5.25；dark 基该变量===--accent */
+  box-shadow: inset 2px 0 0 var(--accent-focus);
 }
 .row.cursor {
   /* 键盘光标行：accent 色外框（不占布局）。单击=光标是核心交互，其落点必须可感知——
