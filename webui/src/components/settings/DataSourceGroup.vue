@@ -666,7 +666,7 @@ bindModalEsc([
   flex: 0 0 auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
-  padding: 1px 5px;
+  padding: 1px 6px; /* 微 badge 内距归偶（G22，RunnerCard .badge 同值） */
   font-size: var(--fs-micro);
   color: var(--text-4);
 }

@@ -759,7 +759,7 @@ const importModal = ref(false)
   color: var(--accent-text);
 }
 .crumb-sep {
-  margin: 0 3px;
+  margin: 0 4px; /* 分隔符外距归偶（G22） */
   color: var(--text-4);
 }
 .crumb-count {
@@ -773,7 +773,7 @@ const importModal = ref(false)
   min-width: 0;
   max-width: 280px;
   margin-left: 10px;
-  padding: 2px 4px 2px 9px;
+  padding: 2px 4px 2px 8px; /* 前导 8px 给 ⌕ 图标留位（G22：9px 归偶） */
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
   background: var(--bg-elevated);
@@ -788,9 +788,11 @@ const importModal = ref(false)
   white-space: nowrap;
 }
 .sc-x {
+  /* 移除/清除类小钮归图标钮 24 档（G8，ctrl-h-s；18/20/26 拼高漏网之一），
+     宿主 search-chip 随之增至 ~30px，面包屑行 36px 内无溢出 */
   flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
+  width: var(--ctrl-h-s);
+  height: var(--ctrl-h-s);
   border: none;
   border-radius: 50%;
   background: transparent;

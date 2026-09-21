@@ -698,7 +698,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 .tag-chip {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px; /* 归偶（G22） */
   max-width: 100%;
   height: var(--ctrl-h-s);
   border: 1px solid var(--border);
@@ -762,6 +762,7 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
   box-shadow: var(--shadow-menu);
 }
 .ctx-item {
+  /* 菜单项内距档 7px 10px 与 ServerTable .ctx-item / TableToolbar .col-item 同源（G16 锚点） */
   display: flex;
   align-items: center;
   gap: 18px;

@@ -69,7 +69,7 @@ const textColor = computed(() => (isDarkMode() ? PROTOCOL_TEXT_DARK : PROTOCOL_T
   border-radius: var(--radius-pill);
   font-size: var(--fs-micro);
   line-height: 1;
-  padding: 2.5px 9px;
+  padding: 2px 8px; /* 微 chip 纵距 2px 档（G22），横距与 ServerRow .tag 同值 */
   white-space: nowrap;
 }
 .badge-unknown {

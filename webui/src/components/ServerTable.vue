@@ -1166,6 +1166,8 @@ onBeforeUnmount(() => {
 }
 
 .ctx-item {
+  /* 下拉/右键菜单项统一内距档 7px 10px（G16 锚点：TableToolbar .col-item / SideTree
+     .tree-ctx .ctx-item 与此同源拷贝） */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1194,6 +1196,6 @@ onBeforeUnmount(() => {
 
 .ctx-hint {
   color: var(--text-4);
-  font-size: var(--fs-micro);
+  font-size: var(--fs-caption); /* 菜单项提示统一 caption（G16，与 col-hint 同档） */
 }
 </style>

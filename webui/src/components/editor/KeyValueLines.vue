@@ -213,7 +213,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
   color: var(--text-4);
   font-size: var(--fs-micro);
   line-height: 1;
-  padding: 3px;
+  padding: 4px; /* 行内移除 ✕ 内距 4px 档（G22，kvm-del/sf-del 同值） */
   cursor: pointer;
 }
 

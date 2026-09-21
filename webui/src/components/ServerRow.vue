@@ -308,7 +308,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
   background: var(--bg-hover);
-  padding: 0 3px;
+  padding: 0 4px; /* 行内 code 内距 4px 档（G22，与 MarkdownField md-body code 同步改） */
   font-family: ui-monospace, Consolas, monospace;
   font-size: var(--fs-caption);
 }
@@ -383,7 +383,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
   color: var(--text-3);
   font-size: var(--fs-micro);
   line-height: 1;
-  padding: 2.5px 8px;
+  padding: 2px 8px; /* 微 chip 纵距 2px 档（G22，与 ProtocolBadge 同值） */
 }
 .tag-more {
   color: var(--text-4);

@@ -222,7 +222,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   border: 1px solid var(--border);
   background: var(--bg-elevated);
   cursor: pointer;
-  padding: 3px;
+  padding: 4px; /* 缩略图格内距归偶（G22） */
 }
 .ip-thumb img {
   width: 100%;

@@ -270,7 +270,7 @@ onBeforeUnmount(() => {
   gap: 6px 16px;
   align-items: center;
   min-height: 40px;
-  padding: 7px 0;
+  padding: 8px 0; /* 行纵距归偶（G22） */
 }
 /* 行悬停：全出血底色（无圆角/无水平内边距），标签列不加 nowrap——长词条自然两行折行 */
 :deep(.row:hover) {

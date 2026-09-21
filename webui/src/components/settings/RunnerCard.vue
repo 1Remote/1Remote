@@ -390,7 +390,7 @@ function onFontSize(v) {
   flex: 0 0 auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
-  padding: 1px 5px;
+  padding: 1px 6px; /* 微 badge 内距归偶（G22，DataSourceGroup .type-badge 同值） */
   font-size: var(--fs-micro);
   color: var(--text-4);
 }
@@ -488,7 +488,7 @@ function onFontSize(v) {
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  margin-top: 5px;
+  margin-top: 6px; /* 归偶（G22） */
 }
 .macro-row-label {
   font-size: var(--fs-micro);

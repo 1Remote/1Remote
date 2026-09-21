@@ -352,8 +352,8 @@ function runConnectAll(list) {
   border-bottom: none;
 }
 .pin-btn {
-  flex: 0 0 26px;
-  height: 24px;
+  flex: 0 0 var(--ctrl-h-s); /* 图标钮 24 档（G8：26×24 拼高漏网） */
+  height: var(--ctrl-h-s);
   border: none;
   border-radius: var(--radius-ctrl);
   background: transparent;

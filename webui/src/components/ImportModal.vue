@@ -315,8 +315,8 @@ function fmtSize(n) {
 }
 .f-x {
   flex: 0 0 auto;
-  width: 20px;
-  height: 20px;
+  width: var(--ctrl-h-s); /* 移除类小钮归图标钮 24 档（G8） */
+  height: var(--ctrl-h-s);
   border: none;
   border-radius: 50%;
   background: transparent;

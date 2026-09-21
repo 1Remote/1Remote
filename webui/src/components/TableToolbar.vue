@@ -269,7 +269,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
    跨行悬于表头上方完整可见 */
 .col-menu {
   position: absolute;
-  top: calc(100% + 3px);
+  top: calc(100% + 4px); /* 触发器与浮层间隙 4px（G22：3px 归偶） */
   right: 0;
   z-index: 30;
   display: flex;
@@ -284,10 +284,12 @@ onBeforeUnmount(() => clearInterval(hintTimer))
 }
 
 .col-item {
+  /* 下拉/右键菜单项统一内距档 7px 10px（G16，与 ServerTable/SideTree 的 .ctx-item 同源；
+     此前 5px 6px 自成一档）。菜单项提示字号统一 caption（.ctx-hint 同步，见 ServerTable） */
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 6px;
+  padding: 7px 10px;
   border-radius: var(--radius-ctrl);
   color: var(--text-2);
   font-size: var(--fs-body);

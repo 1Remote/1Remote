@@ -123,7 +123,7 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
   background: var(--bg-hover);
-  padding: 0 3px;
+  padding: 0 4px; /* 行内 code 内距 4px 档（G22，与 ServerRow note-md code 同步改） */
   font-family: ui-monospace, Consolas, monospace;
   font-size: var(--fs-caption);
 }

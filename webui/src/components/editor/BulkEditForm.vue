@@ -374,7 +374,7 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   top: 0;
   z-index: 1;
   margin: 0;
-  padding: 6px 0 5px;
+  padding: 6px 0 5px; /* 底 5px+1px 下边框 = 6px，与顶 6px 光学等高（banner 光学微调，G22 豁免） */
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border);
   color: var(--text-2);
@@ -409,15 +409,16 @@ defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
   min-width: 0;
 }
 
-/* 覆盖/保持切换：对齐 TableToolbar .bb-btn 参数（h24/0 10/fs-body/中性 hover）；
-   on 态为容器型（accent-container 底 + accent 文字），与分段控件 on 语言一致 */
+/* 覆盖/保持切换：对齐 TableToolbar .bb-btn 参数（h24/0 10/fs-body/transparent 底 +
+   中性 hover——G14：此前 elevated 底与「对齐 bb-btn」注释脱节，24 工具档透明底更贴合，
+   择参数侧归位）；on 态为容器型（accent-container 底 + accent 文字），与分段控件 on 语言一致 */
 .bulk-toggle {
   flex: 0 0 auto;
   height: var(--ctrl-h-s);
   padding: 0 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
-  background: var(--bg-elevated);
+  background: transparent;
   color: var(--text-2);
   font-size: var(--fs-body);
   line-height: 1;

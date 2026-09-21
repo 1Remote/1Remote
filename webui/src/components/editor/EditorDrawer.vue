@@ -700,7 +700,7 @@ onBeforeUnmount(() => {
   /* 相对滚动口贴顶（sticky 参照 scrollport，容器 padding 不影响偏移） */
   z-index: 1;
   margin: 0;
-  padding: 6px 0 5px;
+  padding: 6px 0 5px; /* 底 5px+1px 下边框 = 6px，与顶 6px 光学等高（banner 光学微调，G22 豁免） */
   background: var(--bg-panel);
   /* 滚动内容从标题下穿过时不透底 */
   border-bottom: 1px solid var(--border);

@@ -223,10 +223,14 @@ function applyClassic(name) {
   padding: 0;
   cursor: pointer;
 }
+/* hover 提示环与 active 环同宽 2px（G29：此前 hover 1px/offset 2 与 active 2px/offset 1
+   参数反向），offset 保持 hover 大一圈——提示环在选中环外层作包裹状 */
 .dot:hover {
-  outline: 1px solid var(--border-strong);
+  outline: 2px solid var(--border-strong);
   outline-offset: 2px;
 }
+/* active 选中环用中性 --text-2 而非 --accent-focus（G29 锚点）：色板圆点本身是全谱
+   强调色，任何 accent 环色都会与某些圆点撞色/同色粘连；中性环只表「被选中」事实 */
 .dot.active {
   border-color: var(--bg);
   outline: 2px solid var(--text-2);

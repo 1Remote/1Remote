@@ -329,10 +329,10 @@ const CONTRIBUTE = [
   list-style: none;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 3px 28px;
+  gap: 4px 28px; /* 行距归偶（G22） */
 }
 .components li {
-  padding: 3px 0;
+  padding: 4px 0; /* 归偶（G22） */
 }
 .components a {
   font-size: var(--fs-body);
