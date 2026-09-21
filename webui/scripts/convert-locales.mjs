@@ -4339,6 +4339,12 @@ const bcp47 = (lower) =>
 // （合并同名文件夹确认/无数据源引导/搜索范围标注/复制密码/凭据空态指引/设置分组副标题）。
 const ROUND4 = {
   'de-DE': {
+    'tree.noDsHint':
+      'Noch keine Datenquellen. F\u00fcgen Sie eine unter Optionen > Datenbank hinzu, um Server zu verwalten.',
+    'editor.credEmptyHint':
+      'Diese Datenquelle hat noch keine Zugangsdaten. Legen Sie welche unter Optionen > Anmeldeinformationen an oder geben Sie sie weiter manuell ein.',
+    'tree.folderReordered': 'Ordnerreihenfolge aktualisiert',
+    'settings.r.nameExists': '{name} bereits vorhanden!',
     'folder.contains': 'Enth\u00e4lt {n} (inkl. Unterordner)',
     'editor.ph.password': 'Leer lassen, um das Passwort sp\u00e4ter abzufragen.',
     'editor.kvHint':
@@ -4364,8 +4370,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'Im Ziel existiert bereits ein Ordner mit dem Namen \u201e{name}\u201c. Zusammenf\u00fchren? Die Server beider Ordner werden in einem Ordner vereint.',
     'tree.mergeFolderYes': 'Zusammenf\u00fchren',
-    'tree.noDsHint':
-      'Noch keine Datenquellen. F\u00fcgen Sie eine unter Einstellungen > Datenquellen hinzu, um Server zu verwalten.',
     'crumb.searchScope': 'alle Datenquellen',
     'cols.folderRootOnly': 'Die Ordnerspalte wird nur in der Root-Ansicht oder w\u00e4hrend der Suche angezeigt',
     'ctx.copyPassword': 'Passwort kopieren',
@@ -4373,13 +4377,17 @@ const ROUND4 = {
     'toast.noPasswordToCopy': 'Kein Passwort zum Kopieren',
     'toast.copyPwdNeedVerify':
       'Verifizierung erforderlich: schlie\u00dfen Sie die Windows-Anmeldedaten-Verifizierung in der Desktop-App ab und versuchen Sie es erneut',
-    'editor.credEmptyHint':
-      'Diese Datenquelle hat noch keine Zugangsdaten. Legen Sie welche unter Einstellungen > Zugangsdaten an oder geben Sie sie weiter manuell ein.',
     'settings.nav.dataSub': 'Datenbanken und Verbindungen',
     'settings.nav.appearanceSub': 'Design und Farben',
     'settings.nav.runnersSub': 'Externe Protokoll-Runner',
   },
   'fr-FR': {
+    'tree.noDsHint':
+      'Aucune source de donn\u00e9es pour le moment. Ajoutez-en une dans Choix > Base de donn\u00e9es pour g\u00e9rer des serveurs.',
+    'editor.credEmptyHint':
+      "Cette source de donn\u00e9es n'a pas encore d'identifiants. Cr\u00e9ez-en un dans Choix > Informations d'identification, ou continuez la saisie manuelle.",
+    'tree.folderReordered': 'Ordre des dossiers mis \u00e0 jour',
+    'settings.r.nameExists': '\u00ab {name} \u00bb existe d\u00e9j\u00e0 !',
     'folder.contains': 'Contient {n} (sous-dossiers inclus)',
     'editor.ph.password': 'Laissez-le vide pour saisir le mot de passe plus tard.',
     'editor.kvHint':
@@ -4405,8 +4413,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'Un dossier nomm\u00e9 \u00ab {name} \u00bb existe d\u00e9j\u00e0 \u00e0 la cible. Fusionner ? Les serveurs des deux dossiers seront combin\u00e9s.',
     'tree.mergeFolderYes': 'Fusionner',
-    'tree.noDsHint':
-      'Aucune source de donn\u00e9es pour le moment. Ajoutez-en une dans Param\u00e8tres > Sources de donn\u00e9es pour g\u00e9rer des serveurs.',
     'crumb.searchScope': 'toutes les sources de donn\u00e9es',
     'cols.folderRootOnly': "La colonne Dossier n'est affich\u00e9e qu'en vue racine ou pendant une recherche",
     'ctx.copyPassword': 'Copier le mot de passe',
@@ -4414,13 +4420,17 @@ const ROUND4 = {
     'toast.noPasswordToCopy': 'Aucun mot de passe \u00e0 copier',
     'toast.copyPwdNeedVerify':
       "V\u00e9rification requise : terminez la v\u00e9rification des identifiants Windows dans l'application de bureau, puis r\u00e9essayez",
-    'editor.credEmptyHint':
-      "Cette source de donn\u00e9es n'a pas encore d'identifiants. Cr\u00e9ez-en un dans Param\u00e8tres > Identifiants, ou continuez la saisie manuelle.",
     'settings.nav.dataSub': 'Bases de donn\u00e9es et connexions',
     'settings.nav.appearanceSub': 'Th\u00e8me et couleurs',
     'settings.nav.runnersSub': 'Runners de protocoles externes',
   },
   'es-AR': {
+    'tree.noDsHint':
+      'A\u00fan no hay fuentes de datos. Agregue una en Opciones > Base de datos para empezar a administrar servidores.',
+    'editor.credEmptyHint':
+      'Esta fuente de datos a\u00fan no tiene credenciales. Cree una en Opciones > Credenciales, o siga escribi\u00e9ndolas manualmente.',
+    'tree.folderReordered': 'Se actualiz\u00f3 el orden de las carpetas',
+    'settings.r.nameExists': '\u00a1{name} ya existe!',
     'folder.contains': 'Contiene {n} (incluye subcarpetas)',
     'editor.ph.password': 'D\u00e9jelo en blanco y se solicitar\u00e1 la contrase\u00f1a m\u00e1s tarde.',
     'editor.kvHint':
@@ -4446,8 +4456,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'Ya existe una carpeta llamada "{name}" en el destino. \u00bfCombinarlas? Los servidores de ambas carpetas se unir\u00e1n en una sola.',
     'tree.mergeFolderYes': 'Combinar',
-    'tree.noDsHint':
-      'A\u00fan no hay fuentes de datos. Agregue una en Configuraci\u00f3n > Fuentes de datos para empezar a administrar servidores.',
     'crumb.searchScope': 'todas las fuentes de datos',
     'cols.folderRootOnly': 'La columna Carpeta solo se muestra en la vista ra\u00edz o durante una b\u00fasqueda',
     'ctx.copyPassword': 'Copiar contrase\u00f1a',
@@ -4455,13 +4463,17 @@ const ROUND4 = {
     'toast.noPasswordToCopy': 'No hay contrase\u00f1a para copiar',
     'toast.copyPwdNeedVerify':
       'Se requiere verificaci\u00f3n: complete la verificaci\u00f3n de credenciales de Windows en la aplicaci\u00f3n de escritorio y reintente',
-    'editor.credEmptyHint':
-      'Esta fuente de datos a\u00fan no tiene credenciales. Cree una en Configuraci\u00f3n > Credenciales, o siga escribi\u00e9ndolas manualmente.',
     'settings.nav.dataSub': 'Bases de datos y conexiones',
     'settings.nav.appearanceSub': 'Tema y colores',
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'it-IT': {
+    'tree.noDsHint':
+      'Non ci sono ancora sorgenti dati. Aggiungine una in Opzioni > Database per iniziare a gestire i server.',
+    'editor.credEmptyHint':
+      'Questa sorgente dati non ha ancora credenziali. Creane una in Opzioni > Credenziali, oppure continua a inserirle manualmente.',
+    'tree.folderReordered': 'Ordine delle cartelle aggiornato',
+    'settings.r.nameExists': '{name} esiste gi\u00e0!',
     'folder.contains': 'Contiene {n} (incluse le sottocartelle)',
     'editor.ph.password': 'Lascialo vuoto e la password verr\u00e0 richiesta in seguito.',
     'editor.kvHint':
@@ -4487,8 +4499,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'Nella destinazione esiste gi\u00e0 una cartella denominata "{name}". Unirle? I server di entrambe le cartelle verranno combinati in una sola.',
     'tree.mergeFolderYes': 'Unisci',
-    'tree.noDsHint':
-      'Non ci sono ancora sorgenti dati. Aggiungine una in Impostazioni > Sorgenti dati per iniziare a gestire i server.',
     'crumb.searchScope': 'tutte le sorgenti dati',
     'cols.folderRootOnly': 'La colonna Cartella \u00e8 visibile solo nella vista radice o durante una ricerca',
     'ctx.copyPassword': 'Copia password',
@@ -4496,13 +4506,17 @@ const ROUND4 = {
     'toast.noPasswordToCopy': 'Nessuna password da copiare',
     'toast.copyPwdNeedVerify':
       "Verifica richiesta: completa la verifica delle credenziali di Windows nell'app desktop, poi riprova",
-    'editor.credEmptyHint':
-      'Questa sorgente dati non ha ancora credenziali. Creane una in Impostazioni > Credenziali, oppure continua a inserirle manualmente.',
     'settings.nav.dataSub': 'Database e connessioni',
     'settings.nav.appearanceSub': 'Tema e colori',
     'settings.nav.runnersSub': 'Runner di protocolli esterni',
   },
   'pt-BR': {
+    'tree.noDsHint':
+      'Ainda n\u00e3o h\u00e1 fontes de dados. Adicione uma em Op\u00e7\u00f5es > Base de dados para come\u00e7ar a gerenciar servidores.',
+    'editor.credEmptyHint':
+      'Esta fonte de dados ainda n\u00e3o tem credenciais. Crie uma em Op\u00e7\u00f5es > Credenciais ou continue digitando manualmente.',
+    'tree.folderReordered': 'Ordem das pastas atualizada',
+    'settings.r.nameExists': '\u00ab{name}\u00bb j\u00e1 existe!',
     'folder.contains': 'Cont\u00e9m {n} (incluindo subpastas)',
     'editor.ph.password': 'Deixe em branco e a senha ser\u00e1 solicitada depois.',
     'editor.kvHint':
@@ -4529,8 +4543,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'J\u00e1 existe uma pasta chamada "{name}" no destino. Mesclar? Os servidores das duas pastas ser\u00e3o combinados em uma s\u00f3.',
     'tree.mergeFolderYes': 'Mesclar',
-    'tree.noDsHint':
-      'Ainda n\u00e3o h\u00e1 fontes de dados. Adicione uma em Configura\u00e7\u00f5es > Fontes de dados para come\u00e7ar a gerenciar servidores.',
     'crumb.searchScope': 'todas as fontes de dados',
     'cols.folderRootOnly': 'A coluna Pasta s\u00f3 \u00e9 exibida na vis\u00e3o raiz ou durante uma pesquisa',
     'ctx.copyPassword': 'Copiar senha',
@@ -4538,13 +4550,17 @@ const ROUND4 = {
     'toast.noPasswordToCopy': 'N\u00e3o h\u00e1 senha para copiar',
     'toast.copyPwdNeedVerify':
       'Verifica\u00e7\u00e3o necess\u00e1ria: conclua a verifica\u00e7\u00e3o de credenciais do Windows no aplicativo desktop e tente novamente',
-    'editor.credEmptyHint':
-      'Esta fonte de dados ainda n\u00e3o tem credenciais. Crie uma em Configura\u00e7\u00f5es > Credenciais ou continue digitando manualmente.',
     'settings.nav.dataSub': 'Bancos de dados e conex\u00f5es',
     'settings.nav.appearanceSub': 'Tema e cores',
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'pt-PT': {
+    'tree.noDsHint':
+      'Ainda n\u00e3o h\u00e1 fontes de dados. Adicione uma em Op\u00e7\u00f5es > Base de dados para come\u00e7ar a gerir servidores.',
+    'editor.credEmptyHint':
+      'Esta fonte de dados ainda n\u00e3o tem credenciais. Crie uma em Op\u00e7\u00f5es > Credenciais ou continue a introduzi-las manualmente.',
+    'tree.folderReordered': 'Ordem das pastas atualizada',
+    'settings.r.nameExists': '{name} j\u00e1 existe!',
     'folder.contains': 'Cont\u00e9m {n} (incluindo subpastas)',
     'editor.ph.password': 'Deixe em branco e a palavra-passe ser\u00e1 pedida mais tarde.',
     'editor.kvHint':
@@ -4570,8 +4586,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'J\u00e1 existe uma pasta chamada "{name}" no destino. Unir? Os servidores de ambas as pastas ser\u00e3o combinados numa s\u00f3.',
     'tree.mergeFolderYes': 'Unir',
-    'tree.noDsHint':
-      'Ainda n\u00e3o h\u00e1 fontes de dados. Adicione uma em Defini\u00e7\u00f5es > Fontes de dados para come\u00e7ar a gerir servidores.',
     'crumb.searchScope': 'todas as fontes de dados',
     'cols.folderRootOnly': 'A coluna Pasta s\u00f3 \u00e9 mostrada na vista raiz ou durante uma pesquisa',
     'ctx.copyPassword': 'Copiar palavra-passe',
@@ -4579,13 +4593,18 @@ const ROUND4 = {
     'toast.noPasswordToCopy': 'N\u00e3o h\u00e1 palavra-passe para copiar',
     'toast.copyPwdNeedVerify':
       'Verifica\u00e7\u00e3o necess\u00e1ria: conclua a verifica\u00e7\u00e3o de credenciais do Windows na aplica\u00e7\u00e3o de desktop e tente novamente',
-    'editor.credEmptyHint':
-      'Esta fonte de dados ainda n\u00e3o tem credenciais. Crie uma em Defini\u00e7\u00f5es > Credenciais ou continue a introduzi-las manualmente.',
     'settings.nav.dataSub': 'Bases de dados e liga\u00e7\u00f5es',
     'settings.nav.appearanceSub': 'Tema e cores',
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'ru-RU': {
+    'tree.noDsHint':
+      '\u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u043e\u0432 \u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442. \u0414\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0438\u0445 \u0432 \u0440\u0430\u0437\u0434\u0435\u043b\u0435 \u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b > \u0411\u0430\u0437\u0430 \u0434\u0430\u043d\u043d\u044b\u0445, \u0447\u0442\u043e\u0431\u044b \u043d\u0430\u0447\u0430\u0442\u044c \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u0435\u0440\u0432\u0435\u0440\u0430\u043c\u0438.',
+    'editor.credEmptyHint':
+      '\u0412 \u044d\u0442\u043e\u043c \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0435 \u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442 \u0443\u0447\u0451\u0442\u043d\u044b\u0445 \u0434\u0430\u043d\u043d\u044b\u0445. \u0421\u043e\u0437\u0434\u0430\u0439\u0442\u0435 \u0438\u0445 \u0432 \u0440\u0430\u0437\u0434\u0435\u043b\u0435 \u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b > \u0420\u0435\u043a\u0432\u0438\u0437\u0438\u0442\u044b \u0434\u043b\u044f \u0432\u0445\u043e\u0434\u0430 \u0438\u043b\u0438 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u0435 \u0432\u0432\u043e\u0434 \u0432\u0440\u0443\u0447\u043d\u0443\u044e.',
+    'tree.folderReordered':
+      '\u041f\u043e\u0440\u044f\u0434\u043e\u043a \u043f\u0430\u043f\u043e\u043a \u043e\u0431\u043d\u043e\u0432\u043b\u0451\u043d',
+    'settings.r.nameExists': '{name} \u0443\u0436\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442!',
     'folder.contains':
       '\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u0442 {n} (\u0432\u043a\u043b\u044e\u0447\u0430\u044f \u043f\u043e\u0434\u043f\u0430\u043f\u043a\u0438)',
     'editor.ph.password':
@@ -4623,8 +4642,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       '\u0412 \u0446\u0435\u043b\u0435\u0432\u043e\u043c \u043c\u0435\u0441\u0442\u0435 \u0443\u0436\u0435 \u0435\u0441\u0442\u044c \u043f\u0430\u043f\u043a\u0430 \u00ab{name}\u00bb. \u041e\u0431\u044a\u0435\u0434\u0438\u043d\u0438\u0442\u044c? \u0421\u0435\u0440\u0432\u0435\u0440\u044b \u0438\u0437 \u043e\u0431\u0435\u0438\u0445 \u043f\u0430\u043f\u043e\u043a \u0431\u0443\u0434\u0443\u0442 \u0441\u043e\u0431\u0440\u0430\u043d\u044b \u0432 \u043e\u0434\u043d\u0443.',
     'tree.mergeFolderYes': '\u041e\u0431\u044a\u0435\u0434\u0438\u043d\u0438\u0442\u044c',
-    'tree.noDsHint':
-      '\u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u043e\u0432 \u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442. \u0414\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0438\u0445 \u0432 \u0440\u0430\u0437\u0434\u0435\u043b\u0435 \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 > \u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0438 \u0434\u0430\u043d\u043d\u044b\u0445, \u0447\u0442\u043e\u0431\u044b \u043d\u0430\u0447\u0430\u0442\u044c \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u0435\u0440\u0432\u0435\u0440\u0430\u043c\u0438.',
     'crumb.searchScope':
       '\u043f\u043e \u0432\u0441\u0435\u043c \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0430\u043c \u0434\u0430\u043d\u043d\u044b\u0445',
     'cols.folderRootOnly':
@@ -4636,8 +4653,6 @@ const ROUND4 = {
       '\u041d\u0435\u0442 \u043f\u0430\u0440\u043e\u043b\u044f \u0434\u043b\u044f \u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f',
     'toast.copyPwdNeedVerify':
       '\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430: \u0437\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u0435 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0443 \u0443\u0447\u0451\u0442\u043d\u044b\u0445 \u0434\u0430\u043d\u043d\u044b\u0445 Windows \u0432 \u043d\u0430\u0441\u0442\u043e\u043b\u044c\u043d\u043e\u043c \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u0438 \u0438 \u043f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u0435 \u043f\u043e\u043f\u044b\u0442\u043a\u0443',
-    'editor.credEmptyHint':
-      '\u0412 \u044d\u0442\u043e\u043c \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0435 \u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442 \u0443\u0447\u0451\u0442\u043d\u044b\u0445 \u0434\u0430\u043d\u043d\u044b\u0445. \u0421\u043e\u0437\u0434\u0430\u0439\u0442\u0435 \u0438\u0445 \u0432 \u0440\u0430\u0437\u0434\u0435\u043b\u0435 \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 > \u0423\u0447\u0451\u0442\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 \u0438\u043b\u0438 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u0435 \u0432\u0432\u043e\u0434 \u0432\u0440\u0443\u0447\u043d\u0443\u044e.',
     'settings.nav.dataSub':
       '\u0411\u0430\u0437\u044b \u0434\u0430\u043d\u043d\u044b\u0445 \u0438 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f',
     'settings.nav.appearanceSub': '\u0422\u0435\u043c\u0430 \u0438 \u0446\u0432\u0435\u0442\u0430',
@@ -4645,8 +4660,14 @@ const ROUND4 = {
       '\u0412\u043d\u0435\u0448\u043d\u0438\u0435 Runner \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432',
   },
   'pl-PL': {
+    'tree.noDsHint':
+      'Brak jeszcze \u017ar\u00f3de\u0142 danych. Dodaj je w Opcje > Baza danych, aby zarz\u0105dza\u0107 serwerami.',
+    'editor.credEmptyHint':
+      'To \u017ar\u00f3d\u0142o danych nie ma jeszcze po\u015bwiadcze\u0144. Utw\u00f3rz je w Opcje > Referencje albo dalej wpisuj je r\u0119cznie.',
+    'tree.folderReordered': 'Zaktualizowano kolejno\u015b\u0107 folder\u00f3w',
+    'settings.r.nameExists': '{name} ju\u017c istnieje!',
     'folder.contains': 'Zawiera {n} (wraz z podfolderami)',
-    'editor.ph.password': 'Zostaw puste, a has\u0142o zostanie zapytane p\u00f3\u017aniej.',
+    'editor.ph.password': 'Zostaw puste, aby poda\u0107 has\u0142o p\u00f3\u017aniej.',
     'editor.kvHint':
       'Tutaj mo\u017cesz ustawi\u0107 opcje niewymienione w interfejsie, np. wy\u0142\u0105czy\u0107 automatyczne wznawianie po\u0142\u0105czenia przez EnableAutoReconnect:i:0, wy\u0142\u0105czy\u0107 kombinacje klawiszy przez HotKeyAltTab:i:0 albo przypi\u0105\u0107 pasek po\u0142\u0105czenia przez PinConnectionBar:i:1.',
     'editor.kvPriority':
@@ -4671,8 +4692,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'W miejscu docelowym istnieje ju\u017c folder o nazwie \u201e{name}\u201d. Scali\u0107? Serwery z obu folder\u00f3w zostan\u0105 po\u0142\u0105czone w jeden.',
     'tree.mergeFolderYes': 'Scal',
-    'tree.noDsHint':
-      'Brak jeszcze \u017ar\u00f3de\u0142 danych. Dodaj je w Ustawienia > \u0179r\u00f3d\u0142a danych, aby zarz\u0105dza\u0107 serwerami.',
     'crumb.searchScope': 'wszystkie \u017ar\u00f3d\u0142a danych',
     'cols.folderRootOnly': 'Kolumna Folder jest widoczna tylko w widoku g\u0142\u00f3wnym lub podczas wyszukiwania',
     'ctx.copyPassword': 'Kopiuj has\u0142o',
@@ -4680,13 +4699,17 @@ const ROUND4 = {
     'toast.noPasswordToCopy': 'Brak has\u0142a do skopiowania',
     'toast.copyPwdNeedVerify':
       'Wymagana weryfikacja: uko\u0144cz weryfikacj\u0119 po\u015bwiadcze\u0144 Windows w aplikacji klasycznej i spr\u00f3buj ponownie',
-    'editor.credEmptyHint':
-      'To \u017ar\u00f3d\u0142o danych nie ma jeszcze po\u015bwiadcze\u0144. Utw\u00f3rz je w Ustawienia > Po\u015bwiadczenia albo dalej wpisuj je r\u0119cznie.',
     'settings.nav.dataSub': 'Bazy danych i po\u0142\u0105czenia',
     'settings.nav.appearanceSub': 'Motyw i kolory',
     'settings.nav.runnersSub': 'Zewn\u0119trzne Runner protoko\u0142\u00f3w',
   },
   'cs-CZ': {
+    'tree.noDsHint':
+      'Zat\u00edm \u017e\u00e1dn\u00e9 zdroje dat. P\u0159idejte je v P\u0159edvolby > Datab\u00e1ze a za\u010dn\u011bte spravovat servery.',
+    'editor.credEmptyHint':
+      'Tento zdroj dat zat\u00edm nem\u00e1 \u017e\u00e1dn\u00e9 p\u0159ihla\u0161ovac\u00ed \u00fadaje. Vytvo\u0159te je v P\u0159edvolby > Pov\u011b\u0159en\u00ed, nebo je i nad\u00e1le zad\u00e1vejte ru\u010dn\u011b.',
+    'tree.folderReordered': 'Po\u0159ad\u00ed slo\u017eek aktualizov\u00e1no',
+    'settings.r.nameExists': '{name} u\u017e existuje!',
     'folder.contains': 'Obsahuje {n} (v\u010detn\u011b podslo\u017eek)',
     'editor.ph.password': 'Ponechte pr\u00e1zdn\u00e9 a heslo bude vy\u017e\u00e1d\u00e1no pozd\u011bji.',
     'editor.kvHint':
@@ -4712,8 +4735,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'V c\u00edli u\u017e existuje slo\u017eka s n\u00e1zvem \u201e{name}\u201c. Slou\u010dit? Servery z obou slo\u017eek budou spojeny do jedn\u00e9.',
     'tree.mergeFolderYes': 'Slou\u010dit',
-    'tree.noDsHint':
-      'Zat\u00edm \u017e\u00e1dn\u00e9 zdroje dat. P\u0159idejte je v Nastaven\u00ed > Zdroje dat a za\u010dn\u011bte spravovat servery.',
     'crumb.searchScope': 'v\u0161echny zdroje dat',
     'cols.folderRootOnly':
       'Sloupec Slo\u017eka se zobrazuje jen v ko\u0159enov\u00e9m zobrazen\u00ed nebo p\u0159i hled\u00e1n\u00ed',
@@ -4722,13 +4743,17 @@ const ROUND4 = {
     'toast.noPasswordToCopy': '\u017d\u00e1dn\u00e9 heslo ke zkop\u00edrov\u00e1n\u00ed',
     'toast.copyPwdNeedVerify':
       'Vy\u017eadov\u00e1no ov\u011b\u0159en\u00ed: dokon\u010dete ov\u011b\u0159en\u00ed p\u0159ihla\u0161ovac\u00edch \u00fadaj\u016f Windows v desktopov\u00e9 aplikaci a zkuste to znovu',
-    'editor.credEmptyHint':
-      'Tento zdroj dat zat\u00edm nem\u00e1 \u017e\u00e1dn\u00e9 p\u0159ihla\u0161ovac\u00ed \u00fadaje. Vytvo\u0159te je v Nastaven\u00ed > P\u0159ihla\u0161ovac\u00ed \u00fadaje, nebo je i nad\u00e1le zad\u00e1vejte ru\u010dn\u011b.',
     'settings.nav.dataSub': 'Datab\u00e1ze a p\u0159ipojen\u00ed',
     'settings.nav.appearanceSub': 'Motiv a barvy',
     'settings.nav.runnersSub': 'Extern\u00ed Runnery protokol\u016f',
   },
   'gl-ES': {
+    'tree.noDsHint':
+      'A\u00ednda non hai fontes de datos. Engada unha en Opci\u00f3ns > Base de datos para comezar a xestionar servidores.',
+    'editor.credEmptyHint':
+      'Esta fonte de datos a\u00ednda non ten credenciais. Cree unha en Opci\u00f3ns > Credenciais ou siga escrib\u00edndoas a man.',
+    'tree.folderReordered': 'Actualizouse a orde dos cartafoles',
+    'settings.r.nameExists': '{name} xa existe!',
     'folder.contains': 'Cont\u00e9n {n} (inclu\u00edndo subcartafoles)',
     'editor.ph.password': 'D\u00e9ixeo en branco e pedir\u00e1selle o contrasinal m\u00e1is tarde.',
     'editor.kvHint':
@@ -4754,8 +4779,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       'No destino xa existe un cartafol chamado \u00ab{name}\u00bb. Combinar? Os servidores de ambos os cartafoles uniranse nun s\u00f3.',
     'tree.mergeFolderYes': 'Combinar',
-    'tree.noDsHint':
-      'A\u00ednda non hai fontes de datos. Engada unha en Configuraci\u00f3n > Fontes de datos para comezar a xestionar servidores.',
     'crumb.searchScope': 'todas as fontes de datos',
     'cols.folderRootOnly': 'A columna Cartafol s\u00f3 se mostra na vista ra\u00edz ou durante unha busca',
     'ctx.copyPassword': 'Copiar contrasinal',
@@ -4763,14 +4786,20 @@ const ROUND4 = {
     'toast.noPasswordToCopy': 'Non hai contrasinal para copiar',
     'toast.copyPwdNeedVerify':
       'Requ\u00edrese verificaci\u00f3n: complete a verificaci\u00f3n de credenciais de Windows na aplicaci\u00f3n de escritorio e t\u00e9nteo de novo',
-    'editor.credEmptyHint':
-      'Esta fonte de datos a\u00ednda non ten credenciais. Cree unha en Configuraci\u00f3n > Credenciais ou siga escrib\u00edndoas a man.',
     'settings.nav.dataSub': 'Bases de datos e conexi\u00f3ns',
     'settings.nav.appearanceSub': 'Tema e cores',
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'ja-JP': {
-    'folder.contains': '\u5185\u5305 {n} \u53f0\uff08\u30b5\u30d6\u30d5\u30a9\u30eb\u30c0\u30fc\u542b\u3080\uff09',
+    'tree.noDsHint':
+      '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u304c\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002\u30aa\u30d7\u30b7\u30e7\u30f3 > \u30c7\u30fc\u30bf\u30d9\u30fc\u30b9 \u3067\u8ffd\u52a0\u3059\u308b\u3068\u30b5\u30fc\u30d0\u30fc\u7ba1\u7406\u3092\u59cb\u3081\u3089\u308c\u307e\u3059\u3002',
+    'editor.credEmptyHint':
+      '\u3053\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u306b\u306f\u8cc7\u683c\u60c5\u5831\u304c\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002\u30aa\u30d7\u30b7\u30e7\u30f3 > \u30d1\u30b9\u30ef\u30fc\u30c9\u8a8d\u8a3c \u3067\u4f5c\u6210\u3059\u308b\u304b\u3001\u624b\u52d5\u5165\u529b\u3092\u7d9a\u3051\u3066\u304f\u3060\u3055\u3044\u3002',
+    'tree.folderReordered':
+      '\u30d5\u30a9\u30eb\u30c0\u30fc\u306e\u9806\u5e8f\u3092\u66f4\u65b0\u3057\u307e\u3057\u305f',
+    'settings.r.nameExists': '{name} \u306f\u65e2\u306b\u5b58\u5728\u3057\u3066\u3044\u307e\u3059',
+    'folder.contains':
+      '\u30d5\u30a9\u30eb\u30c0\u30fc\u5185\u306b {n} \u53f0\uff08\u30b5\u30d6\u30d5\u30a9\u30eb\u30c0\u30fc\u542b\u3080\uff09',
     'editor.ph.password':
       '\u7a7a\u6b04\u306b\u3059\u308b\u3068\u63a5\u7d9a\u6642\u306b\u30d1\u30b9\u30ef\u30fc\u30c9\u3092\u5c0b\u306d\u307e\u3059\u3002',
     'editor.kvHint':
@@ -4801,8 +4830,6 @@ const ROUND4 = {
     'tree.mergeFolderConfirm':
       '\u79fb\u52d5\u5148\u306b\u540c\u540d\u306e\u30d5\u30a9\u30eb\u30c0\u30fc\u300c{name}\u300d\u304c\u65e2\u306b\u3042\u308a\u307e\u3059\u3002\u7d71\u5408\u3057\u307e\u3059\u304b\uff1f\u4e21\u65b9\u306e\u30d5\u30a9\u30eb\u30c0\u30fc\u5185\u306e\u30b5\u30fc\u30d0\u30fc\u306f 1 \u3064\u306e\u30d5\u30a9\u30eb\u30c0\u30fc\u306b\u307e\u3068\u3081\u3089\u308c\u307e\u3059\u3002',
     'tree.mergeFolderYes': '\u7d71\u5408',
-    'tree.noDsHint':
-      '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u304c\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002\u8a2d\u5b9a > \u30c7\u30fc\u30bf\u30bd\u30fc\u30b9 \u3067\u8ffd\u52a0\u3059\u308b\u3068\u30b5\u30fc\u30d0\u30fc\u7ba1\u7406\u3092\u59cb\u3081\u3089\u308c\u307e\u3059\u3002',
     'crumb.searchScope': '\u5168\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9',
     'cols.folderRootOnly':
       '\u30d5\u30a9\u30eb\u30c0\u30fc\u5217\u306f\u30eb\u30fc\u30c8\u8868\u793a\u307e\u305f\u306f\u691c\u7d22\u4e2d\u306e\u307f\u8868\u793a\u3055\u308c\u307e\u3059',
@@ -4812,13 +4839,15 @@ const ROUND4 = {
       '\u30b3\u30d4\u30fc\u3059\u308b\u30d1\u30b9\u30ef\u30fc\u30c9\u304c\u3042\u308a\u307e\u305b\u3093',
     'toast.copyPwdNeedVerify':
       '\u691c\u8a3c\u304c\u5fc5\u8981\u3067\u3059\uff1a\u30c7\u30b9\u30af\u30c8\u30c3\u30d7\u30a2\u30d7\u30ea\u3067 Windows \u8cc7\u683c\u60c5\u5831\u306e\u691c\u8a3c\u3092\u5b8c\u4e86\u3057\u3066\u304b\u3089\u518d\u8a66\u884c\u3057\u3066\u304f\u3060\u3055\u3044',
-    'editor.credEmptyHint':
-      '\u3053\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u306b\u306f\u8cc7\u683c\u60c5\u5831\u304c\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002\u8a2d\u5b9a > \u8cc7\u683c\u60c5\u5831 \u3067\u4f5c\u6210\u3059\u308b\u304b\u3001\u624b\u52d5\u5165\u529b\u3092\u7d9a\u3051\u3066\u304f\u3060\u3055\u3044\u3002',
     'settings.nav.dataSub': '\u30c7\u30fc\u30bf\u30d9\u30fc\u30b9\u3068\u63a5\u7d9a',
     'settings.nav.appearanceSub': '\u30c6\u30fc\u30de\u3068\u8272',
     'settings.nav.runnersSub': '\u5916\u90e8\u30d7\u30ed\u30c8\u30b3\u30eb\u306e Runner',
   },
   'zh-TW': {
+    'tree.noDsHint':
+      '\u9084\u6c92\u6709\u8cc7\u6599\u4f86\u6e90\uff1a\u8acb\u5230 \u8a2d\u5b9a \u2192 \u8cc7\u6599\u5eab \u65b0\u589e\u5f8c\u958b\u59cb\u7ba1\u7406\u4f3a\u670d\u5668',
+    'editor.credEmptyHint':
+      '\u6b64\u8cc7\u6599\u4f86\u6e90\u9084\u6c92\u6709\u6191\u8b49\u3002\u53ef\u5728 \u8a2d\u5b9a \u2192 \u8b49\u66f8 \u4e2d\u5efa\u7acb\uff0c\u6216\u4fdd\u6301\u624b\u52d5\u8f38\u5165\u3002',
     'folder.contains': '\u5167\u542b {n} \u53f0\uff08\u542b\u5b50\u8cc7\u6599\u593e\uff09',
     'editor.ph.password': '\u7559\u7a7a\u5247\u9023\u7dda\u6642\u518d\u8a62\u554f\u5bc6\u78bc',
     'editor.kvHint':
@@ -4843,13 +4872,11 @@ const ROUND4 = {
       '\u5167\u5efa Runner \u7684\u8def\u5f91\u7531\u61c9\u7528\u7a0b\u5f0f\u7ba1\u7406\u3002',
     'settings.r.loadFailed': '\u8f09\u5165 Runner \u8a2d\u5b9a\u5931\u6557',
     'editor.f.SelectedRunnerName': '\u6307\u5b9a Runner',
-    'settings.r.nameExists': '\u300c{name}\u5df2\u5b58\u5728\u300d\uff01',
+    'settings.r.nameExists': '\u300c{name}\u300d\u5df2\u5b58\u5728\uff01',
     'tree.mergeFolderTitle': '\u5408\u4f75\u540c\u540d\u8cc7\u6599\u593e',
     'tree.mergeFolderConfirm':
       '\u76ee\u6a19\u4f4d\u7f6e\u5df2\u5b58\u5728\u540c\u540d\u8cc7\u6599\u593e\u300c{name}\u300d\u3002\u662f\u5426\u5408\u4f75\uff1f\u5169\u908a\u8cc7\u6599\u593e\u4e2d\u7684\u4f3a\u670d\u5668\u5c07\u5408\u4f75\u5230\u540c\u4e00\u500b\u8cc7\u6599\u593e\u3002',
     'tree.mergeFolderYes': '\u5408\u4f75',
-    'tree.noDsHint':
-      '\u9084\u6c92\u6709\u8cc7\u6599\u4f86\u6e90\uff1a\u8acb\u5230 \u8a2d\u5b9a \u2192 \u8cc7\u6599\u4f86\u6e90 \u65b0\u589e\u5f8c\u958b\u59cb\u7ba1\u7406\u4f3a\u670d\u5668',
     'crumb.searchScope': '\u5168\u5eab\u7bc4\u570d',
     'cols.folderRootOnly': '\u8cc7\u6599\u593e\u6b04\u50c5\u5728\u6839\u6aa2\u8996\u6216\u641c\u5c0b\u6642\u986f\u793a',
     'ctx.copyPassword': '\u8907\u88fd\u5bc6\u78bc',
@@ -4857,8 +4884,6 @@ const ROUND4 = {
     'toast.noPasswordToCopy': '\u7121\u5bc6\u78bc\u53ef\u8907\u88fd',
     'toast.copyPwdNeedVerify':
       '\u9700\u8981\u9a57\u8b49\uff1a\u8acb\u5728\u684c\u9762\u7aef\u5b8c\u6210 Windows \u8a8d\u8b49\u9a57\u8b49\u5f8c\u91cd\u8a66',
-    'editor.credEmptyHint':
-      '\u6b64\u8cc7\u6599\u4f86\u6e90\u9084\u6c92\u6709\u6191\u8b49\u3002\u53ef\u5728 \u8a2d\u5b9a \u2192 \u6191\u8b49 \u4e2d\u5efa\u7acb\uff0c\u6216\u4fdd\u6301\u624b\u52d5\u8f38\u5165\u3002',
     'settings.nav.dataSub': '\u8cc7\u6599\u5eab\u8207\u9023\u7dda\u8a2d\u5b9a',
     'settings.nav.appearanceSub': '\u4e3b\u984c\u8207\u984f\u8272\u8a2d\u5b9a',
     'settings.nav.runnersSub': '\u5916\u90e8\u5354\u5b9a Runner \u8a2d\u5b9a',
