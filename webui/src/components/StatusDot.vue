@@ -35,8 +35,7 @@ const title = computed(() =>
 <style scoped>
 .status-dot {
   display: inline-flex;
-  align-items: center;
-  gap: 5px;
+  align-items: center; /* 单子元素无 gap（G32：原 gap 5px 无效声明删除） */
 }
 .dot {
   /* 服务器状态点 8px 档（G19）：宿主为 36px 行列表，比数据源状态点（6px，紧凑行/
@@ -54,6 +53,8 @@ const title = computed(() =>
   background: var(--warning);
 }
 .idle .dot {
-  border: 1.5px solid var(--text-4); /* 灰空心圈 */
+  /* 灰空心圈升 --text-3（G32：text-4 线色 ×bg 两基底 2.46-2.76 不达非文本 3:1，
+     text-3 4.63-5.88；语义仍是"未连接"弱档，title 兜底精确状态） */
+  border: 1.5px solid var(--text-3);
 }
 </style>

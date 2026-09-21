@@ -7,7 +7,8 @@
  * - tip：无 URL 的说明性提示 → ⓘ 徽标 + title 悬停（纯提示，无导航）——根元素用
  *   <button type="button">（键盘可达：可 Tab 聚焦，焦点圈见 :focus-visible）；
  * - 徽标字符默认按用途推断（href→"?"，tip→"i"），badge="" 关闭徽标只留文字（默认插槽），
- *   承载 WPF 的文字型链接（"Can't find your language?" / "[More details]"）。
+ *   承载 WPF 的文字型链接（"Can't find your language?" / "[More details]"）——
+ *   即 badge 实际取值仅 ''/?/i（自定义字符兜底已随 G32 清理删除）。
  *
  * 徽标形态视觉（owner 反馈"(?) 不显眼、圆圈包不住问号"后的重做）：
  * - 18×18 圆钮（原 15×15 容器 + 10px 字体字符——字形比例失调）：改内绘 SVG（viewBox
@@ -27,7 +28,7 @@ import { useI18n } from 'vue-i18n'
 const props = defineProps({
   href: { type: String, default: '' },
   tip: { type: String, default: '' },
-  /** 徽标字符：缺省按用途推断（href→? / tip→i）；空串 = 纯文字形态 */
+  /** 徽标字符：缺省按用途推断（href→? / tip→i）；空串 = 纯文字形态（有效值仅 ''/?/i） */
   badge: { type: String, default: undefined },
 })
 
@@ -54,8 +55,9 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
     :aria-label="$slots.default ? undefined : ariaLabel"
   >
     <span v-if="badgeChar" class="hl-badge" aria-hidden="true">
-      <!-- "?" / "i" 用 SVG 笔画绘制（比例可控）；其余自定义字符兜底字体渲染 -->
-      <svg v-if="badgeChar === '?' || badgeChar === 'i'" viewBox="0 0 24 24" width="18" height="18">
+      <!-- "?" / "i" 用 SVG 笔画绘制（比例可控）。G32 清理：自定义字符字体兜底分支
+           （hl-badge-char）全库无调用方已删——badge 实际取值只有 ''/?/i 三种 -->
+      <svg viewBox="0 0 24 24" width="18" height="18">
         <circle class="hl-ring" cx="12" cy="12" r="9.25"></circle>
         <path
           v-if="badgeChar === '?'"
@@ -66,13 +68,12 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
         <circle v-if="badgeChar === '?'" class="hl-dot" cx="12" cy="17" r="0.95"></circle>
         <circle v-else class="hl-dot" cx="12" cy="16.8" r="0.95"></circle>
       </svg>
-      <span v-else class="hl-badge-char">{{ badgeChar }}</span>
     </span>
     <span v-if="$slots.default" class="hl-text"><slot></slot></span>
   </a>
   <button v-else class="help-link" type="button" :title="tip || undefined" :aria-label="ariaLabel">
     <span v-if="badgeChar" class="hl-badge" aria-hidden="true">
-      <svg v-if="badgeChar === '?' || badgeChar === 'i'" viewBox="0 0 24 24" width="18" height="18">
+      <svg viewBox="0 0 24 24" width="18" height="18">
         <circle class="hl-ring" cx="12" cy="12" r="9.25"></circle>
         <path
           v-if="badgeChar === '?'"
@@ -83,7 +84,6 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
         <circle v-if="badgeChar === '?'" class="hl-dot" cx="12" cy="17" r="0.95"></circle>
         <circle v-else class="hl-dot" cx="12" cy="16.8" r="0.95"></circle>
       </svg>
-      <span v-else class="hl-badge-char">{{ badgeChar }}</span>
     </span>
     <span v-if="$slots.default" class="hl-text"><slot></slot></span>
   </button>
@@ -156,20 +156,5 @@ const ariaLabel = computed(() => props.tip || t('common.help'))
   color: var(--text-on-accent);
   background: var(--accent-solid);
   transform: scale(1.15);
-}
-/* 自定义徽标字符（当前无调用方）的字体兜底：与 SVG 同尺寸的圆内居中字符 */
-.hl-badge-char {
-  width: 18px;
-  height: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  font-size: var(--fs-caption);
-  font-weight: 600;
-  line-height: 1;
-  font-style: italic;
-  user-select: none;
 }
 </style>

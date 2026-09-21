@@ -741,7 +741,8 @@ onBeforeUnmount(() => {
   color: var(--text-2);
 }
 
-/* 凭据组二选一分段：容器 28 档（border-box，边框计入）；按钮 stretch 填满、横向内距 14 */
+/* 凭据组二选一分段：容器 28 档（border-box，边框计入）；按钮 stretch 填满、横向内距 14。
+   分段控件族锚点（G18）：AppearanceGroup .seg（字号档）拷贝本参数，改动需两处同步 */
 .ed-seg {
   display: inline-flex;
   align-self: start;

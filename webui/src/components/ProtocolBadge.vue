@@ -1,6 +1,6 @@
 <script setup>
 // 协议徽章（spec §3.4「协议」列）：每协议固定配色——这是协议身份色，非主题变量，跨主题恒定。
-// 实现：背景/边框 = hex+'22'/'33'（13%/20% 透明度叠在行底色上，恒定）；文字按基底深浅
+// 实现：背景 = hex+'22'（13% 透明度叠在行底色上，恒定）；文字按基底深浅
 // 取双值——中间调 hex 直接作小字在浅色底上不可读（light+FTP 1.70:1），
 // light 侧换深变体、dark 侧对过深的 4 协议（RDP/VNC/Serial/APP）换浅变体，全部组合
 // （含 13% 底色叠加、hover 行底、勾选行 accent-container 底）≥4.5 AA。未知协议走中性灰兜底。
@@ -55,9 +55,7 @@ const textColor = computed(() => (isDarkMode() ? PROTOCOL_TEXT_DARK : PROTOCOL_T
 </script>
 
 <template>
-  <span v-if="color" class="badge" :style="{ background: color + '22', color: textColor, borderColor: color + '33' }">{{
-    protocol
-  }}</span>
+  <span v-if="color" class="badge" :style="{ background: color + '22', color: textColor }">{{ protocol }}</span>
   <span v-else class="badge badge-unknown">{{ protocol || '?' }}</span>
 </template>
 
@@ -65,8 +63,9 @@ const textColor = computed(() => (isDarkMode() ? PROTOCOL_TEXT_DARK : PROTOCOL_T
 .badge {
   display: inline-flex;
   align-items: center;
-  border: 1px solid transparent;
   border-radius: var(--radius-pill);
+  /* 无边框（G32）：13% 底上的 20% 同色边框对比仅 1.12-1.51 近乎不可见，纯装饰负担——
+     协议身份信息由全 AA 的文字承载；未知协议兜底（badge-unknown）保留中性边框 */
   font-size: var(--fs-micro);
   line-height: 1;
   padding: 2px 8px; /* 微 chip 纵距 2px 档（G22），横距与 ServerRow .tag 同值 */

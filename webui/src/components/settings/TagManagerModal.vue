@@ -399,9 +399,10 @@ function runConnectAll(list) {
   gap: 4px;
 }
 .act {
+  /* 行内文字小钮族：值拷贝自 CredentialVaultGroup .act（G18），横距统一 4px（G22） */
   min-width: 24px;
   height: var(--ctrl-h-s);
-  padding: 0 5px;
+  padding: 0 4px;
   border: none;
   border-radius: var(--radius-ctrl);
   background: transparent;

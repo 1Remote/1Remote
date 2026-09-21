@@ -104,7 +104,7 @@ const isEmpty = computed(() => !String(props.modelValue ?? '').trim())
 .md-body :deep(h4) {
   margin: 0.5em 0 0.3em;
   color: var(--text-1);
-  line-height: 1.3;
+  line-height: 1.4; /* 行高档归并（G32：1.3/1.4 近邻两档并一），与 ServerRow note-md 同步 */
 }
 .md-body :deep(h1:first-child),
 .md-body :deep(h2:first-child),

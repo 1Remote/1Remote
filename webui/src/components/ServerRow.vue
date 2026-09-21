@@ -289,7 +289,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
 .note-md :deep(h4) {
   margin: 0.5em 0 0.3em;
   color: var(--text-1);
-  line-height: 1.3;
+  line-height: 1.4; /* 行高档归并（G32：1.3/1.4 近邻两档并一），与 MarkdownField 同步 */
 }
 .note-md :deep(h1:first-child),
 .note-md :deep(h2:first-child),
@@ -362,7 +362,9 @@ const barColor = computed(() => opaqueHex(props.server.color))
 }
 
 /* 行左色条：整行高 4px 实色竖条贴行左缘；checkbox 居中于 30px 列内，
-   4px 覆盖不触及。不占 flex 布局（absolute），列对齐与表头零位移 */
+   4px 覆盖不触及。不占 flex 布局（absolute），列对齐与表头零位移。
+   4px 档义（G32 锚点）：服务器自定义色是业务数据色板，不走主题线宽档（1.5/2/3）——
+   色条要在任意用户色（含浅色）下保形，粗一档作数据可视化条 */
 .cbar {
   position: absolute;
   left: 0;

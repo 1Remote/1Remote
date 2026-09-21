@@ -1151,7 +1151,7 @@ onBeforeUnmount(() => {
   font-size: var(--fs-body);
 }
 
-/* 右键菜单浮层 */
+/* 右键菜单浮层。ctx-menu 族锚点（G18）：SideTree .tree-ctx 拷贝本参数 */
 .ctx-menu {
   position: absolute;
   z-index: 30;

@@ -314,6 +314,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 }
 .ip-upload {
   display: inline-block;
+  /* 虚线添加钮族：值拷贝自 SubformList .sf-add（G18） */
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-ctrl);
   background: transparent;

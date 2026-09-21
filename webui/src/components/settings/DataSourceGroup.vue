@@ -695,6 +695,8 @@ bindModalEsc([
   gap: 6px;
 }
 .act {
+  /* 行内文字小钮族（G18）：卡片动作钮与 CredentialVaultGroup/TagManagerModal 的 .act
+     同族（此处带边框形态，行高同 24 档）；.act-btn 为上传型变体（见下） */
   height: 24px;
   padding: 0 10px;
   border: 1px solid var(--border);

@@ -212,6 +212,8 @@ function rowFieldFor(row, f) {
   margin-top: 8px;
 }
 .sf-add {
+  /* 虚线添加钮族源点（G18）：KeyValueLines .kvl-add / KvMapField .kvm-add /
+     IconPicker .ip-upload 三份拷贝本参数，改动需四处同步 */
   align-self: flex-start;
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-ctrl);

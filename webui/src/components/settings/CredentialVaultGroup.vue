@@ -626,6 +626,8 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   gap: 4px;
 }
 .act {
+  /* 行内文字小钮族（G18 锚点）：DataSourceGroup/TagManagerModal 的 .act 与此同参数
+     拷贝（borderless、ctrl-h-s、中性 hover），改动需三处同步 */
   min-width: 24px;
   height: var(--ctrl-h-s);
   padding: 0 4px;
@@ -711,6 +713,8 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   gap: 10px;
 }
 .f-row {
+  /* 设置模态表单行族锚点（G18）：DataSourceGroup / RunnerAddModal 的 .f-row 与此
+     同构（标签列 + 控件列网格），改动需三处同步 */
   display: grid;
   grid-template-columns: 110px minmax(0, 1fr);
   gap: 10px;
