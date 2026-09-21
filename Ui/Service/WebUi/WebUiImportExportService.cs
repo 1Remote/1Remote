@@ -128,14 +128,15 @@ namespace _1RM.Service.WebUi
         /// 前置：数据源必须存在且可写（Database_InsertServer 对只读库静默返回 Success，必须前置拦截）。
         /// 返回 {added, skipped, errors}；解析整体失败（非文件、无有效行、库打不开）→ 400 {errors}。
         /// 成功插入任意台后 ReloadAll(force) 刷新 VmItemList/SSE（WPF 导入后同款）。
-        /// folderPath（可选，'/' 分隔，batch10 Task A #1）：文件夹内入口的导入——导入服务器的
-        /// TreeNodes 统一改写为该路径拆分（覆盖解析器产出：JSON 导出文件可能自带旧库路径，
-        /// 对目标库无意义）；null/空白 = 落数据源根（WPF 导入原语义）。
+        /// folderPath（可选，'/' 分隔）：目标文件夹——导入服务器的 TreeNodes = 目标文件夹 +
+        /// 解析器产出的原有相对层级（H15，owner 2026-09-21 决策：在 123 文件夹导入目录为 1234
+        /// 的服务器 → 落 123/1234；JSON 导出文件自带的层级结构保留，CSV/RDP 等无层级的格式
+        /// 自然全落目标文件夹）；null/空白 = 不加前缀（WPF 导入原语义：保留解析器产出）。
         /// </summary>
         public static ImportResult Import(string? dataSourceName, ImportFileKind kind, string filePath, string? folderPath = null)
         {
             if (kind == ImportFileKind.Unknown)
-                return ImportResult.BadRequest(new List<string> { $"unsupported file type '{Path.GetFileName(filePath)}' (expected .json/.csv/.rdp/.db)" });
+                return ImportResult.BadRequest(new List<string> { $"unsupported file type '{Path.GetFileName(filePath)}' (expected .json/.csv/.rdp/.db/.sqlite)" });
 
             var dataSource = ResolveDataSource(dataSourceName);
             if (dataSource == null)
@@ -169,7 +170,9 @@ namespace _1RM.Service.WebUi
                 });
 
             // 逐台插入（单元素批量重载，见类注释的凭据提取决策）：清 Id = IsTmpSession 新建语义（WPF :385/:473 同款）
-            // 目标文件夹：TreeNodes setter 自带 Trim/去空段拷贝（ProtocolBase.cs:132），共享同一列表安全
+            // H15：目标文件夹作前缀拼接而非整体覆盖——解析器产出的原有 TreeNodes（JSON 导出
+            // 自带层级 / mRemoteNG 库自带分组）保留在目标文件夹之下；TreeNodes setter 自带
+            // Trim/去空段拷贝（ProtocolBase.cs:132），拼新列表传入安全
             var targetNodes = string.IsNullOrWhiteSpace(folderPath)
                 ? null
                 : folderPath.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
@@ -181,7 +184,7 @@ namespace _1RM.Service.WebUi
                 {
                     server.Id = string.Empty;
                     if (targetNodes != null)
-                        server.TreeNodes = new List<string>(targetNodes);
+                        server.TreeNodes = targetNodes.Concat(server.TreeNodes ?? new List<string>()).ToList();
                     var ret = dataSource.Database_InsertServer(new List<ProtocolBase> { server });
                     if (ret.IsSuccess)
                     {

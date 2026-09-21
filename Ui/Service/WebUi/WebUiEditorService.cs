@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using _1RM.Model;
 using _1RM.Model.Protocol;
@@ -88,6 +89,43 @@ namespace _1RM.Service.WebUi
             var clone = (ProtocolBase)vm.Server.Clone();
             clone.DecryptToConnectLevel();
             return clone.ToJsonString();
+        }
+
+        /// <summary>
+        /// H4：右键「复制密码」的服务端编排——WPF ProtocolActionHelper.cs:126-142 的 web 平价。
+        /// 验证门与凭据 reveal/导出共用同一 30s 窗口（按数据源记，WebUiCredentialService；
+        /// 未开启二次验证时 VerifyAsyncUi 直通 true）；通过后克隆+解密取 Password 明文回传，
+        /// 剪贴板写入由前端完成（WebView2/localhost 安全上下文 = 桌面剪贴板，免去 Kestrel
+        /// MTA 线程上 System.Windows.Clipboard 的 STA 处理）。
+        /// 无密码协议（Serial/Telnet 等非 UserPwd 层级 / 未存密码）回传空串，由前端提示。
+        /// </summary>
+        public static async Task<CredentialRevealResult> RevealServerPasswordAsync(string? dataSourceName, string id)
+        {
+            var resolvedName = string.IsNullOrWhiteSpace(dataSourceName)
+                ? DataSourceService.LOCAL_DATA_SOURCE_NAME
+                : dataSourceName;
+            var vm = GetEditableVm(resolvedName, id);
+            if (vm == null)
+                return CredentialRevealResult.NotFound();
+
+            if ((DateTime.Now - WebUiCredentialService.GetRevealVerifiedAt(resolvedName)).TotalSeconds >= 30)
+            {
+                // async Task<bool?> 必须直接 await（同步 dispatch 包不住，reveal/导出同款约束）
+                var verified = await SecondaryVerificationHelper.VerifyAsyncUi();
+                if (verified != true)
+                    return CredentialRevealResult.Forbidden();
+                WebUiCredentialService.SetRevealVerifiedAt(resolvedName, DateTime.Now);
+            }
+
+            // 验证等待期间服务器可能已被删除：重找后再克隆（reveal 同款防御）
+            vm = GetEditableVm(resolvedName, id);
+            if (vm == null)
+                return CredentialRevealResult.NotFound();
+
+            var clone = (ProtocolBase)vm.Server.Clone();
+            clone.DecryptToConnectLevel(); // 处理 InheritedCredentialName 继承凭据的解析
+            var password = clone is ProtocolBaseWithAddressPortUserPwd p ? p.Password : string.Empty;
+            return CredentialRevealResult.Ok(password ?? string.Empty, string.Empty);
         }
 
         /// <summary>
@@ -296,6 +334,8 @@ namespace _1RM.Service.WebUi
         /// 才统一走 GlobalData.UpdateServer(IEnumerable)；任一环节失败 → 整批零执行。
         /// （DB 层批量更新无事务，与 WPF 行为一致；预校验失败不写库。）
         /// 返回 Ok(更新台数)；NotFound=任一 id 不存在；BadRequest=请求体/未知键/深层字段/只读/校验失败。
+        /// H13：dataSourceName 为 null/空白时按每台服务器自身数据源解析（跨库批量，WPF 平价
+        /// ——WPF 批量编辑无数据源限制，保存按各台归属分组落库）；显式传 ds 仍为单库语义（兼容）。
         /// </summary>
         public static EditorSaveResult ApplyBatchPatch(string? dataSourceName, List<string>? ids, string? patchJson)
         {
@@ -303,11 +343,14 @@ namespace _1RM.Service.WebUi
                 return EditorSaveResult.BadRequest(new List<string> { "ids must be a non-empty array of server ids" });
             ids = ids.Distinct().ToList(); // 重复 id 去重：避免同台重复写库（无害但浪费）并使计数与保存一致
 
-            var dataSource = ResolveDataSource(dataSourceName);
-            if (dataSource == null)
-                return EditorSaveResult.BadRequest(new List<string> { $"unknown dataSourceName '{dataSourceName}'" });
-            if (dataSource.IsWritable != true)
-                return EditorSaveResult.BadRequest(new List<string> { $"dataSource '{dataSource.DataSourceName}' is read-only" });
+            if (!string.IsNullOrWhiteSpace(dataSourceName))
+            {
+                var dataSource = ResolveDataSource(dataSourceName);
+                if (dataSource == null)
+                    return EditorSaveResult.BadRequest(new List<string> { $"unknown dataSourceName '{dataSourceName}'" });
+                if (dataSource.IsWritable != true)
+                    return EditorSaveResult.BadRequest(new List<string> { $"dataSource '{dataSource.DataSourceName}' is read-only" });
+            }
 
             JObject patch;
             try
@@ -336,17 +379,35 @@ namespace _1RM.Service.WebUi
             if (keyErrors.Count > 0)
                 return EditorSaveResult.BadRequest(keyErrors);
 
-            // 预校验原子性第一环：锁内查找全部 id，任一缺失/不可编辑 → 404，整批不执行
+            // 预校验原子性第一环：锁内查找全部 id，任一缺失/不可编辑 → 404，整批不执行。
+            // H13：ds 缺省 = 跨库解析（VmItemList 全表按 id 找，与 /api/connect 同款）；显式 ds = 单库
             var gd = IoC.Get<GlobalData>();
+            var singleDs = string.IsNullOrWhiteSpace(dataSourceName)
+                ? null
+                : ResolveDataSource(dataSourceName); // 上方已验非 null（未知名早退）
             var vms = new List<ProtocolBaseViewModel>();
             lock (gd) // 快照语义同 /api/servers：锁内只做查找，后续处理在锁外
             {
                 foreach (var id in ids)
                 {
-                    var vm = gd.GetItemById(dataSource.DataSourceName, id);
+                    var vm = singleDs != null
+                        ? gd.GetItemById(singleDs.DataSourceName, id)
+                        : gd.VmItemList.FirstOrDefault(x => x.Server.Id == id && WebUiEndpoints.IsConnectable(x.Server));
                     if (vm == null || !WebUiEndpoints.IsConnectable(vm.Server))
                         return EditorSaveResult.NotFound();
                     vms.Add(vm);
+                }
+            }
+            // 跨库路径逐台验可写（单库的可写检查已在上方做过）
+            if (string.IsNullOrWhiteSpace(dataSourceName))
+            {
+                foreach (var vm in vms)
+                {
+                    if (vm.Server.DataSource?.IsWritable != true)
+                        return EditorSaveResult.BadRequest(new List<string>
+                        {
+                            $"dataSource '{vm.Server.DataSource?.DataSourceName ?? "?"}' is read-only",
+                        });
                 }
             }
 
@@ -521,8 +582,10 @@ namespace _1RM.Service.WebUi
             if (ids == null || ids.Count == 0)
                 return BatchPeekResult.BadRequest(new List<string> { "ids must be a non-empty array of server ids" });
 
-            var dataSource = ResolveDataSource(dataSourceName);
-            if (dataSource == null)
+            var singleDs = string.IsNullOrWhiteSpace(dataSourceName)
+                ? null // H13：ds 缺省 = 跨库解析（与 batch 补丁同语义）
+                : ResolveDataSource(dataSourceName);
+            if (!string.IsNullOrWhiteSpace(dataSourceName) && singleDs == null)
                 return BatchPeekResult.BadRequest(new List<string> { $"unknown dataSourceName '{dataSourceName}'" });
 
             var idList = ids.Distinct().ToList();
@@ -532,7 +595,9 @@ namespace _1RM.Service.WebUi
             {
                 foreach (var id in idList)
                 {
-                    var vm = gd.GetItemById(dataSource.DataSourceName, id);
+                    var vm = singleDs != null
+                        ? gd.GetItemById(singleDs.DataSourceName, id)
+                        : gd.VmItemList.FirstOrDefault(x => x.Server.Id == id && WebUiEndpoints.IsConnectable(x.Server));
                     if (vm == null || !WebUiEndpoints.IsConnectable(vm.Server))
                         return BatchPeekResult.NotFound();
                     vms.Add(vm);

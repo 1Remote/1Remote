@@ -63,16 +63,35 @@ function onUpdate(v) {
 </script>
 
 <template>
-  <n-select
-    size="small"
-    :value="value"
-    :options="options"
-    :loading="loading"
-    :disabled="disabled"
-    filterable
-    tag
-    :clearable="allowClear"
-    :placeholder="t('editor.credSelectHint')"
-    @update:value="onUpdate"
-  />
+  <div class="cred-picker">
+    <n-select
+      size="small"
+      :value="value"
+      :options="options"
+      :loading="loading"
+      :disabled="disabled"
+      filterable
+      tag
+      :clearable="allowClear"
+      :placeholder="t('editor.credSelectHint')"
+      @update:value="onUpdate"
+    />
+    <!-- H17：全新用户凭据库必然为空——空下拉无出路（无说明、无创建入口指引），
+         创建入口在 设置→凭据库（距此三层操作）。加载中/已有现值不提示 -->
+    <div v-if="!loading && !names.length && !value" class="cred-empty-hint">{{ t('editor.credEmptyHint') }}</div>
+  </div>
 </template>
+
+<style scoped>
+/* H17：空凭据库指引——弱化小字置于下拉正下方（FormField 控件列内），不抢焦点 */
+.cred-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cred-empty-hint {
+  color: var(--text-4);
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+}
+</style>

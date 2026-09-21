@@ -290,6 +290,19 @@ namespace _1RM.Service.WebUi
             {
                 case SqliteSource:
                 {
+                    // H12：编辑弹窗的“测试连接”对表单草稿测试——config.path 非空时构造临时实例自检
+                    // （TestDraft 的 sqlite 分支同款；此前无视草稿直接对已存旧路径自检，“测试成功
+                    // 保存后却断线”）。草稿路径为空才回落已存实例（WPF DataSourceViewModel 绑定
+                    // 原对象、测试即表单值的平价）
+                    var draftPath = input?.Path?.Trim();
+                    if (!string.IsNullOrEmpty(draftPath))
+                    {
+                        var draft = new SqliteSource(resolvedName) { Path = draftPath };
+                        var draftRet = draft.Database_SelfCheck();
+                        draft.Database_CloseConnection();
+                        return DataSourceTestResult.Ok(draftRet.Status == EnumDatabaseStatus.OK,
+                            MapStatus(draftRet.Status), draftRet.Status == EnumDatabaseStatus.OK ? string.Empty : draftRet.GetErrorMessage);
+                    }
                     // sqlite 无静态 TestConnection：自检 = 连接 + 建表/校验（同 Local 初始化路径）
                     var ret = source.Database_SelfCheck();
                     return DataSourceTestResult.Ok(ret.Status == EnumDatabaseStatus.OK,

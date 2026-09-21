@@ -38,14 +38,26 @@ const router = useRouter()
 const { t } = useI18n()
 
 // 分组清单：id 用于 ?#/settings 深链（初始 hash 查询参数 g=），组件 markRaw 防
-// reactive 化警告；label 走 settings.nav.* 词条
+// reactive 化警告；label 走 settings.nav.* 词条。
+// H33：三个改过名的分组挂副标题（subKey，WPF 旧名桥接）——「数据库→数据源」
+// 「主题→外观」「协议→Runner」，WPF 老用户按旧词查找不再落空（词条 ×14）
 const GROUPS = [
   { id: 'g-general', labelKey: 'settings.nav.general', component: markRaw(GeneralGroup) },
   { id: 'g-launcher', labelKey: 'settings.nav.launcher', component: markRaw(LauncherGroup) },
-  { id: 'g-data', labelKey: 'settings.nav.data', component: markRaw(DataSourceGroup) },
+  { id: 'g-data', labelKey: 'settings.nav.data', subKey: 'settings.nav.dataSub', component: markRaw(DataSourceGroup) },
   { id: 'g-credentials', labelKey: 'settings.nav.credentials', component: markRaw(CredentialVaultGroup) },
-  { id: 'g-appearance', labelKey: 'settings.nav.appearance', component: markRaw(AppearanceGroup) },
-  { id: 'g-runners', labelKey: 'settings.nav.runners', component: markRaw(RunnerGroup) },
+  {
+    id: 'g-appearance',
+    labelKey: 'settings.nav.appearance',
+    subKey: 'settings.nav.appearanceSub',
+    component: markRaw(AppearanceGroup),
+  },
+  {
+    id: 'g-runners',
+    labelKey: 'settings.nav.runners',
+    subKey: 'settings.nav.runnersSub',
+    component: markRaw(RunnerGroup),
+  },
   // 「语言与关于」已更名「关于」（语言选择行已并入常规组），
   // 分组 id 同步 g-langabout → g-about（深链 ?g= 引用仅在本文件）
   { id: 'g-about', labelKey: 'settings.nav.about', component: markRaw(AboutGroup) },
@@ -133,7 +145,9 @@ onBeforeUnmount(() => {
           :class="{ active: g.id === activeId }"
           @click="selectGroup(g.id)"
         >
-          {{ t(g.labelKey) }}
+          <!-- H33：改名分组的旧名桥接副标题（WPF 老用户按旧词查找的落点） -->
+          <span class="s-item-text">{{ t(g.labelKey) }}</span>
+          <span v-if="g.subKey" class="s-item-sub">{{ t(g.subKey) }}</span>
           <!-- 「关于」项红点：仅 updateAvailable -->
           <span v-if="g.id === 'g-about' && updateInfo?.available" class="s-dot"></span>
         </button>
@@ -204,21 +218,35 @@ onBeforeUnmount(() => {
   /* 一行一项由 .s-groups 的 flex column 承载（见上）；本规则的 nowrap/ellipsis 负责
      文本不折行、超宽省略。flex:none 在非 flex 父容器上无效，现父级已是 flex column，
      保留无害（占位语义：不被压缩）。160px 内 7 组中英标签均单行可容纳。
-     position:relative 为「关于」项红点（.s-dot）的定位基准 */
+     position:relative 为「关于」项红点（.s-dot）的定位基准。
+     H33 副标题：文本包 .s-item-text 行 + 可选 .s-item-sub 次行（caption/弱化），
+     行高从固定 34px 改 min-height（带副标题的项自然增高） */
   position: relative;
   flex: none;
-  height: 34px;
-  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  min-height: 34px;
+  padding: 4px 10px;
   border: none;
   border-radius: var(--radius-ctrl);
   background: transparent;
   color: var(--text-2);
   font-size: var(--fs-body);
   text-align: left;
+  cursor: pointer;
+}
+.s-item-text,
+.s-item-sub {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  cursor: pointer;
+}
+.s-item-sub {
+  color: var(--text-4);
+  font-size: var(--fs-micro);
+  line-height: 1.2;
 }
 .s-item:hover {
   background: var(--bg-hover);

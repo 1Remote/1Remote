@@ -140,6 +140,22 @@ namespace _1RM.Service.WebUi
                     json = configJson, // 内嵌 JSON 对象（非字符串），前端免二次解析
                 });
             });
+
+            // H4 复制密码：二次验证门（与凭据 reveal/导出共用的 30s 窗口；未开启验证时直通）
+            // 通过后回传 {password} 明文，剪贴板写入由前端 copyText 完成（WebView2/localhost
+            // 安全上下文 = 桌面剪贴板，服务端免做 MTA→STA 剪贴板处理）。403=验证取消/未通过；
+            // 无密码协议回 {password: ''} 由前端提示。WPF 平价：ProtocolActionHelper.cs:126-142。
+            app.MapPost("/api/servers/{id}/copy-password", async (string id, string? ds) =>
+            {
+                var result = await WebUiEditorService.RevealServerPasswordAsync(ds, id);
+                return result.Status switch
+                {
+                    CredentialRevealStatus.Ok => Results.Json(new { password = result.Password }),
+                    CredentialRevealStatus.NotFound => Results.NotFound(),
+                    CredentialRevealStatus.Forbidden => Results.StatusCode(403),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
         }
 
         internal static void MapServersCrud(WebApplication app)
@@ -193,15 +209,13 @@ namespace _1RM.Service.WebUi
             // DTO 域），经显式 allow-list 映射到 C# 属性；缺失字段=保持不变；未知键 400 列出；
             // 深层字段（alternateCredentials 等子表单）400 引导单机编辑（Plan 2 简化）。
             // 原子性=预校验原子性：任一 id 缺失(404)或任一台校验失败(400) → 整批零执行。
+            // H13：ds 缺省不再默认 Local——按每台服务器自身数据源解析分组（跨库批量，WPF 平价）。
             app.MapPost("/api/servers/batch", (BatchPatchRequest? body) =>
             {
                 var patch = body?.Patch;
                 if (patch == null || patch.Value.ValueKind != JsonValueKind.Object)
                     return Results.BadRequest(new { errors = new[] { "body must contain a 'patch' object" } });
-                var dataSourceName = string.IsNullOrWhiteSpace(body!.Ds)
-                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
-                    : body.Ds;
-                var result = WebUiEditorService.ApplyBatchPatch(dataSourceName, body.Ids, patch.Value.GetRawText());
+                var result = WebUiEditorService.ApplyBatchPatch(body!.Ds, body.Ids, patch.Value.GetRawText());
                 return result.Status switch
                 {
                     // updated 取服务端实际保存台数（Ok 载荷经 ServerId 字符串载体带回）——
@@ -224,10 +238,8 @@ namespace _1RM.Service.WebUi
             // ids 空 → 400；任一 id 未知 → 404（与 batch 补丁的整批拒绝语义对齐）。
             app.MapPost("/api/servers/batch/peek", (BatchPeekRequest? body) =>
             {
-                var dataSourceName = string.IsNullOrWhiteSpace(body?.Ds)
-                    ? DataSourceService.LOCAL_DATA_SOURCE_NAME
-                    : body!.Ds;
-                var result = WebUiEditorService.PeekBatch(dataSourceName, body?.Ids);
+                // H13：ds 缺省 = 跨库解析（与 batch 补丁同语义），不再默认 Local
+                var result = WebUiEditorService.PeekBatch(body?.Ds, body?.Ids);
                 return result.Status switch
                 {
                     EditorSaveStatus.Ok => Results.Json(result.Items),
@@ -265,7 +277,7 @@ namespace _1RM.Service.WebUi
 
                 var kind = WebUiImportExportService.DetectImportKind(file.FileName);
                 if (kind == ImportFileKind.Unknown)
-                    return Results.BadRequest(new { errors = new[] { $"unsupported file type '{file.FileName}' (expected .json/.csv/.rdp/.db)" } });
+                    return Results.BadRequest(new { errors = new[] { $"unsupported file type '{file.FileName}' (expected .json/.csv/.rdp/.db/.sqlite)" } });
 
                 // 各解析器按“路径”工作（mRemoteNG/RdpConfig/sqlite 连接串），先落临时目录再处理；
                 // 目录内保留上传文件原名——RdpConfig.FromRdpFile 用文件名作服务器 DisplayName（WPF 平价）

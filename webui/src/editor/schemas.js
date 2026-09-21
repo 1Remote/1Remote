@@ -259,8 +259,11 @@ const APP_ARGUMENT_TYPE_OPTIONS = [
 /**
  * 基本信息组（字段来自 ProtocolBase + ProtocolBaseWithAddressPort）。
  * @param {{withAddressPort?: boolean}} opts
- *   withAddressPort=false 时去掉 Address/Port/可用性检测三行：Serial 只继承
- *   ProtocolBase（无此组属性），LocalApp 的地址端口在专属 connection 组中展示
+ *   withAddressPort=false 时去掉 Address/Port/可用性检测三行：地址/端口默认移入凭据组
+ *   'pre' 段（有凭据组的协议，见 credentialGroup 的 addressInCredential）；保留在基本组的
+ *   只有三种情况：① Serial 只继承 ProtocolBase（无地址端口属性）；② Telnet 基类是
+ *   ProtocolBaseWithAddressPort（无凭据组可去，保持原位——owner 2026-09-21 决策：
+ *   无凭据组的协议地址/端口留在基本信息）；③ LocalApp 的地址端口在专属 connection 组
  *   （见 APP schema 注释与 localAppConnectionGroup）。
  */
 function basicGroup({ withAddressPort = true } = {}) {
@@ -373,32 +376,49 @@ function alternateCredentialsField() {
 }
 
 /**
- * 凭据组（字段来自 ProtocolBaseWithAddressPortUserPwd）。组内由 EditorDrawer 按
+ * 地址/端口三件套（Address/Port/可用性检测）——移入凭据组 'pre' 段的字段集
+ * （owner 2026-09-21 决策：有凭据组的协议，地址/端口放「凭据」组内、用户名之前）。
+ * 放 'pre' 段（手动/凭据库两模式恒显）而非 'identity'：地址不从库凭据继承，
+ * 切到「从凭据库选择」时地址/端口必须仍然可见可编辑。行序对齐 WPF
+ * HostView（地址/端口/检测一行不落）+ 其后才是 Domain/LoadBalanceInfo/凭据。
+ */
+function addressInCredential() {
+  return [
+    { key: 'Address', type: FIELD.TEXT, required: true, placeholderKey: 'editor.ph.address' },
+    { key: 'Port', type: FIELD.NUMBER, required: true, asString: true },
+    pingBeforeConnectField(),
+  ]
+}
+
+/**
+ * 凭据组（字段来自 ProtocolBaseWithAddressPort）。组内由 EditorDrawer 按
  * `credRole` 四段渲染（对齐 WPF CredentialView.xaml 的区段顺序，见 EditorDrawer 的
  * groupBlocks）：
- *  - 'pre'：prepend 字段（RDP 的 Domain/LoadBalanceInfo），位于「凭据来源」二选一切换
- *    之前，manual/vault 两模式恒显（WPF 中它们是凭据区之前的 Connection 组字段，不属于
- *    手动输入凭据块）；
+ *  - 'pre'：prepend 字段（地址/端口三件套 + RDP 的 Domain/LoadBalanceInfo），位于
+ *    「凭据来源」二选一切换之前，manual/vault 两模式恒显（WPF 中它们是凭据区之前的
+ *    Connection 组字段，不属于手动输入凭据块）；
  *  - 'identity'：manual 态的身份字段（UserName/Password/PrivateKey）；
  *  - 'picker'：vault 态的 InheritedCredentialName（凭据库选择器，配提示行）；
  *  - 'option'：AskPasswordWhenConnect（+ 私钥协议的 UsePrivateKeyForConnect），两模式
  *    恒显、排在凭据区最后——WPF 中两个开关行不在 manual 块内，vault 态依旧可见。
  * AlternateCredentials 已移出本组（alternateGroup）。子表单行内字段无 credRole，
  * 不参与凭据组分段。
- * @param {{withPrivateKey?: boolean, prepend?: object[]}} opts
+ * @param {{withPrivateKey?: boolean, prepend?: object[], withAddressPort?: boolean}} opts
  *   withPrivateKey: SSH/SFTP 覆写了 ShowPrivateKeyInput()=true，显示私钥两件套；RDP/FTP
  *     等不显示。私钥协议的 Password 额外挂 visibleWhen（UsePrivateKeyForConnect=true 时
  *     隐藏，对齐 WPF CredentialView.xaml 的 IsUsePrivateKey=True → Password 行 Collapsed）；
  *     无私钥协议的 Password 不挂条件（依赖开关不存在，恒显）。
  *   prepend: 组首额外字段（自动标 'pre'，RDP 的 Domain/LoadBalanceInfo）。
+ *   withAddressPort: 地址/端口三件套插进 'pre' 段最前（owner 决策，见 addressInCredential）。
  */
-function credentialGroup({ withPrivateKey = false, prepend = [] } = {}) {
+function credentialGroup({ withPrivateKey = false, prepend = [], withAddressPort = false } = {}) {
   // placeholder：WPF CredentialView.xaml:148 的 Password Tag（各协议共用，文件头清单）
   const password = { key: 'Password', type: FIELD.PASSWORD, credRole: 'identity', placeholderKey: 'editor.ph.password' }
   if (withPrivateKey) {
     password.visibleWhen = { field: 'UsePrivateKeyForConnect', notIn: [true] }
   }
   const fields = [
+    ...(withAddressPort ? addressInCredential().map((f) => ({ ...f, credRole: 'pre' })) : []),
     ...prepend.map((f) => ({ ...f, credRole: 'pre' })),
     { key: 'UserName', type: FIELD.TEXT, credRole: 'identity' },
     password,
@@ -789,10 +809,12 @@ export const PROTOCOLS = {
       IsAutoAlternateAddressSwitching: true,
     },
     groups: [
-      basicGroup(),
+      basicGroup({ withAddressPort: false }),
       scriptsGroup('RDP'),
       credentialGroup({
-        // Domain/LoadBalanceInfo（RDP.cs:129/137）位于 WPF Connection 组的凭据区之前。
+        withAddressPort: true,
+        // Domain/LoadBalanceInfo（RDP.cs:129/137）位于 WPF Connection 组的凭据区之前，
+        // 跟在地址/端口三件套之后（WPF HostView → Domain → 凭据 的行序）。
         // placeholder：LoadBalanceInfo 的 tsv:// 前缀 Tag（RdpFormView.xaml:58）；Domain 无 Tag
         prepend: [
           { key: 'Domain', type: FIELD.TEXT },
@@ -837,9 +859,9 @@ export const PROTOCOLS = {
       IsAutoAlternateAddressSwitching: true,
     },
     groups: [
-      basicGroup(),
+      basicGroup({ withAddressPort: false }),
       scriptsGroup('SSH'),
-      credentialGroup({ withPrivateKey: true }),
+      credentialGroup({ withPrivateKey: true, withAddressPort: true }),
       alternateGroup(),
       behaviorGroup([
         // SshVersion: int?（SSH.cs:20-27，非枚举非字符串），序列化为数字；
@@ -883,9 +905,9 @@ export const PROTOCOLS = {
       IsAutoAlternateAddressSwitching: true,
     },
     groups: [
-      basicGroup(),
+      basicGroup({ withAddressPort: false }),
       scriptsGroup('SFTP'),
-      credentialGroup({ withPrivateKey: true }),
+      credentialGroup({ withPrivateKey: true, withAddressPort: true }),
       alternateGroup(),
       // placeholder：StartupPath Tag "e.g. /home/user/Desktop"（SftpFormView:24，文件头清单）
       behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.startupPath' }]),
@@ -904,10 +926,10 @@ export const PROTOCOLS = {
       IsAutoAlternateAddressSwitching: true,
     },
     groups: [
-      basicGroup(),
+      basicGroup({ withAddressPort: false }),
       scriptsGroup('FTP'),
       // FTP 未覆写 ShowPrivateKeyInput()（基类默认 false），无私钥两件套
-      credentialGroup(),
+      credentialGroup({ withAddressPort: true }),
       alternateGroup(),
       // placeholder：StartupPath Tag "e.g. /home/user/Desktop"（FtpFormView:72，文件头清单）
       behaviorGroup([{ key: 'StartupPath', type: FIELD.TEXT, placeholderKey: 'editor.ph.startupPath' }]),
@@ -931,7 +953,7 @@ export const PROTOCOLS = {
       // 警告 + [More details] 链接 → 运行器文档（url 照抄；WPF 为字面量英文，14 语言同显，
       // web 同值硬编码不进 locale）。挂在 basic 组标题下（VNC 表单首组）
       {
-        ...basicGroup(),
+        ...basicGroup({ withAddressPort: false }),
         note: 'Caution: RFB protocol over 3.8 are proprietary. If you would like using RFB 3.8+, you have to try your own VNC runner:',
         noteUrl: 'https://1remote.github.io/usage/protocol/runner/',
         noteUrlLabel: '[More details]',
@@ -940,7 +962,7 @@ export const PROTOCOLS = {
       // WPF CredentialView 对 VNC 同样渲染 UserName 行（CredentialView.xaml:123 无条件，
       // VNC.ShowUserNameInput()=false 只影响凭据库新增弹窗的必填项，Vnc.cs:55）；
       // ShowPrivateKeyInput()=false（Vnc.cs:65）→ 无私钥两件套，与 FTP 同构
-      credentialGroup(),
+      credentialGroup({ withAddressPort: true }),
       alternateGroup(),
       {
         id: 'display',
@@ -958,8 +980,8 @@ export const PROTOCOLS = {
    * Telnet：Ui/Model/Protocol/Telnet.cs，ctor 见 Telnet.cs:13-16。
    * 注意基类是 ProtocolBaseWithAddressPort（Telnet.cs:10）——模型里没有
    * UserName/Password/AskPasswordWhenConnect/InheritedCredentialName/PrivateKey，
-   * 无凭据组（手动/库二选一无从谈起），备用凭据列表独立成备用连接组
-   *（WPF TelnetFormView.xaml:35 也只挂备用凭据列表）。
+   * 无凭据组（手动/库二选一无从谈起，地址/端口保持基本信息组原位——owner 决策），
+   * 备用凭据列表独立成备用连接组（WPF TelnetFormView.xaml:35 也只挂备用凭据列表）。
    */
   Telnet: {
     protocol: 'Telnet',
@@ -1043,10 +1065,10 @@ export const PROTOCOLS = {
       IsAutoAlternateAddressSwitching: true,
     },
     groups: [
-      basicGroup(),
+      basicGroup({ withAddressPort: false }),
       scriptsGroup('RemoteApp'),
       // WPF RdpAppFormView 挂 CredentialView + 备用凭据列表；ShowPrivateKeyInput 基类默认 false
-      credentialGroup(),
+      credentialGroup({ withAddressPort: true }),
       alternateGroup(),
       {
         // IDataErrorInfo：RemoteApplicationName/RemoteApplicationProgram 必填（RdpApp.cs:140-153）；

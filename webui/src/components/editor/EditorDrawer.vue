@@ -212,8 +212,13 @@ async function load() {
         // 仅 Clone + 清 Id），这是 web 增强——降低保存时忘改重名的概率。后缀词条只放括号
         // 部分（editor.copySuffix），前导空格在代码里（各语言排版习惯不同）；目标名已存在
         // 不拦（用户可改，仅预填）；后缀计入 initialSnapshot → 打开即保存不算脏。
+        // H26（F18/G37 连续三轮）：原名已带副本后缀（连续复制）时先剥净再补一个——
+        // 此前无条件拼接会得到「(副本) (副本)」无限叠加
         if (typeof raw.DisplayName === 'string' && raw.DisplayName.trim() !== '') {
-          raw.DisplayName = `${raw.DisplayName} ${t('editor.copySuffix')}`
+          const suffix = t('editor.copySuffix')
+          let base = raw.DisplayName
+          while (base.endsWith(suffix)) base = base.slice(0, -suffix.length).trimEnd()
+          raw.DisplayName = `${base} ${suffix}`
         }
       } else {
         const s = PROTOCOLS[props.protocol] || PROTOCOLS.RDP
@@ -245,7 +250,6 @@ async function load() {
 // ---- 批量表单接缝：保存入口/按钮态/脏态经模板 ref 走 BulkEditForm 的 defineExpose ----
 const bulkFormRef = ref(null)
 const bulkSaving = computed(() => !!bulkFormRef.value?.saving) // 批量保存中（底部按钮禁用/文案）
-const bulkDsMixed = computed(() => !!bulkFormRef.value?.dsMixed) // 跨数据源勾选禁存
 function onBulkSaved(e) {
   emit('saved', e) // { mode:'bulk', ids } 原样转发父级（外部事件序与拆分前一致）
   doClose() // 关闭动画属本组件；列表刷新由 SSE reload 自动完成
@@ -324,6 +328,10 @@ let closeTimer = 0
 // ---- 快捷键（window 级；ServerListView 的 Esc 链在抽屉打开时不消费）----
 function onKey(e) {
   if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key?.toLowerCase() === 's') {
+    // H21（G30 三人命中）：全局渲染的浮层（如 Esc 弹出的「未保存确认」对话框）开着时
+    // Ctrl+S 让位——此前保存会直接执行、抽屉关闭，而确认框不随抽屉关闭，悬空漂浮在
+    // 列表上方且任何按钮都已无意义（与表格 onGlobalKey 的 .n-dialog 让位同款守卫）
+    if (document.querySelector('.n-dialog, .n-modal')) return
     e.preventDefault() // 抢在浏览器「保存网页」前
     save()
   } else if (e.key === 'Escape') {
@@ -565,7 +573,7 @@ onBeforeUnmount(() => {
             class="ed-btn ed-primary"
             :class="{ 'ed-pulse-error': errorPulse }"
             type="button"
-            :disabled="saving || bulkSaving || loading || !!loadError || bulkDsMixed"
+            :disabled="saving || bulkSaving || loading || !!loadError"
             @click="save"
             @animationend="onPulseEnd"
           >

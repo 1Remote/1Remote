@@ -4,7 +4,8 @@
 // - 过滤：搜索/标签过滤已由 ServerListView（applyServerFilters）收窄后经 servers prop 传入，
 //   此处仅剩树选中过滤，两层交集自然复合；搜索激活时树过滤整体让位（搜索本就是全库递归语义）
 // - 视图语义：「全部数据」虚拟根 = 跨库递归总览且不显示文件夹行（来源上下文由行内 folder 列
-//   承担）；数据源根/文件夹内仅列直接子级服务器（资源管理器式浏览），子文件夹以文件夹行呈现
+//   承担）；数据源根/文件夹内列出其下全部服务器（含子文件夹，H38 按 spec §3.2），子文件夹
+//   另以文件夹行呈现作导航捷径
 // - 排序：名称/地址（自然 IP）/协议/最近连接，点表头 升→降→无 三态循环（第三态清排序
 //   恢复默认树序）；localStorage '1r-sort' 持久化（清除态落 {key:''}）
 // - 多选：勾选只由 复选框点击 / Ctrl+点击 / Shift+点击 / Ctrl+A / 文件夹与表头复选框
@@ -12,10 +13,11 @@
 //   （=当前视图可见服务器行，不含文件夹的隐藏子孙——要含子孙勾文件夹行复选框）；
 //   勾选集合始终是服务器 id 集，「已选 N 台」与批量编辑/导出/删除自然作用于全集。
 //   勾选/文件夹勾选/剔除的完整语义与口径见 composables/useRowChecks.js 文件头
-// - 键盘：↑↓ 移动光标行（sorted 可见列表内）、Enter 连接光标行、Ctrl+A 全选可见
-//   （已全选时再按 = 清空，与表头三态复选框同款对称）、Menu/Shift+F10 呼出右键菜单、
-//   E 编辑 / Del 删除 / Ctrl+D 复制（目标行 = 恰好单选该台，否则光标行；Del 在多选
-//   （>1）时转批量删除确认；Ctrl+D 在多选（>1）时忽略——批量复制无对应后端动作，防误触）；
+// - 键盘：↑↓ 移动光标行（sorted 可见列表内）、Ctrl+A 全选可见（已全选时再按 = 清空，
+//   与表头三态复选框同款对称）、Menu/Shift+F10 呼出右键菜单、E 编辑 / Ctrl+D 复制
+//   （目标行 = 恰好单选该台，否则光标行）；Enter 连接 / Del 删除在多选（>1）时整体
+//   禁用（owner 2026-09-21 决策：批量语境下目标歧义无法自解释，误触代价高——批量
+//   操作走批量条按钮；Ctrl+D 在多选（>1）时忽略——批量复制无对应后端动作，防误触）；
 //   Esc 不在此处理——全局 Esc 链（菜单→列菜单→勾选→搜索→标签→光标）由 ServerListView
 //   统一调度（见其 onGlobalEsc）
 // - 批量条 + ≡ 自定义顺序 / ▦ 列菜单工具簇：TableToolbar 组件承载，Teleport 至面包屑行右侧
@@ -24,9 +26,10 @@
 //   「文件夹行」= 移入该文件夹；文件夹行自身可拖（可写源）= 整个子树移动——拖到
 //   别的文件夹行/「..」上级行 = 移入或上移一级，文件夹行不支持拖拽重排序
 //   （hover 服务器行一次性 toast 说明，重排序归树内拖拽）
-// - 右键菜单：连接/编辑/复制/复制地址/复制用户名/删除可用，其余占位禁用（title 提示）；
-//   服务器行与文件夹/空白两类菜单（menu/nfMenu）均点击外部关闭，Esc 经 ServerListView
-//   全局 Esc 链关闭（closeMenuIfOpen/closeNfMenuIfOpen 两级，链序见 ServerListView）
+// - 右键菜单：连接/编辑/复制/复制地址/复制用户名/复制密码(H4，后端验证门+前端写剪贴板)/
+//   删除可用，其余占位禁用（title 提示）；服务器行与文件夹/空白两类菜单（menu/nfMenu）
+//   均点击外部关闭，Esc 经 ServerListView 全局 Esc 链关闭（closeMenuIfOpen/closeNfMenuIfOpen
+//   两级，链序见 ServerListView）
 // - 空态：默认居中提示按「传入列表空=空库 / 非空但过滤后无行=无匹配」二分；
 //   具名插槽 empty 供父级覆写（ServerListView 的引导卡片/无匹配态在表格外层接管）
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
@@ -89,14 +92,19 @@ const filtered = computed(() => {
   if (searchedIds.value != null) return props.servers
   const sel = props.selection
   if (!sel || !sel.dataSourceName) return props.servers // 「全部数据」虚拟根 = 跨库总览（递归，无文件夹行）
-  // 资源管理器式浏览：选中节点一律仅列直接子级服务器（根 = folderPath 空串），子文件夹由
-  // ServerListView currentFolders（holderAt.folders）以文件夹行呈现。folderPath 两侧归一化
-  //（根选中/根级服务器的 folderPath 可能是 '' 或 undefined）
-  return props.servers.filter(
-    (s) => s.dataSourceName === sel.dataSourceName && (s.folderPath || '') === (sel.folderPath || '')
-  )
+  // H38（spec §3.2「选中文件夹节点：列表显示该文件夹下（含子文件夹）全部服务器」）：
+  // 前缀匹配含全部子孙服务器，不再只列直接子级；子文件夹仍以文件夹行呈现导航入口
+  //（资源管理器式的浏览捷径保留），文件夹行复选框级联勾选子孙的语义与列表内容对齐。
+  // folderPath 两侧归一化（根选中/根级服务器的 folderPath 可能是 '' 或 undefined）
+  const target = sel.folderPath || ''
+  const prefix = target ? target + '/' : ''
+  return props.servers.filter((s) => s.dataSourceName === sel.dataSourceName && (s.folderPath || '').startsWith(prefix))
 })
-const showFolder = computed(() => !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列
+// H9：搜索激活时强制显示文件夹列——搜索是全库递归语义（后端跨数据源/跨文件夹匹配），
+// 子文件夹视图内搜索的结果可能来自任意位置，文件夹列（数据源/路径）是唯一来处标注，
+// 隐藏它会让用户把全库命中误读成本文件夹命中（面包屑「N 台」仍在撒谎的另一半由
+// ServerListView 的搜索范围提示补足）
+const showFolder = computed(() => searchedIds.value != null || !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列（搜索态强制显示，见上）；列菜单在非根视图禁用该项（H9）
 const showDs = computed(() => !props.selection || !props.selection.dataSourceName) // 「全部数据」根：文件夹列前缀数据源名
 
 // ---- 排序 ----
@@ -202,6 +210,25 @@ function onRowDragEnd() {
   dropFolder.value = null
   listDragServer.value = null
 }
+// 跨库拖拽悬停标记的 dragend 兜底（H18 自 SideTree 迁入）：dropEffect='none' 时按
+// HTML 规范 drop 事件不会触发，跨库拒绝的提示改在源侧 dragend 出——dragover 期间
+// 落区侧（树/列表两处 onFolderDragOver 与本组件 onRowDragOver）记种类
+//（tableBus.crossDsHover），dragend 检查后 toast+复位；回到合法目标或成功 drop 即清
+// 标记（不误报）。原实现挂在 SideTree 的 window 监听上，边栏收起（SideTree 卸载）时
+// 监听随之消失——窄窗（<900px）下整条反馈链断裂（第四轮 H18）。列表行拖拽的源是
+// 本组件的行，本组件挂载期间监听恒在（表格隐藏时无可拖行），迁到此处后窄窗不再失效。
+function onListDragEndGlobal() {
+  if (crossDsHover.value) {
+    const kind = crossDsHover.value
+    crossDsHover.value = CROSS_DS_NONE
+    message.warning(kind === CROSS_DS_FOLDER ? t('toast.crossDsFolderMove') : t('toast.crossDsMove'))
+  }
+}
+// 成功拖放（如拖到树节点/列表文件夹行放下）也冒泡 drop 到 window：复位跨库标记，
+// 避免 dragend 兜底在成功操作后误报（capture 阶段挂——与 dragend 同生命周期）
+function resetCrossDsHover() {
+  crossDsHover.value = CROSS_DS_NONE
+}
 // 文件夹行拖拽源（draggable 由模板绑定 dsWritable）：快照挂本地 + tableBus
 //（SideTree 落区判定），dataTransfer 类型 x-1r-list-folder 与另两条链路区分
 function onFolderRowDragStart(f, e) {
@@ -221,6 +248,12 @@ function onRowDragOver(server, e) {
   // 文件夹拖拽不落在服务器行（不支持行间重排序，任何模式）：不 preventDefault →
   // 浏览器拒收，toast 只提示一次/拖拽（对齐非 custom 服务器重排提示的先例）
   if (dragFolder.value) {
+    // H27：跨库优先于一切提示——先弹「需要自定义排序」会诱导用户去开排序模式，
+    // 开了也没用（真正原因是跨库不允许），归因错误的提示比没有提示更糟
+    if (dragFolder.value.dsName !== server.dataSourceName) {
+      crossDsHover.value = CROSS_DS_FOLDER
+      return
+    }
     if (!folderReorderHintShown) {
       folderReorderHintShown = true
       message.info(t('toast.folderNoReorder'))
@@ -228,6 +261,13 @@ function onRowDragOver(server, e) {
     return
   }
   if (!dragId.value || dragId.value === server.id) return
+  // H27：同款——跨库比对先于重排模式提示（此前悬停对方库的服务器行会先弹
+  // 「需要自定义排序」，归因错误）；dragend 兜底出正确文案（onListDragEndGlobal）
+  if (dragServer.value && dragServer.value.dataSourceName !== server.dataSourceName) {
+    crossDsHover.value = CROSS_DS_SERVER
+    return
+  }
+  crossDsHover.value = CROSS_DS_NONE // 回到合法目标即清跨库标记（不误报 dragend）
   if (!isCustom.value) {
     // 非 custom 模式：不 preventDefault（重排 drop 被浏览器拒绝），toast 只提示一次/拖拽
     if (!reorderHintShown) {
@@ -452,6 +492,9 @@ const MENU = computed(() => [
   { key: 'duplicate', label: t('ctx.duplicate'), hint: 'Ctrl+D', on: true },
   { key: 'copy-address', label: t('ctx.copyAddress'), on: true },
   { key: 'copy-username', label: t('ctx.copyUsername'), on: true },
+  // H4：复制密码——WPF 右键高频动作（ProtocolActionHelper.cs:126-142，带二次验证门）的
+  // web 平价：后端过验证门（与凭据查看/导出共用的 30s 窗口）后回传明文，前端写剪贴板
+  { key: 'copy-password', label: t('ctx.copyPassword'), on: true },
   { key: 'shortcut', label: t('ctx.shortcut'), tip: t('common.comingSoon') },
   { key: 'delete', label: t('ctx.delete'), hint: 'Del', on: true },
 ])
@@ -481,6 +524,30 @@ function onMenuAction(item) {
     if (!s.address) message.warning(t('toast.noAddressToCopy'))
     else copyText(s.address + (s.port ? ':' + s.port : ''), t('common.address'))
   } else if (item.key === 'copy-username') copyText(s.userName, t('common.username'))
+  else if (item.key === 'copy-password') copyServerPassword(s)
+}
+
+// H4 复制密码：后端过二次验证门（未开启验证时直通；30s 窗口内复验免弹）后回传明文，
+// 前端复用 copyText 写剪贴板（WebView2/localhost 安全上下文 = 桌面剪贴板，与 WPF
+// 服务端写剪贴板等效，且免去 Kestrel MTA 线程上调 System.Windows.Clipboard 的 STA
+// 处理）。403=验证取消/未通过；Serial/Telnet 等无密码协议回传空 → 明确提示
+async function copyServerPassword(s) {
+  try {
+    const resp = await api.copyPassword(s.id, s.dataSourceName)
+    const pwd = resp?.password || ''
+    if (!pwd) {
+      message.warning(t('toast.noPasswordToCopy'))
+      return
+    }
+    copyText(pwd, t('common.password'))
+  } catch (e) {
+    if (e?.status === 403) {
+      message.error(t('toast.copyPwdNeedVerify'))
+      return
+    }
+    console.warn('[ServerTable] copy password failed:', s.id, e?.message || e)
+    message.error(t('toast.copyFailed', { what: t('common.password') }))
+  }
 }
 async function copyText(text, what) {
   if (!text) {
@@ -535,8 +602,11 @@ function onGlobalKey(e) {
   // naive 对话框/模态打开时按键整体让位（DOM 存在性判断，参照 EditorDrawer 的
   // .n-base-select-menu 让位先例）：删除/批量确认等 dialog 无输入框（autoFocus:false），
   // 焦点停留在打开前位置 → tableFocused 仍真，Enter/E/Del/Ctrl+A 若不守卫会穿透到
-  // 连接/编辑/删除分支（Enter 误连 P0 即此路径）
-  if (document.querySelector('.n-dialog, .n-modal')) return
+  // 连接/编辑/删除分支（Enter 误连 P0 即此路径）。
+  // H6：自绘浮层（本组件行菜单 .ctx-menu / 文件夹空白菜单 .nf-menu / 树右键菜单 .tree-ctx）
+  // 同样让位——右键菜单开着时按 Enter/E/Del 会穿透（Menu 键呼出菜单后 Enter 直接拉起
+  // 远程会话，第三轮 G3/第四轮 H6，与 .n-dialog 让位同一守卫形态。
+  if (document.querySelector('.n-dialog, .n-modal, .ctx-menu, .nf-menu, .tree-ctx')) return
   if (!tableFocused.value) return
   // 表格内的可交互控件（表头复选框/批量条按钮等）聚焦时不抢按键：Enter/空格留给原生行为
   if (e.target.closest?.('input, textarea, select, button, [contenteditable]')) return
@@ -547,6 +617,9 @@ function onGlobalKey(e) {
     e.preventDefault() // 阻止页面/滚动容器滚动，光标移动优先
     moveCursor(e.key === 'ArrowDown' ? 1 : -1)
   } else if (e.key === 'Enter') {
+    // 多选（勾选 >1 台）时禁用 Enter：此时批量操作语境（批量条已现），Enter 连光标行
+    // 与勾选心智冲突且一键即拉起真实远程会话——owner 2026-09-21 决策，与 Del 同款禁用
+    if (checked.value.size > 1) return
     if (cursorId.value != null) {
       e.preventDefault()
       emit('connect', cursorId.value)
@@ -563,14 +636,13 @@ function onGlobalKey(e) {
     const s = keyTargetServer()
     if (s) emit('duplicate', s)
   } else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key === 'Delete') {
-    // Del 删除：勾选 >1 台时与批量条同目标（删除全部已选，批量确认由父级 onBatchDelete
-    // 弹出）——否则「已选 N 台」时 Del 删的是光标行，与批量心智冲突；恰 1 台勾选或
-    // 无勾选 = 单台（keyTargetServer），确认框显示名字可纠错
-    if (checked.value.size > 1) emit('batch-delete', [...checked.value])
-    else {
-      const s = keyTargetServer()
-      if (s) emit('delete', s)
-    }
+    // Del 删除（owner 2026-09-21 决策：多选（>1）时整体禁用——批量删除的误触代价是
+    // 一次确认框也拦不住的数据丢失，且「已选 N 台」时 Del 的目标歧义无法自解释；
+    // 批量删除走批量条按钮）。恰 1 台勾选或无勾选 = 单台（keyTargetServer），确认框
+    // 显示名字可纠错
+    if (checked.value.size > 1) return
+    const s = keyTargetServer()
+    if (s) emit('delete', s)
   } else if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) {
     // 键盘呼出右键菜单（Menu 键 / Shift+F10，对齐系统语境菜单惯例）：目标行与
     // E/Del 同源（keyTargetServer），定位到该行 DOM（无鼠标坐标）
@@ -740,11 +812,16 @@ onMounted(() => {
   window.addEventListener('mousedown', onGlobalDown)
   window.addEventListener('keydown', onGlobalKey)
   document.addEventListener('focusin', onDocFocusin)
+  // 跨库拖拽反馈兜底（H18，自 SideTree 迁入，见 onListDragEndGlobal 注释）
+  window.addEventListener('dragend', onListDragEndGlobal)
+  window.addEventListener('drop', resetCrossDsHover, true)
 })
 onBeforeUnmount(() => {
   window.removeEventListener('mousedown', onGlobalDown)
   window.removeEventListener('keydown', onGlobalKey)
   document.removeEventListener('focusin', onDocFocusin)
+  window.removeEventListener('dragend', onListDragEndGlobal)
+  window.removeEventListener('drop', resetCrossDsHover, true)
 })
 </script>
 
@@ -758,6 +835,7 @@ onBeforeUnmount(() => {
       :col-menu="colMenu"
       :hidden-cols="hiddenCols"
       :col-labels="COL_LABELS"
+      :folder-col-locked="!showFolder"
       @batch-connect="emit('batch-connect', [...checked])"
       @batch-delete="emit('batch-delete', [...checked])"
       @bulk-edit="emit('bulk-edit', [...checked])"

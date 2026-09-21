@@ -108,7 +108,6 @@ const MAPPING = {
   'editor.f.CommandAfterDisconnected': 'Script after disconnected',
   'editor.f.CommandBeforeConnected': 'Script before connect',
   'editor.f.HideCommandBeforeConnectedWindow': 'Hide script window',
-  'editor.f.SelectedRunnerName': 'Selected runner',
   'editor.f.Selections': 'Selections',
   'editor.f.IsAutoAlternateAddressSwitching': 'Automatic address switching',
   'editor.f.Description': 'Description',
@@ -269,7 +268,6 @@ const MAPPING = {
   'settings.d.deleteFailed': 'Failed',
 
   // -- 运行器组 --
-  'settings.r.selected': 'Selected runner',
   'settings.r.internal': 'Default',
   'settings.r.f.env': 'Environment variables',
   // batch10 Task B #9：通用参数位 label（协议无私钥字段时用，WPF ExternalRunnerSettings
@@ -280,9 +278,7 @@ const MAPPING = {
   // batch8 Task D #10：arguments/argsPrivateKey 改为"启动参数（通过密码/私钥）"组合文案，
   // WPF 无对应词条（'Cmd parameter' 与 'Login with password' 是两个独立键）→ 撤出映射，
   // 12 生成语言回落 en-US，zh 系走手写（zh-CN 手写基准 + zh-TW OVERRIDES）
-  'settings.r.addTitle': 'New runner name',
   'settings.r.nameRequired': 'Can not be empty!',
-  'settings.r.nameExists': 'XXX is already existed!',
   'settings.r.f.theme': 'Themes',
   'settings.r.f.font': 'Font',
   'settings.r.f.fontSize': 'Font size',
@@ -306,7 +302,6 @@ const MAPPING = {
 // WPF {0}/{1} → web 具名占位符（仅当目标 WPF 键的值含 {N} 时需要）
 const PLACEHOLDERS = {
   'tree.deleteFolderConfirm': ['{name}', '{n}'], // {0}=文件夹名，{1}=服务器数
-  'settings.r.nameExists': ['{name}'], // {0}=运行器名（WPF XXX is already existed!）
 }
 const FALLBACK_PARAMS = ['{n}', '{m}']
 
@@ -382,7 +377,6 @@ const OVERRIDES = {
     'crumb.searchChip': '\u641c\u5c0b\u904e\u6ffe\u4e2d',
     'crumb.clearSearch': '\u6e05\u9664\u641c\u5c0b\uff08Esc\uff09',
     'sidebar.expand': '\u5c55\u958b\u5074\u6b04',
-    'tree.noDatasources': '\uff08\u7121\u8cc7\u6599\u4f86\u6e90\uff09',
     'tree.manageTags': '+ \u7ba1\u7406',
     // 標籤 chip 計數口徑（可讀形式：{name} · 全庫 {n} 台）——第三輪 G8
     'tree.tagChipTitle': '{name} \u00b7 \u5168\u5eab {n} \u53f0',
@@ -583,8 +577,6 @@ const OVERRIDES = {
     'editor.bulkUpdated': '\u5df2\u66f4\u65b0 {n} \u53f0',
     'editor.bulkNoChanges':
       '\u6c92\u6709\u53ef\u5132\u5b58\u7684\u8b8a\u66f4\uff1a\u5148\u9ede\u300c\u8986\u5beb\u300d\u518d\u4fee\u6539\u6b04\u4f4d',
-    'editor.bulkMixedDs':
-      '\u6240\u9078\u4f3a\u670d\u5668\u8de8\u8d8a\u591a\u500b\u8cc7\u6599\u4f86\u6e90\uff1b\u6279\u6b21\u7de8\u8f2f\u50c5\u652f\u63f4\u540c\u4e00\u8cc7\u6599\u4f86\u6e90',
     'editor.bulkMixedProtocols': '所選伺服器協定不完全相同：僅顯示各協定共有的選項，其餘選項保持不變。',
     'editor.f.AppProtocolDisplayName': '\u5354\u5b9a\u986f\u793a\u540d\u7a31',
     'editor.f.BitRate': '\u9b91\u7387',
@@ -750,7 +742,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Aktivní vyhledávací filtr',
     'crumb.clearSearch': 'Vymazat hledání (Esc)',
     'sidebar.expand': 'Rozbalit postranní panel',
-    'tree.noDatasources': '(Žádné zdroje dat)',
     'tree.manageTags': '+ Spravovat',
     'tree.collapse': '« Sbalit',
     'tree.collapseTitle': 'Sbalit postranní panel',
@@ -921,7 +912,6 @@ const OVERRIDES = {
     'editor.overwriteTip': 'Nastavit jednu hodnotu pro všech {n} serverů',
     'editor.bulkUpdated': 'Aktualizováno serverů: {n}',
     'editor.bulkNoChanges': 'Žádné změny k uložení: nejdřív klikněte na „Přepsat“ a upravte pole',
-    'editor.bulkMixedDs': 'Výběr zahrnuje více zdrojů dat; hromadná úprava vyžaduje jediný zdroj',
     'editor.bulkMixedProtocols':
       'Vybrané servery používají různé protokoly; zobrazují se jen možnosti společné pro všechny. Ostatní zůstanou beze změn.',
     'editor.f.AppProtocolDisplayName': 'Zobrazovaný název protokolu',
@@ -1064,7 +1054,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Suchfilter aktiv',
     'crumb.clearSearch': 'Suche löschen (Esc)',
     'sidebar.expand': 'Seitenleiste ausklappen',
-    'tree.noDatasources': '(Keine Datenquellen)',
     'tree.manageTags': '+ Verwalten',
     'tree.collapse': '« Einklappen',
     'tree.collapseTitle': 'Seitenleiste einklappen',
@@ -1242,8 +1231,6 @@ const OVERRIDES = {
     'editor.bulkUpdated': '{n} Server aktualisiert',
     'editor.bulkNoChanges':
       'Keine zu speichernden Änderungen: Klicken Sie zuerst auf „Überschreiben“ und bearbeiten Sie dann das Feld',
-    'editor.bulkMixedDs':
-      'Die Auswahl umfasst mehrere Datenquellen; Massenbearbeitung erfordert eine einzelne Datenquelle',
     'editor.bulkMixedProtocols':
       'Die ausgewählten Server verwenden unterschiedliche Protokolle; es werden nur gemeinsame Optionen angezeigt. Die übrigen bleiben unverändert.',
     'editor.f.AppProtocolDisplayName': 'Protokollanzeigename',
@@ -1388,7 +1375,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Filtro de búsqueda activo',
     'crumb.clearSearch': 'Limpiar búsqueda (Esc)',
     'sidebar.expand': 'Expandir barra lateral',
-    'tree.noDatasources': '(Sin fuentes de datos)',
     'tree.manageTags': '+ Administrar',
     'tree.collapse': '« Contraer',
     'tree.collapseTitle': 'Contraer barra lateral',
@@ -1563,7 +1549,6 @@ const OVERRIDES = {
     'editor.overwriteTip': 'Definir un valor para los {n} servidores',
     'editor.bulkUpdated': '{n} servidores actualizados',
     'editor.bulkNoChanges': 'No hay cambios para guardar: primero tocá “Sobrescribir” y editá el campo',
-    'editor.bulkMixedDs': 'La selección abarca varias fuentes de datos; la edición masiva requiere una única fuente',
     'editor.bulkMixedProtocols':
       'Los servidores seleccionados usan distintos protocolos; solo se muestran las opciones comunes a todos. El resto queda sin cambios.',
     'editor.f.AppProtocolDisplayName': 'Nombre visible del protocolo',
@@ -1707,7 +1692,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Filtre de recherche actif',
     'crumb.clearSearch': 'Effacer la recherche (Esc)',
     'sidebar.expand': 'Déplier la barre latérale',
-    'tree.noDatasources': '(Aucune source de données)',
     'tree.manageTags': '+ Gérer',
     'tree.collapse': '« Replier',
     'tree.collapseTitle': 'Replier la barre latérale',
@@ -1882,8 +1866,6 @@ const OVERRIDES = {
     'editor.bulkUpdated': '{n} serveurs mis à jour',
     'editor.bulkNoChanges':
       "Aucune modification à enregistrer : cliquez d'abord sur « Écraser » puis modifiez le champ",
-    'editor.bulkMixedDs':
-      "La sélection s'étend sur plusieurs sources de données ; la modification groupée exige une seule source",
     'editor.bulkMixedProtocols':
       'Les serveurs sélectionnés utilisent des protocoles différents ; seules les options communes à tous sont affichées. Les autres restent inchangées.',
     'editor.f.AppProtocolDisplayName': 'Nom affiché du protocole',
@@ -2030,7 +2012,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Filtro de busca activo',
     'crumb.clearSearch': 'Limpar a busca (Esc)',
     'sidebar.expand': 'Expandir a barra lateral',
-    'tree.noDatasources': '(Sen fontes de datos)',
     'tree.manageTags': '+ Xestionar',
     'tree.collapse': '« Contraer',
     'tree.collapseTitle': 'Contraer a barra lateral',
@@ -2203,7 +2184,6 @@ const OVERRIDES = {
     'editor.overwriteTip': 'Definir un valor para os {n} servidores',
     'editor.bulkUpdated': 'Actualizáronse {n} servidores',
     'editor.bulkNoChanges': 'Non hai cambios para gardar: primeiro preme «Sobrescribir» e edita o campo',
-    'editor.bulkMixedDs': 'A selección abrangue varias fontes de datos; a edición en bloque require unha única fonte',
     'editor.bulkMixedProtocols':
       'Os servidores seleccionados usan protocolos distintos; só se mostran as opcións comúns a todos. O resto permanece sen cambios.',
     'editor.f.AppProtocolDisplayName': 'Nome visible do protocolo',
@@ -2347,7 +2327,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Filtro di ricerca attivo',
     'crumb.clearSearch': 'Cancella ricerca (Esc)',
     'sidebar.expand': 'Espandi barra laterale',
-    'tree.noDatasources': '(Nessuna origine dati)',
     'tree.manageTags': '+ Gestisci',
     'tree.collapse': '« Comprimi',
     'tree.collapseTitle': 'Comprimi barra laterale',
@@ -2523,8 +2502,6 @@ const OVERRIDES = {
     'editor.overwriteTip': 'Imposta un unico valore per tutti gli {n} server',
     'editor.bulkUpdated': '{n} server aggiornati',
     'editor.bulkNoChanges': 'Nessuna modifica da salvare: prima fai clic su “Sovrascrivi” e modifica il campo',
-    'editor.bulkMixedDs':
-      'La selezione si estende su più origini dati; la modifica in blocco richiede una singola origine',
     'editor.bulkMixedProtocols':
       'I server selezionati usano protocolli diversi; vengono mostrate solo le opzioni comuni a tutti. Le altre restano invariate.',
     'editor.f.AppProtocolDisplayName': 'Nome visualizzato del protocollo',
@@ -2668,7 +2645,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Aktywny filtr wyszukiwania',
     'crumb.clearSearch': 'Wyczyść wyszukiwanie (Esc)',
     'sidebar.expand': 'Rozwiń panel boczny',
-    'tree.noDatasources': '(Brak źródeł danych)',
     'tree.manageTags': '+ Zarządzaj',
     'tree.collapse': '« Zwiń',
     'tree.collapseTitle': 'Zwiń panel boczny',
@@ -2842,7 +2818,6 @@ const OVERRIDES = {
     'editor.overwriteTip': 'Ustaw jedną wartość dla wszystkich {n} serwerów',
     'editor.bulkUpdated': 'Zaktualizowano serwery: {n}',
     'editor.bulkNoChanges': 'Brak zmian do zapisania: najpierw kliknij „Nadpisz” i edytuj pole',
-    'editor.bulkMixedDs': 'Zaznaczenie obejmuje wiele źródeł danych; edycja masowa wymaga jednego źródła',
     'editor.bulkMixedProtocols':
       'Wybrane serwery używają różnych protokołów; pokazywane są tylko opcje wspólne dla wszystkich. Pozostałe pozostaną bez zmian.',
     'editor.f.AppProtocolDisplayName': 'Nazwa wyświetlana protokołu',
@@ -2984,7 +2959,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Filtro de pesquisa ativo',
     'crumb.clearSearch': 'Limpar pesquisa (Esc)',
     'sidebar.expand': 'Expandir barra lateral',
-    'tree.noDatasources': '(Sem fontes de dados)',
     'tree.manageTags': '+ Gerenciar',
     'tree.collapse': '« Recolher',
     'tree.collapseTitle': 'Recolher barra lateral',
@@ -3158,7 +3132,6 @@ const OVERRIDES = {
     'editor.overwriteTip': 'Definir um valor para todos os {n} servidores',
     'editor.bulkUpdated': '{n} servidores atualizados',
     'editor.bulkNoChanges': 'Nenhuma alteração a salvar: primeiro clique em “Sobrescrever” e edite o campo',
-    'editor.bulkMixedDs': 'A seleção abrange várias fontes de dados; a edição em massa exige uma única fonte',
     'editor.bulkMixedProtocols':
       'Os servidores selecionados usam protocolos diferentes; apenas as opções comuns a todos são exibidas. As demais permanecem inalteradas.',
     'editor.f.AppProtocolDisplayName': 'Nome de exibição do protocolo',
@@ -3301,7 +3274,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Filtro de pesquisa ativo',
     'crumb.clearSearch': 'Limpar pesquisa (Esc)',
     'sidebar.expand': 'Expandir barra lateral',
-    'tree.noDatasources': '(Sem fontes de dados)',
     'tree.manageTags': '+ Gerir',
     'tree.collapse': '« Ocultar',
     'tree.collapseTitle': 'Ocultar barra lateral',
@@ -3474,7 +3446,6 @@ const OVERRIDES = {
     'editor.overwriteTip': 'Definir um valor para todos os {n} servidores',
     'editor.bulkUpdated': '{n} servidores atualizados',
     'editor.bulkNoChanges': 'Sem alterações a guardar: primeiro clique em “Substituir” e edite o campo',
-    'editor.bulkMixedDs': 'A seleção abrange várias fontes de dados; a edição em massa requer uma única fonte',
     'editor.bulkMixedProtocols':
       'Os servidores selecionados utilizam protocolos diferentes; apenas são apresentadas as opções comuns a todos. As restantes permanecem inalteradas.',
     'editor.f.AppProtocolDisplayName': 'Nome de apresentação do protocolo',
@@ -3618,7 +3589,6 @@ const OVERRIDES = {
     'crumb.searchChip': 'Активен поисковый фильтр',
     'crumb.clearSearch': 'Очистить поиск (Esc)',
     'sidebar.expand': 'Развернуть боковую панель',
-    'tree.noDatasources': '(Нет источников данных)',
     'tree.manageTags': '+ Управление',
     'tree.collapse': '« Свернуть',
     'tree.collapseTitle': 'Свернуть боковую панель',
@@ -3794,7 +3764,6 @@ const OVERRIDES = {
     'editor.overwriteTip': 'Задать одно значение для всех {n} серверов',
     'editor.bulkUpdated': 'Обновлено серверов: {n}',
     'editor.bulkNoChanges': 'Нет изменений для сохранения: сначала нажмите «Перезаписать» и измените поле',
-    'editor.bulkMixedDs': 'Выбор охватывает несколько источников данных; для группового изменения нужен один источник',
     'editor.bulkMixedProtocols':
       'Выбранные серверы используют разные протоколы; показываются только общие для всех параметры. Остальные остаются без изменений.',
     'editor.f.AppProtocolDisplayName': 'Отображаемое имя протокола',
@@ -3938,7 +3907,6 @@ const OVERRIDES = {
     'crumb.searchChip': '\u691c\u7d22\u30d5\u30a3\u30eb\u30bf\u30fc\u9069\u7528\u4e2d',
     'crumb.clearSearch': '\u691c\u7d22\u3092\u30af\u30ea\u30a2\uff08Esc\uff09',
     'sidebar.expand': '\u30b5\u30a4\u30c9\u30d0\u30fc\u3092\u5c55\u958b',
-    'tree.noDatasources': '\uff08\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u306a\u3057\uff09',
     'tree.manageTags': '+ \u7ba1\u7406',
     'tree.collapse': '\u00ab \u6298\u308a\u305f\u305f\u3080',
     'tree.collapseTitle': '\u30b5\u30a4\u30c9\u30d0\u30fc\u3092\u6298\u308a\u305f\u305f\u3080',
@@ -4156,8 +4124,6 @@ const OVERRIDES = {
     'editor.bulkUpdated': '{n} \u53f0\u3092\u66f4\u65b0\u3057\u307e\u3057\u305f',
     'editor.bulkNoChanges':
       '\u4fdd\u5b58\u3059\u308b\u5909\u66f4\u304c\u3042\u308a\u307e\u305b\u3093\uff1a\u5148\u306b\u300c\u4e0a\u66f8\u304d\u300d\u3092\u30af\u30ea\u30c3\u30af\u3057\u3066\u304b\u3089\u30d5\u30a3\u30fc\u30eb\u30c9\u3092\u7de8\u96c6\u3057\u3066\u304f\u3060\u3055\u3044',
-    'editor.bulkMixedDs':
-      '\u9078\u629e\u7bc4\u56f2\u304c\u8907\u6570\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u306b\u307e\u305f\u304c\u3063\u3066\u3044\u307e\u3059\u3002\u4e00\u62ec\u7de8\u96c6\u306b\u306f\u5358\u4e00\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u304c\u5fc5\u8981\u3067\u3059',
     'editor.bulkMixedProtocols':
       '選択したサーバーのプロトコルが異なるため、共通のオプションのみ表示されます。その他は変更されません。',
     'editor.f.AppProtocolDisplayName': '\u30d7\u30ed\u30c8\u30b3\u30eb\u8868\u793a\u540d',
@@ -4366,6 +4332,526 @@ const bcp47 = (lower) =>
 
 // ---------------------------------------------------------------------------
 
+// 第四轮修复（2026-09-21）新增的 12 生成语言译文表：优先级 MAPPING > ROUND4 > OVERRIDES >
+// en-US 回落（对 OVERRIDES 的同名键形成覆盖——zh-TW 的「執行器」旧值即由本表取代）。
+// 覆盖内容：H16 四词条补译（password 占位/kvHint/kvPriority/跟随全局）、H28 导入格式
+// 口径+.sqlite、H30 Runner 术语统一（所有语言保留「Runner」不译）、以及本轮新增 UI 键
+// （合并同名文件夹确认/无数据源引导/搜索范围标注/复制密码/凭据空态指引/设置分组副标题）。
+const ROUND4 = {
+  'de-DE': {
+    'editor.ph.password': 'Leer lassen, um das Passwort sp\u00e4ter abzufragen.',
+    'editor.kvHint':
+      'Hier k\u00f6nnen Sie Optionen festlegen, die in der Oberfl\u00e4che nicht aufgef\u00fchrt sind, z. B. automatische Wiederverbindung deaktivieren mit EnableAutoReconnect:i:0, Tastenkombinationen deaktivieren mit HotKeyAltTab:i:0 oder die Verbindungsleiste anheften mit PinConnectionBar:i:1.',
+    'editor.kvPriority':
+      'Hinweis: Diese Option hat die h\u00f6chste Priorit\u00e4t und \u00fcberschreibt die vorherigen Einstellungen der Oberfl\u00e4che.',
+    'editor.o.followGlobalSettings': 'Den globalen Einstellungen folgen',
+    'import.formats': 'Unterst\u00fctzt .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'Nicht unterst\u00fctzte Datei: {name} (unterst\u00fctzt: .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats': 'Import aus mRemoteNG (.db/.sqlite) / .rdp / .csv / .json wird unterst\u00fctzt',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Runner hinzuf\u00fcgen',
+    'settings.r.addTitle': 'Neuer Runner-Name',
+    'settings.r.selected': 'Standard-Runner',
+    'settings.r.deleteTitle': 'Runner l\u00f6schen',
+    'settings.r.deleteConfirm': 'Runner \u201e{name}\u201c l\u00f6schen? Dies kann nicht widerrufen werden.',
+    'settings.r.internalHint': 'Integrierter Runner, nichts zu konfigurieren.',
+    'settings.r.internalNoDelete': 'Integrierte Runner k\u00f6nnen nicht gel\u00f6scht werden.',
+    'settings.r.internalExeManaged': 'Der Pfad des integrierten Runners wird von der Anwendung verwaltet.',
+    'settings.r.loadFailed': 'Runner-Einstellungen konnten nicht geladen werden',
+    'editor.f.SelectedRunnerName': 'Ausgew\u00e4hlter Runner',
+    'tree.mergeFolderTitle': 'Ordner zusammenf\u00fchren',
+    'tree.mergeFolderConfirm':
+      'Im Ziel existiert bereits ein Ordner mit dem Namen \u201e{name}\u201c. Zusammenf\u00fchren? Die Server beider Ordner werden in einem Ordner vereint.',
+    'tree.mergeFolderYes': 'Zusammenf\u00fchren',
+    'tree.noDsHint':
+      'Noch keine Datenquellen. F\u00fcgen Sie eine unter Einstellungen > Datenquellen hinzu, um Server zu verwalten.',
+    'crumb.searchScope': 'alle Datenquellen',
+    'cols.folderRootOnly': 'Die Ordnerspalte wird nur in der Root-Ansicht oder w\u00e4hrend der Suche angezeigt',
+    'ctx.copyPassword': 'Passwort kopieren',
+    'common.password': 'Passwort',
+    'toast.noPasswordToCopy': 'Kein Passwort zum Kopieren',
+    'toast.copyPwdNeedVerify':
+      'Verifizierung erforderlich: schlie\u00dfen Sie die Windows-Anmeldedaten-Verifizierung in der Desktop-App ab und versuchen Sie es erneut',
+    'editor.credEmptyHint':
+      'Diese Datenquelle hat noch keine Zugangsdaten. Legen Sie welche unter Einstellungen > Zugangsdaten an oder geben Sie sie weiter manuell ein.',
+    'settings.nav.dataSub': 'Datenbanken und Verbindungen',
+    'settings.nav.appearanceSub': 'Design und Farben',
+    'settings.nav.runnersSub': 'Externe Protokoll-Runner',
+  },
+  'fr-FR': {
+    'editor.ph.password': 'Laissez-le vide pour saisir le mot de passe plus tard.',
+    'editor.kvHint':
+      "Vous pouvez d\u00e9finir ici des options absentes de l'interface, par exemple d\u00e9sactiver la reconnexion automatique avec EnableAutoReconnect:i:0, d\u00e9sactiver les combinaisons de touches avec HotKeyAltTab:i:0 ou \u00e9pingler la barre de connexion avec PinConnectionBar:i:1.",
+    'editor.kvPriority':
+      "Attention : cette option a la priorit\u00e9 la plus \u00e9lev\u00e9e et remplace les configurations pr\u00e9c\u00e9dentes de l'interface.",
+    'editor.o.followGlobalSettings': 'Suivre les param\u00e8tres globaux',
+    'import.formats': 'Prend en charge .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'Fichier non pris en charge : {name} (pris en charge : .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats': "L'import depuis mRemoteNG (.db/.sqlite) / .rdp / .csv / .json est pris en charge",
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Ajouter un Runner',
+    'settings.r.addTitle': 'Nom du nouveau Runner',
+    'settings.r.selected': 'Runner par d\u00e9faut',
+    'settings.r.deleteTitle': 'Supprimer le Runner',
+    'settings.r.deleteConfirm': 'Supprimer le Runner \u00ab {name} \u00bb ? Cette action est irr\u00e9versible.',
+    'settings.r.internalHint': 'Runner int\u00e9gr\u00e9, rien \u00e0 configurer.',
+    'settings.r.internalNoDelete': 'Les Runner int\u00e9gr\u00e9s ne peuvent pas \u00eatre supprim\u00e9s.',
+    'settings.r.internalExeManaged': 'Le chemin du Runner int\u00e9gr\u00e9 est g\u00e9r\u00e9 par l\u2019application.',
+    'settings.r.loadFailed': '\u00c9chec du chargement des param\u00e8tres du Runner',
+    'editor.f.SelectedRunnerName': 'Runner s\u00e9lectionn\u00e9',
+    'tree.mergeFolderTitle': 'Fusionner les dossiers',
+    'tree.mergeFolderConfirm':
+      'Un dossier nomm\u00e9 \u00ab {name} \u00bb existe d\u00e9j\u00e0 \u00e0 la cible. Fusionner ? Les serveurs des deux dossiers seront combin\u00e9s.',
+    'tree.mergeFolderYes': 'Fusionner',
+    'tree.noDsHint':
+      'Aucune source de donn\u00e9es pour le moment. Ajoutez-en une dans Param\u00e8tres > Sources de donn\u00e9es pour g\u00e9rer des serveurs.',
+    'crumb.searchScope': 'toutes les sources de donn\u00e9es',
+    'cols.folderRootOnly': "La colonne Dossier n'est affich\u00e9e qu'en vue racine ou pendant une recherche",
+    'ctx.copyPassword': 'Copier le mot de passe',
+    'common.password': 'mot de passe',
+    'toast.noPasswordToCopy': 'Aucun mot de passe \u00e0 copier',
+    'toast.copyPwdNeedVerify':
+      "V\u00e9rification requise : terminez la v\u00e9rification des identifiants Windows dans l'application de bureau, puis r\u00e9essayez",
+    'editor.credEmptyHint':
+      "Cette source de donn\u00e9es n'a pas encore d'identifiants. Cr\u00e9ez-en un dans Param\u00e8tres > Identifiants, ou continuez la saisie manuelle.",
+    'settings.nav.dataSub': 'Bases de donn\u00e9es et connexions',
+    'settings.nav.appearanceSub': 'Th\u00e8me et couleurs',
+    'settings.nav.runnersSub': 'Runners de protocoles externes',
+  },
+  'es-AR': {
+    'editor.ph.password': 'D\u00e9jelo en blanco y se solicitar\u00e1 la contrase\u00f1a m\u00e1s tarde.',
+    'editor.kvHint':
+      'Aqu\u00ed puede configurar opciones que no aparecen en la interfaz, por ejemplo desactivar la reconexi\u00f3n autom\u00e1tica con EnableAutoReconnect:i:0, desactivar las combinaciones de teclas con HotKeyAltTab:i:0 o fijar la barra de conexi\u00f3n con PinConnectionBar:i:1.',
+    'editor.kvPriority':
+      'Tenga en cuenta que esta opci\u00f3n tiene la prioridad m\u00e1s alta y anular\u00e1 las configuraciones previas de la interfaz.',
+    'editor.o.followGlobalSettings': 'Seguir la configuraci\u00f3n global',
+    'import.formats': 'Admite .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'Archivo no admitido: {name} (admitidos: .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats': 'Se admite importar desde mRemoteNG (.db/.sqlite) / .rdp / .csv / .json',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Agregar Runner',
+    'settings.r.addTitle': 'Nombre del nuevo Runner',
+    'settings.r.selected': 'Runner predeterminado',
+    'settings.r.deleteTitle': 'Eliminar Runner',
+    'settings.r.deleteConfirm': '\u00bfEliminar el Runner "{name}"? Esta acci\u00f3n no se puede deshacer.',
+    'settings.r.internalHint': 'Runner integrado, no requiere configuraci\u00f3n.',
+    'settings.r.internalNoDelete': 'Los Runner integrados no se pueden eliminar.',
+    'settings.r.internalExeManaged': 'La ruta del Runner integrado la gestiona la aplicaci\u00f3n.',
+    'settings.r.loadFailed': 'No se pudo cargar la configuraci\u00f3n del Runner',
+    'editor.f.SelectedRunnerName': 'Runner seleccionado',
+    'tree.mergeFolderTitle': 'Combinar carpetas',
+    'tree.mergeFolderConfirm':
+      'Ya existe una carpeta llamada "{name}" en el destino. \u00bfCombinarlas? Los servidores de ambas carpetas se unir\u00e1n en una sola.',
+    'tree.mergeFolderYes': 'Combinar',
+    'tree.noDsHint':
+      'A\u00fan no hay fuentes de datos. Agregue una en Configuraci\u00f3n > Fuentes de datos para empezar a administrar servidores.',
+    'crumb.searchScope': 'todas las fuentes de datos',
+    'cols.folderRootOnly': 'La columna Carpeta solo se muestra en la vista ra\u00edz o durante una b\u00fasqueda',
+    'ctx.copyPassword': 'Copiar contrase\u00f1a',
+    'common.password': 'contrase\u00f1a',
+    'toast.noPasswordToCopy': 'No hay contrase\u00f1a para copiar',
+    'toast.copyPwdNeedVerify':
+      'Se requiere verificaci\u00f3n: complete la verificaci\u00f3n de credenciales de Windows en la aplicaci\u00f3n de escritorio y reintente',
+    'editor.credEmptyHint':
+      'Esta fuente de datos a\u00fan no tiene credenciales. Cree una en Configuraci\u00f3n > Credenciales, o siga escribi\u00e9ndolas manualmente.',
+    'settings.nav.dataSub': 'Bases de datos y conexiones',
+    'settings.nav.appearanceSub': 'Tema y colores',
+    'settings.nav.runnersSub': 'Runners de protocolos externos',
+  },
+  'it-IT': {
+    'editor.ph.password': 'Lascialo vuoto e la password verr\u00e0 richiesta in seguito.',
+    'editor.kvHint':
+      "Qui puoi impostare opzioni non elencate nell'interfaccia, ad esempio disattivare la riconnessione automatica con EnableAutoReconnect:i:0, disattivare le combinazioni di tasti con HotKeyAltTab:i:0 o bloccare la barra di connessione con PinConnectionBar:i:1.",
+    'editor.kvPriority':
+      "Nota: questa opzione ha la priorit\u00e0 pi\u00f9 alta e sovrascrive le configurazioni precedenti dell'interfaccia.",
+    'editor.o.followGlobalSettings': 'Segui le impostazioni globali',
+    'import.formats': 'Supporta .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'File non supportato: {name} (supportati: .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats': "\u00c8 supportata l'importazione da mRemoteNG (.db/.sqlite) / .rdp / .csv / .json",
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Aggiungi Runner',
+    'settings.r.addTitle': 'Nome del nuovo Runner',
+    'settings.r.selected': 'Runner predefinito',
+    'settings.r.deleteTitle': 'Elimina Runner',
+    'settings.r.deleteConfirm': 'Eliminare il Runner "{name}"? Questa azione non pu\u00f2 essere annullata.',
+    'settings.r.internalHint': 'Runner integrato, nulla da configurare.',
+    'settings.r.internalNoDelete': 'I Runner integrati non possono essere eliminati.',
+    'settings.r.internalExeManaged': 'Il percorso del Runner integrato \u00e8 gestito dall\u2019applicazione.',
+    'settings.r.loadFailed': 'Impossibile caricare le impostazioni del Runner',
+    'editor.f.SelectedRunnerName': 'Runner selezionato',
+    'tree.mergeFolderTitle': 'Unisci cartelle',
+    'tree.mergeFolderConfirm':
+      'Nella destinazione esiste gi\u00e0 una cartella denominata "{name}". Unirle? I server di entrambe le cartelle verranno combinati in una sola.',
+    'tree.mergeFolderYes': 'Unisci',
+    'tree.noDsHint':
+      'Non ci sono ancora sorgenti dati. Aggiungine una in Impostazioni > Sorgenti dati per iniziare a gestire i server.',
+    'crumb.searchScope': 'tutte le sorgenti dati',
+    'cols.folderRootOnly': 'La colonna Cartella \u00e8 visibile solo nella vista radice o durante una ricerca',
+    'ctx.copyPassword': 'Copia password',
+    'common.password': 'password',
+    'toast.noPasswordToCopy': 'Nessuna password da copiare',
+    'toast.copyPwdNeedVerify':
+      "Verifica richiesta: completa la verifica delle credenziali di Windows nell'app desktop, poi riprova",
+    'editor.credEmptyHint':
+      'Questa sorgente dati non ha ancora credenziali. Creane una in Impostazioni > Credenziali, oppure continua a inserirle manualmente.',
+    'settings.nav.dataSub': 'Database e connessioni',
+    'settings.nav.appearanceSub': 'Tema e colori',
+    'settings.nav.runnersSub': 'Runner di protocolli esterni',
+  },
+  'pt-BR': {
+    'editor.ph.password': 'Deixe em branco e a senha ser\u00e1 solicitada depois.',
+    'editor.kvHint':
+      'Aqui voc\u00ea pode definir op\u00e7\u00f5es n\u00e3o listadas na interface, como desativar a reconex\u00e3o autom\u00e1tica com EnableAutoReconnect:i:0, desativar as combina\u00e7\u00f5es de teclas com HotKeyAltTab:i:0 ou fixar a barra de conex\u00e3o com PinConnectionBar:i:1.',
+    'editor.kvPriority':
+      'Observa\u00e7\u00e3o: esta op\u00e7\u00e3o tem a prioridade mais alta e substituir\u00e1 as configura\u00e7\u00f5es anteriores da interface.',
+    'editor.o.followGlobalSettings': 'Seguir as configura\u00e7\u00f5es globais',
+    'import.formats': 'Suporta .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'Arquivo n\u00e3o suportado: {name} (suportados: .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats':
+      'H\u00e1 suporte \u00e0 importa\u00e7\u00e3o de mRemoteNG (.db/.sqlite) / .rdp / .csv / .json',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Adicionar Runner',
+    'settings.r.addTitle': 'Nome do novo Runner',
+    'settings.r.selected': 'Runner padr\u00e3o',
+    'settings.r.deleteTitle': 'Excluir Runner',
+    'settings.r.deleteConfirm': 'Excluir o Runner "{name}"? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.',
+    'settings.r.internalHint': 'Runner integrado, nada a configurar.',
+    'settings.r.internalNoDelete': 'Os Runners integrados n\u00e3o podem ser exclu\u00eddos.',
+    'settings.r.internalExeManaged': 'O caminho do Runner integrado \u00e9 gerenciado pelo aplicativo.',
+    'settings.r.loadFailed': 'Falha ao carregar as configura\u00e7\u00f5es do Runner',
+    'editor.f.SelectedRunnerName': 'Runner selecionado',
+    'tree.mergeFolderTitle': 'Mesclar pastas',
+    'tree.mergeFolderConfirm':
+      'J\u00e1 existe uma pasta chamada "{name}" no destino. Mesclar? Os servidores das duas pastas ser\u00e3o combinados em uma s\u00f3.',
+    'tree.mergeFolderYes': 'Mesclar',
+    'tree.noDsHint':
+      'Ainda n\u00e3o h\u00e1 fontes de dados. Adicione uma em Configura\u00e7\u00f5es > Fontes de dados para come\u00e7ar a gerenciar servidores.',
+    'crumb.searchScope': 'todas as fontes de dados',
+    'cols.folderRootOnly': 'A coluna Pasta s\u00f3 \u00e9 exibida na vis\u00e3o raiz ou durante uma pesquisa',
+    'ctx.copyPassword': 'Copiar senha',
+    'common.password': 'senha',
+    'toast.noPasswordToCopy': 'N\u00e3o h\u00e1 senha para copiar',
+    'toast.copyPwdNeedVerify':
+      'Verifica\u00e7\u00e3o necess\u00e1ria: conclua a verifica\u00e7\u00e3o de credenciais do Windows no aplicativo desktop e tente novamente',
+    'editor.credEmptyHint':
+      'Esta fonte de dados ainda n\u00e3o tem credenciais. Crie uma em Configura\u00e7\u00f5es > Credenciais ou continue digitando manualmente.',
+    'settings.nav.dataSub': 'Bancos de dados e conex\u00f5es',
+    'settings.nav.appearanceSub': 'Tema e cores',
+    'settings.nav.runnersSub': 'Runners de protocolos externos',
+  },
+  'pt-PT': {
+    'editor.ph.password': 'Deixe em branco e a palavra-passe ser\u00e1 pedida mais tarde.',
+    'editor.kvHint':
+      'Aqui pode definir op\u00e7\u00f5es n\u00e3o listadas na interface, como desativar a reconex\u00e3o autom\u00e1tica com EnableAutoReconnect:i:0, desativar as combina\u00e7\u00f5es de teclas com HotKeyAltTab:i:0 ou fixar a barra de liga\u00e7\u00e3o com PinConnectionBar:i:1.',
+    'editor.kvPriority':
+      'Nota: esta op\u00e7\u00e3o tem a prioridade mais alta e substituir\u00e1 as configura\u00e7\u00f5es anteriores da interface.',
+    'editor.o.followGlobalSettings': 'Seguir as defini\u00e7\u00f5es globais',
+    'import.formats': 'Suporta .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'Ficheiro n\u00e3o suportado: {name} (suportados: .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats': '\u00c9 suportada a importa\u00e7\u00e3o de mRemoteNG (.db/.sqlite) / .rdp / .csv / .json',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Adicionar Runner',
+    'settings.r.addTitle': 'Nome do novo Runner',
+    'settings.r.selected': 'Runner predefinido',
+    'settings.r.deleteTitle': 'Eliminar Runner',
+    'settings.r.deleteConfirm': 'Eliminar o Runner "{name}"? Esta a\u00e7\u00e3o n\u00e3o pode ser anulada.',
+    'settings.r.internalHint': 'Runner integrado, nada a configurar.',
+    'settings.r.internalNoDelete': 'Os Runners integrados n\u00e3o podem ser eliminados.',
+    'settings.r.internalExeManaged': 'O caminho do Runner integrado \u00e9 gerido pela aplica\u00e7\u00e3o.',
+    'settings.r.loadFailed': 'Falha ao carregar as defini\u00e7\u00f5es do Runner',
+    'editor.f.SelectedRunnerName': 'Runner selecionado',
+    'tree.mergeFolderTitle': 'Unir pastas',
+    'tree.mergeFolderConfirm':
+      'J\u00e1 existe uma pasta chamada "{name}" no destino. Unir? Os servidores de ambas as pastas ser\u00e3o combinados numa s\u00f3.',
+    'tree.mergeFolderYes': 'Unir',
+    'tree.noDsHint':
+      'Ainda n\u00e3o h\u00e1 fontes de dados. Adicione uma em Defini\u00e7\u00f5es > Fontes de dados para come\u00e7ar a gerir servidores.',
+    'crumb.searchScope': 'todas as fontes de dados',
+    'cols.folderRootOnly': 'A coluna Pasta s\u00f3 \u00e9 mostrada na vista raiz ou durante uma pesquisa',
+    'ctx.copyPassword': 'Copiar palavra-passe',
+    'common.password': 'palavra-passe',
+    'toast.noPasswordToCopy': 'N\u00e3o h\u00e1 palavra-passe para copiar',
+    'toast.copyPwdNeedVerify':
+      'Verifica\u00e7\u00e3o necess\u00e1ria: conclua a verifica\u00e7\u00e3o de credenciais do Windows na aplica\u00e7\u00e3o de desktop e tente novamente',
+    'editor.credEmptyHint':
+      'Esta fonte de dados ainda n\u00e3o tem credenciais. Crie uma em Defini\u00e7\u00f5es > Credenciais ou continue a introduzi-las manualmente.',
+    'settings.nav.dataSub': 'Bases de dados e liga\u00e7\u00f5es',
+    'settings.nav.appearanceSub': 'Tema e cores',
+    'settings.nav.runnersSub': 'Runners de protocolos externos',
+  },
+  'ru-RU': {
+    'editor.ph.password':
+      '\u041e\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u043f\u0443\u0441\u0442\u044b\u043c \u2014 \u043f\u0430\u0440\u043e\u043b\u044c \u0431\u0443\u0434\u0435\u0442 \u0437\u0430\u043f\u0440\u043e\u0448\u0435\u043d \u043f\u043e\u0437\u0436\u0435.',
+    'editor.kvHint':
+      '\u0417\u0434\u0435\u0441\u044c \u043c\u043e\u0436\u043d\u043e \u0437\u0430\u0434\u0430\u0442\u044c \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b, \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0435 \u0432 \u0438\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0435, \u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0430\u0432\u0442\u043e\u043f\u0435\u0440\u0435\u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435 \u0447\u0435\u0440\u0435\u0437 EnableAutoReconnect:i:0, \u043e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0441\u043e\u0447\u0435\u0442\u0430\u043d\u0438\u044f \u043a\u043b\u0430\u0432\u0438\u0448 \u0447\u0435\u0440\u0435\u0437 HotKeyAltTab:i:0 \u0438\u043b\u0438 \u0437\u0430\u043a\u0440\u0435\u043f\u0438\u0442\u044c \u043f\u0430\u043d\u0435\u043b\u044c \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f \u0447\u0435\u0440\u0435\u0437 PinConnectionBar:i:1.',
+    'editor.kvPriority':
+      '\u041e\u0431\u0440\u0430\u0442\u0438\u0442\u0435 \u0432\u043d\u0438\u043c\u0430\u043d\u0438\u0435: \u044d\u0442\u043e\u0442 \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440 \u0438\u043c\u0435\u0435\u0442 \u043d\u0430\u0438\u0432\u044b\u0441\u0448\u0438\u0439 \u043f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442 \u0438 \u043f\u0435\u0440\u0435\u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0438\u0442 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438, \u0437\u0430\u0434\u0430\u043d\u043d\u044b\u0435 \u0432 \u0438\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0435 \u0432\u044b\u0448\u0435.',
+    'editor.o.followGlobalSettings':
+      '\u0421\u043b\u0435\u0434\u043e\u0432\u0430\u0442\u044c \u0433\u043b\u043e\u0431\u0430\u043b\u044c\u043d\u044b\u043c \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430\u043c',
+    'import.formats':
+      '\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u044e\u0442\u0441\u044f .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile':
+      '\u041d\u0435\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u043c\u044b\u0439 \u0444\u0430\u0439\u043b: {name} (\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u044e\u0442\u0441\u044f .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats':
+      '\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442\u0441\u044f \u0438\u043c\u043f\u043e\u0440\u0442 \u0438\u0437 mRemoteNG (.db/.sqlite) / .rdp / .csv / .json',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': '\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c Runner',
+    'settings.r.addTitle': '\u0418\u043c\u044f \u043d\u043e\u0432\u043e\u0433\u043e Runner',
+    'settings.r.selected': 'Runner \u043f\u043e \u0443\u043c\u043e\u043b\u0447\u0430\u043d\u0438\u044e',
+    'settings.r.deleteTitle': '\u0423\u0434\u0430\u043b\u0438\u0442\u044c Runner',
+    'settings.r.deleteConfirm':
+      '\u0423\u0434\u0430\u043b\u0438\u0442\u044c Runner \u00ab{name}\u00bb? \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u043d\u0435\u043b\u044c\u0437\u044f \u043e\u0442\u043c\u0435\u043d\u0438\u0442\u044c.',
+    'settings.r.internalHint':
+      '\u0412\u0441\u0442\u0440\u043e\u0435\u043d\u043d\u044b\u0439 Runner \u2014 \u043d\u0430\u0441\u0442\u0440\u0430\u0438\u0432\u0430\u0442\u044c \u043d\u0435 \u043d\u0443\u0436\u043d\u043e.',
+    'settings.r.internalNoDelete':
+      '\u0412\u0441\u0442\u0440\u043e\u0435\u043d\u043d\u044b\u0435 Runner \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u043d\u0435\u043b\u044c\u0437\u044f.',
+    'settings.r.internalExeManaged':
+      '\u041f\u0443\u0442\u0451\u043c \u0432\u0441\u0442\u0440\u043e\u0435\u043d\u043d\u043e\u0433\u043e Runner \u0443\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442 \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u0435.',
+    'settings.r.loadFailed':
+      '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 Runner',
+    'editor.f.SelectedRunnerName': '\u0412\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 Runner',
+    'tree.mergeFolderTitle':
+      '\u041e\u0431\u044a\u0435\u0434\u0438\u043d\u0438\u0442\u044c \u043f\u0430\u043f\u043a\u0438',
+    'tree.mergeFolderConfirm':
+      '\u0412 \u0446\u0435\u043b\u0435\u0432\u043e\u043c \u043c\u0435\u0441\u0442\u0435 \u0443\u0436\u0435 \u0435\u0441\u0442\u044c \u043f\u0430\u043f\u043a\u0430 \u00ab{name}\u00bb. \u041e\u0431\u044a\u0435\u0434\u0438\u043d\u0438\u0442\u044c? \u0421\u0435\u0440\u0432\u0435\u0440\u044b \u0438\u0437 \u043e\u0431\u0435\u0438\u0445 \u043f\u0430\u043f\u043e\u043a \u0431\u0443\u0434\u0443\u0442 \u0441\u043e\u0431\u0440\u0430\u043d\u044b \u0432 \u043e\u0434\u043d\u0443.',
+    'tree.mergeFolderYes': '\u041e\u0431\u044a\u0435\u0434\u0438\u043d\u0438\u0442\u044c',
+    'tree.noDsHint':
+      '\u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u043e\u0432 \u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442. \u0414\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0438\u0445 \u0432 \u0440\u0430\u0437\u0434\u0435\u043b\u0435 \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 > \u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0438 \u0434\u0430\u043d\u043d\u044b\u0445, \u0447\u0442\u043e\u0431\u044b \u043d\u0430\u0447\u0430\u0442\u044c \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u0435\u0440\u0432\u0435\u0440\u0430\u043c\u0438.',
+    'crumb.searchScope':
+      '\u043f\u043e \u0432\u0441\u0435\u043c \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0430\u043c \u0434\u0430\u043d\u043d\u044b\u0445',
+    'cols.folderRootOnly':
+      '\u0421\u0442\u043e\u043b\u0431\u0435\u0446 \u00ab\u041f\u0430\u043f\u043a\u0430\u00bb \u043e\u0442\u043e\u0431\u0440\u0430\u0436\u0430\u0435\u0442\u0441\u044f \u0442\u043e\u043b\u044c\u043a\u043e \u0432 \u043a\u043e\u0440\u043d\u0435\u0432\u043e\u043c \u0432\u0438\u0434\u0435 \u0438\u043b\u0438 \u043f\u0440\u0438 \u043f\u043e\u0438\u0441\u043a\u0435',
+    'ctx.copyPassword':
+      '\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043f\u0430\u0440\u043e\u043b\u044c',
+    'common.password': '\u043f\u0430\u0440\u043e\u043b\u044c',
+    'toast.noPasswordToCopy':
+      '\u041d\u0435\u0442 \u043f\u0430\u0440\u043e\u043b\u044f \u0434\u043b\u044f \u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f',
+    'toast.copyPwdNeedVerify':
+      '\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430: \u0437\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u0435 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0443 \u0443\u0447\u0451\u0442\u043d\u044b\u0445 \u0434\u0430\u043d\u043d\u044b\u0445 Windows \u0432 \u043d\u0430\u0441\u0442\u043e\u043b\u044c\u043d\u043e\u043c \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u0438 \u0438 \u043f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u0435 \u043f\u043e\u043f\u044b\u0442\u043a\u0443',
+    'editor.credEmptyHint':
+      '\u0412 \u044d\u0442\u043e\u043c \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0435 \u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442 \u0443\u0447\u0451\u0442\u043d\u044b\u0445 \u0434\u0430\u043d\u043d\u044b\u0445. \u0421\u043e\u0437\u0434\u0430\u0439\u0442\u0435 \u0438\u0445 \u0432 \u0440\u0430\u0437\u0434\u0435\u043b\u0435 \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 > \u0423\u0447\u0451\u0442\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 \u0438\u043b\u0438 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u0435 \u0432\u0432\u043e\u0434 \u0432\u0440\u0443\u0447\u043d\u0443\u044e.',
+    'settings.nav.dataSub':
+      '\u0411\u0430\u0437\u044b \u0434\u0430\u043d\u043d\u044b\u0445 \u0438 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f',
+    'settings.nav.appearanceSub': '\u0422\u0435\u043c\u0430 \u0438 \u0446\u0432\u0435\u0442\u0430',
+    'settings.nav.runnersSub':
+      '\u0412\u043d\u0435\u0448\u043d\u0438\u0435 Runner \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432',
+  },
+  'pl-PL': {
+    'editor.ph.password': 'Zostaw puste, a has\u0142o zostanie zapytane p\u00f3\u017aniej.',
+    'editor.kvHint':
+      'Tutaj mo\u017cesz ustawi\u0107 opcje niewymienione w interfejsie, np. wy\u0142\u0105czy\u0107 automatyczne wznawianie po\u0142\u0105czenia przez EnableAutoReconnect:i:0, wy\u0142\u0105czy\u0107 kombinacje klawiszy przez HotKeyAltTab:i:0 albo przypi\u0105\u0107 pasek po\u0142\u0105czenia przez PinConnectionBar:i:1.',
+    'editor.kvPriority':
+      'Uwaga: ta opcja ma najwy\u017cszy priorytet i zast\u0105pi wcze\u015bniejsze ustawienia z interfejsu.',
+    'editor.o.followGlobalSettings': 'Zgodnie z ustawieniami globalnymi',
+    'import.formats': 'Obs\u0142uguje .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'Nieobs\u0142ugiwany plik: {name} (obs\u0142ugiwane: .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats': 'Obs\u0142ugiwany jest import z mRemoteNG (.db/.sqlite) / .rdp / .csv / .json',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Dodaj Runner',
+    'settings.r.addTitle': 'Nazwa nowego Runnera',
+    'settings.r.selected': 'Domy\u015blny Runner',
+    'settings.r.deleteTitle': 'Usu\u0144 Runner',
+    'settings.r.deleteConfirm':
+      'Usun\u0105\u0107 Runner \u201e{name}\u201d? Tej operacji nie mo\u017cna cofn\u0105\u0107.',
+    'settings.r.internalHint': 'Wbudowany Runner \u2014 niczego nie trzeba konfigurowa\u0107.',
+    'settings.r.internalNoDelete': 'Wbudowanych Runner\u00f3w nie mo\u017cna usuwa\u0107.',
+    'settings.r.internalExeManaged': '\u015acie\u017ck\u0105 wbudowanego Runnera zarz\u0105dza aplikacja.',
+    'settings.r.loadFailed': 'Nie uda\u0142o si\u0119 wczyta\u0107 ustawie\u0144 Runnera',
+    'editor.f.SelectedRunnerName': 'Wybrany Runner',
+    'tree.mergeFolderTitle': 'Scal foldery',
+    'tree.mergeFolderConfirm':
+      'W miejscu docelowym istnieje ju\u017c folder o nazwie \u201e{name}\u201d. Scali\u0107? Serwery z obu folder\u00f3w zostan\u0105 po\u0142\u0105czone w jeden.',
+    'tree.mergeFolderYes': 'Scal',
+    'tree.noDsHint':
+      'Brak jeszcze \u017ar\u00f3de\u0142 danych. Dodaj je w Ustawienia > \u0179r\u00f3d\u0142a danych, aby zarz\u0105dza\u0107 serwerami.',
+    'crumb.searchScope': 'wszystkie \u017ar\u00f3d\u0142a danych',
+    'cols.folderRootOnly': 'Kolumna Folder jest widoczna tylko w widoku g\u0142\u00f3wnym lub podczas wyszukiwania',
+    'ctx.copyPassword': 'Kopiuj has\u0142o',
+    'common.password': 'has\u0142o',
+    'toast.noPasswordToCopy': 'Brak has\u0142a do skopiowania',
+    'toast.copyPwdNeedVerify':
+      'Wymagana weryfikacja: uko\u0144cz weryfikacj\u0119 po\u015bwiadcze\u0144 Windows w aplikacji klasycznej i spr\u00f3buj ponownie',
+    'editor.credEmptyHint':
+      'To \u017ar\u00f3d\u0142o danych nie ma jeszcze po\u015bwiadcze\u0144. Utw\u00f3rz je w Ustawienia > Po\u015bwiadczenia albo dalej wpisuj je r\u0119cznie.',
+    'settings.nav.dataSub': 'Bazy danych i po\u0142\u0105czenia',
+    'settings.nav.appearanceSub': 'Motyw i kolory',
+    'settings.nav.runnersSub': 'Zewn\u0119trzne Runner protoko\u0142\u00f3w',
+  },
+  'cs-CZ': {
+    'editor.ph.password': 'Ponechte pr\u00e1zdn\u00e9 a heslo bude vy\u017e\u00e1d\u00e1no pozd\u011bji.',
+    'editor.kvHint':
+      'Zde m\u016f\u017eete nastavit volby, kter\u00e9 nejsou v rozhran\u00ed uvedeny, nap\u0159\u00edklad zak\u00e1zat automatick\u00e9 op\u011btovn\u00e9 p\u0159ipojen\u00ed pomoc\u00ed EnableAutoReconnect:i:0, zak\u00e1zat kombinace kl\u00e1ves pomoc\u00ed HotKeyAltTab:i:0 nebo p\u0159ipnout panel p\u0159ipojen\u00ed pomoc\u00ed PinConnectionBar:i:1.',
+    'editor.kvPriority':
+      'Pozn\u00e1mka: tato volba m\u00e1 nejvy\u0161\u0161\u00ed prioritu a p\u0159ep\u00ed\u0161e p\u0159edchoz\u00ed nastaven\u00ed z rozhran\u00ed.',
+    'editor.o.followGlobalSettings': '\u0158\u00eddit se glob\u00e1ln\u00edm nastaven\u00edm',
+    'import.formats': 'Podporuje .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'Nepodporovan\u00fd soubor: {name} (podporovan\u00e9: .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats': 'Podporov\u00e1n je import z mRemoteNG (.db/.sqlite) / .rdp / .csv / .json',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'P\u0159idat Runner',
+    'settings.r.addTitle': 'N\u00e1zev nov\u00e9ho Runneru',
+    'settings.r.selected': 'V\u00fdchoz\u00ed Runner',
+    'settings.r.deleteTitle': 'Odstranit Runner',
+    'settings.r.deleteConfirm': 'Odstranit Runner \u201e{name}\u201c? Tuto akci nelze vr\u00e1tit.',
+    'settings.r.internalHint': 'Vestav\u011bn\u00fd Runner, nen\u00ed co konfigurovat.',
+    'settings.r.internalNoDelete': 'Vestav\u011bn\u00e9 Runnery nelze odstranit.',
+    'settings.r.internalExeManaged': 'Cestu vestav\u011bn\u00e9ho Runneru spravuje aplikace.',
+    'settings.r.loadFailed': 'Nepoda\u0159ilo se na\u010d\u00edst nastaven\u00ed Runneru',
+    'editor.f.SelectedRunnerName': 'Vybran\u00fd Runner',
+    'tree.mergeFolderTitle': 'Slou\u010dit slo\u017eky',
+    'tree.mergeFolderConfirm':
+      'V c\u00edli u\u017e existuje slo\u017eka s n\u00e1zvem \u201e{name}\u201c. Slou\u010dit? Servery z obou slo\u017eek budou spojeny do jedn\u00e9.',
+    'tree.mergeFolderYes': 'Slou\u010dit',
+    'tree.noDsHint':
+      'Zat\u00edm \u017e\u00e1dn\u00e9 zdroje dat. P\u0159idejte je v Nastaven\u00ed > Zdroje dat a za\u010dn\u011bte spravovat servery.',
+    'crumb.searchScope': 'v\u0161echny zdroje dat',
+    'cols.folderRootOnly':
+      'Sloupec Slo\u017eka se zobrazuje jen v ko\u0159enov\u00e9m zobrazen\u00ed nebo p\u0159i hled\u00e1n\u00ed',
+    'ctx.copyPassword': 'Kop\u00edrovat heslo',
+    'common.password': 'heslo',
+    'toast.noPasswordToCopy': '\u017d\u00e1dn\u00e9 heslo ke zkop\u00edrov\u00e1n\u00ed',
+    'toast.copyPwdNeedVerify':
+      'Vy\u017eadov\u00e1no ov\u011b\u0159en\u00ed: dokon\u010dete ov\u011b\u0159en\u00ed p\u0159ihla\u0161ovac\u00edch \u00fadaj\u016f Windows v desktopov\u00e9 aplikaci a zkuste to znovu',
+    'editor.credEmptyHint':
+      'Tento zdroj dat zat\u00edm nem\u00e1 \u017e\u00e1dn\u00e9 p\u0159ihla\u0161ovac\u00ed \u00fadaje. Vytvo\u0159te je v Nastaven\u00ed > P\u0159ihla\u0161ovac\u00ed \u00fadaje, nebo je i nad\u00e1le zad\u00e1vejte ru\u010dn\u011b.',
+    'settings.nav.dataSub': 'Datab\u00e1ze a p\u0159ipojen\u00ed',
+    'settings.nav.appearanceSub': 'Motiv a barvy',
+    'settings.nav.runnersSub': 'Extern\u00ed Runnery protokol\u016f',
+  },
+  'gl-ES': {
+    'editor.ph.password': 'D\u00e9ixeo en branco e pedir\u00e1selle o contrasinal m\u00e1is tarde.',
+    'editor.kvHint':
+      'Aqu\u00ed pode configurar opci\u00f3ns que non aparecen na interface, por exemplo desactivar a reconexi\u00f3n autom\u00e1tica con EnableAutoReconnect:i:0, desactivar as combinaci\u00f3ns de teclas con HotKeyAltTab:i:0 ou fixar a barra de conexi\u00f3n con PinConnectionBar:i:1.',
+    'editor.kvPriority':
+      'Te\u00f1a en conta que esta opci\u00f3n ten a prioridade m\u00e1is alta e anular\u00e1 as configuraci\u00f3ns previas da interface.',
+    'editor.o.followGlobalSettings': 'Seguir a configuraci\u00f3n global',
+    'import.formats': 'Admite .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile': 'Ficheiro non admitido: {name} (admitidos: .json/.csv/.rdp/.db/.sqlite)',
+    'empty.importFormats': 'Adm\u00edtese importar de mRemoteNG (.db/.sqlite) / .rdp / .csv / .json',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Engadir Runner',
+    'settings.r.addTitle': 'Nome do novo Runner',
+    'settings.r.selected': 'Runner predeterminado',
+    'settings.r.deleteTitle': 'Eliminar Runner',
+    'settings.r.deleteConfirm': 'Eliminar o Runner \u00ab{name}\u00bb? Esta acci\u00f3n non se pode desfacer.',
+    'settings.r.internalHint': 'Runner integrado, non require configuraci\u00f3n.',
+    'settings.r.internalNoDelete': 'Os Runners integrados non se poden eliminar.',
+    'settings.r.internalExeManaged': 'A ruta do Runner integrado xestionaa a aplicaci\u00f3n.',
+    'settings.r.loadFailed': 'Non se puido cargar a configuraci\u00f3n do Runner',
+    'editor.f.SelectedRunnerName': 'Runner seleccionado',
+    'tree.mergeFolderTitle': 'Combinar cartafoles',
+    'tree.mergeFolderConfirm':
+      'No destino xa existe un cartafol chamado \u00ab{name}\u00bb. Combinar? Os servidores de ambos os cartafoles uniranse nun s\u00f3.',
+    'tree.mergeFolderYes': 'Combinar',
+    'tree.noDsHint':
+      'A\u00ednda non hai fontes de datos. Engada unha en Configuraci\u00f3n > Fontes de datos para comezar a xestionar servidores.',
+    'crumb.searchScope': 'todas as fontes de datos',
+    'cols.folderRootOnly': 'A columna Cartafol s\u00f3 se mostra na vista ra\u00edz ou durante unha busca',
+    'ctx.copyPassword': 'Copiar contrasinal',
+    'common.password': 'contrasinal',
+    'toast.noPasswordToCopy': 'Non hai contrasinal para copiar',
+    'toast.copyPwdNeedVerify':
+      'Requ\u00edrese verificaci\u00f3n: complete a verificaci\u00f3n de credenciais de Windows na aplicaci\u00f3n de escritorio e t\u00e9nteo de novo',
+    'editor.credEmptyHint':
+      'Esta fonte de datos a\u00ednda non ten credenciais. Cree unha en Configuraci\u00f3n > Credenciais ou siga escrib\u00edndoas a man.',
+    'settings.nav.dataSub': 'Bases de datos e conexi\u00f3ns',
+    'settings.nav.appearanceSub': 'Tema e cores',
+    'settings.nav.runnersSub': 'Runners de protocolos externos',
+  },
+  'ja-JP': {
+    'editor.ph.password':
+      '\u7a7a\u6b04\u306b\u3059\u308b\u3068\u63a5\u7d9a\u6642\u306b\u30d1\u30b9\u30ef\u30fc\u30c9\u3092\u5c0b\u306d\u307e\u3059\u3002',
+    'editor.kvHint':
+      '\u3053\u3053\u306b\u306f UI \u306b\u4e00\u89a7\u3055\u308c\u3066\u3044\u306a\u3044\u30aa\u30d7\u30b7\u30e7\u30f3\u3092\u8a2d\u5b9a\u3067\u304d\u307e\u3059\u3002\u4f8b\uff1aEnableAutoReconnect:i:0 \u3067\u81ea\u52d5\u518d\u63a5\u7d9a\u3092\u7121\u52b9\u5316\u3001HotKeyAltTab:i:0 \u3067\u30ad\u30fc\u306e\u7d44\u307f\u5408\u308f\u305b\u3092\u7121\u52b9\u5316\u3001PinConnectionBar:i:1 \u3067\u63a5\u7d9a\u30d0\u30fc\u3092\u56fa\u5b9a\u3002',
+    'editor.kvPriority':
+      '\u6ce8\u610f\uff1a\u3053\u306e\u30aa\u30d7\u30b7\u30e7\u30f3\u306f\u6700\u3082\u512a\u5148\u5ea6\u304c\u9ad8\u304f\u3001\u4e0a\u90e8\u306e UI \u3067\u306e\u8a2d\u5b9a\u3092\u4e0a\u66f8\u304d\u3057\u307e\u3059\u3002',
+    'editor.o.followGlobalSettings': '\u30b0\u30ed\u30fc\u30d0\u30eb\u8a2d\u5b9a\u306b\u5f93\u3046',
+    'import.formats': '.json / .csv / .rdp / .db / .sqlite \u306b\u5bfe\u5fdc',
+    'import.badFile':
+      '\u672a\u5bfe\u5fdc\u306e\u30d5\u30a1\u30a4\u30eb\u3067\u3059\uff1a{name}\uff08\u5bfe\u5fdc\uff1a.json/.csv/.rdp/.db/.sqlite\uff09',
+    'empty.importFormats':
+      'mRemoteNG\uff08.db/.sqlite\uff09/ .rdp / .csv / .json \u304b\u3089\u306e\u30a4\u30f3\u30dd\u30fc\u30c8\u306b\u5bfe\u5fdc\u3057\u3066\u3044\u307e\u3059',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': 'Runner \u3092\u8ffd\u52a0',
+    'settings.r.addTitle': '\u65b0\u3057\u3044 Runner \u540d',
+    'settings.r.selected': '\u65e2\u5b9a\u306e Runner',
+    'settings.r.deleteTitle': 'Runner \u3092\u524a\u9664',
+    'settings.r.deleteConfirm':
+      'Runner\u300c{name}\u300d\u3092\u524a\u9664\u3057\u307e\u3059\u304b\uff1f\u3053\u306e\u64cd\u4f5c\u306f\u5143\u306b\u623b\u305b\u307e\u305b\u3093\u3002',
+    'settings.r.internalHint': '\u5185\u8535 Runner \u3067\u3059\u3002\u8a2d\u5b9a\u306f\u4e0d\u8981\u3067\u3059\u3002',
+    'settings.r.internalNoDelete': '\u5185\u8535 Runner \u306f\u524a\u9664\u3067\u304d\u307e\u305b\u3093\u3002',
+    'settings.r.internalExeManaged':
+      '\u5185\u8535 Runner \u306e\u30d1\u30b9\u306f\u30a2\u30d7\u30ea\u304c\u7ba1\u7406\u3057\u307e\u3059\u3002',
+    'settings.r.loadFailed':
+      'Runner \u8a2d\u5b9a\u306e\u8aad\u307f\u8fbc\u307f\u306b\u5931\u6557\u3057\u307e\u3057\u305f',
+    'editor.f.SelectedRunnerName': '\u4f7f\u7528\u3059\u308b Runner',
+    'tree.mergeFolderTitle': '\u30d5\u30a9\u30eb\u30c0\u30fc\u3092\u7d71\u5408',
+    'tree.mergeFolderConfirm':
+      '\u79fb\u52d5\u5148\u306b\u540c\u540d\u306e\u30d5\u30a9\u30eb\u30c0\u30fc\u300c{name}\u300d\u304c\u65e2\u306b\u3042\u308a\u307e\u3059\u3002\u7d71\u5408\u3057\u307e\u3059\u304b\uff1f\u4e21\u65b9\u306e\u30d5\u30a9\u30eb\u30c0\u30fc\u5185\u306e\u30b5\u30fc\u30d0\u30fc\u306f 1 \u3064\u306e\u30d5\u30a9\u30eb\u30c0\u30fc\u306b\u307e\u3068\u3081\u3089\u308c\u307e\u3059\u3002',
+    'tree.mergeFolderYes': '\u7d71\u5408',
+    'tree.noDsHint':
+      '\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u304c\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002\u8a2d\u5b9a > \u30c7\u30fc\u30bf\u30bd\u30fc\u30b9 \u3067\u8ffd\u52a0\u3059\u308b\u3068\u30b5\u30fc\u30d0\u30fc\u7ba1\u7406\u3092\u59cb\u3081\u3089\u308c\u307e\u3059\u3002',
+    'crumb.searchScope': '\u5168\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9',
+    'cols.folderRootOnly':
+      '\u30d5\u30a9\u30eb\u30c0\u30fc\u5217\u306f\u30eb\u30fc\u30c8\u8868\u793a\u307e\u305f\u306f\u691c\u7d22\u4e2d\u306e\u307f\u8868\u793a\u3055\u308c\u307e\u3059',
+    'ctx.copyPassword': '\u30d1\u30b9\u30ef\u30fc\u30c9\u3092\u30b3\u30d4\u30fc',
+    'common.password': '\u30d1\u30b9\u30ef\u30fc\u30c9',
+    'toast.noPasswordToCopy':
+      '\u30b3\u30d4\u30fc\u3059\u308b\u30d1\u30b9\u30ef\u30fc\u30c9\u304c\u3042\u308a\u307e\u305b\u3093',
+    'toast.copyPwdNeedVerify':
+      '\u691c\u8a3c\u304c\u5fc5\u8981\u3067\u3059\uff1a\u30c7\u30b9\u30af\u30c8\u30c3\u30d7\u30a2\u30d7\u30ea\u3067 Windows \u8cc7\u683c\u60c5\u5831\u306e\u691c\u8a3c\u3092\u5b8c\u4e86\u3057\u3066\u304b\u3089\u518d\u8a66\u884c\u3057\u3066\u304f\u3060\u3055\u3044',
+    'editor.credEmptyHint':
+      '\u3053\u306e\u30c7\u30fc\u30bf\u30bd\u30fc\u30b9\u306b\u306f\u8cc7\u683c\u60c5\u5831\u304c\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002\u8a2d\u5b9a > \u8cc7\u683c\u60c5\u5831 \u3067\u4f5c\u6210\u3059\u308b\u304b\u3001\u624b\u52d5\u5165\u529b\u3092\u7d9a\u3051\u3066\u304f\u3060\u3055\u3044\u3002',
+    'settings.nav.dataSub': '\u30c7\u30fc\u30bf\u30d9\u30fc\u30b9\u3068\u63a5\u7d9a',
+    'settings.nav.appearanceSub': '\u30c6\u30fc\u30de\u3068\u8272',
+    'settings.nav.runnersSub': '\u5916\u90e8\u30d7\u30ed\u30c8\u30b3\u30eb\u306e Runner',
+  },
+  'zh-TW': {
+    'editor.ph.password': '\u7559\u7a7a\u5247\u9023\u7dda\u6642\u518d\u8a62\u554f\u5bc6\u78bc',
+    'editor.kvHint':
+      '\u5728\u9019\u88e1\u53ef\u4ee5\u8a2d\u5b9a\u4ecb\u9762\u672a\u5217\u51fa\u7684\u9078\u9805\uff0c\u7372\u5f97\u66f4\u8c50\u5bcc\u7684\u8a2d\u5b9a\u80fd\u529b\uff1a\u4f8b\u5982\u7528 EnableAutoReconnect:i:0 \u505c\u7528\u81ea\u52d5\u91cd\u9023\uff0c\u7528 HotKeyAltTab:i:0 \u505c\u7528\u7d44\u5408\u9375\uff0c\u6216\u7528 PinConnectionBar:i:1 \u56fa\u5b9a\u9023\u7dda\u5217\u3002',
+    'editor.kvPriority':
+      '\u6ce8\u610f\uff1a\u6b64\u8655\u8a2d\u5b9a\u7684\u512a\u5148\u9806\u5e8f\u6700\u9ad8\uff0c\u6703\u8986\u84cb\u4e0a\u65b9\u4ecb\u9762\u7684\u8a2d\u5b9a\u3002',
+    'editor.o.followGlobalSettings': '\u8ddf\u96a8\u5168\u57df\u8a2d\u5b9a',
+    'import.formats': '\u652f\u63f4 .json / .csv / .rdp / .db / .sqlite',
+    'import.badFile':
+      '\u4e0d\u652f\u63f4\u7684\u6a94\u6848\uff1a{name}\uff08\u652f\u63f4 .json/.csv/.rdp/.db/.sqlite\uff09',
+    'empty.importFormats': '\u652f\u63f4\u5f9e mRemoteNG\uff08.db/.sqlite\uff09/ .rdp / .csv / .json \u532f\u5165',
+    'settings.nav.runners': 'Runner',
+    'settings.r.add': '\u65b0\u589e Runner',
+    'settings.r.addTitle': '\u65b0\u589e Runner \u540d',
+    'settings.r.selected': '\u9810\u8a2d Runner',
+    'settings.r.deleteTitle': '\u522a\u9664 Runner',
+    'settings.r.deleteConfirm':
+      '\u78ba\u5b9a\u522a\u9664 Runner\u300c{name}\u300d\uff1f\u6b64\u64cd\u4f5c\u4e0d\u53ef\u5fa9\u539f\u3002',
+    'settings.r.internalHint': '\u5167\u5efa Runner\uff0c\u7121\u9700\u8a2d\u5b9a\u3002',
+    'settings.r.internalNoDelete': '\u5167\u5efa Runner \u4e0d\u53ef\u522a\u9664\u3002',
+    'settings.r.internalExeManaged':
+      '\u5167\u5efa Runner \u7684\u8def\u5f91\u7531\u61c9\u7528\u7a0b\u5f0f\u7ba1\u7406\u3002',
+    'settings.r.loadFailed': '\u8f09\u5165 Runner \u8a2d\u5b9a\u5931\u6557',
+    'editor.f.SelectedRunnerName': '\u6307\u5b9a Runner',
+    'settings.r.nameExists': '\u300c{name}\u5df2\u5b58\u5728\u300d\uff01',
+    'tree.mergeFolderTitle': '\u5408\u4f75\u540c\u540d\u8cc7\u6599\u593e',
+    'tree.mergeFolderConfirm':
+      '\u76ee\u6a19\u4f4d\u7f6e\u5df2\u5b58\u5728\u540c\u540d\u8cc7\u6599\u593e\u300c{name}\u300d\u3002\u662f\u5426\u5408\u4f75\uff1f\u5169\u908a\u8cc7\u6599\u593e\u4e2d\u7684\u4f3a\u670d\u5668\u5c07\u5408\u4f75\u5230\u540c\u4e00\u500b\u8cc7\u6599\u593e\u3002',
+    'tree.mergeFolderYes': '\u5408\u4f75',
+    'tree.noDsHint':
+      '\u9084\u6c92\u6709\u8cc7\u6599\u4f86\u6e90\uff1a\u8acb\u5230 \u8a2d\u5b9a \u2192 \u8cc7\u6599\u4f86\u6e90 \u65b0\u589e\u5f8c\u958b\u59cb\u7ba1\u7406\u4f3a\u670d\u5668',
+    'crumb.searchScope': '\u5168\u5eab\u7bc4\u570d',
+    'cols.folderRootOnly': '\u8cc7\u6599\u593e\u6b04\u50c5\u5728\u6839\u6aa2\u8996\u6216\u641c\u5c0b\u6642\u986f\u793a',
+    'ctx.copyPassword': '\u8907\u88fd\u5bc6\u78bc',
+    'common.password': '\u5bc6\u78bc',
+    'toast.noPasswordToCopy': '\u7121\u5bc6\u78bc\u53ef\u8907\u88fd',
+    'toast.copyPwdNeedVerify':
+      '\u9700\u8981\u9a57\u8b49\uff1a\u8acb\u5728\u684c\u9762\u7aef\u5b8c\u6210 Windows \u8a8d\u8b49\u9a57\u8b49\u5f8c\u91cd\u8a66',
+    'editor.credEmptyHint':
+      '\u6b64\u8cc7\u6599\u4f86\u6e90\u9084\u6c92\u6709\u6191\u8b49\u3002\u53ef\u5728 \u8a2d\u5b9a \u2192 \u6191\u8b49 \u4e2d\u5efa\u7acb\uff0c\u6216\u4fdd\u6301\u624b\u52d5\u8f38\u5165\u3002',
+    'settings.nav.dataSub': '\u8cc7\u6599\u5eab\u8207\u9023\u7dda\u8a2d\u5b9a',
+    'settings.nav.appearanceSub': '\u4e3b\u984c\u8207\u984f\u8272\u8a2d\u5b9a',
+    'settings.nav.runnersSub': '\u5916\u90e8\u5354\u5b9a Runner \u8a2d\u5b9a',
+  },
+}
+
 const enUS = JSON.parse(readFileSync(path.join(OUT_DIR, 'en-US.json'), 'utf8'))
 const webKeys = Object.keys(enUS)
 
@@ -4442,7 +4928,7 @@ for (const lang of GENERATE) {
       out[k] = toI18nMessage(k, pre + dict[wpfKey] + post)
       filled++
     } else {
-      out[k] = OVERRIDES[lang]?.[k] ?? enUS[k]
+      out[k] = ROUND4[lang]?.[k] ?? OVERRIDES[lang]?.[k] ?? enUS[k]
     }
   }
   writeFileSync(path.join(OUT_DIR, `${lang}.json`), JSON.stringify(out, null, 2) + '\n')

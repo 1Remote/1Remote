@@ -194,6 +194,9 @@ function connectAll(tg) {
       positiveButtonProps: { type: 'default' },
       positiveText: t('batch.connect'),
       negativeText: t('editor.cancel'),
+      // H10：不自动聚焦确认按钮——Enter 肌肉记忆误确认会拉起 N 个会话
+      //（与 ServerListView.onBatchConnect 的同款补丁，两处必须一致）
+      autoFocus: false,
       onPositiveClick: () => runConnectAll(list),
     })
     return

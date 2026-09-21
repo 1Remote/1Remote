@@ -249,6 +249,9 @@ async function onBatchConnect(ids) {
       positiveText: t('batch.connect'),
       negativeText: t('editor.cancel'),
       positiveButtonProps: { type: 'default' },
+      // H10（G7 两轮遗留）：确认框不自动聚焦 positive 按钮——默认 autoFocus 下 Enter
+      // 肌肉记忆会直接确认并串行拉起 N 个远程会话（同界面删除类确认均已关，此处漏网）
+      autoFocus: false,
       onPositiveClick: () => runBatchConnect(ids),
     })
     return
@@ -524,9 +527,14 @@ const importModal = ref(false)
           <span class="crumb-count">{{ t('crumb.count', { n: listCount }) }}</span>
         </div>
         <!-- 活动过滤器 chips：搜索词 + 标签（文件夹选择由面包屑本身表达，不重复）；
-             点击 chip 上的 ✕ 清对应过滤器，样式沿用 search-chip -->
+             点击 chip 上的 ✕ 清对应过滤器，样式沿用 search-chip。
+             H9：搜索 chip 附「全库范围」标注——搜索是全库递归（后端跨数据源/跨文件夹匹配），
+             在子文件夹内搜索时面包屑路径与「N 台」会把全库命中误读成本文件夹命中，
+             唯一的来处标注（文件夹列）之外再给一句就地说明 -->
         <span v-if="searchActive" class="search-chip" :title="t('crumb.searchChip')">
-          <span class="sc-label">⌕ {{ searchQuery }}</span>
+          <span class="sc-label"
+            >⌕ {{ searchQuery }}<span class="sc-scope">{{ t('crumb.searchScope') }}</span></span
+          >
           <button class="sc-x" :title="t('crumb.clearSearch')" @click="searchQuery = ''">✕</button>
         </span>
         <span v-if="activeTag" class="search-chip" :title="'#' + activeTag">
@@ -786,6 +794,12 @@ const importModal = ref(false)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+/* H9：搜索 chip 内的「全库范围」标注——弱化小字，与查询词同行省略 */
+.sc-scope {
+  margin-left: 6px;
+  color: var(--text-4);
+  font-size: var(--fs-micro);
 }
 .sc-x {
   /* 移除/清除类小钮归图标钮 24 档（G8，ctrl-h-s；18/20/26 拼高漏网之一），

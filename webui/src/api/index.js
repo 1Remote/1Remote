@@ -142,6 +142,14 @@ export const api = {
     request(`/api/credentials/${encodeURIComponent(name)}/reveal?ds=${encodeURIComponent(ds ?? 'Local')}`, {
       method: 'POST',
     }),
+  // H4 复制密码：POST 过二次验证门（与凭据 reveal/导出共用 30s 窗口；未开启验证时后端
+  // 直通）后回传 {password} 明文——剪贴板写入在前端完成（WebView2/localhost 安全上下文
+  // = 桌面剪贴板，免去服务端 MTA→STA 线程处理）。验证取消/未通过 → 403；无密码协议
+  //（Serial/Telnet）回 {password: ''}
+  copyPassword: (id, ds) =>
+    request(`/api/servers/${encodeURIComponent(id)}/copy-password?ds=${encodeURIComponent(ds ?? 'Local')}`, {
+      method: 'POST',
+    }),
   // 设置中心：general/launcher 均为白名单部分更新（缺省键=保持不变）；
   // general.language 用小写码（zh-cn），web locale（zh-CN）由调用方转换；
   // requireSecondaryVerification 写路径落注册表/凭据管理器（机器状态）——开关点击立即生效：

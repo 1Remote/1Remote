@@ -13,11 +13,18 @@
 //   字典状态收在 useTreeState 共享存储（列表文件夹行/新建文件夹也消费，侧栏收起不丢）
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useMessage } from 'naive-ui'
+import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../api'
 import { progressToast } from '../utils/progressToast'
 import { useServers } from '../composables/useServers'
-import { buildTree, countDirectChildServers, fullKey, holderAt, isDescendantPath } from '../composables/folders'
+import {
+  buildTree,
+  countDirectChildServers,
+  fullKey,
+  holderAt,
+  isDescendantPath,
+  rewriteTreeStateKeys,
+} from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import {
@@ -36,9 +43,11 @@ const props = defineProps({
 const emit = defineEmits(['update:selection', 'update:tag', 'update:collapsed', 'manage-tags'])
 const { t } = useI18n()
 const message = useMessage()
+const dialog = useDialog()
 
 const { servers, datasources, tags, reload } = useServers()
-const { orderMap, folderPathsByDs, load, isExpanded, toggleExpand, persist } = useTreeState()
+const { orderMap, folderPathsByDs, load, isExpanded, toggleExpand, persist, knownExpanded, setLocalKeys } =
+  useTreeState()
 const folderOps = useFolderOps()
 const tree = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
 
@@ -74,17 +83,12 @@ async function flushSave() {
 
 onMounted(() => {
   load() // 共享存储幂等（ServerListView 亦会触发首载）
-  // 列表行拖拽的 dragend 在源元素（列表行）上触发并冒泡到 window——树侧经全局监听兜底
-  window.addEventListener('dragend', onListDragEndGlobal)
-  // 成功拖放（如拖回列表侧文件夹行放下）也冒泡 drop 到 window：复位跨库标记，
-  // 避免 dragend 兜底在成功操作后误报
-  window.addEventListener('drop', resetCrossDsHover, true)
+  // 跨库拖拽的 dragend/drop 兜底监听已迁至 ServerTable（H18：随 SideTree 卸载会在
+  // 边栏收起时失效，窄窗下跨库拖拽零反馈——见 ServerTable.onListDragEndGlobal 注释）
 })
 onBeforeUnmount(() => {
   clearTimeout(saveTimer)
   if (savePending) flushSave() // 卸载时立即落盘防抖未到的变更（fire-and-forget）
-  window.removeEventListener('dragend', onListDragEndGlobal)
-  window.removeEventListener('drop', resetCrossDsHover, true)
 })
 
 function onToggle(key) {
@@ -170,22 +174,6 @@ function onRowDragStart(row, e) {
 function onRowDragEnd() {
   dragRow.value = null
   dropHint.value = null
-}
-// 跨库悬停标记移 tableBus 共享（记拖拽种类供 dragend 选文案）：dropEffect='none' 时按
-// HTML 规范 drop 事件不会触发，跨库提示改在源侧 dragend 出——dragover 跨库分支记种类
-//（树/列表两侧落区都可置位，见 ServerTable.onFolderDragOver），dragend 检查后 toast+复位；
-// 回到合法目标或成功 drop 即清标记（不误报）
-// 列表行拖拽的 dragend 兜底（树节点上没有列表拖拽的 dragend 事件源）：跨库悬停过则在
-// 拖拽结束时提示（drop 在 dropEffect=none 下不触发，见上），按拖拽种类出对应文案
-function onListDragEndGlobal() {
-  if (crossDsHover.value) {
-    const kind = crossDsHover.value
-    crossDsHover.value = CROSS_DS_NONE
-    message.warning(kind === CROSS_DS_FOLDER ? t('toast.crossDsFolderMove') : t('toast.crossDsMove'))
-  }
-}
-function resetCrossDsHover() {
-  crossDsHover.value = CROSS_DS_NONE
 }
 // 行 dsName（根行持 ds 对象、文件夹行持 dsName 字符串；列表拖入与树内拖共用）
 const rowDsName = (row) => (row.kind === 'root' ? row.ds.name : row.dsName)
@@ -274,12 +262,53 @@ function targetParentPath(row, zone) {
   return p
 }
 
+// H3：目标层同名文件夹的合并确认（resolve true=确认合并）。对齐 WPF 语义
+//（ServerTreeViewModel.cs:637-646 同名 → 子项逐一移入既有文件夹）与 owner 2026-09-21
+// 决策（弹窗确认而非静默合并/拒绝）。resolve 幂等（重复调用无害），onAfterLeave
+// 兜底任何关闭路径（promptName 同款安全网）
+function confirmFolderMerge(name) {
+  return new Promise((resolve) => {
+    dialog.create({
+      title: t('tree.mergeFolderTitle'),
+      content: t('tree.mergeFolderConfirm', { name }),
+      // 非破坏性确认（合并两侧内容）：无图标 + 中性按钮（folderOps 文件头配色策略）
+      showIcon: false,
+      positiveText: t('tree.mergeFolderYes'),
+      negativeText: t('editor.cancel'),
+      positiveButtonProps: { type: 'default' },
+      autoFocus: false,
+      onPositiveClick: () => resolve(true),
+      onNegativeClick: () => resolve(false),
+      onClose: () => resolve(false),
+      onAfterLeave: () => resolve(false),
+    })
+  })
+}
+
 // 落点执行：算受影响服务器集合的新 TreeNodes → 逐台 GET config → 改 TreeNodes → PUT
-//（UpdateServer 不触发 SSE——由前端显式 reload() 刷新）。同级顺序：before/after 重排
-// 目标层兄弟文件夹序号（1 起）；into 删除被拖文件夹的序号键（排末尾，与 WPF AddChild 后语义一致）。
-// 大子树逐台串行耗时——与批量删除/folderOps 同款 loading 进度 toast（原地更新+终态转换）
+//（UpdateServer 不触发 SSE——由前端显式 reload() 刷新）。
+// H1（+树内拖拽失效 bug）：文件夹「整节点迁移」三件缺一不可——
+//  ① 服务器新路径 = 目标父层 + 被拖文件夹名 + 余量（此前 newPath 漏掉文件夹名一段，
+//     「移入」实际把被拖文件夹的内容打散进目标、文件夹本身消失）；
+//  ② tree-state 虚拟文件夹键随前缀重写迁移（此前只搬服务器不动键：旧位置物化出
+//     幽灵空文件夹、纯空文件夹原地不动、含空子文件夹的子树被拆散）——对齐 WPF
+//     整节点移动 + 展开字典重建（ServerTreeViewModel.cs:667 / LocalityTreeViewService.cs:74）；
+//  ③ 同级顺序：before/after 重排目标层兄弟文件夹序号（1 起）；into 删除被拖文件夹的
+//     序号键（排末尾，与 WPF AddChild 后语义一致）。
+// H3：目标层已有同名文件夹（非自身）→ 先弹窗确认合并；确认后两侧服务器/键归一到
+// 同一路径，天然合并。大子树逐台串行耗时——loading 进度 toast（原地更新+终态转换）
 async function applyTreeMove(src, row, zone) {
   const parentPath = targetParentPath(row, zone)
+  const name = src.folder.name
+  const newPath = [...parentPath, name].join('/')
+  // H3：跨层移动且目标层已有同名文件夹 → 合并确认（同层 before/after 重排不触发：
+  // 同层同名只有 src 自己，folderOps.moveFolder 的同名分支同款口径）
+  if (newPath !== src.folder.path) {
+    const holder = holderAt(tree.value, src.dsName, parentPath.join('/'))
+    if (holder?.folders.some((f) => f.name === name && f.path !== src.folder.path)) {
+      if (!(await confirmFolderMerge(name))) return
+    }
+  }
   const prefix = src.folder.path + '/'
   const affected = servers.value
     .filter((s) => s.dataSourceName === src.dsName && (s.folderPath ? s.folderPath + '/' : '').startsWith(prefix))
@@ -287,18 +316,18 @@ async function applyTreeMove(src, row, zone) {
 
   let moved = 0
   const failed = []
-  // 空子树（0 台受影响，纯顺序调整）不弹「0/0」进度，终态直接常规 toast
+  // 空子树（0 台受影响，纯键迁移/顺序调整）不弹「0/0」进度，终态直接常规 toast
   const toast = progressToast(message, affected.length, (done) =>
     t('toast.treeWorking', { ok: done, n: affected.length })
   )
   moving.value = true
   try {
     for (const { server, rest } of affected) {
-      const newPath = [...parentPath, ...rest]
-      if ((server.folderPath || '') === newPath.join('/')) continue // 位置未变（仅顺序调整）
+      const newPathSegs = [...parentPath, name, ...rest]
+      if ((server.folderPath || '') === newPathSegs.join('/')) continue // 位置未变（仅顺序调整）
       try {
         const cfg = await api.getServerConfig(server.id, src.dsName)
-        cfg.json.TreeNodes = newPath // 编辑器配置域 PascalCase 直通（勿做命名转换）
+        cfg.json.TreeNodes = newPathSegs // 编辑器配置域 PascalCase 直通（勿做命名转换）
         await api.updateServer(server.id, cfg.json, src.dsName)
         moved++
       } catch (err) {
@@ -335,16 +364,34 @@ async function applyTreeMove(src, row, zone) {
       }
     }
 
-    if (moved === 0 && failed.length === 0 && !orderChanged) {
+    // H1②：虚拟文件夹键前缀重写（folderOps.rewriteKeys 同款：本地即时物化 + 合并基底
+    // PUT 落盘，orderMap 已含上面的顺序变更、随同一次 PUT 携带）。纯重排不动键。
+    let keysAction = 'none' // 'none' | 'moved' | 'failed'
+    if (newPath !== src.folder.path) {
+      const { remove, add } = rewriteTreeStateKeys(knownExpanded.value, src.dsName, src.folder.path, newPath)
+      if (remove.length || Object.keys(add).length) {
+        setLocalKeys(add, remove)
+        keysAction = (await persist((m) => {
+          for (const k of remove) delete m[k]
+          Object.assign(m, add)
+        }))
+          ? 'moved'
+          : 'failed'
+      }
+    } else if (orderChanged) {
+      await flushSave()
+    }
+
+    if (moved === 0 && failed.length === 0 && !orderChanged && keysAction === 'none') {
       toast.cancel() // 完全无变化（原位放下）：撤下进度，无终态文案
       return
     }
-    if (orderChanged) await flushSave()
     await reload() // UpdateServer 路径不触发 SSE（见上），显式刷新列表/树
-    // 终态三档（第三轮 G11：moved=0 的纯重排此前显示「已移动 0 台服务器」——确定性
-    // 错误文案；有移动时报文件夹名与列表侧 folderOps.moveFolder 同款 tree.folderMoved）
-    if (failed.length) toast.finish('error', t('toast.treeMoveFailed', { n: failed.length }))
-    else if (moved > 0) toast.finish('success', t('tree.folderMoved', { name: src.folder.name }))
+    // 终态四档：键落盘失败或服务器失败 / 常规移动（moved>0）/ 纯键迁移（空文件夹移动，
+    // H1 后可达）/ 纯重排（第三轮 G11：moved=0 的纯重排此前显示「已移动 0 台服务器」）
+    if (failed.length || keysAction === 'failed')
+      toast.finish('error', t('toast.treeMoveFailed', { n: failed.length + (keysAction === 'failed' ? 1 : 0) }))
+    else if (moved > 0 || keysAction === 'moved') toast.finish('success', t('tree.folderMoved', { name }))
     else toast.finish('success', t('tree.folderReordered'))
   } finally {
     moving.value = false
@@ -421,6 +468,14 @@ function ctxDelete() {
 
 // ---- 展示辅助
 const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
+// H31：树根状态点悬停 title 走 i18n（复用底部状态栏三词条，含数据源名）——此前
+// connected/disconnected 直出英文裸枚举（重连分支倒是配了翻译），同一颗点两套口径
+const dsDotTitle = (ds) => {
+  if (ds.status === 'connected') return t('statusbar.dsConnected', { name: ds.name })
+  if (ds.status === 'reconnecting')
+    return t('statusbar.dsReconnecting', { name: ds.name }) + (ds.reconnectInfo ? ' · ' + ds.reconnectInfo : '')
+  return t('statusbar.dsDisconnected', { name: ds.name })
+}
 
 // 置顶标签在前，组内保持 API 顺序（稳定排序；重命名/删除等管理操作走标签管理模态）
 const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isPinned) - Number(a.isPinned)))
@@ -434,7 +489,9 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
 <template>
   <div ref="rootEl" class="side-tree">
     <div class="tree-scroll">
-      <div v-if="!rows.length" class="empty-hint">{{ t('tree.noDatasources') }}</div>
+      <!-- H32：真无数据源（rows 恒含「全部数据」虚拟根或源根，原 rows.length 判空是
+           永不触发的死代码）——给去设置的引导，而不是一行无人认领的「（无数据源）」 -->
+      <div v-if="!datasources.length" class="empty-hint">{{ t('tree.noDsHint') }}</div>
       <div
         v-for="row in rows"
         :key="row.key"
@@ -470,16 +527,12 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
           <span class="count">{{ row.count }}</span>
         </template>
 
-        <!-- 数据源根：🗄 名称 · 类型 + 状态点 + 计数 -->
+        <!-- 数据源根：🗄 名称 · 类型 + 状态点 + 计数（状态点 title 见 dsDotTitle，H31） -->
         <template v-else-if="row.kind === 'root'">
           <span class="ds-icon">🗄</span>
           <span class="label" :title="row.ds.name">{{ row.ds.name }}</span>
           <span class="ds-type">{{ row.ds.type }}</span>
-          <span
-            class="dot"
-            :class="dotClass(row.ds.status)"
-            :title="row.ds.status === 'reconnecting' ? row.ds.reconnectInfo || t('tree.reconnecting') : row.ds.status"
-          ></span>
+          <span class="dot" :class="dotClass(row.ds.status)" :title="dsDotTitle(row.ds)"></span>
           <span class="count">{{ row.count }}</span>
         </template>
 
@@ -496,8 +549,11 @@ const tagName = (name) => (name.length > TAG_MAX_LEN ? name.slice(0, TAG_MAX_LEN
          「+ 管理」入口在标题行右端（原为列表区末尾的 chip——混在标签里不显眼）；
          chips+计数，置顶在前；点击=过滤条件；超长名截断（title 含全名）。
          chip 计数来自 /api/tags 全库聚合（G8：点击过滤的是当前视图，两口径不同——
-         title 注明「全库 {n} 台」，消除「chip 显示 5、界面说没有」的自相矛盾） -->
-    <div class="tags">
+         title 注明「全库 {n} 台」，消除「chip 显示 5、界面说没有」的自相矛盾）。
+         H32：无任何标签时整区隐藏（owner 2026-09-21 决策）——空态下只剩「标签/管理」
+         两行孤字无信息量，且标签唯一创建入口在服务器编辑器，留着空白区反而暗示
+         「这里该有什么东西」；有标签即恢复（管理入口随之回来） -->
+    <div v-if="tags.length" class="tags">
       <div class="tags-head">
         <span>{{ t('tree.tags') }}</span>
         <button class="tags-manage" :title="t('tagm.title')" @click="emit('manage-tags')">

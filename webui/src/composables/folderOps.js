@@ -337,6 +337,27 @@ export function useFolderOps() {
     }
   }
 
+  // H3：目标层同名文件夹的合并确认（resolve true=确认合并）——与 SideTree.confirmFolderMerge
+  // 同款（树内拖拽/列表拖拽两条路径共用合并语义，词条共用）；WPF 语义为直接合并
+  //（ServerTreeViewModel.cs:637-646），owner 2026-09-21 决策改为先确认再合并
+  function confirmFolderMerge(name) {
+    return new Promise((resolve) => {
+      dialog.create({
+        title: t('tree.mergeFolderTitle'),
+        content: t('tree.mergeFolderConfirm', { name }),
+        showIcon: false, // 非破坏性确认（合并两侧内容）：无图标 + 中性按钮（文件头配色策略）
+        positiveText: t('tree.mergeFolderYes'),
+        negativeText: t('editor.cancel'),
+        positiveButtonProps: { type: 'default' },
+        autoFocus: false,
+        onPositiveClick: () => resolve(true),
+        onNegativeClick: () => resolve(false),
+        onClose: () => resolve(false),
+        onAfterLeave: () => resolve(false),
+      })
+    })
+  }
+
   // 服务器移入文件夹（列表行拖到文件夹行；path='' = 移到数据源根）
   async function moveServersToFolder(list, dsName, path) {
     if (!dsWritable(dsName)) {
@@ -349,9 +370,16 @@ export function useFolderOps() {
     let moved = 0
     let failed = 0
     busy.value = true
+    // H20：逐台 GET+PUT 的长操作补进行中反馈（远程库下数秒零反馈疑似卡死）——与
+    // 批量删除/重命名文件夹同款 progressToast（原地更新+终态转换），此前是长操作
+    // 体系里唯一没有进度的一条
+    const toast = progressToast(message, list.length, (done) => t('toast.treeWorking', { ok: done, n: list.length }))
     try {
       for (const s of list) {
-        if ((s.folderPath || '') === target) continue
+        if ((s.folderPath || '') === target) {
+          toast.step(moved + failed) // 原位置跳过也推进度（口径=已处理台数）
+          continue
+        }
         try {
           const cfg = await api.getServerConfig(s.id, dsName)
           cfg.json.TreeNodes = segs // 编辑器配置域 PascalCase 直通（勿做命名转换）
@@ -361,10 +389,12 @@ export function useFolderOps() {
           console.warn('[folderOps] move failed:', s.id, err?.message || err)
           failed++
         }
+        toast.step(moved + failed)
       }
       await reload()
-      if (failed) message.error(t('toast.treeMoveFailed', { n: failed }))
-      else if (moved > 0) message.success(t('toast.treeMoved', { n: moved }))
+      if (failed) toast.finish('error', t('toast.treeMoveFailed', { n: failed }))
+      else if (moved > 0) toast.finish('success', t('toast.treeMoved', { n: moved }))
+      else toast.cancel() // 全部原位置放下：无变化，撤下进度不出终态
     } finally {
       busy.value = false
     }
@@ -373,9 +403,11 @@ export function useFolderOps() {
   // 文件夹整体移动（列表文件夹行拖拽 / 列表文件夹拖入树节点共用）：整个子树迁到
   // targetParent 之下——runPrefixRewrite（newPath = targetParent + '/' + 名，
   // 即「重命名到新父路径」，与 renameFolder 同一执行体）。
-  // 拒绝项（UI 层已拦，此处执行层再各设一道防御）：只读源 / 移入自身或后代 /
-  // 目标父层同名文件夹（防静默合并两棵子树，与新建/重命名查重一致）；原地放下
-  //（newPath === path，如树内拖到自身父节点）静默返回，与 moveServersToFolder 同口径
+  // 拒绝项（UI 层已拦，此处执行层再各设一道防御）：只读源 / 移入自身或后代；
+  // 原地放下（newPath === path，如树内拖到自身父节点）静默返回，与 moveServersToFolder
+  // 同口径。H3：目标父层同名文件夹不再直接拒绝——弹窗确认合并（owner 2026-09-21
+  // 决策；确认后 runPrefixRewrite 的前缀重写把两侧服务器/键归一到同一路径，天然合并，
+  // 对齐 WPF ServerTreeViewModel.cs:637-646；取消则不动）
   async function moveFolder(dsName, path, targetParent) {
     if (!dsWritable(dsName)) {
       message.warning(t('cv.readOnly'))
@@ -386,8 +418,7 @@ export function useFolderOps() {
     const newPath = targetParent ? targetParent + '/' + name : name
     if (newPath === path || isDescendantPath(path, targetParent || '')) return
     if (siblingNames(dsName, targetParent).includes(name)) {
-      message.warning(t('tree.folderNameExists'))
-      return
+      if (!(await confirmFolderMerge(name))) return
     }
     await runPrefixRewrite(dsName, path, newPath, newPath, {
       fail: () => t('tree.folderMoveFailed'),

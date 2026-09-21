@@ -14,6 +14,7 @@ const props = defineProps({
   colMenu: { type: Boolean, default: false }, // ▦ 列菜单展开态
   hiddenCols: { type: Object, default: () => ({}) }, // { colKey: bool }（true=隐藏）
   colLabels: { type: Object, default: () => ({}) }, // { colKey: i18n 标签 }
+  folderColLocked: { type: Boolean, default: false }, // H9：文件夹列当前不可显示（非根视图且未搜索）——菜单项禁用+说明
 })
 const emit = defineEmits([
   'batch-connect',
@@ -94,10 +95,19 @@ onBeforeUnmount(() => clearInterval(hintTimer))
         ▦
       </button>
       <div v-if="colMenu" class="col-menu">
-        <label v-for="k in HIDEABLE_COLS" :key="k" class="col-item">
+        <!-- H9：文件夹列受双重控制（列显隐 × 根视图/搜索态），非根视图且未搜索时勾选无效
+             ——禁用该项并说明原因（此前勾上了没反应也无解释，G34/H9 的另一半） -->
+        <label
+          v-for="k in HIDEABLE_COLS"
+          :key="k"
+          class="col-item"
+          :class="{ 'col-item-locked': k === 'folder' && folderColLocked }"
+          :title="k === 'folder' && folderColLocked ? t('cols.folderRootOnly') : ''"
+        >
           <input
             type="checkbox"
             :checked="!hiddenCols[k]"
+            :disabled="k === 'folder' && folderColLocked"
             @change="emit('set-hidden', k, $event.target.checked ? false : true)"
           />
           <span>{{ colLabels[k] }}</span>
@@ -309,7 +319,13 @@ onBeforeUnmount(() => clearInterval(hintTimer))
   cursor: default;
 }
 
-.col-item-fixed:hover {
+/* H9：当前不可用的列项（文件夹列在非根视图且未搜索）——与 disabled input 同款弱化 */
+.col-item-locked {
+  color: var(--text-4);
+  cursor: not-allowed;
+}
+
+.col-item-locked:hover {
   background: transparent;
 }
 

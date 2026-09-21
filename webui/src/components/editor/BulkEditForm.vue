@@ -31,8 +31,9 @@
  *    抽屉据此触发保存错误三联动（同单机模式）；
  *  - 保存成功：message.success → emit('saved', { mode:'bulk', ids }) → 抽屉转发父级并
  *    执行关闭动画（列表刷新由 SSE reload 自动完成）；
- *  - saving / dirty（有字段处于覆盖态即脏）/ dsMixed（跨数据源勾选禁存）经 defineExpose
- *    暴露，抽屉的底部按钮禁用态与 Esc 关闭的脏确认经模板 ref 响应式读取。
+ *  - saving / dirty（有字段处于覆盖态即脏）经 defineExpose 暴露，抽屉的底部按钮禁用态
+ *    与 Esc 关闭的脏确认经模板 ref 响应式读取（H13 后跨数据源勾选可保存——后端按每台
+ *    自身数据源分组落库，dsMixed 禁存语义已随之下线）。
  */
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -68,8 +69,9 @@ const peekItems = ref(null) // null=未回读；Array<{id, <camelKey>: value}>�
 onMounted(() => {
   const count = props.bulkIds.length
   if (count === 0 || count > PEEK_LIMIT) return
+  // H13：ds 省略 → 后端按每台自身数据源解析（跨库勾选同款），不再按单 ds 调用
   api
-    .batchPeek(props.bulkIds, bulkDs.value)
+    .batchPeek(props.bulkIds)
     .then((items) => {
       peekItems.value = Array.isArray(items) ? items : null
     })
@@ -192,9 +194,10 @@ function bulkUnknownKey(field) {
   return BULK_SENSITIVE_KEYS.has(camelKey(field.key)) ? 'editor.bulkSensitiveHint' : 'editor.bulkUnknown'
 }
 const bulkCount = computed(() => props.bulkServers.length)
-const bulkDsNames = computed(() => new Set(props.bulkServers.map((s) => s.dataSourceName || 'Local')))
-// 后端 batch 端点单 ds 语义：跨数据源勾选无法一次落库 → 明确告知并禁存（不做静默裁剪）
-const bulkDsMixed = computed(() => bulkDsNames.value.size > 1)
+// H13：跨数据源批量编辑解禁（WPF 平价：按每台自身数据源分组落库）——batch/peek 端点
+// 的 ds 省略即走跨库解析（见 WebUiEditorService.ApplyBatchPatch），前端不再禁存；
+// bulkDs 仅供凭据库下拉等需要单数据源语境的控件取首台归属（跨库勾选下凭据选项按
+// 首台数据源列出——凭据名按数据源隔离，跨库统一写同名引用与 WPF 批量编辑同 caveat）
 const bulkDs = computed(() => props.bulkServers[0]?.dataSourceName || props.dataSourceName || 'Local')
 
 // 图标预览底色：共享 ColorHex（已知且全同）的低饱和 tint——IconPicker 只读/覆盖态即时联动
@@ -209,7 +212,7 @@ const iconTint = computed(() => {
 // 批量同为长表单写操作，失败感知与单机模式对齐；横幅类名 .ed-banner 两边同名，
 // 抽屉 rootRef 的 querySelector 能滚到本组件横幅）
 async function save() {
-  if (saving.value || bulkDsMixed.value) return 0
+  if (saving.value) return 0
   missingRequired.value = validateBulkRequired()
   if (missingRequired.value.length) return missingRequired.value.length
   const patch = buildBulkPatch()
@@ -222,7 +225,8 @@ async function save() {
   saveErrors.value = []
   saving.value = true
   try {
-    await api.batchUpdate(props.bulkIds, patch, bulkDs.value)
+    // H13：ds 省略 → 后端按每台服务器自身数据源解析分组（跨库勾选与 WPF 批量编辑同语义）
+    await api.batchUpdate(props.bulkIds, patch)
     message.success(t('editor.bulkUpdated', { n: bulkCount.value }))
     emit('saved', { mode: 'bulk', ids: props.bulkIds })
     return 0
@@ -240,15 +244,15 @@ async function save() {
   }
 }
 
-// 接缝暴露：save 供抽屉保存入口调用；saving/dirty/dsMixed 供抽屉按钮态与脏检测读取
-defineExpose({ save, saving, dirty: bulkDirty, dsMixed: bulkDsMixed })
+// 接缝暴露：save 供抽屉保存入口调用；saving/dirty 供抽屉按钮态与脏检测读取
+//（H13 后 dsMixed 不再暴露——跨库批量已解禁）
+defineExpose({ save, saving, dirty: bulkDirty })
 </script>
 
 <template>
   <div class="ed-fields">
-    <div v-if="bulkDsMixed" class="ed-banner">{{ t('editor.bulkMixedDs') }}</div>
     <!-- 混合协议提示：交集之外的选项不显示且各自保持不变（owner 需求文案） -->
-    <div v-else-if="schemaView.mixed" class="bulk-info-banner">{{ t('editor.bulkMixedProtocols') }}</div>
+    <div v-if="schemaView.mixed" class="bulk-info-banner">{{ t('editor.bulkMixedProtocols') }}</div>
     <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
       {{ t('editor.missingRequired', { keys: missingRequired.join(', ') }) }}
     </div>

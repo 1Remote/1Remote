@@ -36,10 +36,17 @@ const tileStyle = (s) => {
   const rgb = opaqueHex(s.color)
   return rgb ? { background: rgb + '26', color: rgb } : null
 }
-// 地址列：有地址拼 ':port'；无地址协议回退 SubTitle（WPF 列表地址列绑定 Server.SubTitle，
-// Serial 即 "COM1(9600)"——串口号(波特率)，搜索命中高亮 addrSegs 对该文本自动生效），
+// 地址列 = WPF「目标」列（ServerLineItem.xaml:242 绑定 Server.SubTitle）的显示口径：
+// 有地址时「address[:port] + ' (userName)'」（ProtocolBaseWithAddressPortUserPwd.GetSubTitle
+// 的 "address:port (user)" 格式；端口为空时省略 ":port" 免得出现悬挂冒号）；用户名为空退化
+// 为纯地址（WPF 同款不带空括号）。无地址协议（Serial）回退 SubTitle（"COM1(9600)"），
 // 旧后端无该字段时再退协议名
-const addressText = (s) => (s.address ? s.address + (s.port ? ':' + s.port : '') : s.subTitle || s.protocol)
+const addressText = (s) => {
+  if (!s.address) return s.subTitle || s.protocol
+  let text = s.address + (s.port ? ':' + s.port : '')
+  if (s.userName) text += ' (' + s.userName + ')'
+  return text
+}
 // 文件夹列：「全部数据」根视图无文件夹行，此列是
 // 唯一来源上下文——「数据源 / 路径」定位信息（额外前缀数据源名，同名路径跨数据源区分）；
 // 进入文件夹后列隐藏（面包屑承载路径）
