@@ -79,6 +79,25 @@ export function sharedValueOf(values) {
 const CRED_ROLE_ORDER = ['pre', 'identity', 'picker', 'option']
 
 /**
+ * 跨组公共字段（第五轮 E4-2 补丁）：地址/端口/可用性检测在单机 schema 里可能位于
+ * basic 组（Telnet——无凭据组，owner 决策保持原位）或 credential 组 'pre' 段（其余六
+ * 协议——设计改动 #4 移入）。混合交集按「组 id 相同」取公共组，credential 组对 Telnet
+ * 不存在 → 整组出局，basic 交集又不再含这三个字段——两头落空，字段从批量表单消失
+ * （后端 allow-list 与 BULK_DTO_KEYS 本都支持）。补集规则：全部所选协议在各自 schema
+ * 的任意组内都含「值语义同签」的该字段时，收入交集（挂在 basic 组头部）。
+ */
+const CROSS_GROUP_KEYS = ['Address', 'Port', 'IsPingBeforeConnect']
+
+/** 在 schema 的任意组内按 key 找字段（跨组补集用）。 */
+function findFieldAnywhere(schema, key) {
+  for (const g of schema.groups) {
+    const f = g.fields.find((x) => x.key === key)
+    if (f) return f
+  }
+  return null
+}
+
+/**
  * 字段的「值语义签名」：交集判定用。type + SELECT 选项值表（顺序敏感）+ optionsSource。
  * 不含 labelKey/placeholderKey/visibleWhen/required——文案与显隐不影响写值语义
  * （混合协议下 placeholder 取首协议文案，为记录在案的有意取舍）。
@@ -153,6 +172,23 @@ export function bulkSchemaView(protocolKeys) {
       else if (isDev()) console.warn('[bulkSchema] field dropped from mixed-protocol intersection:', f.key)
     }
     if (fields.length) groups.push({ ...g, fields })
+  }
+
+  // E4-2 跨组补集：组交集已收入的键不再重复；只在「所有协议都有且同签、但组不公共」
+  // 时从各组里捞回归并（字段对象共享首协议 schema 引用，与既有约定一致）
+  const present = new Set(groups.flatMap((g) => g.fields.map((f) => f.key)))
+  const crossFields = []
+  for (const key of CROSS_GROUP_KEYS) {
+    if (present.has(key)) continue
+    const found = schemas.map((s) => findFieldAnywhere(s, key))
+    if (found.every(Boolean) && found.every((f) => fieldSignature(f) === fieldSignature(found[0]))) {
+      crossFields.push(found[0])
+    } else if (isDev()) console.warn('[bulkSchema] cross-group field dropped from mixed intersection:', key)
+  }
+  if (crossFields.length) {
+    const basic = groups.find((g) => g.id === 'basic')
+    if (basic) basic.fields = [...crossFields, ...basic.fields]
+    else groups.unshift({ id: 'basic', labelKey: 'editor.group.basic', fields: crossFields })
   }
   return { groups, defaults: null, mixed: true }
 }

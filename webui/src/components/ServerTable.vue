@@ -606,7 +606,10 @@ function onGlobalKey(e) {
   // H6：自绘浮层（本组件行菜单 .ctx-menu / 文件夹空白菜单 .nf-menu / 树右键菜单 .tree-ctx）
   // 同样让位——右键菜单开着时按 Enter/E/Del 会穿透（Menu 键呼出菜单后 Enter 直接拉起
   // 远程会话，第三轮 G3/第四轮 H6，与 .n-dialog 让位同一守卫形态。
-  if (document.querySelector('.n-dialog, .n-modal, .ctx-menu, .nf-menu, .tree-ctx')) return
+  // E3-1（第五轮）：编辑抽屉是自绘 .ed-root 覆盖层（非组件库弹窗），此前漏在守卫外——
+  // 按 E 打开抽屉后 tableFocused 仍真（抽屉不移焦点，H8），Enter 会穿透直连光标行；
+  // .col-menu 为防御性补齐（当前只能点击打开、focusin 已使 tableFocused=false，不可达）。
+  if (document.querySelector('.n-dialog, .n-modal, .ctx-menu, .nf-menu, .tree-ctx, .ed-root, .col-menu')) return
   if (!tableFocused.value) return
   // 表格内的可交互控件（表头复选框/批量条按钮等）聚焦时不抢按键：Enter/空格留给原生行为
   if (e.target.closest?.('input, textarea, select, button, [contenteditable]')) return

@@ -118,7 +118,7 @@
   "row.more": "Más",
   "row.parentFolder": "Carpeta superior",
   "row.tagSep": ", ",
-  "folder.contains": "Contiene {n} directamente",
+  "folder.contains": "Contiene {n} (incluye subcarpetas)",
   "status.never": "Nunca",
   "conn.connected": "Conectado",
   "conn.connecting": "Conectando",

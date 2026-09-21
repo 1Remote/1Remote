@@ -118,7 +118,7 @@
   "row.more": "その他",
   "row.parentFolder": "上の階層",
   "row.tagSep": "、",
-  "folder.contains": "直下 {n} 台",
+  "folder.contains": "内包 {n} 台（サブフォルダー含む）",
   "status.never": "未接続",
   "conn.connected": "接続済み",
   "conn.connecting": "接続中",

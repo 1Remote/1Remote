@@ -129,7 +129,7 @@
   "row.more": "More",
   "row.parentFolder": "Parent folder",
   "row.tagSep": ", ",
-  "folder.contains": "Contains {n} directly",
+  "folder.contains": "Contains {n} (incl. subfolders)",
   "status.never": "Never",
   "conn.connected": "Connected",
   "conn.connecting": "Connecting",

@@ -6,8 +6,9 @@
 // - 数据源根（🗄 名称 · 类型 + 状态点）→ 递归文件夹树；不再渲染服务器叶（列表承担）
 // - 虚拟文件夹：tree-state expansion 键即存在（空文件夹物化，与 WPF BuildView 一致）；
 //   右键菜单 新建/重命名/删除（folderOps 统一实现，列表侧共用）
-// - 节点右侧子服务器计数与列表同口径：数据源根/文件夹 = 直接子级服务器数
-//   （与点击后的列表行数/面包屑「N 台」一致）；「全部数据」= 全库服务器总数
+// - 节点右侧子服务器计数与列表同口径（E5-1/H38 后统一为递归口径）：数据源根/文件夹
+//   = 该子树全部服务器数（含子文件夹）——与 H38 后「点进去的列表行数/面包屑 N 台」
+//   一致；「全部数据」= 全库服务器总数（各源徽标之和与之相等，H37 矛盾随之消解）
 // - 树下方「标签」chips（置顶在前）；底部「« 收起边栏」emit update:collapsed
 // - 展开/折叠与拖拽经 /api/ui-state/tree 持久化（防抖 500ms），与 WPF 共用 .tree_view.json；
 //   字典状态收在 useTreeState 共享存储（列表文件夹行/新建文件夹也消费，侧栏收起不丢）
@@ -19,7 +20,7 @@ import { progressToast } from '../utils/progressToast'
 import { useServers } from '../composables/useServers'
 import {
   buildTree,
-  countDirectChildServers,
+  countHolderServers,
   fullKey,
   holderAt,
   isDescendantPath,
@@ -117,12 +118,12 @@ const rows = computed(() => {
   const pushLevel = (holder, dsName, depth) => {
     for (const f of levelChildren(holder)) {
       const key = fullKey(dsName, f.path)
-      out.push({ kind: 'folder', key, folder: f, dsName, depth, count: countDirectChildServers(f) })
+      out.push({ kind: 'folder', key, folder: f, dsName, depth, count: countHolderServers(f) })
       if (isExpanded(key)) pushLevel(f, dsName, depth + 1)
     }
   }
   for (const root of tree.value) {
-    out.push({ kind: 'root', key: root.name, ds: root, depth: rootDepth, count: countDirectChildServers(root) })
+    out.push({ kind: 'root', key: root.name, ds: root, depth: rootDepth, count: countHolderServers(root) })
     if (isExpanded(root.name)) pushLevel(root, root.name, rootDepth + 1)
   }
   return out

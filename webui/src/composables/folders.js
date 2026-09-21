@@ -69,6 +69,9 @@ export function rewriteServerPath(folderPath, oldPath, newPath) {
  * tree-state expansion 键前缀重写：返回 { remove: [旧键], add: {新键: 值} }。
  * 只动 ds 数据源下 oldPath 及其子孙的键；其余键不动（由调用方在合并基底上应用）。
  * newPath=null = 删除（子键上移一级）；否则 = 重命名（前缀替换）。
+ * 目标键已存在时不覆盖其值（保留目标侧展开态）——同名文件夹合并（H3）时两侧键归一，
+ * 存活文件夹的展开状态应以目标侧为准（WPF 节点移接、展开态随子项走；第五轮 E5-4：
+ * 此前 Object.assign 会用源值覆盖，合出来的文件夹展开态跟着源走）。
  */
 export function rewriteTreeStateKeys(expanded, dsName, oldPath, newPath) {
   const remove = []
@@ -86,7 +89,8 @@ export function rewriteTreeStateKeys(expanded, dsName, oldPath, newPath) {
     let newKey = null
     if (rest) newKey = fullKey(dsName, target ? target + '/' + rest : rest)
     else if (newPath != null && target) newKey = fullKey(dsName, target)
-    if (newKey && newKey !== key) add[newKey] = expanded[key] ?? true
+    if (newKey && newKey !== key && !Object.prototype.hasOwnProperty.call(expanded, newKey))
+      add[newKey] = expanded[key] ?? true
   }
   return { remove, add }
 }
@@ -132,18 +136,12 @@ export function buildTree(servers, datasources, folderPathsByDs) {
   return roots
 }
 
-/** holder（根/文件夹）下的服务器总数（含全部后代）——「全部数据」根徽标（全库总览，
- *  与该视图列表=全库服务器同口径）与删除文件夹确认（影响整个子树）仍用递归口径 */
+/** holder（根/文件夹）下的服务器总数（含全部后代）——树徽标/文件夹行计数/删除确认
+ *  （影响整个子树）与「全部数据」根徽标（全库总览）共用口径；H38 后「选中文件夹 =
+ *  列表显示含子文件夹的全部服务器」，徽标与列表/面包屑「N 台」同口径才自洽
+ *  （第五轮 E5-1：直接子级口径曾在同屏呈现两个矛盾数字）。 */
 export function countHolderServers(holder) {
   return holder.servers.length + holder.folders.reduce((n, f) => n + countHolderServers(f), 0)
-}
-
-/** holder（数据源根/文件夹）的直接子级服务器数：与资源管理器式列表口径一致——
- *  选中该节点时列表只列直接子级服务器（ServerTable filtered 的 folderPath 全等匹配，
- *  面包屑「N 台」同源），徽标=本数即「点进去看到几台」。子文件夹的服务器不计入
- *  （由子文件夹自己的徽标承载），空（虚拟）文件夹为 0。 */
-export function countDirectChildServers(holder) {
-  return holder.servers.length
 }
 
 /** 在树模型中按数据源 + 路径段下钻取 holder；不存在返回 null */

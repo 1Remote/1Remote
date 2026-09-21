@@ -118,7 +118,7 @@
   "row.more": "Altro",
   "row.parentFolder": "Cartella superiore",
   "row.tagSep": ", ",
-  "folder.contains": "Contiene {n} direttamente",
+  "folder.contains": "Contiene {n} (incluse le sottocartelle)",
   "status.never": "Mai",
   "conn.connected": "Connesso",
   "conn.connecting": "Connessione…",

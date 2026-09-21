@@ -118,7 +118,7 @@
   "row.more": "Еще",
   "row.parentFolder": "Родительская папка",
   "row.tagSep": ", ",
-  "folder.contains": "Содержит напрямую: {n}",
+  "folder.contains": "Содержит {n} (включая подпапки)",
   "status.never": "Никогда",
   "conn.connected": "Подключено",
   "conn.connecting": "Подключение…",

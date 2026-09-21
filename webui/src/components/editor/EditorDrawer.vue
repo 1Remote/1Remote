@@ -562,7 +562,7 @@ onBeforeUnmount(() => {
         </template>
       </div>
 
-      <!-- 底部：快捷键提示 + 取消/保存（批量保存中/跨源禁存态经 bulkFormRef 同步） -->
+      <!-- 底部：快捷键提示 + 取消/保存（批量保存中经 bulkFormRef 同步；H13 后跨数据源可保存） -->
       <footer class="ed-foot">
         <span class="ed-hint">{{ t('editor.saveHint') }}</span>
         <div class="ed-foot-btns">

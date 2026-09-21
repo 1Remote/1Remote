@@ -118,7 +118,7 @@
   "row.more": "更多",
   "row.parentFolder": "上一層",
   "row.tagSep": "、",
-  "folder.contains": "直接內含 {n} 台",
+  "folder.contains": "內含 {n} 台（含子資料夾）",
   "status.never": "從未",
   "conn.connected": "已連線",
   "conn.connecting": "連線中",

@@ -118,7 +118,7 @@
   "row.more": "Mais",
   "row.parentFolder": "Pasta superior",
   "row.tagSep": ", ",
-  "folder.contains": "Contém {n} diretamente",
+  "folder.contains": "Contém {n} (incluindo subpastas)",
   "status.never": "Nunca",
   "conn.connected": "Conectado",
   "conn.connecting": "Conectando…",

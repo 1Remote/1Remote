@@ -4339,6 +4339,7 @@ const bcp47 = (lower) =>
 // （合并同名文件夹确认/无数据源引导/搜索范围标注/复制密码/凭据空态指引/设置分组副标题）。
 const ROUND4 = {
   'de-DE': {
+    'folder.contains': 'Enth\u00e4lt {n} (inkl. Unterordner)',
     'editor.ph.password': 'Leer lassen, um das Passwort sp\u00e4ter abzufragen.',
     'editor.kvHint':
       'Hier k\u00f6nnen Sie Optionen festlegen, die in der Oberfl\u00e4che nicht aufgef\u00fchrt sind, z. B. automatische Wiederverbindung deaktivieren mit EnableAutoReconnect:i:0, Tastenkombinationen deaktivieren mit HotKeyAltTab:i:0 oder die Verbindungsleiste anheften mit PinConnectionBar:i:1.',
@@ -4379,6 +4380,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Externe Protokoll-Runner',
   },
   'fr-FR': {
+    'folder.contains': 'Contient {n} (sous-dossiers inclus)',
     'editor.ph.password': 'Laissez-le vide pour saisir le mot de passe plus tard.',
     'editor.kvHint':
       "Vous pouvez d\u00e9finir ici des options absentes de l'interface, par exemple d\u00e9sactiver la reconnexion automatique avec EnableAutoReconnect:i:0, d\u00e9sactiver les combinaisons de touches avec HotKeyAltTab:i:0 ou \u00e9pingler la barre de connexion avec PinConnectionBar:i:1.",
@@ -4419,6 +4421,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocoles externes',
   },
   'es-AR': {
+    'folder.contains': 'Contiene {n} (incluye subcarpetas)',
     'editor.ph.password': 'D\u00e9jelo en blanco y se solicitar\u00e1 la contrase\u00f1a m\u00e1s tarde.',
     'editor.kvHint':
       'Aqu\u00ed puede configurar opciones que no aparecen en la interfaz, por ejemplo desactivar la reconexi\u00f3n autom\u00e1tica con EnableAutoReconnect:i:0, desactivar las combinaciones de teclas con HotKeyAltTab:i:0 o fijar la barra de conexi\u00f3n con PinConnectionBar:i:1.',
@@ -4459,6 +4462,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'it-IT': {
+    'folder.contains': 'Contiene {n} (incluse le sottocartelle)',
     'editor.ph.password': 'Lascialo vuoto e la password verr\u00e0 richiesta in seguito.',
     'editor.kvHint':
       "Qui puoi impostare opzioni non elencate nell'interfaccia, ad esempio disattivare la riconnessione automatica con EnableAutoReconnect:i:0, disattivare le combinazioni di tasti con HotKeyAltTab:i:0 o bloccare la barra di connessione con PinConnectionBar:i:1.",
@@ -4499,6 +4503,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runner di protocolli esterni',
   },
   'pt-BR': {
+    'folder.contains': 'Cont\u00e9m {n} (incluindo subpastas)',
     'editor.ph.password': 'Deixe em branco e a senha ser\u00e1 solicitada depois.',
     'editor.kvHint':
       'Aqui voc\u00ea pode definir op\u00e7\u00f5es n\u00e3o listadas na interface, como desativar a reconex\u00e3o autom\u00e1tica com EnableAutoReconnect:i:0, desativar as combina\u00e7\u00f5es de teclas com HotKeyAltTab:i:0 ou fixar a barra de conex\u00e3o com PinConnectionBar:i:1.',
@@ -4540,6 +4545,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'pt-PT': {
+    'folder.contains': 'Cont\u00e9m {n} (incluindo subpastas)',
     'editor.ph.password': 'Deixe em branco e a palavra-passe ser\u00e1 pedida mais tarde.',
     'editor.kvHint':
       'Aqui pode definir op\u00e7\u00f5es n\u00e3o listadas na interface, como desativar a reconex\u00e3o autom\u00e1tica com EnableAutoReconnect:i:0, desativar as combina\u00e7\u00f5es de teclas com HotKeyAltTab:i:0 ou fixar a barra de liga\u00e7\u00e3o com PinConnectionBar:i:1.',
@@ -4580,6 +4586,8 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'ru-RU': {
+    'folder.contains':
+      '\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u0442 {n} (\u0432\u043a\u043b\u044e\u0447\u0430\u044f \u043f\u043e\u0434\u043f\u0430\u043f\u043a\u0438)',
     'editor.ph.password':
       '\u041e\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u043f\u0443\u0441\u0442\u044b\u043c \u2014 \u043f\u0430\u0440\u043e\u043b\u044c \u0431\u0443\u0434\u0435\u0442 \u0437\u0430\u043f\u0440\u043e\u0448\u0435\u043d \u043f\u043e\u0437\u0436\u0435.',
     'editor.kvHint':
@@ -4637,6 +4645,7 @@ const ROUND4 = {
       '\u0412\u043d\u0435\u0448\u043d\u0438\u0435 Runner \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432',
   },
   'pl-PL': {
+    'folder.contains': 'Zawiera {n} (wraz z podfolderami)',
     'editor.ph.password': 'Zostaw puste, a has\u0142o zostanie zapytane p\u00f3\u017aniej.',
     'editor.kvHint':
       'Tutaj mo\u017cesz ustawi\u0107 opcje niewymienione w interfejsie, np. wy\u0142\u0105czy\u0107 automatyczne wznawianie po\u0142\u0105czenia przez EnableAutoReconnect:i:0, wy\u0142\u0105czy\u0107 kombinacje klawiszy przez HotKeyAltTab:i:0 albo przypi\u0105\u0107 pasek po\u0142\u0105czenia przez PinConnectionBar:i:1.',
@@ -4678,6 +4687,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Zewn\u0119trzne Runner protoko\u0142\u00f3w',
   },
   'cs-CZ': {
+    'folder.contains': 'Obsahuje {n} (v\u010detn\u011b podslo\u017eek)',
     'editor.ph.password': 'Ponechte pr\u00e1zdn\u00e9 a heslo bude vy\u017e\u00e1d\u00e1no pozd\u011bji.',
     'editor.kvHint':
       'Zde m\u016f\u017eete nastavit volby, kter\u00e9 nejsou v rozhran\u00ed uvedeny, nap\u0159\u00edklad zak\u00e1zat automatick\u00e9 op\u011btovn\u00e9 p\u0159ipojen\u00ed pomoc\u00ed EnableAutoReconnect:i:0, zak\u00e1zat kombinace kl\u00e1ves pomoc\u00ed HotKeyAltTab:i:0 nebo p\u0159ipnout panel p\u0159ipojen\u00ed pomoc\u00ed PinConnectionBar:i:1.',
@@ -4719,6 +4729,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Extern\u00ed Runnery protokol\u016f',
   },
   'gl-ES': {
+    'folder.contains': 'Cont\u00e9n {n} (inclu\u00edndo subcartafoles)',
     'editor.ph.password': 'D\u00e9ixeo en branco e pedir\u00e1selle o contrasinal m\u00e1is tarde.',
     'editor.kvHint':
       'Aqu\u00ed pode configurar opci\u00f3ns que non aparecen na interface, por exemplo desactivar a reconexi\u00f3n autom\u00e1tica con EnableAutoReconnect:i:0, desactivar as combinaci\u00f3ns de teclas con HotKeyAltTab:i:0 ou fixar a barra de conexi\u00f3n con PinConnectionBar:i:1.',
@@ -4759,6 +4770,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'ja-JP': {
+    'folder.contains': '\u5185\u5305 {n} \u53f0\uff08\u30b5\u30d6\u30d5\u30a9\u30eb\u30c0\u30fc\u542b\u3080\uff09',
     'editor.ph.password':
       '\u7a7a\u6b04\u306b\u3059\u308b\u3068\u63a5\u7d9a\u6642\u306b\u30d1\u30b9\u30ef\u30fc\u30c9\u3092\u5c0b\u306d\u307e\u3059\u3002',
     'editor.kvHint':
@@ -4807,6 +4819,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': '\u5916\u90e8\u30d7\u30ed\u30c8\u30b3\u30eb\u306e Runner',
   },
   'zh-TW': {
+    'folder.contains': '\u5167\u542b {n} \u53f0\uff08\u542b\u5b50\u8cc7\u6599\u593e\uff09',
     'editor.ph.password': '\u7559\u7a7a\u5247\u9023\u7dda\u6642\u518d\u8a62\u554f\u5bc6\u78bc',
     'editor.kvHint':
       '\u5728\u9019\u88e1\u53ef\u4ee5\u8a2d\u5b9a\u4ecb\u9762\u672a\u5217\u51fa\u7684\u9078\u9805\uff0c\u7372\u5f97\u66f4\u8c50\u5bcc\u7684\u8a2d\u5b9a\u80fd\u529b\uff1a\u4f8b\u5982\u7528 EnableAutoReconnect:i:0 \u505c\u7528\u81ea\u52d5\u91cd\u9023\uff0c\u7528 HotKeyAltTab:i:0 \u505c\u7528\u7d44\u5408\u9375\uff0c\u6216\u7528 PinConnectionBar:i:1 \u56fa\u5b9a\u9023\u7dda\u5217\u3002',

@@ -118,7 +118,7 @@
   "row.more": "Więcej",
   "row.parentFolder": "Folder nadrzędny",
   "row.tagSep": ", ",
-  "folder.contains": "Zawiera bezpośrednio {n}",
+  "folder.contains": "Zawiera {n} (wraz z podfolderami)",
   "status.never": "Nigdy",
   "conn.connected": "Połączono",
   "conn.connecting": "Łączenie…",

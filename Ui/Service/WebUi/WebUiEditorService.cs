@@ -123,7 +123,7 @@ namespace _1RM.Service.WebUi
                 return CredentialRevealResult.NotFound();
 
             var clone = (ProtocolBase)vm.Server.Clone();
-            clone.DecryptToConnectLevel(); // 处理 InheritedCredentialName 继承凭据的解析
+            clone.DecryptToConnectLevel(); // 只解密 Password/PrivateKey 等密文字段（DataBaseService 同名方法），不解析 InheritedCredentialName 继承——凭据库继承的服务器 Password 为空，回传空串由前端提示「无密码可复制」（WPF 同样只解 Password 字段，双侧一致）
             var password = clone is ProtocolBaseWithAddressPortUserPwd p ? p.Password : string.Empty;
             return CredentialRevealResult.Ok(password ?? string.Empty, string.Empty);
         }

@@ -118,7 +118,7 @@
   "row.more": "Máis",
   "row.parentFolder": "Cartafol superior",
   "row.tagSep": ", ",
-  "folder.contains": "Contén {n} directamente",
+  "folder.contains": "Contén {n} (incluíndo subcartafoles)",
   "status.never": "Nunca",
   "conn.connected": "Conectado",
   "conn.connecting": "Conectando",

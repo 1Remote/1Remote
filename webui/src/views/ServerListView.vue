@@ -20,7 +20,7 @@ import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
 import { progressToast } from '../utils/progressToast'
 import { applyServerFilters, BATCH_CONNECT_THRESHOLD, useServers } from '../composables/useServers'
-import { buildTree, countDirectChildServers, holderAt } from '../composables/folders'
+import { buildTree, countHolderServers, holderAt } from '../composables/folders'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import { useEditorBus } from '../composables/editorBus'
@@ -80,10 +80,10 @@ const currentFolders = computed(() => {
   const out = []
   const holder = holderAt(treeModel.value, sel.dataSourceName, sel.folderPath || '')
   if (holder) {
-    // 文件夹行计数与树徽标同口径（直接子级服务器数）：行内数字 = 进入该文件夹
-    // 后能看到的台数（不含子文件夹内部，由子文件夹自己的行/徽标承载）
+    // 文件夹行计数与树徽标同口径（E5-1/H38 后为递归口径）：行内数字 = 进入该
+    // 文件夹后列表显示的台数（含子文件夹全部，与面包屑「N 台」一致）
     for (const f of holder.folders)
-      out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countDirectChildServers(f) })
+      out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
   }
   return out
 })

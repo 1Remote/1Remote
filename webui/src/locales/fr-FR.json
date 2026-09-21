@@ -118,7 +118,7 @@
   "row.more": "Plus",
   "row.parentFolder": "Dossier parent",
   "row.tagSep": ", ",
-  "folder.contains": "Contient {n} directement",
+  "folder.contains": "Contient {n} (sous-dossiers inclus)",
   "status.never": "Jamais",
   "conn.connected": "Connecté",
   "conn.connecting": "Connexion…",

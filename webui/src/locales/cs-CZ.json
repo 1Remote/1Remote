@@ -118,7 +118,7 @@
   "row.more": "Více",
   "row.parentFolder": "Nadřazená složka",
   "row.tagSep": ", ",
-  "folder.contains": "Obsahuje přímo {n}",
+  "folder.contains": "Obsahuje {n} (včetně podsložek)",
   "status.never": "Nikdy",
   "conn.connected": "Připojeno",
   "conn.connecting": "Připojování",
