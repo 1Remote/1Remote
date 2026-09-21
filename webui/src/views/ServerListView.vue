@@ -30,7 +30,7 @@ import { LANGUAGES } from '../locales/languages.js'
 const { t, locale } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
-const selection = ref(null) // { dataSourceName, folderPath, serverId? } —— null=未选中（全部）
+const selection = ref(null) // { dataSourceName, folderPath, serverId? } —— null=未选中（全部）；展示层经 viewSel 归一化（见下）
 const activeTag = ref('') // ''=未按标签过滤
 // 收起状态仅本地内存（持久化暂缓）。窄窗适配：<900px 自动收起，只收不展——
 // 仅在跨过 900 阈值时收起（窄窗内用户手动展开后，同侧宽度微调不反复打回），≥900 不自动展开
@@ -45,6 +45,18 @@ watch(
 )
 
 const { servers, datasources, tags, loading, connected, reload, searchQuery, searchedIds } = useServers()
+
+// 单数据源根（owner 需求，通用化按「数据源总数 === 1」判定，不认死 Local 名）：
+// 只有一个数据源时 SideTree 不再显示「全部数据」虚拟根（深度整体上移一级），列表/面包屑
+// 同步以该数据源根为顶。selection 语义不动（null=全部数据），经 viewSel 归一化映射——
+// null 与 {源根} 合一：单源时二者本就等价（全库 = 该源全部），面包屑首段显示源名；
+// 多源时 viewSel === selection，行为与从前逐分支一致。
+const singleDsName = computed(() => (datasources.value.length === 1 ? datasources.value[0].name : null))
+const viewSel = computed(() => {
+  if (singleDsName.value && (!selection.value || !selection.value.dataSourceName))
+    return { dataSourceName: singleDsName.value, folderPath: '' }
+  return selection.value
+})
 
 // tree-state 首载：虚拟文件夹物化需要 expansion 键，侧栏收起
 //（SideTree 卸载）时也须可用；useTreeState 幂等（SideTree 挂载时同调不重复请求）
@@ -61,8 +73,8 @@ const currentFolders = computed(() => {
   // searchedIds 为 server id 集），文件夹名不参与匹配——保留会在命中结果上方悬浮一层
   // 与查询无关的文件夹，误导导航；空 Set（零命中）同样隐藏。
   if (searchedIds.value != null) return []
-  const sel = selection.value
-  // 「全部数据」根（selection=null）：只列服务器行（全库递归，
+  const sel = viewSel.value
+  // 「全部数据」根（viewSel 无数据源，仅多源可达）：只列服务器行（全库递归，
   // ServerTable 对 null selection 不过滤），不生成文件夹行
   if (!sel || !sel.dataSourceName) return []
   const out = []
@@ -103,10 +115,12 @@ const visibleServers = computed(() => applyServerFilters(servers.value, activeTa
 const searchActive = computed(() => searchedIds.value != null) // null=未启用；空 Set=搜了但零命中
 
 // 面包屑：可点击逐级返回——全部数据 › 数据源 · 全部服务器 › 路径段；
-// 末段=当前层级（强显示不可点）。hover title 给完整路径
+// 末段=当前层级（强显示不可点）。hover title 给完整路径。
+// 单数据源时无「全部数据」首段（树无此根，见 viewSel），以源名打头
 const crumbSegments = computed(() => {
-  const sel = selection.value
-  const segs = [{ label: t('crumb.allDataSources'), sel: null }]
+  const sel = viewSel.value
+  const segs = []
+  if (!sel?.dataSourceName) segs.push({ label: t('crumb.allDataSources'), sel: null })
   if (sel?.dataSourceName) {
     segs.push({
       label: sel.dataSourceName + ' · ' + t('crumb.allServers'),
@@ -125,7 +139,7 @@ const crumbSegments = computed(() => {
   return segs
 })
 const crumbTitle = computed(() => {
-  const sel = selection.value
+  const sel = viewSel.value
   return sel?.dataSourceName
     ? sel.dataSourceName + (sel.folderPath ? ' / ' + sel.folderPath : '')
     : t('crumb.allDataSources')
@@ -336,13 +350,13 @@ watch(importRequest, () => {
 function openCreate() {
   // 归属数据源 = 当前树选中（根/文件夹/叶）的数据源；未选 = Local。
   // 文件夹归属：选中根/文件夹时其 folderPath 随 initialFolder 传入，
-  // EditorDrawer create 模式把 TreeNodes 预置为该路径——「全部数据」根（selection=null）
-  // 不注入（无确定归属，落数据源根）；数据源根 folderPath='' 同样不注入
+  // EditorDrawer create 模式把 TreeNodes 预置为该路径——「全部数据」根（viewSel 无数据源，
+  // 仅多源可达）不注入（无确定归属，落数据源根）；数据源根 folderPath='' 同样不注入
   editor.value = {
     mode: 'create',
-    ds: selection.value?.dataSourceName || 'Local',
+    ds: viewSel.value?.dataSourceName || 'Local',
     protocol: 'RDP',
-    initialFolder: selection.value?.folderPath || '',
+    initialFolder: viewSel.value?.folderPath || '',
   }
 }
 
@@ -462,15 +476,15 @@ function onSaved({ id, mode }) {
 // ---- 标签管理模态：SideTree「+ 管理」chip 打开；ds = 当前树选中的数据源 ----
 const tagManager = ref(null) // null=关 | { ds }
 function openTagManager() {
-  tagManager.value = { ds: selection.value?.dataSourceName || 'Local' }
+  tagManager.value = { ds: viewSel.value?.dataSourceName || 'Local' } // viewSel：单源时落实际源名（不再兜 Local）
 }
 
 // 表内空态文案（无过滤的真空视图）：按选中层级分（第三轮 G16——数据源根/「全部数据」
 // 根不是文件夹，固定 empty.folder 的「此文件夹为空…右键新建文件夹」文案失准，且
 // 「全部数据」根的空白右键「新建文件夹」禁用（无确定数据源），引导了不可达的动作）
 const tableEmptyText = computed(() => {
-  const sel = selection.value
-  if (!sel || !sel.dataSourceName) return t('empty.allRoot') // 全部数据根：只引导 +
+  const sel = viewSel.value
+  if (!sel || !sel.dataSourceName) return t('empty.allRoot') // 全部数据根（仅多源可达）：只引导 +
   return sel.folderPath ? t('empty.folder') : t('empty.dsRoot') // 文件夹 / 数据源根（右键可用）
 })
 
@@ -482,11 +496,15 @@ const importModal = ref(false)
 <template>
   <div class="server-list">
     <aside class="sidebar" :class="{ collapsed }">
+      <!-- SideTree 选中态传 viewSel（单源时 null 映射为源根，树内高亮正确）；点击仍写回
+           原始 selection（单源模式树无「全部数据」行，永不产生 null） -->
       <SideTree
         v-if="!collapsed"
         ref="sideTree"
-        v-model:selection="selection"
-        v-model:tag="activeTag"
+        :selection="viewSel"
+        :tag="activeTag"
+        @update:selection="selection = $event"
+        @update:tag="activeTag = $event"
         @update:collapsed="collapsed = $event"
         @manage-tags="openTagManager"
       />
@@ -569,7 +587,7 @@ const importModal = ref(false)
         ref="table"
         class="table-host"
         :servers="visibleServers"
-        :selection="selection"
+        :selection="viewSel"
         :folders="currentFolders"
         :query="searchQuery"
         :ops-busy="folderOps.busy.value"
@@ -621,8 +639,8 @@ const importModal = ref(false)
       <ImportModal
         v-if="importModal"
         :show="true"
-        :default-ds="selection?.dataSourceName || 'Local'"
-        :default-folder="selection?.folderPath || ''"
+        :default-ds="viewSel?.dataSourceName || 'Local'"
+        :default-folder="viewSel?.folderPath || ''"
         @update:show="importModal = $event"
       />
 

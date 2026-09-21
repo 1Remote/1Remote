@@ -1,6 +1,8 @@
 <script setup>
 // 边栏树 + 标签区：
-// - 顶部常驻虚拟根「全部数据」（点击=清除数据源过滤，列表显示全部库服务器）
+// - 顶部常驻虚拟根「全部数据」（点击=清除数据源过滤，列表显示全部库服务器）——
+//   仅多数据源时渲染；单数据源（总数 === 1）不显示此根，该源根直接为顶（depth 上移，
+//   见 rows），选中协议不变：父层传归一化后的 viewSel（null 已映射为源根）
 // - 数据源根（🗄 名称 · 类型 + 状态点）→ 递归文件夹树；不再渲染服务器叶（列表承担）
 // - 虚拟文件夹：tree-state expansion 键即存在（空文件夹物化，与 WPF BuildView 一致）；
 //   右键菜单 新建/重命名/删除（folderOps 统一实现，列表侧共用）
@@ -28,8 +30,8 @@ import {
 } from '../composables/tableBus'
 
 const props = defineProps({
-  selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据（v-model:selection）
-  tag: { type: String, default: '' }, // 当前标签过滤（v-model:tag，仅用于 chip 高亮）
+  selection: { type: Object, default: null }, // { dataSourceName, folderPath } | null=全部数据（父层传归一化 viewSel；update:selection 回写原始值）
+  tag: { type: String, default: '' }, // 当前标签过滤（仅用于 chip 高亮，父层 v-model:tag）
 })
 const emit = defineEmits(['update:selection', 'update:tag', 'update:collapsed', 'manage-tags'])
 const { t } = useI18n()
@@ -94,11 +96,20 @@ function onToggle(key) {
 const allOpen = ref(true)
 
 // ---- 可见行扁平化（免递归组件；depth 控缩进）：全部数据 → 数据源根 → 文件夹（无服务器叶）
+// 单数据源（datasources 总数 === 1，通用判定不认死名字）：不渲染「全部数据」虚拟根，
+// 该数据源根上移到 depth 0（文件夹随之 1 起）——只有一个源时"全部数据"与"源根"语义合一，
+// 中间层只添一次无意义点击（owner 需求）；多数据源行为不变。「全部数据」的展开态 allOpen
+// 纯本地（WPF 无此节点，不落 tree-state 字典），单源模式不参与渲染
+const singleDs = computed(() => datasources.value.length === 1)
 const rows = computed(() => {
-  // 「全部数据」= 全库服务器总数（与该视图列表同口径；直接用 servers 长度——buildTree
-  // 会丢弃数据源快照错配的孤儿服务器，树内求和会把它们漏计）
-  const out = [{ kind: 'all', key: 'all', depth: 0, count: servers.value.length }]
-  if (!allOpen.value) return out
+  const out = []
+  if (!singleDs.value) {
+    // 「全部数据」= 全库服务器总数（与该视图列表同口径；直接用 servers 长度——buildTree
+    // 会丢弃数据源快照错配的孤儿服务器，树内求和会把它们漏计）
+    out.push({ kind: 'all', key: 'all', depth: 0, count: servers.value.length })
+    if (!allOpen.value) return out
+  }
+  const rootDepth = singleDs.value ? 0 : 1
   const pushLevel = (holder, dsName, depth) => {
     for (const f of levelChildren(holder)) {
       const key = fullKey(dsName, f.path)
@@ -107,8 +118,8 @@ const rows = computed(() => {
     }
   }
   for (const root of tree.value) {
-    out.push({ kind: 'root', key: root.name, ds: root, depth: 1, count: countDirectChildServers(root) })
-    if (isExpanded(root.name)) pushLevel(root, root.name, 2)
+    out.push({ kind: 'root', key: root.name, ds: root, depth: rootDepth, count: countDirectChildServers(root) })
+    if (isExpanded(root.name)) pushLevel(root, root.name, rootDepth + 1)
   }
   return out
 })
