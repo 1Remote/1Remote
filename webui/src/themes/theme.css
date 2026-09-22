@@ -199,3 +199,23 @@ a:focus-visible {
   --accent-container: #e2e8f0;
   --accent-text: #475569;
 }
+
+/* ---- 全局组件规则（跨组件的工具类与组件库覆盖，theme.css 唯一颜色来源原则的补充层） ---- */
+
+/* ghost 主按钮（type="primary" ghost）悬停补浅底（N2，round4）：naive 把 ghost 的
+   hover 底色硬编码为透明、主题键注入不进，导致与自绘描边主按钮（悬停=浅底+边框不动，
+   如 EditorDrawer .ed-primary）分叉成两种悬停语言。选择器特异性 4 类稳胜 naive 的
+   2 类（.n-button:not(.n-button--disabled):hover），无需 important；仅取 primary 型
+   （default 型已由 themes/index.js 的 colorHover 键归档） */
+.n-button.n-button--primary-type.n-button--ghost:not(.n-button--disabled):hover {
+  background-color: var(--bg-hover);
+}
+
+/* 必填星标全局工具类（N4，round4）：与编辑器 FormField .ff-required 同语言（红色
+   警示星 + 2px 间距）——设置页模态原为继承标签色的裸文本「 *」（间距依赖模板空格
+   不可控）。编辑器两处 scoped 类保留（.ff-required/.ff-required-like），三方参数
+   一致，改动需同步 */
+.req-star {
+  margin-left: 2px;
+  color: var(--danger);
+}

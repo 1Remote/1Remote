@@ -416,3 +416,37 @@ describe('round6 L2/L3/L4：美学三项', () => {
     assert.ok(th.includes("border: '1px solid var(--border)'"), '默认钮边框应统一 --border 令牌')
   })
 })
+
+// ---------- round9（2026-09-22 N 系列定案：round4 报告 N1-N4） ----------
+describe('round9 N1-N4：主按钮悬停统一 / 星标统一 / 三档补漏', () => {
+  it('N1: 脚本测试确认钮进三档映射（中性 default，非破坏性确认）', () => {
+    const stt = read('src/editor/scriptTest.js')
+    assert.ok(stt.includes("positiveButtonProps: { type: 'default' }"), '脚本测试确认钮应为中性档')
+  })
+  it('N2: ghost 主按钮悬停边框钉住强调色 + 悬停补浅底（全局规则）', () => {
+    const th = read('src/themes/index.js')
+    assert.ok(th.includes("borderHoverPrimary: '1px solid var(--accent)'"), 'ghost 悬停边框应钉住 --accent')
+    const css = read('src/themes/theme.css')
+    assert.ok(
+      css.includes('.n-button.n-button--primary-type.n-button--ghost:not(.n-button--disabled):hover'),
+      'theme.css 应有 ghost 悬停浅底规则'
+    )
+  })
+  it('N3: naive 默认钮悬停文字归主文字色、底浮浅底（无后缀键只喂 default 型）', () => {
+    const th = read('src/themes/index.js')
+    assert.ok(th.includes("textColorHover: 'var(--text-1)'"))
+    assert.ok(th.includes("colorHover: 'var(--bg-hover)'"))
+  })
+  it('N4: 设置页必填星标统一为红色星元素（全局 .req-star，与编辑器同语言）', () => {
+    const css = read('src/themes/theme.css')
+    assert.ok(css.includes('.req-star'), 'theme.css 应有 .req-star 工具类')
+    for (const f of [
+      'src/components/settings/DataSourceGroup.vue',
+      'src/components/settings/CredentialVaultGroup.vue',
+    ]) {
+      const v = read(f)
+      assert.ok(!/\}\s*\*<\/label>/.test(v), `${f} 仍有裸文本星`)
+      assert.ok(v.includes('req-star'), `${f} 应使用红色星元素`)
+    }
+  })
+})

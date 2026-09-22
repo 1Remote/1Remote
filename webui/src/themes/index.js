@@ -235,12 +235,28 @@ export function useNaiveTheme() {
         textColorGhostFocusPrimary: accentTextHex(),
         textColorGhostDisabledPrimary: accentTextHex(),
         // L4「其他按钮用统一的描边颜色」：naive 默认钮（取消等）边框从自带灰系归到
-        // 令牌 --border 档（hover --border-strong），与全站自绘带边框按钮同色
+        // 令牌 --border 档（hover --border-strong），与全站自绘带边框按钮同色。
+        // N3（round4）：默认钮 hover 与自绘次按钮同语言——文字归主文字色、底浮浅底
+        //（这些无后缀键只喂 default 型，不波及 ghost 主按钮与 error 危险钮；ghost 的
+        // 文字/底另有键管、危险钮 error 系不动）
         border: '1px solid var(--border)',
         borderHover: '1px solid var(--border-strong)',
         borderPressed: '1px solid var(--border-strong)',
         borderFocus: '1px solid var(--border-strong)',
         borderDisabled: '1px solid var(--border)',
+        textColorHover: 'var(--text-1)',
+        textColorPressed: 'var(--text-1)',
+        textColorFocus: 'var(--text-1)',
+        colorHover: 'var(--bg-hover)',
+        colorPressed: 'var(--bg-hover)',
+        colorFocus: 'var(--bg-hover)',
+        // N2（round4）：ghost 主按钮 hover/按下/聚焦的边框钉住强调色不变（naive 默认
+        // 提亮一档，与自绘描边主按钮「边框不动」的语言分叉）；值走 var(--accent) 与
+        // borderPrimary 的字面量同源。ghost 的 hover 底色 naive 硬编码透明、主题键
+        // 注入不进——补底由 theme.css 的全局规则承担（见该文件 .n-button--ghost 条）
+        borderHoverPrimary: '1px solid var(--accent)',
+        borderPressedPrimary: '1px solid var(--accent)',
+        borderFocusPrimary: '1px solid var(--accent)',
       },
       // 下拉选中项文字（第三轮 G1，本轮唯一 P1）：common.primaryColor 仍喂亮 accent，而
       // naive select-menu 的 optionTextColorActive/optionCheckColor 直接取 primaryColor

@@ -423,7 +423,7 @@ bindModalEsc([
         </div>
         <div class="f-row">
           <!-- K9：必填星标（与凭据库「名称 *」同语言）；sqlite 名称可缺省（按路径文件名推导） -->
-          <label>{{ t('settings.d.name') }}<template v-if="addForm.type !== 'sqlite'"> *</template></label>
+          <label>{{ t('settings.d.name') }}<span v-if="addForm.type !== 'sqlite'" class="req-star">*</span></label>
           <div>
             <n-input
               size="small"
@@ -436,7 +436,7 @@ bindModalEsc([
           </div>
         </div>
         <div v-if="addForm.type === 'sqlite'" class="f-row">
-          <label>{{ t('settings.d.f.path') }} *</label>
+          <label>{{ t('settings.d.f.path') }}<span class="req-star">*</span></label>
           <!-- 路径 + "浏览…"（⑱A：WPF SqliteSettingView Select 按钮的 web 平价） -->
           <div class="path-wrap">
             <n-input size="small" v-model:value="addForm.path" :input-props="{ spellcheck: false }" />
@@ -447,7 +447,7 @@ bindModalEsc([
         </div>
         <template v-else>
           <div class="f-row">
-            <label>{{ t('settings.d.f.host') }} *</label>
+            <label>{{ t('settings.d.f.host') }}<span class="req-star">*</span></label>
             <n-input size="small" v-model:value="addForm.host" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
@@ -455,15 +455,15 @@ bindModalEsc([
             <n-input size="small" v-model:value="addForm.port" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.database') }} *</label>
+            <label>{{ t('settings.d.f.database') }}<span class="req-star">*</span></label>
             <n-input size="small" v-model:value="addForm.databaseName" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.user') }} *</label>
+            <label>{{ t('settings.d.f.user') }}<span class="req-star">*</span></label>
             <n-input size="small" v-model:value="addForm.userName" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.password') }} *</label>
+            <label>{{ t('settings.d.f.password') }}<span class="req-star">*</span></label>
             <n-input
               size="small"
               type="password"
@@ -509,7 +509,7 @@ bindModalEsc([
       <div class="form" @keydown="onFormEnter($event, editSave)">
         <!-- 名称行：WPF 弹窗 Name 编辑平价（改名走 PUT body.name）；编辑态名称恒必填 -->
         <div class="f-row">
-          <label>{{ t('settings.d.name') }} *</label>
+          <label>{{ t('settings.d.name') }}<span class="req-star">*</span></label>
           <div>
             <n-input
               size="small"
@@ -521,7 +521,7 @@ bindModalEsc([
           </div>
         </div>
         <div v-if="editing?.type === 'sqlite'" class="f-row">
-          <label>{{ t('settings.d.f.path') }} *</label>
+          <label>{{ t('settings.d.f.path') }}<span class="req-star">*</span></label>
           <!-- 路径 + "浏览…"（⑱A，同添加模态） -->
           <div class="path-wrap">
             <n-input size="small" v-model:value="editForm.path" :input-props="{ spellcheck: false }" />
@@ -532,7 +532,7 @@ bindModalEsc([
         </div>
         <template v-else>
           <div class="f-row">
-            <label>{{ t('settings.d.f.host') }} *</label>
+            <label>{{ t('settings.d.f.host') }}<span class="req-star">*</span></label>
             <n-input size="small" v-model:value="editForm.host" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
@@ -540,11 +540,11 @@ bindModalEsc([
             <n-input size="small" v-model:value="editForm.port" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.database') }} *</label>
+            <label>{{ t('settings.d.f.database') }}<span class="req-star">*</span></label>
             <n-input size="small" v-model:value="editForm.databaseName" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">
-            <label>{{ t('settings.d.f.user') }} *</label>
+            <label>{{ t('settings.d.f.user') }}<span class="req-star">*</span></label>
             <n-input size="small" v-model:value="editForm.userName" :input-props="{ spellcheck: false }" />
           </div>
           <div class="f-row">

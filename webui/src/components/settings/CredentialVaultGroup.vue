@@ -414,7 +414,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
     >
       <div class="form" @keydown="onFormEnter($event, save)">
         <div class="f-row">
-          <label>{{ t('editor.f.Name') }} *</label>
+          <label>{{ t('editor.f.Name') }}<span class="req-star">*</span></label>
           <div>
             <n-input
               size="small"
