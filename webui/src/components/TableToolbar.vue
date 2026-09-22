@@ -218,7 +218,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
 }
 
 /* 清除勾选 ✕：对齐全站移除小钮多数派（J9，sc-x/f-x/kvl-del/kvm-del/sf-del）——
-   圆形 24 档 + micro/text-4，hover bg-hover+text-1；此处方角+大一号是异类 */
+   圆形 24 档 + micro/text-4，hover bg-hover+text-1 */
 .bb-x {
   margin-left: auto;
   border: none;
