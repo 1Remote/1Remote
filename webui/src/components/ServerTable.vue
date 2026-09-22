@@ -87,8 +87,8 @@ const { datasources, searchedIds, dsWritable, servers: allServers } = useServers
 
 // ---- 过滤 ----
 const filtered = computed(() => {
-  // 搜索激活：列表已由 searchedIds 收窄，且搜索本就是全库递归语义（后端跨数据源/跨文件夹
-  // 匹配）——树选中过滤整体让位，子文件夹深处的命中一律可见
+  // 搜索激活：列表已由父级收窄（applyServerFilters：搜索命中集 ∩ 当前文件夹子树，
+  // 资源管理器语义）后传入——此处不再叠加树选中过滤，子文件夹深处的命中同样可见
   if (searchedIds.value != null) return props.servers
   const sel = props.selection
   if (!sel || !sel.dataSourceName) return props.servers // 「全部数据」虚拟根 = 跨库总览（递归，无文件夹行）
@@ -102,10 +102,8 @@ const filtered = computed(() => {
   const target = sel.folderPath || ''
   return props.servers.filter((s) => s.dataSourceName === sel.dataSourceName && isDirectChildOf(s.folderPath, target))
 })
-// H9：搜索激活时强制显示文件夹列——搜索是全库递归语义（后端跨数据源/跨文件夹匹配），
-// 子文件夹视图内搜索的结果可能来自任意位置，文件夹列（数据源/路径）是唯一来处标注，
-// 隐藏它会让用户把全库命中误读成本文件夹命中（面包屑「N 台」仍在撒谎的另一半由
-// ServerListView 的搜索范围提示补足）
+// H9：搜索激活时强制显示文件夹列——搜索命中可来自当前子树的任意子文件夹，
+// 文件夹列（数据源/路径）是唯一来处标注；隐藏它会让用户把子树命中误读成当前层级命中
 const showFolder = computed(() => searchedIds.value != null || !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列（搜索态强制显示，见上）；列菜单在非根视图禁用该项（H9）
 const showDs = computed(() => !props.selection || !props.selection.dataSourceName) // 「全部数据」根：文件夹列前缀数据源名
 
@@ -479,6 +477,17 @@ const {
   onFolderToggleCheck,
 } = useRowChecks({ sorted, servers: () => props.servers, folders: () => props.folders })
 
+// 视图切换即清空勾选（owner 2026-09-22 需求，资源管理器语义）：进入/离开文件夹（树点击、
+// 文件夹行双击、面包屑跳转都归结为 selection 变化）一律清空——勾选属于"当前视图"语境，
+// 跨文件夹保留会把批量操作误用到不可见行。此前"跨层级导航勾选持续存在"的设计（useRowChecks
+// 文件头「跨层级导航勾选持续存在」）自本轮起废止；Enter/Del 键安全守卫（checked>1 禁用）
+// 仍保留，与清空规则互补。数据变化剔除（useRowChecks 的 servers watch）仍负责 SSE 重载等
+// 不换视图的数据更新，与视图切换清空互补，勿混淆
+watch(
+  () => props.selection,
+  () => clearChecked()
+)
+
 function onRowClick(server, ev, idx) {
   cursorId.value = server.id // 点击行 = 光标落位（Enter 连接光标行，↑↓ 由此起算）
   rowClickSelect(ev, idx, server.id) // 勾选分支：Ctrl/Shift（裸点击不改勾选集，见 useRowChecks）
@@ -741,7 +750,7 @@ watch(focusHandoff, (req) => {
 // localStorage '1r-cols'（仅本地）。flex 列有自定义宽时改为定宽（--c-*-grow=0，
 // flex-basis=px），未设时保持默认比例；隐藏列在表头与行两侧同时 v-if。
 // colMenu/COL_LABELS 供 TableToolbar 展示（列菜单的点击外部关闭在其子组件内自理）----
-const { HIDEABLE_COLS, isHidden, widthOf, setHidden, setWidth } = useColumns()
+const { HIDEABLE_COLS, isHidden, widthOf, setHidden, setWidth, resetWidths } = useColumns()
 const hiddenCols = computed(() => {
   const o = {}
   for (const k of HIDEABLE_COLS) o[k] = isHidden(k)
@@ -856,6 +865,7 @@ onBeforeUnmount(() => {
       @toggle-custom="toggleCustomSort"
       @toggle-col-menu="toggleColMenu"
       @set-hidden="setHidden"
+      @reset-widths="resetWidths"
     />
 
     <div class="tbody" v-bind="useVirtual ? containerProps : undefined" @contextmenu="onBlankContext">
@@ -986,7 +996,6 @@ onBeforeUnmount(() => {
             v-else
             :server="row.server"
             :selected="checked.has(row.server.id)"
-            :highlighted="!!selection && selection.serverId === row.server.id"
             :cursor="row.server.id === cursorId"
             :show-folder="showFolder"
             :show-ds="showDs"

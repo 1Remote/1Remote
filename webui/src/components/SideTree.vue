@@ -17,7 +17,7 @@ import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { useServers } from '../composables/useServers'
 import { buildTree, countHolderServers, fullKey, holderAt, isDescendantPath } from '../composables/folders'
-import { makeDsDotTitle } from '../utils/dsTitle'
+import { dsDotClass as dotClass, makeDsDotTitle } from '../utils/dsTitle'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import {
@@ -375,7 +375,6 @@ function ctxDelete() {
 }
 
 // ---- 展示辅助
-const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
 // H31：树根状态点悬停 title 走 i18n——单一实现在 utils/dsTitle.js（三处消费共用：
 // 树根行/底部状态栏/设置页卡片），此前三份逐行同构拷贝已收敛（round8 重构）
 const dsDotTitle = makeDsDotTitle(t)

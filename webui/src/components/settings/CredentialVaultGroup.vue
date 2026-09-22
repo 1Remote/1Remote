@@ -10,13 +10,15 @@
  *   复用备用凭据子表单的这两项属多余；后端 DTO 字段保留仅为 API 兼容，前端不再提交。
  * - 数据源过滤：n-select（useServers 共享态），切换即重载列表；只读数据源禁用 CRUD 按钮
  *   （后端也会前置拦截，这里只做 UI 预防）。
- * - 列表 DTO 不含密码/私钥路径（后端安全红线）——明文只能走 reveal：
+ * - 列表 DTO 不含密码/私钥路径的值（后端安全红线），仅含存在性布尔 hasPwd/hasKeyPath
+ *   （加密不改空串性，密文非空 ⇔ 明文非空）——明文只能走 reveal：
  *   点 👁 → 行内「请在桌面端完成验证…」等待态（服务端在桌面端弹本地验证，未开启则直通）→
  *   成功后行内展开明文（默认掩码，可切换）+ 30s 倒计时自动隐藏；403 → toast 验证失败；
  *   404 → 静默刷新列表（凭据已被其它端删除/改名）。列表列与 WPF 凭据库表格对齐
  *   （名称/用户名/操作），另加 web 侧引用计数列；WPF 的密码/私钥掩码列由 reveal 行承载。
  * - 编辑模态的密码/私钥路径（"正常行为"对齐）：
- *   打开即预填掩码串 MASK（列表无值、不自动 reveal——那会在打开模态时弹验证）；
+ *   按存在性布尔预填：存在 → 掩码串 MASK（不自动 reveal——那会在打开模态时弹验证）；
+ *   不存在 → 空输入框（如实显示无密码，round9.1 用户报告修复）。
  *   点 👁 调 reveal（复用行级同一端点与 30s 免验证窗口）回填真实值后可编辑。
  *   保存语义（后端 Update 对两字段 null=保持、空串=清除、非空=新值）：
  *   未 reveal 且值仍为 MASK → 提交 null（保持）；reveal 后未改 → 提交原值（等价保持）；
@@ -116,14 +118,18 @@ function openCreate() {
 }
 
 function openEdit(c) {
-  // 密码/私钥路径预填掩码：列表无值（安全红线），真实值由 👁 reveal 回填
+  // 密码/私钥路径预填：列表含存在性布尔（hasPwd/hasKeyPath，安全红线不含值）——
+  // 存在 → 预填掩码占位（真实值由 👁 reveal 回填）；不存在 → 空输入框（如实显示"无密码"，
+  // 不再用掩码误导用户以为存有密码；用户报告 BUG）。掩码回填与保存三态语义不变
   Object.assign(form, {
     name: c.name,
     userName: c.userName,
-    password: SECRET_MASK,
-    privateKeyPath: SECRET_MASK,
+    password: c.hasPwd ? SECRET_MASK : '',
+    privateKeyPath: c.hasKeyPath ? SECRET_MASK : '',
   })
   resetSecretUi()
+  // WPF 编辑打开的对齐规则（org.PrivateKeyPath 非空默认私钥侧）：用存在性布尔在打开时即应用
+  if (!c.hasPwd && c.hasKeyPath) authMode.value = 'key'
   editing.value = { mode: 'edit', name: c.name }
 }
 
@@ -137,11 +143,11 @@ function setAuthMode(mode) {
 //（对齐后端 UpdateCredential 的 CurrentCultureIgnoreCase 判重，排除原名）；
 // 重名即输入框下方红字提示 + 禁用保存（后端 400 仍为最终守卫） ----
 const nameExists = computed(() => {
+  if (!editing.value) return false // 模态已关（保存成功后的淡出动画期间）不参与查重——否则
+  // 刚保存进列表的新凭据会与未清空的表单值撞名，淡出瞬间闪红字「名称已存在」（用户报告 BUG）
   const n = form.name.trim()
   if (!n) return false
-  return credentials.value.some(
-    (c) => c.name !== editing.value?.name && c.name.trim().toLowerCase() === n.toLowerCase()
-  )
+  return credentials.value.some((c) => c.name !== editing.value.name && c.name.trim().toLowerCase() === n.toLowerCase())
 })
 
 // 👁：编辑态未加载明文时 = reveal（本地验证门，与行级 reveal 同端点同 30s 窗口）；
@@ -422,8 +428,8 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
               :status="nameExists ? 'error' : undefined"
               :input-props="{ spellcheck: false }"
             />
-            <!-- 重名即时提示（secretHint 长提示行已随即时查重移除，locale 键保留避免
-                 动 locales 平价；文案复用运行器重名词条） -->
+            <!-- 重名即时提示（secretHint 长提示行已随即时查重移除并按 P13 走管线删除；
+                 文案复用运行器重名词条） -->
             <p v-if="nameExists" class="f-err">{{ t('settings.r.nameExists', { name: form.name.trim() }) }}</p>
           </div>
         </div>

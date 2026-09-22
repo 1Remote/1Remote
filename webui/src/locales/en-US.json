@@ -17,7 +17,9 @@
   "crumb.count": " · {n} servers",
   "crumb.searchChip": "Search filter active",
   "crumb.clearSearch": "Clear search (Esc)",
-  "crumb.searchScope": "all data sources",
+  "crumb.searchScope.all": "all data sources",
+  "crumb.searchScope.ds": "entire data source",
+  "crumb.searchScope.folder": "current folder and subfolders",
 
   "sidebar.expand": "Expand sidebar",
 
@@ -79,6 +81,7 @@
   "cols.menu": "Column visibility & width",
   "cols.fixed": "Always shown",
   "cols.folderRootOnly": "The folder column is only shown in the root view or while searching",
+  "cols.resetWidths": "Reset column widths",
   "cols.hint": "Drag a column edge to resize; double-click the edge to reset",
   "col.selectAll": "Select all (Ctrl+A)",
 
@@ -169,8 +172,6 @@
   "statusbar.dsDisconnected": "{name}: disconnected",
   "statusbar.dsReconnecting": "{name}: reconnecting",
   "statusbar.langSwitch": "Switch language",
-  "statusbar.langZh": "中",
-  "statusbar.langEn": "EN",
 
   "toast.connectStarted": "Connection started: {name}",
   "toast.connectFailed": "Failed to start connection",
@@ -518,7 +519,6 @@
   "cv.editTitle": "Edit credential",
   "cv.authType": "Authentication",
   "cv.browse": "Browse…",
-  "cv.secretHint": "Saved secrets show as a mask: click 👁 to reveal (verification required); an untouched mask keeps the current value on save. Only the selected type is saved — to remove the other, switch to it and clear the field.",
   "cv.nameRequired": "Name is required",
   "cv.deleteTitle": "Delete credential",
   "cv.deleteConfirm": "Delete credential \"{name}\"? This cannot be undone.",

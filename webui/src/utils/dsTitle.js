@@ -14,3 +14,10 @@ export function makeDsDotTitle(t) {
     return t('statusbar.dsDisconnected', { name: d.name })
   }
 }
+
+/**
+ * 数据源状态点 → CSS 类的单一实现（round11 重构收敛，与 makeDsDotTitle 同居：
+ * 状态点的"颜色"与"悬停说明"是同一语义的两半）。三处消费（侧树根行 / 底部状态栏 /
+ * 设置页数据源卡片）此前各持一份同构拷贝。
+ */
+export const dsDotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')

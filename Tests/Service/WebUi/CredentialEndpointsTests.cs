@@ -513,6 +513,52 @@ namespace Tests.Service.WebUi
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
         }
 
+        [TestMethod]
+        public async Task List_HasPwdHasKeyPath_FlagsReflectSecretPresence()
+        {
+            // 编辑弹窗的掩码/空态预填依据（用户报告：空密码凭据编辑时显示掩码误导）。
+            // 存在性布尔不是敏感值——列表响应不得含 password/privatekey 子串（安全红线），
+            // 字段名刻意避开了这两个子串
+            var withPwd = NewName("cred-flag-pwd");
+            Assert.AreEqual(HttpStatusCode.OK,
+                (await PostCredentialAsync(withPwd, password: "pw-flag-" + Guid.NewGuid().ToString("N").Substring(0, 6)))
+                .StatusCode);
+            var withKey = NewName("cred-flag-key");
+            Assert.AreEqual(HttpStatusCode.OK,
+                (await PostCredentialAsync(withKey, privateKeyPath: "C:/keys/flag_id_rsa")).StatusCode);
+            var empty = NewName("cred-flag-none");
+            Assert.AreEqual(HttpStatusCode.OK, (await PostCredentialAsync(empty)).StatusCode);
+
+            var raw = await (await _client.GetAsync("/api/credentials?ds=Local")).Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(raw);
+            var arr = doc.RootElement.GetProperty("credentials");
+
+            (bool pwd, bool key) FlagOf(string name)
+            {
+                foreach (var e in arr.EnumerateArray())
+                {
+                    if (e.GetProperty("name").GetString() == name)
+                        return (e.GetProperty("hasPwd").GetBoolean(), e.GetProperty("hasKeyPath").GetBoolean());
+                }
+                return (false, false);
+            }
+
+            var (pwd1, key1) = FlagOf(withPwd);
+            Assert.IsTrue(pwd1, "有密码的凭据 hasPwd 应为 true");
+            Assert.IsFalse(key1, "仅密码凭据 hasKeyPath 应为 false");
+            var (pwd2, key2) = FlagOf(withKey);
+            Assert.IsFalse(pwd2, "仅私钥凭据 hasPwd 应为 false");
+            Assert.IsTrue(key2, "仅私钥凭据 hasKeyPath 应为 true");
+            var (pwd3, key3) = FlagOf(empty);
+            Assert.IsFalse(pwd3, "空密钥凭据 hasPwd 应为 false");
+            Assert.IsFalse(key3, "空密钥凭据 hasKeyPath 应为 false");
+
+            // 存在性布尔不属于敏感值：既有红线断言（不含 password/privatekey 子串）应保持绿色，
+            // 新增字段不得破坏该守卫
+            Assert.IsFalse(raw.ToLower().Contains("password"), "列表不得含 password 值/字段");
+            Assert.IsFalse(raw.ToLower().Contains("privatekey"), "列表不得含 privatekey 值/字段");
+        }
+
         /// <summary>
         /// 30s 验证窗口：窗口内有效时间戳 → 跳过 VerifyAsyncUi（本测试强制“验证已开启”，
         /// 若窗口失效会弹真实 Windows 凭据对话框/挂起——即失败信号）。

@@ -17,7 +17,6 @@ import { renderMarkdown } from '../utils/markdown'
 const props = defineProps({
   server: { type: Object, required: true },
   selected: { type: Boolean, default: false }, // 复选框勾选态（批量操作）
-  highlighted: { type: Boolean, default: false }, // 边栏树叶选中对应行的高亮
   cursor: { type: Boolean, default: false }, // 键盘导航光标行（↑↓ 移动 / Enter 连接）
   showFolder: { type: Boolean, default: false }, // 仅根视图显示「文件夹」列
   showDs: { type: Boolean, default: false }, // 「全部数据」根视图：文件夹列前缀数据源名
@@ -80,7 +79,7 @@ const barColor = computed(() => opaqueHex(props.server.color))
 <template>
   <div
     class="row"
-    :class="{ selected: selected, highlighted: highlighted, cursor: cursor }"
+    :class="{ selected: selected, cursor: cursor }"
     @click="emit('row-click', $event)"
     @dblclick="emit('connect')"
     @contextmenu.prevent="emit('context-menu', { server, x: $event.clientX, y: $event.clientY })"
@@ -198,15 +197,10 @@ const barColor = computed(() => opaqueHex(props.server.color))
 .row.selected {
   background: var(--accent-container);
 }
-.row.highlighted {
-  /* 树叶选中行：左侧强调色细条。状态指示条走 --accent-focus（G6）：light 基橙/绿亮
-     accent ×bg 仅 2.69/2.43 不达非文本 3:1，深变体 4.96/5.25；dark 基该变量===--accent */
-  box-shadow: inset 2px 0 0 var(--accent-focus);
-}
 .row.cursor {
   /* 键盘光标行：accent 色外框（不占布局）。单击=光标是核心交互，其落点必须可感知——
-     此前 1px --border-strong 过淡，用户无法判断 Enter 将作用于哪行。与另两类行态可区分：
-     勾选=.selected 的 accent-container 底色、树叶选中=.highlighted 的左缘 2px 细条 */
+     此前 1px --border-strong 过淡，用户无法判断 Enter 将作用于哪行。与勾选行态
+     （.selected 的 accent-container 底色）可区分 */
   outline: 1px solid var(--accent-focus);
   outline-offset: -1px;
 }

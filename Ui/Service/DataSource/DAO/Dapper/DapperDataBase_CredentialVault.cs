@@ -114,25 +114,32 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                         };
                         ret = _dbConnection?.Execute(SqlUpdatePasswordVault, tpv) > 0;
 
-
-
                         // after credential is updated, the related protocols will also be updated with the new credential information.
                         if (ret && relatedProtocols?.Count > 0)
                         {
-                            ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToTableServer())) > 0;
-                            if (ret)
+                            // 联动值必须先落到内存对象再写库：SqlUpdate 写的是服务器整行 Json
+                            //（ToTableServer 序列化当前内存状态），原实现先写库后赋值（赋值在
+                            // Commit 之后），提交进库的是变更前状态——引用服务器的
+                            // InheritedCredentialName / UserName 永远同步不上（既有缺陷，
+                            // CredentialEndpointsTests.Update_Rename*/Update_Syncs* 捕获）。
+                            // 失败路径（Rollback）下内存对象已带新值、与库内旧值短暂偏差，
+                            // 由调用方失败提示后的 reload / 下次 GetServers(force) 重读收敛。
+                            foreach (var protocol in relatedProtocols)
                             {
-                                transaction.Commit();
-                                credential.Address = "";
-                                credential.Port = "";
-                                foreach (var protocol in relatedProtocols)
-                                {
-                                    protocol.InheritedCredentialName = tpv.Name;
-                                    protocol.SetCredential(credential, true);
-                                }
+                                protocol.InheritedCredentialName = tpv.Name;
+                                protocol.SetCredential(credential, true);
                             }
+                            ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToTableServer())) > 0;
                         }
-                        if (!ret)
+                        // Commit 不能只放在 relatedProtocols 分支内：无引用服务器时原实现既不
+                        // Commit 也不 Rollback，using 退出触发隐式回滚——凭据行更新被静默丢弃
+                        // 却仍返回 Success（既有缺陷，用户表现=改密码保存成功后 reveal 仍是旧值；
+                        // CrudRoundTrip/Update_SecretFields 捕获）。
+                        if (ret)
+                        {
+                            transaction.Commit();
+                        }
+                        else
                         {
                             transaction.Rollback();
                         }

@@ -108,7 +108,7 @@ describe('表头三态全选（合并语义 + 对称清空）', () => {
   })
 })
 
-describe('数据变化剔除（按过滤后列表域，跨层级导航勾选持续存在）', () => {
+describe('数据变化剔除（按过滤后列表域；视图切换清空归 ServerTable 的 selection watch）', () => {
   it('被删除/过滤掉的勾选即时剔除；仍在过滤列表中的保留', async () => {
     const servers = ref([SRV('keep', 'Local', '323'), SRV('gone', 'Local', '323')])
     const c = makeChecks(servers, ref([]))
@@ -117,6 +117,40 @@ describe('数据变化剔除（按过滤后列表域，跨层级导航勾选持�
     servers.value = [SRV('keep', 'Local', '323')] // gone 消失
     await nextTick()
     assert.deepEqual([...c.checked.value], ['keep'])
+  })
+})
+
+describe('空文件夹勾选剔除与显示同谓词（round8 P4/M20：消失或非空即剔）', () => {
+  const F0 = () => [{ name: 'temp', path: 'temp', dsName: 'Local', count: 0 }]
+
+  it('文件夹被填入服务器（count>0）后从 checkedFolders 剔除', async () => {
+    const servers = ref([SRV('root1', 'Local', '')])
+    const folders = ref(F0())
+    const c = makeChecks(servers, folders)
+    c.onFolderToggleCheck(folders.value[0])
+    assert.equal(c.checkedFolders.value.size, 1)
+    servers.value = [SRV('root1', 'Local', ''), SRV('new1', 'Local', 'temp')] // 被拖入服务器
+    folders.value = [{ name: 'temp', path: 'temp', dsName: 'Local', count: 1 }]
+    await nextTick()
+    assert.equal(c.checkedFolders.value.size, 0, '不再为空的文件夹勾选应被剔除（防静默搬迁内容）')
+  })
+  it('文件夹行消失（被删除/切走视图）后从 checkedFolders 剔除', async () => {
+    const folders = ref(F0())
+    const c = makeChecks(ref([SRV('root1', 'Local', '')]), folders)
+    c.onFolderToggleCheck(folders.value[0])
+    assert.equal(c.checkedFolders.value.size, 1)
+    folders.value = []
+    await nextTick()
+    assert.equal(c.checkedFolders.value.size, 0)
+  })
+  it('仍为空且仍在当前层级的勾选不受影响', async () => {
+    const folders = ref(F0())
+    const c = makeChecks(ref([SRV('root1', 'Local', '')]), folders)
+    c.onFolderToggleCheck(folders.value[0])
+    await nextTick()
+    folders.value = F0() // 同形状刷新（SSE 重载等）
+    await nextTick()
+    assert.equal(c.checkedFolders.value.size, 1)
   })
 })
 

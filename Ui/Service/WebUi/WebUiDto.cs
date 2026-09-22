@@ -270,7 +270,10 @@ namespace _1RM.Service.WebUi
 
     /// <summary>
     /// GET /api/credentials 列表条目（信封/列表域 camelCase 序列化）。
-    /// 安全红线：绝不包含 Password/PrivateKeyPath——明文查看只能走 reveal 端点（二次验证）。
+    /// 安全红线：绝不包含 Password/PrivateKeyPath 的**值**——明文查看只能走 reveal 端点（二次验证）。
+    /// HasPwd/HasKeyPath = 密码/私钥路径「是否存在」的布尔（加密不改变空串性，密文非空 ⇔ 明文
+    /// 非空，由密文缓存直接判定，不解密）。字段名刻意避开 "password"/"privatekey" 子串——
+    /// 安全红线测试以子串守卫响应体（CredentialEndpointsTests），存在性布尔不是敏感值。
     /// refCount = 该数据源下引用此凭据名的服务器数（InheritedCredentialName + AlternateCredentials[].Name）。
     /// </summary>
     public class CredentialListItemDto
@@ -279,6 +282,8 @@ namespace _1RM.Service.WebUi
         public string Address { get; set; } = string.Empty;
         public string Port { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
+        public bool HasPwd { get; set; }
+        public bool HasKeyPath { get; set; }
         public int RefCount { get; set; }
     }
 

@@ -29,14 +29,21 @@ watch(
   }
 )
 
-// 名称校验 = WPF CmdAddRunner 的 InputBox 规则：非空 + 协议内唯一
+// 名称校验 = WPF CmdAddRunner Runner弹窗的 InputBox 规则：非空 + 协议内唯一。
+// touched 门控（round8 P5）：红框/红字是"真实违规"信号，打开瞬间不预报错——
+// 用户未碰过输入框时不显示（空值只禁保存钮），与全库「红星预告要求 + 红字留给真实违规」惯例一致
+const touched = ref(false)
 const nameError = computed(() => {
+  if (!touched.value) return ''
   const n = name.value.trim()
   if (!n) return t('settings.r.nameRequired')
   if (props.existingNames.includes(n)) return t('settings.r.nameExists', { name: n })
   return ''
 })
-const valid = computed(() => !nameError.value)
+const valid = computed(() => {
+  const n = name.value.trim()
+  return !!n && !props.existingNames.includes(n)
+})
 
 function save() {
   if (!valid.value) return
@@ -59,13 +66,14 @@ function save() {
   >
     <div class="form" @keydown="onFormEnter($event, save)">
       <div class="f-row">
-        <label>{{ t('editor.f.Name') }}</label>
+        <label>{{ t('editor.f.Name') }}<span class="req-star">*</span></label>
         <div>
           <n-input
             size="small"
             v-model:value="name"
             :status="nameError ? 'error' : undefined"
             :input-props="{ spellcheck: false }"
+            @input="touched = true"
           />
           <p v-if="nameError" class="f-err">{{ nameError }}</p>
         </div>

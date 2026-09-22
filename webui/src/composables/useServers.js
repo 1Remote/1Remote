@@ -1,5 +1,6 @@
 import { ref, watch } from 'vue'
 import { api, subscribeEvents } from '../api/index.js'
+import { isInSubtreeOf } from './folders.js'
 
 // 批量连接确认阈值（产品决策项）：一次连接超过该台数时前端先弹确认（显示 N 台）
 // 再逐台发起；ServerListView 批量条与 TagManagerModal「连接全部」共用，
@@ -128,23 +129,33 @@ export function useServers() {
   }
 }
 
-// buildTree 定义在 ./folders（物化空文件夹需与键换算纯函数同居，且 node 断言
-// 要求模块无浏览器依赖）；此处转发保持既有 import 路径兼容
-export { buildTree } from './folders.js'
-
 /**
- * 组合应用边栏过滤：基础列表 → 标签过滤 → 搜索命中集逐层收窄。
+ * 组合应用边栏过滤：基础列表 → 标签过滤 → 搜索命中集 → 搜索范围收窄。
  * 纯函数（ServerListView 的 computed 与 node 断言共用；调用方负责传入响应式值以维持依赖追踪）：
  * - activeTag 非空 → 仅保留 tags 含该标签的服务器（后端标签名大小写无统一保证，按小写比较）
- * - searchedIds 非 null → 仅保留命中搜索的服务器（null=未启用搜索过滤，全通过）
- * 树选中过滤与排序不在此层——由 ServerTable 在收到收窄后的列表后自行应用，交集自然复合。
+ * - searchedIds 非 null（搜索激活）→ 仅保留命中搜索的服务器，并按 selection 收窄到
+ *   **当前文件夹及其子文件夹**（owner 2026-09-22 设计需求①，资源管理器语义）：此前
+ *   "搜索=全库递归"在文件夹内搜索会命中其他文件夹/其他库，owner 判为 BUG。层级语义：
+ *   文件夹=该子树；数据源根=整个数据源；「全部数据」根（selection 无数据源）=全库。
+ *   搜索未激活时 selection 不参与——树选中过滤归 ServerTable 的显示语义 isDirectChildOf，
+ *   「过滤域收窄」与「显示域过滤」两层职责不同，勿合并
  */
-export function applyServerFilters(servers, activeTag, searchedIds) {
+export function applyServerFilters(servers, activeTag, searchedIds, selection) {
   let list = servers
   if (activeTag) {
     const t = activeTag.toLowerCase()
     list = list.filter((s) => (s.tags || []).some((tag) => tag.toLowerCase() === t))
   }
-  if (searchedIds) list = list.filter((s) => searchedIds.has(s.id))
+  if (searchedIds) {
+    list = list.filter((s) => searchedIds.has(s.id))
+    if (selection?.dataSourceName) {
+      const target = selection.folderPath || ''
+      // 数据源根（target=''）= 整源可见：isInSubtreeOf(x, '') 只会命中根级（fp==='')，
+      // 故根视图单独放行同数据源全部路径；文件夹视图走子树语义
+      list = list.filter(
+        (s) => s.dataSourceName === selection.dataSourceName && (target === '' || isInSubtreeOf(s.folderPath, target))
+      )
+    }
+  }
   return list
 }

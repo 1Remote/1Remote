@@ -54,8 +54,10 @@ namespace _1RM.Service.WebUi
         }
 
         /// <summary>
-        /// GET /api/credentials：完整列表（Name/Address/Port/UserName/被引用数）。
-        /// 绝不包含 Password/PrivateKeyPath。引用计数 = 该数据源下引用此凭据名的服务器数
+        /// GET /api/credentials：完整列表（Name/Address/Port/UserName/HasPwd/HasKeyPath/被引用数）。
+        /// 绝不包含 Password/PrivateKeyPath 的值。HasPwd/HasKeyPath = 密钥存在性布尔：加密不改
+        /// 空串性（EncryptToDatabaseLevel 对空串原样跳过），密文非空 ⇔ 明文非空，由密文缓存直接
+        /// 判定不解密。引用计数 = 该数据源下引用此凭据名的服务器数
         /// （InheritedCredentialName + AlternateCredentials[].Name，跳过分组头与临时会话）。
         /// </summary>
         public static List<CredentialListItemDto> List(DataSourceBase dataSource)
@@ -81,6 +83,8 @@ namespace _1RM.Service.WebUi
                 Address = c.Address ?? string.Empty,
                 Port = c.Port ?? string.Empty,
                 UserName = c.UserName ?? string.Empty,
+                HasPwd = !string.IsNullOrEmpty(c.Password),
+                HasKeyPath = !string.IsNullOrEmpty(c.PrivateKeyPath),
                 RefCount = servers.Count(s => ReferencesCredential(s, c.Name)),
             }).ToList();
         }

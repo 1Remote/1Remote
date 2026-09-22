@@ -21,8 +21,8 @@ import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
 import { progressToast } from '../utils/progressToast'
 import { applyServerFilters, useServers } from '../composables/useServers'
-import { buildTree, countHolderServers, holderAt } from '../composables/folders'
-import { makeDsDotTitle } from '../utils/dsTitle'
+import { buildTree, countHolderServers, holderAt, parentPath } from '../composables/folders'
+import { dsDotClass, makeDsDotTitle } from '../utils/dsTitle'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import { useBatchConnect } from '../composables/useBatchConnect'
@@ -33,7 +33,7 @@ import { LANGUAGES } from '../locales/languages.js'
 const { t, locale } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
-const selection = ref(null) // { dataSourceName, folderPath, serverId? } —— null=未选中（全部）；展示层经 viewSel 归一化（见下）
+const selection = ref(null) // { dataSourceName, folderPath } —— null=未选中（全部）；展示层经 viewSel 归一化（见下）。serverId 叶选中已随树叶移除（树不再渲染叶），无生产者
 const activeTag = ref('') // ''=未按标签过滤
 // 收起状态仅本地内存（持久化暂缓）。窄窗适配：<900px 自动收起，只收不展——
 // 仅在跨过 900 阈值时收起（窄窗内用户手动展开后，同侧宽度微调不反复打回），≥900 不自动展开
@@ -76,8 +76,9 @@ const treeModel = computed(() => buildTree(servers.value, datasources.value, fol
 const currentFolders = computed(() => {
   // 搜索/标签过滤激活时隐藏文件夹行（K23：标签过滤沿用搜索的做法）：过滤只命中
   // 服务器（文件夹不参与匹配），保留文件夹行会让「内含 N 台」的未过滤计数与过滤后
-  // 所见脱节（写着 5 台、进去 0 台）；进文件夹在**标签**过滤期间仍可走侧栏树（搜索态
-  // 树导航让位全库语义——点树只动面包屑不动行集，属已知边界见 round7 M22）
+  // 所见脱节（写着 5 台、进去 0 台）；进文件夹在**标签**过滤期间仍可走侧栏树。搜索态
+  // 点树 = 改变搜索范围（applyServerFilters 以 selection 收窄命中集，资源管理器语义），
+  // 结果集随之刷新——不再是"点树只动面包屑不动行集"（round7 M22 边界已由需求①消解）
   if (searchedIds.value != null || activeTag.value) return []
   const sel = viewSel.value
   // 「全部数据」根（viewSel 无数据源，仅多源可达）：只列服务器行（全库递归，
@@ -92,6 +93,20 @@ const currentFolders = computed(() => {
       out.push({ name: f.name, path: f.path, dsName: sel.dataSourceName, count: countHolderServers(f) })
   }
   return out
+})
+
+// 当前文件夹被删除/移动/重命名后自动回退（owner 2026-09-22 设计需求③）：treeModel 更新后
+// holder 消失 = 当前路径已是"虚假文件夹"——逐级上溯到仍存在的最近祖先（含数据源根），
+// 防止右侧列表停留在已不存在的路径上。删除/移动/重命名（folderOps 统一走前缀重写 +
+// reload）与其它 Web 端 SSE 推送导致的消失均覆盖；数据源根（folderPath=''）不适用
+//（根不存在=整个数据源消失，属另一话题）
+watch(treeModel, () => {
+  const sel = viewSel.value
+  if (!sel?.dataSourceName || !sel.folderPath) return
+  if (holderAt(treeModel.value, sel.dataSourceName, sel.folderPath)) return
+  let path = parentPath(sel.folderPath)
+  while (path && !holderAt(treeModel.value, sel.dataSourceName, path)) path = parentPath(path)
+  selection.value = { dataSourceName: sel.dataSourceName, folderPath: path }
 })
 
 // 双击文件夹行 = 进入；树选中态与面包屑共用 selection
@@ -116,9 +131,21 @@ function onMoveFolder({ folder, path }) {
   folderOps.moveFolder(folder.dsName, folder.path, path)
 }
 
-// 传给 ServerTable 的收窄列表（其内部再应用树选中过滤 + 排序，交集自然复合）
-const visibleServers = computed(() => applyServerFilters(servers.value, activeTag.value, searchedIds.value))
+// 传给 ServerTable 的收窄列表（其内部再应用树选中过滤 + 排序，交集自然复合）；
+// 第 4 参 = 当前视图（viewSel 归一化后）——搜索激活时 applyServerFilters 以它收窄
+// 搜索范围到当前文件夹子树（资源管理器语义，owner 2026-09-22 设计需求①）
+const visibleServers = computed(() =>
+  applyServerFilters(servers.value, activeTag.value, searchedIds.value, viewSel.value)
+)
 const searchActive = computed(() => searchedIds.value != null) // null=未启用；空 Set=搜了但零命中
+// H9：搜索 chip 的「范围」标注随当前视图层级变化：全部数据根=全库 / 数据源根=整源 /
+// 文件夹=当前文件夹及子文件夹（需求①的另一半——就地告知用户搜索范围，防把当前范围
+// 命中误读为全库结果）
+const searchScopeKey = computed(() => {
+  const sel = viewSel.value
+  if (!sel?.dataSourceName) return 'crumb.searchScope.all'
+  return sel.folderPath ? 'crumb.searchScope.folder' : 'crumb.searchScope.ds'
+})
 
 // 面包屑：可点击逐级返回——全部数据 › 数据源 · 全部服务器 › 路径段；
 // 末段=当前层级（强显示不可点）。hover title 给完整路径。
@@ -213,7 +240,6 @@ function clearNextFilter() {
 const MAX_DS = 3
 const dsShown = computed(() => datasources.value.slice(0, MAX_DS))
 const dsHidden = computed(() => Math.max(0, datasources.value.length - MAX_DS))
-const dsDotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
 // 状态栏状态点 title——单一实现在 utils/dsTitle.js（与树根行/设置页卡片共用，round8 收敛）
 const dsTitle = makeDsDotTitle(t)
 function toggleLocale() {
@@ -233,13 +259,19 @@ watch(
   { immediate: true }
 )
 // 按钮显示将要切到的语言的自称（语言名不做 i18n，与 LANGUAGES 清单/WPF language_name
-// 同语义）；旧键 statusbar.langEn/langZh 不再使用，locale JSON 中保留不删（避免动生成映射）
+// 同语义）；旧键 statusbar.langEn/langZh 已随 round8 P13 从 locale 管线删除
 const langNative = (code) => LANGUAGES.find((l) => l.code === code)?.native || 'English'
 const nextLang = computed(() => (locale.value === 'en-US' ? langNative(nonEnglishLocale) : 'English'))
 
 // ---- 连接动作：api.connect → 后端触发 OnRequestServerConnect（fromView="WebUi"），
 // 密码交互与会话窗口由桌面端既有管线处理（Web 侧不感知，spec 约定凭据留在本地）----
+// 单台连接防重入（round8 P3，与批量侧 M11 同根）：Enter 双按 / ▸ 连点 / 右键菜单重复
+// 点击全部汇入 onConnect——同一台的在途连接直接忽略，完成后 1.5s 冷却（覆盖双击窗口），
+// 防止同一台被拉起两个远程会话
+const connecting = new Set()
 async function onConnect(id) {
+  if (connecting.has(id)) return
+  connecting.add(id)
   const name = servers.value.find((s) => s.id === id)?.displayName || id
   try {
     await api.connect(id)
@@ -247,6 +279,8 @@ async function onConnect(id) {
   } catch (e) {
     console.warn('[ServerListView] connect failed:', e?.message || e)
     message.error(t('toast.connectFailed'))
+  } finally {
+    setTimeout(() => connecting.delete(id), 1500)
   }
 }
 
@@ -398,8 +432,6 @@ function onDelete(server) {
       try {
         await api.deleteServer(server.id, server.dataSourceName)
         message.success(t('editor.deleteOk', { name: server.displayName }))
-        // 选中态可能指向已删对象（树叶选中）：清理回退，避免高亮悬空
-        if (selection.value?.serverId === server.id) selection.value = null
         reload()
       } catch (e) {
         message.error(t('editor.deleteFailed') + (e?.message ? ` (${e.message})` : ''))
@@ -413,7 +445,14 @@ function onDelete(server) {
 // 删除后指向已删行的树叶选中态回退；勾选集由 useRowChecks 的数据剔除 watch 自动收敛 ----
 function onBatchDelete(ids, folders = []) {
   const list = (ids || []).map((id) => servers.value.find((s) => s.id === id)).filter(Boolean)
-  const emptyFolders = folders.filter((f) => f && f.dsName && f.path != null)
+  // 确认前按「当前确实为空文件夹」复核（round8 P4/M20 的执行侧闭环；勾选剔除 watch 是
+  // 显示侧）——被填入服务器的勾选文件夹或已消失的文件夹不进本批，防「承诺删空壳、
+  // 实际静默搬迁内容」：消失（holder=null）或非空（count>0）一律剔除
+  const stillEmpty = (f) => {
+    const h = holderAt(buildTree(servers.value, datasources.value, folderPathsByDs.value), f.dsName, f.path)
+    return !!h && countHolderServers(h) === 0
+  }
+  const emptyFolders = folders.filter((f) => f && f.dsName && f.path != null && stillEmpty(f))
   if (!list.length && !emptyFolders.length) return
   // 混合确认文案：仅服务器 / 仅空文件夹 / 两者（空文件夹删除不可逆且与服务器同批，一并确认）
   const content =
@@ -446,7 +485,6 @@ async function runBatchDelete(list) {
     try {
       await api.deleteServer(s.id, s.dataSourceName)
       ok++
-      if (selection.value?.serverId === s.id) selection.value = null
     } catch (e) {
       console.warn('[ServerListView] batch delete failed:', s.id, e?.message || e)
     }
@@ -484,13 +522,8 @@ function openBulkEdit(ids) {
 }
 
 // 保存成功（新建/编辑/复制/批量共用的 saved 事件）：UpdateServer 系不触发 SSE（已知后端
-// 行为），前端兜底 reload；这里收敛抽屉状态 + 清理指向旧行的选中态
-// （名称/协议可能已变）。bulk 模式目标是一个 id 集，不涉及树叶选中回退。
-function onSaved({ id, mode }) {
-  if (mode === 'edit' && selection.value?.serverId && selection.value.serverId !== id) {
-    // 编辑目标的树叶选中态与保存对象不符（多选中残留）——保守回退，避免错误高亮
-    selection.value = null
-  }
+// 行为），前端兜底 reload；这里收敛抽屉状态（名称/协议可能已变，列表经 reload 取新值）。
+function onSaved() {
   editor.value = null
   reload()
 }
@@ -547,12 +580,12 @@ const importModal = ref(false)
         </div>
         <!-- 活动过滤器 chips：搜索词 + 标签（文件夹选择由面包屑本身表达，不重复）；
              点击 chip 上的 ✕ 清对应过滤器，样式沿用 search-chip。
-             H9：搜索 chip 附「全库范围」标注——搜索是全库递归（后端跨数据源/跨文件夹匹配），
-             在子文件夹内搜索时面包屑路径与「N 台」会把全库命中误读成本文件夹命中，
-             唯一的来处标注（文件夹列）之外再给一句就地说明 -->
+             H9：搜索 chip 附「范围」标注（随当前视图层级：全库/整源/当前文件夹及子文件夹），
+             与搜索范围收窄（applyServerFilters 第 4 参）配套——就地告知命中范围，防把当前
+             范围命中误读为全库结果 -->
         <span v-if="searchActive" class="search-chip" :title="t('crumb.searchChip')">
           <span class="sc-label"
-            >⌕ {{ searchQuery }}<span class="sc-scope">{{ t('crumb.searchScope') }}</span></span
+            >⌕ {{ searchQuery }}<span class="sc-scope">{{ t(searchScopeKey) }}</span></span
           >
           <button class="sc-x" :title="t('crumb.clearSearch')" @click="searchQuery = ''">✕</button>
         </span>

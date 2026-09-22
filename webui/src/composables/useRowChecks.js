@@ -137,6 +137,23 @@ export function useRowChecks({ sorted, servers, folders }) {
   watch(sorted, () => {
     anchorIdx = -1
   })
+  // 空文件夹勾选的剔除与显示同谓词（round8 P4/M20）：文件夹行消失（不在当前层级
+  // folderChecks）或不再为空（count>0，被填入了服务器）即从勾选集中剔除——此前剔除
+  // 只清服务器集，显示层已按三态语义如实显示未勾，但 checkedFolders 残留会让批量条
+  // 仍计「1 个空文件夹」、确认框仍承诺「删除空文件夹」，执行时其内容被静默上移
+  watch(folderChecks, (m) => {
+    if (!checkedFolders.value.size) return
+    const next = new Map(checkedFolders.value)
+    let changed = false
+    for (const key of checkedFolders.value.keys()) {
+      const st = m.get(key)
+      if (!st || st.count > 0) {
+        next.delete(key)
+        changed = true
+      }
+    }
+    if (changed) checkedFolders.value = next
+  })
   // 数据变化剔除已不存在的勾选（口径见文件头：servers 域而非视图域）
   watch(servers, (list) => {
     if (!checked.value.size) return

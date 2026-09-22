@@ -55,5 +55,13 @@ export function useColumns() {
     state.value = { ...state.value, [k]: { w: w == null ? null : Math.max(40, Math.round(w)), hidden: isHidden(k) } }
     persist()
   }
-  return { colState: state, HIDEABLE_COLS, isHidden, widthOf, setHidden, setWidth }
+  /** 全部列宽重置（round8 P12：列菜单入口——此前「双击重置」只存在于不可聚焦的表头拖拽热区，
+      键盘用户无法调宽看全文、列被拖坏也无恢复通道） */
+  function resetWidths() {
+    const next = { ...state.value }
+    for (const k of HIDEABLE_COLS) next[k] = { w: null, hidden: isHidden(k) }
+    state.value = next
+    persist()
+  }
+  return { colState: state, HIDEABLE_COLS, isHidden, widthOf, setHidden, setWidth, resetWidths }
 }

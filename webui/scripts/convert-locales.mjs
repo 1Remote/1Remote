@@ -672,12 +672,9 @@ const OVERRIDES = {
     // batch9 Task D \u246d\u246e\u246f\uff1a\u7f16\u8f91\u6a21\u6001\u4e8c\u9009\u4e00/\u63a9\u7801\u63d0\u793a/\u79c1\u94a5\u6d4f\u89c8\uff08web \u4e13\u6709\u952e\uff0cWPF \u5f39\u7a97\u4e3a
     // IsUsePrivateKey \u590d\u9009\u6846\u65e0\u5bf9\u5e94\u8bcd\u6761\uff09\u3002\u53ef\u8bfb\u5f62\u5f0f\uff1a
     //   authType=\u8a8d\u8b49\u65b9\u5f0f / browse=\u700f\u89bd\u2026 /
-    //   secretHint=\u5df2\u5132\u5b58\u7684\u5bc6\u78bc/\u79c1\u9470\u4ee5\u906e\u7f69\u986f\u793a\uff1a\u9ede \ud83d\udc41 \u9a57\u8b49\u5f8c\u67e5\u770b\u660e\u6587\uff0c\u906e\u7f69\u672a\u66f4\u52d5\u6642\u5132\u5b58\u4fdd\u6301\u539f\u503c\u3002
     //   \u50c5\u5132\u5b58\u76ee\u524d\u6240\u9078\u985e\u578b\uff1b\u5982\u9700\u79fb\u9664\u53e6\u4e00\u9805\uff0c\u8acb\u5207\u63db\u5230\u8a72\u9805\u5f8c\u6e05\u7a7a\u518d\u5132\u5b58\u3002
     'cv.authType': '\u8a8d\u8b49\u65b9\u5f0f',
     'cv.browse': '\u700f\u89bd\u2026',
-    'cv.secretHint':
-      '\u5df2\u5132\u5b58\u7684\u5bc6\u78bc/\u79c1\u9470\u4ee5\u906e\u7f69\u986f\u793a\uff1a\u9ede \ud83d\udc41 \u9a57\u8b49\u5f8c\u67e5\u770b\u660e\u6587\uff0c\u906e\u7f69\u672a\u66f4\u52d5\u6642\u5132\u5b58\u4fdd\u6301\u539f\u503c\u3002\u50c5\u5132\u5b58\u76ee\u524d\u6240\u9078\u985e\u578b\uff1b\u5982\u9700\u79fb\u9664\u53e6\u4e00\u9805\uff0c\u8acb\u5207\u63db\u5230\u8a72\u9805\u5f8c\u6e05\u7a7a\u518d\u5132\u5b58\u3002',
     'cv.deleteTitle': '\u522a\u9664\u6191\u8b49',
     'cv.deleteConfirm':
       '\u78ba\u5b9a\u522a\u9664\u6191\u8b49\u300c{name}\u300d\uff1f\u6b64\u64cd\u4f5c\u7121\u6cd5\u5fa9\u539f\u3002',
@@ -4434,6 +4431,7 @@ const bcp47 = (lower) =>
 // （合并同名文件夹确认/无数据源引导/搜索范围标注/复制密码/凭据空态指引/设置分组副标题）。
 const ROUND4 = {
   'de-DE': {
+    'common.help': 'Hilfe',
     'row.selectEmptyFolder': 'Diesen leeren Ordner ausw\u00e4hlen (Sammell\u00f6schung)',
     'batch.selectedFolders': '{m} leere Ordner',
     'batchDelete.confirmFolders': '{m} leere Ordner l\u00f6schen? Dies kann nicht widerrufen werden.',
@@ -4481,6 +4479,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Externe Protokoll-Runner',
   },
   'fr-FR': {
+    'common.help': 'Aide',
     'row.selectEmptyFolder': 'S\u00e9lectionner ce dossier vide (suppression par lot)',
     'batch.selectedFolders': '{m} dossier vide | {m} dossiers vides',
     'batchDelete.confirmFolders': 'Supprimer {m} dossiers vides ? Cette action est irr\u00e9versible.',
@@ -4528,6 +4527,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocoles externes',
   },
   'es-AR': {
+    'common.help': 'Ayuda',
     'row.selectEmptyFolder': 'Seleccionar esta carpeta vac\u00eda (eliminaci\u00f3n por lotes)',
     'batch.selectedFolders': '{m} carpeta vac\u00eda | {m} carpetas vac\u00edas',
     'batchDelete.confirmFolders': '\u00bfEliminar {m} carpetas vac\u00edas? Esta acci\u00f3n no se puede deshacer.',
@@ -4576,6 +4576,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'it-IT': {
+    'common.help': 'Aiuto',
     'row.selectEmptyFolder': 'Seleziona questa cartella vuota (eliminazione in blocco)',
     'batch.selectedFolders': '{m} cartella vuota | {m} cartelle vuote',
     'batchDelete.confirmFolders': 'Eliminare {m} cartelle vuote? Questa azione non pu\u00f2 essere annullata.',
@@ -4624,6 +4625,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runner di protocolli esterni',
   },
   'pt-BR': {
+    'common.help': 'Ajuda',
     'row.selectEmptyFolder': 'Selecionar esta pasta vazia (exclus\u00e3o em lote)',
     'batch.selectedFolders': '{m} pasta vazia | {m} pastas vazias',
     'batchDelete.confirmFolders': 'Excluir {m} pastas vazias? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.',
@@ -4673,6 +4675,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'pt-PT': {
+    'common.help': 'Ajuda',
     'row.selectEmptyFolder': 'Selecionar esta pasta vazia (elimina\u00e7\u00e3o em lote)',
     'batch.selectedFolders': '{m} pasta vazia | {m} pastas vazias',
     'batchDelete.confirmFolders': 'Eliminar {m} pastas vazias? Esta a\u00e7\u00e3o n\u00e3o pode ser anulada.',
@@ -4721,6 +4724,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'ru-RU': {
+    'common.help': 'Справка',
     'row.selectEmptyFolder':
       '\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u044d\u0442\u0443 \u043f\u0443\u0441\u0442\u0443\u044e \u043f\u0430\u043f\u043a\u0443 (\u043c\u0430\u0441\u0441\u043e\u0432\u043e\u0435 \u0443\u0434\u0430\u043b\u0435\u043d\u0438\u0435)',
     'batch.selectedFolders':
@@ -4791,6 +4795,7 @@ const ROUND4 = {
       '\u0412\u043d\u0435\u0448\u043d\u0438\u0435 Runner \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432',
   },
   'pl-PL': {
+    'common.help': 'Pomoc',
     'row.selectEmptyFolder': 'Zaznacz ten pusty folder (usuwanie wsadowe)',
     'batch.selectedFolders': '{m} pusty folder | {m} puste foldery | {m} pustych folder\u00f3w',
     'batchDelete.confirmFolders':
@@ -4841,6 +4846,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Zewn\u0119trzne Runner protoko\u0142\u00f3w',
   },
   'cs-CZ': {
+    'common.help': 'Nápověda',
     'row.selectEmptyFolder': 'Vybrat tuto pr\u00e1zdnou slo\u017eku (hromadn\u00e9 odstran\u011bn\u00ed)',
     'batch.selectedFolders':
       '{m} pr\u00e1zdn\u00e1 slo\u017eka | {m} pr\u00e1zdn\u00e9 slo\u017eky | {m} pr\u00e1zdn\u00fdch slo\u017eek',
@@ -4891,6 +4897,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Extern\u00ed Runnery protokol\u016f',
   },
   'gl-ES': {
+    'common.help': 'Axuda',
     'row.selectEmptyFolder': 'Seleccionar este cartafol baleiro (eliminaci\u00f3n por lotes)',
     'batch.selectedFolders': '{m} cartafol baleiro | {m} cartafoles baleiros',
     'batchDelete.confirmFolders': '\u00bfEliminar {m} cartafoles baleiros? Non se pode desfacer.',
@@ -4938,6 +4945,7 @@ const ROUND4 = {
     'settings.nav.runnersSub': 'Runners de protocolos externos',
   },
   'ja-JP': {
+    'common.help': 'ヘルプ',
     'row.selectEmptyFolder':
       '\u3053\u306e\u7a7a\u30d5\u30a9\u30eb\u30c0\u30fc\u3092\u9078\u629e\uff08\u4e00\u62ec\u524a\u9664\uff09',
     'batch.selectedFolders': '{m} \u500b\u306e\u7a7a\u30d5\u30a9\u30eb\u30c0\u30fc',
@@ -4998,6 +5006,16 @@ const ROUND4 = {
     'settings.nav.runnersSub': '\u5916\u90e8\u30d7\u30ed\u30c8\u30b3\u30eb\u306e Runner',
   },
   'zh-TW': {
+    // round8 P13：中文占位符统一（原回落 en-US 的 e.g. 与 zh 系「如：」不一致）
+    'editor.ph.serialPort': '如：COM1',
+    'editor.ph.bitRate': '如：9600',
+    'editor.ph.address': '如：192.168.0.101',
+    'editor.ph.startupPath': '如：/home/user/Desktop',
+    'editor.ph.startupAutoCommand': '如：cd /home/user/Desktop/',
+    'editor.ph.sshStartupAutoCommand': '如：cd /home/user/Desktop/;./build.sh;',
+    'editor.ph.exePath': '如：C:/vnc/viewer.exe 或 %VNC%/viewer.exe',
+    'editor.ph.rdpControlKey': '如：EnableAutoReconnect:i:0',
+    'common.help': '說明',
     'row.selectEmptyFolder': '\u9078\u53d6\u6b64\u7a7a\u8cc7\u6599\u593e\uff08\u53ef\u6279\u6b21\u522a\u9664\uff09',
     'batch.selectedFolders': '{m} \u500b\u7a7a\u8cc7\u6599\u593e',
     'batchDelete.confirmFolders':

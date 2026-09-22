@@ -29,7 +29,7 @@ import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { api } from '../../api'
-import { makeDsDotTitle } from '../../utils/dsTitle'
+import { dsDotClass as dotClass, makeDsDotTitle } from '../../utils/dsTitle'
 import { useServers } from '../../composables/useServers'
 import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import { onFormEnter } from '../../utils/formEnter'
@@ -44,7 +44,6 @@ const { datasources, reload } = useServers()
 const { shield, bindModalEsc } = useSettingsEsc()
 
 // ---- 展示辅助 ----
-const dotClass = (status) => (status === 'connected' ? 'ok' : status === 'reconnecting' ? 'bad' : 'idle')
 // K16：卡片状态点悬停 title 走 i18n——单一实现在 utils/dsTitle.js（与树根行/状态栏共用），
 // 此前 :title="d.status" 直出英文裸枚举
 const dsDotTitle = makeDsDotTitle(t)

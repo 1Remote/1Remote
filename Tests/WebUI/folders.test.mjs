@@ -252,3 +252,30 @@ describe('边栏过滤 applyServerFilters（标签 ∩ 搜索）', () => {
     )
   })
 })
+
+describe('搜索范围收窄（owner 2026-09-22 需求①：资源管理器语义）', () => {
+  // 树形测试数据：ds-A 下 folder a（含子 a/b），ds-B 独库
+  const list = [
+    { id: 'a1', dataSourceName: 'ds-A', folderPath: 'a' },
+    { id: 'a1x', dataSourceName: 'ds-A', folderPath: 'a/b' }, // a 的子文件夹内
+    { id: 'a2', dataSourceName: 'ds-A', folderPath: 'a2' },
+    { id: 'root', dataSourceName: 'ds-A', folderPath: '' }, // 数据源根级
+    { id: 'b1', dataSourceName: 'ds-B', folderPath: 'a' }, // 跨库同路径
+  ]
+  const selFolder = { dataSourceName: 'ds-A', folderPath: 'a' }
+  const selDsRoot = { dataSourceName: 'ds-A', folderPath: '' }
+  const hit = (sel) => applyServerFilters(list, '', new Set(['a1', 'a1x', 'a2', 'root', 'b1']), sel).map((s) => s.id)
+
+  it('文件夹视图：仅命中当前文件夹及其子文件夹', () => {
+    assert.deepEqual(hit(selFolder), ['a1', 'a1x'])
+  })
+  it('数据源根视图：整个数据源命中可见（含全部子文件夹）', () => {
+    assert.deepEqual(hit(selDsRoot), ['a1', 'a1x', 'a2', 'root'])
+  })
+  it('「全部数据」根（无数据源）：全库命中可见（跨库）', () => {
+    assert.deepEqual(hit(null), ['a1', 'a1x', 'a2', 'root', 'b1'])
+  })
+  it('搜索未激活（searchedIds=null）时 selection 不参与过滤', () => {
+    assert.equal(applyServerFilters(list, '', null, selFolder).length, 5)
+  })
+})

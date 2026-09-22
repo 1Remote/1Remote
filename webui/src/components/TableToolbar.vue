@@ -26,6 +26,7 @@ const emit = defineEmits([
   'toggle-custom',
   'toggle-col-menu',
   'set-hidden',
+  'reset-widths',
 ])
 const { t } = useI18n()
 
@@ -133,6 +134,10 @@ onBeforeUnmount(() => clearInterval(hintTimer))
           <input type="checkbox" checked disabled />
           <span>{{ t('col.status') }} · {{ t('col.tags') }} · {{ t('col.actions') }}</span>
         </label>
+        <!-- P12：重置列宽——键盘可达的重置入口（此前只有表头拖拽热区的双击重置） -->
+        <button class="col-item col-reset" type="button" @click="emit('reset-widths')">
+          {{ t('cols.resetWidths') }}
+        </button>
         <div class="col-hint">{{ t('cols.hint') }}</div>
       </div>
     </div>
@@ -337,6 +342,15 @@ onBeforeUnmount(() => clearInterval(hintTimer))
 .col-item-fixed {
   color: var(--text-4);
   cursor: default;
+}
+
+/* P12：重置列宽按钮——菜单项形态（无边框、hover 浅底），与复选行同参数 */
+.col-reset {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
 }
 
 /* H9：当前不可用的列项（文件夹列在非根视图且未搜索）——与 disabled input 同款弱化 */
