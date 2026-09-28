@@ -53,8 +53,9 @@ Dragablz `Thumb` 拖动（约 4px 启动阈值）→ `TabablzControl.MonitorBrea
 
 ### P3 · detach/合并后更新 ParentWindow
 
-`TabWindowViewModel.ItemsOnCollectionChanged`：对 `e.NewItems` 中的 `TabItemViewModel` 调用
-`item.Content.SetParentWindow(View)`。`HostBase.SetParentWindow`（`HostBase.cs:41`）对相同值
+`TabWindowViewModel.ItemsOnCollectionChanged`：仅在 `e.Action == Add` 且 `e.NewItems != null` 时，
+对其中 `TabItemViewModel` 调用 `item.Content.SetParentWindow(View)`（`Dispose` 路径的 `Items.Clear()`
+触发 Reset、`NewItems` 为 null，必须过滤以免 NRE）。`HostBase.SetParentWindow`（`HostBase.cs:41`）对相同值
 早退，幂等，与 `AddItem` 现有调用不冲突。移出（`e.OldItems`）不需要处理——同一个集合变化周期内
 新窗口侧必然收到 Add 并设置正确的 `View`。
 
@@ -82,18 +83,26 @@ public static Point ToWpf(this Point pixelPoint, Visual visual)
 ### P6 · 扩大窗口间合并判定区域
 
 1. `InterTabController` 新增依赖属性 `ReentryGrace`（double，默认 0 = 现状不变）。
+   语义定为：**取目标窗口的 `InterTabController.ReentryGrace`**（`MonitorReentry` 是源控件上的方法、
+   但构造的是目标矩形，从语义上应取目标侧；1Remote 两侧统一设 40 时二者等价）。
 2. `TabablzControl.MonitorReentry` 构造目标矩形时：
-   `topLeft.Y -= ReentryGrace * 0.25; bottomRight.Y += ReentryGrace;`（DIP）。
+   `topLeft.Y -= ReentryGrace * 0.25; bottomRight.Y += ReentryGrace;`。
+   注意该矩形由 `PointToScreen` 构造、单位为物理像素，而 `ReentryGrace` 定义为 DIP；
+   System DPI Aware 下全进程按主屏 DPI 统一换算，同屏内 DIP 数值与物理像素近似一致，
+   接受此近似，不做二次换算。
 3. 1Remote 的 XAML 里为 `InterTabController` 设 `ReentryGrace="40"`：tab 条下方 40px 内松手即可吸入
    目标窗口，上方 10px 余量。水平方向不扩展，避免误吸到目标窗口内容区中部。
+4. 本修复不改变"两跳式合并"结构（多 tab 窗口的 tab 先 popout、再吸回目标窗口；`MonitorReentry`
+   仅在源窗口单 tab 拖动时执行），扩大的是第二跳的判定区域。
 
 ## 测试与验证
 
 UI 拖拽行为无法单元测试，采用手动验证矩阵：
 
 - 会话类型：RDP（AxMsRdpClient09）、SSH/Integrate、VNC、文件传输
-- 场景：tab 重排不误触；单 tab 窗口拖动；多 tab 窗口 detach；detach 后拖回原窗口；跨窗口合并；
-  最大化窗口 detach；detach 后 F11 全屏（多屏）
+- 场景：tab 重排不误触；单 tab 窗口拖动；多 tab 窗口 detach；detach 后拖回原窗口；跨窗口合并
+  （预期为两跳式：先 popout 再吸入，吸回判定区为 tab 条及其下方约 40px——判定区扩大即达标，
+  两跳本身不是缺陷）；最大化窗口 detach；detach 后 F11 全屏（多屏）
 - 环境：单屏；混合 DPI 双屏（验证 P5 行为不变）
 - 构建：主仓 net9/10/11 多 TFM 构建通过；Dragablz 子模块 net48 目标构建通过
 
