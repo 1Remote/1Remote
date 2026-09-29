@@ -141,7 +141,7 @@ watchEffect(() => {
 }
 
 .frow .cell-status {
-  flex: 0 0 var(--c-status, 42px);
+  flex: 0 0 var(--c-status, 12px); /* 12px 定宽（2026-09-26 定案；.frow .cell 无右内距，无需清零） */
 }
 
 .frow .cell-name {
@@ -189,34 +189,9 @@ watchEffect(() => {
   padding-right: 0;
 }
 
-.act {
-  border: none;
-  background: transparent;
-  color: var(--text-3);
-  font-size: var(--fs-body);
-  line-height: 1;
-  width: var(--ctrl-h-s);
-  height: var(--ctrl-h-s);
-  border-radius: var(--radius-ctrl);
-  cursor: pointer;
-}
-
-.act:hover:not(:disabled) {
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-
-.act:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
-
-/* 文件夹勾选复选框：强调色随主题；空（虚拟）文件夹禁用置灰 */
+/* 文件夹勾选复选框：强调色随主题（空文件夹同样可勾选作批量删除通道，无禁用态——
+   round17 删除 .cb:disabled 死样式：模板无 :disabled 绑定，该规则永不命中） */
 .cb {
   accent-color: var(--accent);
-}
-.cb:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
 }
 </style>

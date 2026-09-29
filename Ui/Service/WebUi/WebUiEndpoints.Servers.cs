@@ -331,6 +331,24 @@ namespace _1RM.Service.WebUi
                     _ => Results.BadRequest(new { errors = result.Errors }),
                 };
             });
+
+            // 导出 POST 体版（round13 N7）：GET 查询串拼 ids 受 Kestrel 默认 8KB 请求行上限
+            //（服务器 Id 为 26 字符 ULID，约 300 台即超限 414，用户只见笼统"导出失败"）。
+            // POST body { ids: [...] } 无此限制；GET 保留兼容（旧前端/直链场景）。
+            app.MapPost("/api/servers/export", async (ExportRequestDto? body) =>
+            {
+                var idList = body?.Ids ?? new List<string>();
+                var result = await WebUiImportExportService.ExportAsync(idList);
+                return result.Status switch
+                {
+                    ExportStatus.Ok => Results.File(
+                        Encoding.UTF8.GetBytes(result.Json),
+                        "application/json",
+                        result.FileName),
+                    ExportStatus.Forbidden => Results.StatusCode(403),
+                    _ => Results.BadRequest(new { errors = result.Errors }),
+                };
+            });
         }
 
         internal static void MapServersEvents(WebApplication app)

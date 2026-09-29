@@ -219,7 +219,8 @@ const barColor = computed(() => opaqueHex(props.server.color))
   padding-right: 0;
 }
 .cell-status {
-  flex: 0 0 var(--c-status, 42px);
+  flex: 0 0 var(--c-status, 12px);
+  padding-right: 0; /* 12px 定宽列（指示器 8px+4px，2026-09-26 定案）：清零 .cell 的 10px 右内距，dot 左置、右侧 4px 余量 */
 }
 .cell-name {
   flex: var(--c-name, 2.3) var(--c-name-grow, 1) 0;
@@ -430,26 +431,5 @@ const barColor = computed(() => opaqueHex(props.server.color))
 
 .cb {
   accent-color: var(--accent);
-}
-.act {
-  border: none;
-  background: transparent;
-  color: var(--text-3);
-  font-size: var(--fs-body);
-  line-height: 1;
-  width: var(--ctrl-h-s);
-  height: var(--ctrl-h-s);
-  border-radius: var(--radius-ctrl);
-  cursor: pointer;
-}
-/* 行内钮 hover 统一多数派语言（bg-hover + text-1，与 bb-x/sc-x/cv .act 同款；
-   此前 elevated+accent-text 是异类） */
-.act:hover:not(:disabled) {
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-.act:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
 }
 </style>

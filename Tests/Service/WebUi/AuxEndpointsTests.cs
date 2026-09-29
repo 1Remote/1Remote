@@ -168,13 +168,14 @@ namespace Tests.Service.WebUi
         public async Task PickFile_StubPicked_ReturnsPathAndDerivesInitialDir()
         {
             var picked = @"C:\apps\putty.exe";
-            WebUiEndpoints.FilePicker = (filter, title, initialDir) =>
+            WebUiEndpoints.FilePicker = (filter, title, initialDir, checkFileExists) =>
             {
                 // 端点归一：filter 透传（exe 调用方传原值）、title 缺省 → null、
                 // body.path 的目录推导在端点内完成，stub 收到的已是 initialDirectory
                 Assert.AreEqual("exe|*.exe", filter, "filter 应原样透传（WPF SelectFileHelper 线格式）");
                 Assert.IsNull(title, "body 无 title 时应归一为 null（系统默认标题）");
                 Assert.AreEqual(@"C:\apps", initialDir, "端点应把 body.path 的目录部分作为 initialDirectory 传入");
+                Assert.IsTrue(checkFileExists, "未传 checkFileExists 时缺省 true（exe/脚本既有语义）");
                 return picked;
             };
             try
@@ -198,10 +199,11 @@ namespace Tests.Service.WebUi
         {
             // 脚本选择调用方（WPF CmdSelectScript 同参）：filter 含多段 + 第二段 *|*.*，title 直传
             var scriptFilter = "script|*.bat;*.cmd;*.ps1;*.py|*|*.*";
-            WebUiEndpoints.FilePicker = (filter, title, initialDir) =>
+            WebUiEndpoints.FilePicker = (filter, title, initialDir, checkFileExists) =>
             {
                 Assert.AreEqual(scriptFilter, filter, "多段 filter 应原样透传");
                 Assert.AreEqual("Select a script", title, "title 应原样透传");
+                Assert.IsTrue(checkFileExists, "脚本选择要求文件存在（缺省语义不变）");
                 return @"C:\scripts\run.bat";
             };
             try
@@ -223,7 +225,7 @@ namespace Tests.Service.WebUi
         [TestMethod]
         public async Task PickFile_StubCancelled_Returns404()
         {
-            WebUiEndpoints.FilePicker = (_, _, _) => null; // 用户取消：SelectFileHelper 返回 null → 404
+            WebUiEndpoints.FilePicker = (_, _, _, _) => null; // 用户取消：SelectFileHelper 返回 null → 404
             try
             {
                 var resp = await PostPickAsync(null);
@@ -239,11 +241,12 @@ namespace Tests.Service.WebUi
         public async Task PickFile_NoBody_StillInvokesPicker()
         {
             // body 整体可省（filter/title/path 均仅用于对话框参数）：无 body 时不 400，弹窗照常（此处 stub 直通）
-            WebUiEndpoints.FilePicker = (filter, title, initialDir) =>
+            WebUiEndpoints.FilePicker = (filter, title, initialDir, checkFileExists) =>
             {
                 Assert.IsNull(filter, "无 body.filter 时端点归一为 null（生产实现内回退 exe|*.exe）");
                 Assert.IsNull(title, "无 body.title 时应归一为 null");
                 Assert.IsNull(initialDir, "无 body.path 时 initialDirectory 应为 null");
+                Assert.IsTrue(checkFileExists, "无 body 时 checkFileExists 应缺省 true");
                 return @"C:\apps\kitty.exe";
             };
             try
@@ -251,6 +254,37 @@ namespace Tests.Service.WebUi
                 var resp = await _client.PostAsync("/api/files/pick",
                     new StringContent(string.Empty, Encoding.UTF8, "application/json"));
                 Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
+            }
+            finally
+            {
+                WebUiEndpoints.FilePicker = null;
+            }
+        }
+
+        [TestMethod]
+        public async Task PickFile_CheckFileExistsFalse_PassesThroughToPicker()
+        {
+            // round14 sqlite 需求：库文件浏览允许选定不存在的路径（新建库）——
+            // body.checkFileExists=false 应透传到对话框层（对齐 WPF SqliteSettingViewModel
+            // CmdSelectDbPath 的 checkFileExists:false）；缺省调用方（exe/脚本）不受影响
+            WebUiEndpoints.FilePicker = (filter, title, initialDir, checkFileExists) =>
+            {
+                Assert.AreEqual("SqliteSource Database|*.db", filter, "sqlite filter 应原样透传");
+                Assert.IsFalse(checkFileExists, "body.checkFileExists=false 应透传（允许选定不存在文件）");
+                return @"C:\data\new-database.db";
+            };
+            try
+            {
+                var body = JsonSerializer.Serialize(new
+                {
+                    filter = "SqliteSource Database|*.db",
+                    checkFileExists = false,
+                });
+                var resp = await _client.PostAsync("/api/files/pick",
+                    new StringContent(body, Encoding.UTF8, "application/json"));
+                Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode);
+                using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+                Assert.AreEqual(@"C:\data\new-database.db", doc.RootElement.GetProperty("path").GetString());
             }
             finally
             {

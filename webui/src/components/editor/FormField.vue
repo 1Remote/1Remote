@@ -26,14 +26,16 @@
  * 的模块级缓存拉取一次，两字段共享；SELECT 的动态选项（optionsSource 'runners:*'，
  * SelectedRunnerName）同样经 composables/useRunnerOptions.js 模块级缓存共享。
  */
-import { computed, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
+import { REQUIRED_HOT_KEY } from '../../composables/useRequiredGuard.js'
 import SubformList from './SubformList.vue'
 import IconPicker from './IconPicker.vue'
 import CredentialPicker from './CredentialPicker.vue'
 import MarkdownField from './MarkdownField.vue'
 import SwitchItem from './SwitchItem.vue'
+import SuggestInput from './SuggestInput.vue'
 import KeyValueLines from './KeyValueLines.vue'
 import HelpLink from '../HelpLink.vue'
 import KvMapField from './KvMapField.vue'
@@ -55,6 +57,9 @@ const props = defineProps({
   dataSourceName: { type: String, default: '' },
   /** icon 字段的预览底色（#RRGGBB；EditorDrawer 由 ColorHex 实时派生） */
   tint: { type: String, default: '' },
+  /** 行内校验红（round11 U7）：true 时输入控件标错误态——SubformList 行内必填空值
+   *  在保存尝试后（saveIssues.validate 门控）由父级传入 */
+  invalid: { type: Boolean, default: false },
 })
 const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
@@ -75,14 +80,16 @@ const placeholder = computed(() => (props.field.placeholderKey ? t(props.field.p
 // 按钮文案 Select 在 web 已被脚本行的"选择"占用，统一走 Browse 系）。
 // 子表单行内的条件按钮（ArgumentList Value 仅 File 型行）由 SubformList 按
 // filePickWhen 求值后剥离/保留描述符，本组件只看 filePick 有无。
-const filePickBusy = ref(false) // 请求寿命 = 用户开着对话框的时间（同 scriptBusy 语义）
-async function onFilePick() {
+const filePickBusy = ref(false) // 请求寿命 = 用户开着对话框的时间（与脚本行共用一枚 busy，
+// round17 收敛：filePick「浏览…」与脚本「选择」的描述符形态互斥——TEXT+filePick /
+// TEXTAREA+actions 不会同时出现，互斥语义不变）
+async function pickInto(filter, title) {
   if (filePickBusy.value) return
   filePickBusy.value = true
   try {
-    const resp = await api.pickFile(props.field.filePick.filter, {
+    const resp = await api.pickFile(filter, {
       path: String(props.modelValue ?? ''),
-      title: props.field.filePick.titleKey ? t(props.field.filePick.titleKey) : '',
+      title,
     })
     if (resp?.path) emit('update:modelValue', resp.path)
   } catch (e) {
@@ -90,6 +97,10 @@ async function onFilePick() {
   } finally {
     filePickBusy.value = false
   }
+}
+function onFilePick() {
+  const fp = props.field.filePick
+  return pickInto(fp.filter, fp.titleKey ? t(fp.titleKey) : '')
 }
 
 // ---- switch 行式（对齐 WPF 复选框行 CredentialView.xaml:191-215：空标题列 + 输入列
@@ -160,19 +171,17 @@ const selectValue = computed(() => {
     : props.modelValue
 })
 
-// ---- autocomplete：可输入下拉 = n-auto-complete。naive 默认空输入不弹菜单
-//（getShow 缺省 = !!value）——get-show 恒 true 让聚焦即显示。下拉恒展示全部建议
-//（不按输入过滤，聚焦即见所有备选项）；输入的值仍可自由键入（n-auto-complete
-// 本身支持）——建议只是候选、不约束取值，任意键入原样进 json（校验交给后端的
-// WPF 平价规则）。建议列表：suggestionsSource 指向远程串口建议（useSerialOptions，
-// 失败静默退化为空建议 = 纯文本输入），否则用字段自带的静态 suggestions。
+// ---- autocomplete（Serial 的端口/波特率）：候选清单原样给出——过滤/Esc 行为统一在
+// SuggestInput（round11 U21：此前恒全量铺开且不随输入过滤，两处行为分叉）。候选只是
+// 建议、不约束取值，任意键入原样进 json（校验交给后端的 WPF 平价规则）。建议列表：
+// suggestionsSource 指向远程串口建议（useSerialOptions，失败静默退化为空建议 =
+// 纯文本输入），否则用字段自带的静态 suggestions ----
 const acOptions = computed(() => {
   const list = props.field.suggestionsSource
     ? serialSuggestions(props.field.suggestionsSource)
     : Array.isArray(props.field.suggestions)
       ? props.field.suggestions
       : []
-  // 恒全量：不按输入过滤，下拉始终展示所有建议
   return list.map((s) => String(s))
 })
 
@@ -217,21 +226,16 @@ function addTag(tag) {
 //    （WPF 的 "We will run..." 提示 + 控制台窗口 + "The exit code..." 消息盒的 web 等价）。
 const actionSelect = computed(() => Array.isArray(props.field.actions) && props.field.actions.includes('select'))
 const actionTest = computed(() => Array.isArray(props.field.actions) && props.field.actions.includes('test'))
-const scriptBusy = ref(false) // 两按钮互斥占用（选择请求寿命 = 用户开着对话框的时间）
+const scriptBusy = ref(false) // 「选择/测试」两按钮互斥占用（选择请求寿命 = 用户开着对话框的时间）
 // 脚本值为空（含纯空白）时禁用"测试"（空命令的测试必然无意义，
 // 后端 DisassembleOneLineScriptCmd 拆不出可执行项）；"选择"不受影响——选择正是填值的入口
 const scriptEmpty = computed(() => String(props.modelValue ?? '').trim() === '')
+// 「选择」走 pickInto（round17 收敛：与 filePick「浏览…」共用入口/错误处理，仅 filter 与
+// 标题不同）；busy 用脚本行自己的 scriptBusy（与「测试」互斥，await 全程占用）
 async function onScriptSelect() {
-  if (scriptBusy.value) return
   scriptBusy.value = true
   try {
-    const resp = await api.pickFile('script|*.bat;*.cmd;*.ps1;*.py|*|*.*', {
-      path: String(props.modelValue ?? ''),
-      title: t('editor.scriptPickTitle'),
-    })
-    if (resp?.path) emit('update:modelValue', resp.path)
-  } catch (e) {
-    if (e?.status !== 404) message.error(t('settings.r.pickFailed')) // 404=用户取消，静默
+    await pickInto('script|*.bat;*.cmd;*.ps1;*.py|*|*.*', t('editor.scriptPickTitle'))
   } finally {
     scriptBusy.value = false
   }
@@ -280,10 +284,21 @@ const currentColorTitle = computed(() =>
 const isSwatchActive = (sw) => typeof props.modelValue === 'string' && sw === props.modelValue
 
 const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
+
+// 必填高亮（round14 统一必填处理；round15 起改红色——原橙色警告档与橙色主题冲突）：
+// EditorDrawer 守卫强点保存时 provide 的警告键集——本字段未填被高亮 → 标签红色
+//（全局 .req-hot）+ 输入框红色边框；无提供方（FormField 单独复用的场合）安全退化。
+// 与错误档（invalid）同为红色，直接合并条件
+const reqHot = inject(REQUIRED_HOT_KEY, null)
+const warnHot = computed(() => !!reqHot?.hot.has(props.field.key))
 </script>
 
 <template>
-  <div class="form-field" :class="'ff-' + field.type">
+  <div
+    class="form-field"
+    :class="['ff-' + field.type, { 'req-hot': warnHot }]"
+    :data-req-key="field.required || field.type === FIELD_TYPE.SUBFORM ? field.key : undefined"
+  >
     <div class="ff-label" :title="label">
       <!-- switch 行标签列默认留空（控件列 [开关][文字] 自解释）；switchWithLabel 例外 -->
       <span v-if="showLabelInColumn" class="ff-label-text"
@@ -315,6 +330,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
           size="small"
           :value="modelValue ?? ''"
           :placeholder="placeholder"
+          :status="invalid || warnHot ? 'error' : undefined"
           :disabled="disabled"
           :input-props="{ spellcheck: false }"
           @update:value="emit('update:modelValue', $event)"
@@ -328,6 +344,7 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         size="small"
         :value="modelValue ?? ''"
         :placeholder="placeholder"
+        :status="invalid || warnHot ? 'error' : undefined"
         :disabled="disabled"
         :input-props="{ spellcheck: false }"
         @update:value="emit('update:modelValue', $event)"
@@ -355,19 +372,16 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         @update:value="emit('update:modelValue', $event)"
       />
 
-      <!-- autocomplete（Serial 的端口/波特率）：可输入下拉——下拉始终显示全部建议
-          （acOptions 不按输入过滤、get-show 恒 true）；选中与直接键入均为字符串值
+      <!-- autocomplete（Serial 的端口/波特率）：SuggestInput（round11 U21 统一候选
+           控件）——候选随输入过滤、Esc 取消候选显示；选中与直接键入均为字符串值
            直通 json（建议只是候选，不约束取值） -->
-      <n-auto-complete
+      <SuggestInput
         v-else-if="field.type === FIELD_TYPE.AUTOCOMPLETE"
-        size="small"
-        :value="modelValue ?? ''"
-        :options="acOptions"
+        :value="String(modelValue ?? '')"
+        :suggestions="acOptions"
         :placeholder="placeholder"
         :disabled="disabled"
-        :input-props="{ spellcheck: false }"
-        :get-show="() => true"
-        @update:value="emit('update:modelValue', $event ?? '')"
+        @update:value="emit('update:modelValue', $event)"
       />
 
       <!-- switch：控件在前、描述文字紧跟（标签列留空见上方 showLabelInColumn）；
@@ -387,18 +401,21 @@ const FIELD_TYPE = FIELD // 模板中使用类型常量做分发
         :type="showPassword ? 'text' : 'password'"
         :value="modelValue ?? ''"
         :placeholder="placeholder"
+        :status="invalid || warnHot ? 'error' : undefined"
         :disabled="disabled"
         :input-props="{ spellcheck: false }"
         @update:value="emit('update:modelValue', $event)"
       >
         <template #suffix>
+          <!-- M8（round14）：图标随状态切换（👁=密文可显示 / 🙈=明文已显示），与凭据库
+               弹窗同语言——同一动作全站一种图标语义 -->
           <button
             class="ff-eye"
             type="button"
             :title="showPassword ? t('editor.hidePassword') : t('editor.showPassword')"
             @click="showPassword = !showPassword"
           >
-            👁
+            {{ showPassword ? '🙈' : '👁' }}
           </button>
         </template>
       </n-input>

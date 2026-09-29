@@ -74,9 +74,9 @@ async function persist(mutate) {
 
 export function useTreeState() {
   return {
-    expandedMap,
+    // round17 清死键：expandedMap/loaded 此前在返回对象里但全库零外部消费（SideTree/
+    // ServerListView/folderOps 解构均未取），ref 本体保留供模块内使用
     orderMap,
-    loaded,
     load,
     isExpanded,
     toggleExpand,

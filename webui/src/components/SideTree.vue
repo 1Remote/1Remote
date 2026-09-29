@@ -16,8 +16,10 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { useServers } from '../composables/useServers'
+import { useNow } from '../composables/useNow'
 import { buildTree, countHolderServers, fullKey, holderAt, isDescendantPath } from '../composables/folders'
 import { dsDotClass as dotClass, makeDsDotTitle } from '../utils/dsTitle'
+import { clampMenuPos } from '../utils/contextMenu'
 import { useTreeState } from '../composables/useTreeState'
 import { useFolderOps } from '../composables/folderOps'
 import {
@@ -37,7 +39,7 @@ const emit = defineEmits(['update:selection', 'update:tag', 'update:collapsed', 
 const { t } = useI18n()
 const message = useMessage()
 
-const { servers, datasources, tags, reload, dsWritable } = useServers()
+const { servers, datasources, datasourcesFetchedAt, tags, reload, dsWritable } = useServers()
 const { orderMap, folderPathsByDs, load, isExpanded, toggleExpand, persist } = useTreeState()
 const folderOps = useFolderOps()
 const tree = computed(() => buildTree(servers.value, datasources.value, folderPathsByDs.value))
@@ -136,7 +138,9 @@ const ZONE_RATIO = 0.25
 const moving = ref(false) // 逐台 PUT 进行中（防重入拖拽）
 
 function isDraggable(row) {
-  if (row.kind !== 'folder' || moving.value) return false // 仅文件夹可拖（根/全部数据源不可）
+  // 仅文件夹可拖（根/全部数据源不可）；round13 N1/A4：folderOps 长操作进行中也
+  // 不可拖——同层重排会与进行中的键迁移并发写全量字典，后写者覆盖先写者
+  if (row.kind !== 'folder' || moving.value || folderOps.busy.value) return false
   return dsWritable(row.dsName) // 只读数据源禁止改结构
 }
 function zoneFor(row, e) {
@@ -266,6 +270,8 @@ function targetParentPath(row, zone) {
 //   末尾，与 WPF 保留旧序号同语义）；
 // - before/after 且同层 → 纯重排（仅写同级序号键，不动服务器不动键，原逻辑保留）。
 async function applyTreeMove(src, row, zone) {
+  // round13 N1：长操作进行中整体让位（isDraggable 已挡拖起，此处兜底键盘/竞态路径）
+  if (folderOps.busy.value) return
   const parentPath = targetParentPath(row, zone)
   const newPath = [...parentPath, src.folder.name].join('/')
   if (newPath !== src.folder.path) {
@@ -325,14 +331,12 @@ const rootEl = ref(null)
 function onRowContext(row, e) {
   if (row.kind === 'all') return
   e.preventDefault()
-  const r = rootEl.value?.getBoundingClientRect()
-  const px = r ? e.clientX - r.left : e.clientX
-  const py = r ? e.clientY - r.top : e.clientY
+  // y 同款防溢出（J2，对齐 ServerTable 定位标准）：菜单最高 3 项约 110px，预算 130——
+  // 树最后一行右键时菜单整体上移入屏（「删除」不再被视口底裁掉）；极端矮窗回落贴顶
+  const { x, y } = clampMenuPos(e.clientX, e.clientY, rootEl.value, 150, 130)
   ctx.value = {
-    x: r ? Math.max(0, Math.min(px, r.width - 150)) : px, // 防溢出内收（菜单约 140px 宽）
-    // y 同款防溢出（J2，对齐 ServerTable 定位标准）：菜单最高 3 项约 110px，预算 130——
-    // 树最后一行右键时菜单整体上移入屏（「删除」不再被视口底裁掉）；极端矮窗回落贴顶
-    y: r ? Math.max(0, Math.min(py, r.height - 130)) : py,
+    x,
+    y,
     dsName: row.kind === 'root' ? row.ds.name : row.dsName,
     parentPath: row.kind === 'folder' ? row.folder.path : '',
     folderPath: row.kind === 'folder' ? row.folder.path : null,
@@ -377,7 +381,7 @@ function ctxDelete() {
 // ---- 展示辅助
 // H31：树根状态点悬停 title 走 i18n——单一实现在 utils/dsTitle.js（三处消费共用：
 // 树根行/底部状态栏/设置页卡片），此前三份逐行同构拷贝已收敛（round8 重构）
-const dsDotTitle = makeDsDotTitle(t)
+const dsDotTitle = makeDsDotTitle(t, { now: useNow(), fetchedAt: datasourcesFetchedAt })
 
 // 置顶标签在前，组内保持 API 顺序（稳定排序；重命名/删除等管理操作走标签管理模态）
 const sortedTags = computed(() => tags.value.slice().sort((a, b) => Number(b.isPinned) - Number(a.isPinned)))

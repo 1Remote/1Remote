@@ -42,6 +42,12 @@ namespace _1RM.Service.WebUi
         public string Status { get; set; } = string.Empty;      // connected/disconnected/reconnecting
         public bool Writable { get; set; } = true;
         public string ReconnectInfo { get; set; } = string.Empty;
+        /// <summary>
+        /// 自动重连等待剩余秒数（快照）：null=不在重连等待中（已连接/未开始）；
+        /// &gt;0=距下次自动重连秒数；0=已到点（正在重连）。Web 端配快照时间戳本地逐秒
+        /// 倒数展示，消除 30s 轮询间隔内的悬停滞后（2026-09-22 用户报告）。
+        /// </summary>
+        public int? ReconnectEtaSeconds { get; set; }
         public int ServerCount { get; set; }
         /// <summary>
         /// 连接参数视图（camelCase 序列化）：sqlite = {path}；mysql/pgsql = {host, port, databaseName, userName}。
@@ -147,6 +153,9 @@ namespace _1RM.Service.WebUi
     ///    缺省回退 "exe|*.exe"（原 pick-exe 调用方语义，exe 选择器仍是主流用法）。
     ///  - title：对话框标题（WPF CmdSelectScript 传 "Select a script"）；缺省用系统默认。
     ///  - path：当前值（仅用于推导对话框初始目录，取其目录名；缺失/无效时用系统默认位置）。
+    ///  - checkFileExists：文件须已存在（OpenFileDialog CheckFileExists）。缺省 true（脚本/exe
+    ///    等既有调用方语义）；sqlite 数据库浏览传 false——库文件不存在时允许选定路径新建
+    ///    （对齐 WPF SqliteSettingViewModel.CmdSelectDbPath 的 checkFileExists:false）。
     /// 响应 {path} = 用户选中的文件全路径；用户取消 → 404。
     /// </summary>
     public class PickFileRequest
@@ -154,6 +163,7 @@ namespace _1RM.Service.WebUi
         public string? Filter { get; set; }
         public string? Title { get; set; }
         public string? Path { get; set; }
+        public bool? CheckFileExists { get; set; }
     }
 
     /// <summary>
@@ -190,6 +200,7 @@ namespace _1RM.Service.WebUi
         public bool DoNotCheckNewVersion { get; set; }
         public bool RequireSecondaryVerification { get; set; }    // SecondaryVerificationHelper.GetEnabled()
         public bool AppStartAutomatically { get; set; }           // SetSelfStartingHelper.IsSelfStart()（注册表/启动文件夹实况）
+        public string LogFilePath { get; set; } = string.Empty;   // SimpleLogHelper.GetFileFullName()（运行时实况，只读展示；V11 round16——WPF 常规页日志路径行的 web 平价，PUT 白名单不含此键）
     }
 
     /// <summary>
@@ -361,5 +372,12 @@ namespace _1RM.Service.WebUi
     public class RunnersSaveRequest
     {
         public JsonElement? Protocols { get; set; }
+    }
+
+    /// <summary>POST /api/servers/export 请求体（round13 N7）：ids 放 body 避免 GET
+    /// 查询串拼接受 Kestrel 默认 8KB 请求行上限（约 300 台即 414）。</summary>
+    public class ExportRequestDto
+    {
+        public List<string>? Ids { get; set; }
     }
 }

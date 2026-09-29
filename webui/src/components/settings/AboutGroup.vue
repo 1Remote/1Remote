@@ -6,7 +6,7 @@
  * 破坏性更新在 tooltip 里标记）、Author 卡（头像 + Shawn(github) + 邮箱）、Support
  * （使用文档）、做出贡献（说明 + 三按钮）、包含组件（10 个链接照抄 WPF 列表）。
  * 紧凑布局：hero 与 Author 卡同行左右分布；Support 标题与文档链接同行；
- * 贡献按钮组保持横排；组件清单两列网格。克制风格：分组小标题 + 主题变量取色，
+ * 贡献按钮组保持横排；组件清单一行一个（2026-09-22 owner 要求）。克制风格：分组小标题 + 主题变量取色，
  * 不克隆 WPF 的三色按钮/双栏形态；词条与链接零增删。
  * 语言选择行已删除——常规组（GeneralGroup）已有语言下拉，此处不再重复。
  * 纯技术标签（Author/Support/Make contributions/Included Components/Update/Version/标语）
@@ -127,7 +127,7 @@ const CONTRIBUTE = [
       </a>
     </div>
 
-    <!-- Included Components（WPF:241-293：10 个组件链接照抄；两列网格 #18） -->
+    <!-- Included Components（WPF:241-293：10 个组件链接照抄；一行一个 2026-09-22 owner 要求） -->
     <h3 class="sec-title">{{ t('about.includedComponents') }}</h3>
     <ul class="components">
       <li v-for="u in COMPONENTS" :key="u">
@@ -322,14 +322,14 @@ const CONTRIBUTE = [
   gap: 8px;
 }
 
-/* ---- Included Components（自适应列网格：宽容器多列、960px 内约 2 列） ---- */
+/* ---- Included Components（一行一个：owner 2026-09-22 要求，长 URL 不换行挤压） ---- */
 .components {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 4px 28px; /* 行距归偶（G22） */
+  grid-template-columns: 1fr;
+  gap: 4px 28px; /* 行距归偶（G22）；单列下行距仍生效 */
 }
 .components li {
   padding: 4px 0; /* 归偶（G22） */

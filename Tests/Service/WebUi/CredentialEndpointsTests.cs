@@ -355,6 +355,58 @@ namespace Tests.Service.WebUi
             Assert.AreEqual("user-keep3", cached.UserName);
         }
 
+        /// <summary>
+        /// 用户报告场景回归（2026-09-22）：新建完全空凭据 → 编辑 → 填 UserName+Password → 保存成功
+        /// → 再次读回用户名在列、hasPwd=true 且密文真正落库。历史上 Dapper UpdateCredential 的
+        /// Commit 只在 relatedProtocols 分支内执行——无引用服务器（refCount=0）时 using 退出隐式
+        /// 回滚、表面返回 Success，用户名密码双双静默丢失（round11 已修，本测试钉住该场景）。
+        /// 提交形态照抄 web 编辑表单：Password 非空、PrivateKeyPath 键缺失（null=保持）。
+        /// </summary>
+        [TestMethod]
+        public async Task Update_EmptyCredential_FillsUserNameAndPassword_NoRefs_Persists()
+        {
+            var name = NewName("cred-empty");
+            var password = "pw-fill-" + Guid.NewGuid().ToString("N").Substring(0, 6);
+
+            // ① 新建空凭据（仅名称，用户名/密码/私钥全空）
+            Assert.AreEqual(HttpStatusCode.OK,
+                (await PostCredentialAsync(name, userName: "", password: "")).StatusCode);
+            var item = await GetListItemAsync(name);
+            Assert.AreEqual("", item.UserName, "前置：新建空凭据 userName 应为空");
+            Assert.AreEqual(0, item.RefCount, "前置：无引用服务器（历史上正是此分支被静默回滚）");
+
+            // ② web 编辑表单保存形态：UserName+Password 填值，PrivateKeyPath 未提交（null=保持）
+            var resp = await PutCredentialAsync(name, name, userName: "user-filled", password: password);
+            Assert.AreEqual(HttpStatusCode.OK, resp.StatusCode, await resp.Content.ReadAsStringAsync());
+
+            // ③ 列表读回：用户名在列 + hasPwd=true（再次编辑弹窗据此预填掩码）
+            var raw = await (await _client.GetAsync("/api/credentials?ds=Local")).Content.ReadAsStringAsync();
+            using (var doc = JsonDocument.Parse(raw))
+            {
+                var entry = doc.RootElement.GetProperty("credentials").EnumerateArray()
+                    .First(x => x.GetProperty("name").GetString() == name);
+                Assert.AreEqual("user-filled", entry.GetProperty("userName").GetString(),
+                    "用户名必须在更新后持久化（静默丢失回归）");
+                Assert.IsTrue(entry.GetProperty("hasPwd").GetBoolean(),
+                    "密码必须在更新后持久化——hasPwd=true 驱动编辑弹窗掩码预填（静默丢失回归）");
+            }
+
+            // ④ 落库验证（GetCredentials(true) 强制重读库，保持密文态）后克隆解密比对明文
+            var local = _1RM.IoC.Get<DataSourceService>().LocalDataSource;
+            Assert.IsNotNull(local);
+            var cached = local.GetCredentials(true).First(x => x.Name == name);
+            Assert.AreNotEqual(password, cached.Password, "库内必须保持加密态");
+            var clone = cached.CloneMe();
+            clone.DecryptToConnectLevel();
+            Assert.AreEqual("user-filled", cached.UserName, "强制重读库后用户名仍在（非缓存假象）");
+            Assert.AreEqual(password, clone.Password, "编辑填入的密码必须真正落库（非缓存假象）");
+
+            // ⑤ reveal 端到端对照（用户"再次编辑看到空"的直接反证）
+            var reveal = await _client.PostAsync($"/api/credentials/{Uri.EscapeDataString(name)}/reveal?ds=Local", null);
+            Assert.AreEqual(HttpStatusCode.OK, reveal.StatusCode);
+            StringAssert.Contains(await reveal.Content.ReadAsStringAsync(), password);
+        }
+
         // ------------------------------------------------------------------
         // DELETE 联动
         // ------------------------------------------------------------------

@@ -1,3 +1,11 @@
+// ────────────────────────────────────────────────────────────────────────────
+// 新人导览 · folders.test.mjs · L1 纯逻辑
+// ▸ 本文件测什么：文件夹/路径的核心语义：显示=直接子级、勾选=全部子孙、
+//   tree-state 键换算与迁移、树模型、自然 IP 排序、搜索与标签过滤的范围收窄。
+//   被测代码全部是纯函数（webui/src/composables/folders.js 等），不需要浏览器。
+// ▸ 单独运行：cd webui && node --test ../Tests/WebUI/folders.test.mjs
+// ▸ 全量运行与结果怎么看：Tests/WebUI/README.md §0；断言红了怎么办：README §8
+// ────────────────────────────────────────────────────────────────────────────
 // 文件夹/路径语义纯函数用例（spec §3.2 §3.5；历史缺陷 round4-错误2/H1/H3、round5-BUG1/2/3）。
 // 语义单一来源：src/composables/folders.js —— 显示=直接子级（isDirectChildOf，资源管理器
 // 模型），勾选=全部子孙（isInSubtreeOf，级联口径）。两者有意不同（H38 一轮反复的根源）。
@@ -277,5 +285,37 @@ describe('搜索范围收窄（owner 2026-09-22 需求①：资源管理器语�
   })
   it('搜索未激活（searchedIds=null）时 selection 不参与过滤', () => {
     assert.equal(applyServerFilters(list, '', null, selFolder).length, 5)
+  })
+})
+
+describe('标签过滤范围收窄（round11 U5：与搜索同口径——当前文件夹及子文件夹）', () => {
+  // 树形测试数据同上：a1 在 a、a1x 在 a/b（a 的子文件夹）、a2/root 在别层，b1 跨库
+  const tagged = [
+    { id: 'a1', dataSourceName: 'ds-A', folderPath: 'a', tags: ['prod'] },
+    { id: 'a1x', dataSourceName: 'ds-A', folderPath: 'a/b', tags: ['prod'] }, // 子文件夹里的同标签命中
+    { id: 'a2', dataSourceName: 'ds-A', folderPath: 'a2', tags: ['prod'] }, // 同库其它分支
+    { id: 'root', dataSourceName: 'ds-A', folderPath: '', tags: ['prod'] },
+    { id: 'b1', dataSourceName: 'ds-B', folderPath: 'a', tags: ['prod'] }, // 跨库同路径
+  ]
+  const tagHit = (sel) => applyServerFilters(tagged, 'prod', null, sel).map((s) => s.id)
+
+  it('文件夹视图：同标签命中含子文件夹（U5 回归锁定——此前只看直接子级会漏掉 a1x）', () => {
+    assert.deepEqual(tagHit({ dataSourceName: 'ds-A', folderPath: 'a' }), ['a1', 'a1x'])
+  })
+  it('数据源根视图：整源同标签命中可见', () => {
+    assert.deepEqual(tagHit({ dataSourceName: 'ds-A', folderPath: '' }), ['a1', 'a1x', 'a2', 'root'])
+  })
+  it('「全部数据」根（无数据源）：全库同标签命中可见（跨库）', () => {
+    assert.deepEqual(tagHit(null), ['a1', 'a1x', 'a2', 'root', 'b1'])
+  })
+  it('标签与搜索同激活：交集后仍按子树收窄', () => {
+    const both = applyServerFilters(tagged, 'prod', new Set(['a1', 'a1x', 'b1']), {
+      dataSourceName: 'ds-A',
+      folderPath: 'a',
+    }).map((s) => s.id)
+    assert.deepEqual(both, ['a1', 'a1x'])
+  })
+  it('无任何过滤时 selection 不参与（保持既有显示语义分界）', () => {
+    assert.equal(applyServerFilters(tagged, '', null, { dataSourceName: 'ds-A', folderPath: 'a' }).length, 5)
   })
 })

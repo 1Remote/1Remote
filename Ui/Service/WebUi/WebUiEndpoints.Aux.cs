@@ -12,6 +12,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.Image;
@@ -33,6 +34,7 @@ namespace _1RM.Service.WebUi
     /// ─ POST /api/icons/extract-from-exe 从 .exe 提取图标（与 WPF 图标选择器同路径）
     /// ─ POST /api/files/pick            通用文件选择器（WPF OpenFileDialog，filter/title 可选，取消 → 404）
     /// ─ POST /api/scripts/test          编辑器脚本测试执行（回传输出/退出码，见端点注释）
+    /// ─ POST /api/logs/open             打开日志所在文件夹并选中日志文件（WPF 常规页 CmdExploreTo 平价，V11 round16）
     /// ─ GET  /api/serial/options        Serial 编辑器下拉建议（端口/波特率）
     /// ─ GET/PUT /api/ui-state/tree      服务器树状态（展开/排序，本地缓存代理）
     /// ─ GET/POST /api/ui-state/list-order 列表自定义顺序（本地缓存代理）
@@ -140,11 +142,13 @@ namespace _1RM.Service.WebUi
         /// 文件选择弹窗注入点：null = 生产实现（STA 线程弹 WPF 文件对话框）；
         /// 测试注入 stub 以避免真实弹窗（MSTest 宿主弹了也没人关，请求会永久挂起）。
         /// 须保持 public：Tests 程序集无 InternalsVisibleTo（与 IsConnectable/DeriveConnectionState 同理）。
-        /// 签名 = (filter, title, initialDirectory) → 选中的文件全路径或 null（取消）；
-        /// filter/title 为端点归一后的值（空 → null），initialDirectory 为 body.path 的目录推导。
+        /// 签名 = (filter, title, initialDirectory, checkFileExists) → 选中的文件全路径或
+        /// null（取消）；filter/title 为端点归一后的值（空 → null），initialDirectory 为
+        /// body.path 的目录推导，checkFileExists 缺省 true（round14：sqlite 库文件浏览
+        /// 传 false，允许选定不存在的路径新建）。
         /// batch9 Task B #9 由 PickExePicker(string→string) 泛化（携带 filter/title）。
         /// </summary>
-        public static Func<string?, string?, string?, string?>? FilePicker = null;
+        public static Func<string?, string?, string?, bool, string?>? FilePicker = null;
 
         internal static void MapFilesPick(WebApplication app)
         {
@@ -165,6 +169,7 @@ namespace _1RM.Service.WebUi
             {
                 var filter = string.IsNullOrWhiteSpace(body?.Filter) ? null : body!.Filter!.Trim();
                 var title = string.IsNullOrWhiteSpace(body?.Title) ? null : body!.Title!.Trim();
+                var checkFileExists = body?.CheckFileExists ?? true;
                 string? initialDirectory = null;
                 try
                 {
@@ -181,7 +186,7 @@ namespace _1RM.Service.WebUi
                 var picker = FilePicker ?? ShowPickDialogOnSta;
                 try
                 {
-                    picked = picker(filter, title, initialDirectory);
+                    picked = picker(filter, title, initialDirectory, checkFileExists);
                 }
                 catch
                 {
@@ -199,7 +204,7 @@ namespace _1RM.Service.WebUi
         /// ValidateNames 与 try-catch 吞异常；filter 缺省回退 "exe|*.exe" 与端点层一致，
         /// 实际上端点层已归一，这里兜底注入点被直接调用时的形状），Join 同步等待用户选择后返回。
         /// </summary>
-        private static string? ShowPickDialogOnSta(string? filter, string? title, string? initialDirectory)
+        private static string? ShowPickDialogOnSta(string? filter, string? title, string? initialDirectory, bool checkFileExists)
         {
             string? result = null;
             var thread = new Thread(() =>
@@ -207,7 +212,7 @@ namespace _1RM.Service.WebUi
                 result = SelectFileHelper.OpenFile(
                     title: title,
                     filter: string.IsNullOrWhiteSpace(filter) ? "exe|*.exe" : filter,
-                    checkFileExists: true,
+                    checkFileExists: checkFileExists,
                     initialDirectory: initialDirectory);
             });
             thread.IsBackground = true; // 进程退出不被挂起的对话框卡死
@@ -317,6 +322,22 @@ namespace _1RM.Service.WebUi
                     output,
                     error,
                 });
+            });
+        }
+
+        internal static void MapLogsOpen(WebApplication app)
+        {
+            // 打开日志所在文件夹并选中日志文件：WPF 常规设置页「浏览…」按钮
+            // （GeneralSettingViewModel.CmdExploreTo → SelectFileHelper.OpenInExplorerAndSelect）
+            // 的 web 平价。V11（round16）：此前 web 常规组没有日志文件位置行，用户遇到
+            // 问题想反馈日志时无从找起。路径不可用（日志未初始化等）→ 404。
+            app.MapPost("/api/logs/open", () =>
+            {
+                var path = SimpleLogHelper.GetFileFullName();
+                if (string.IsNullOrEmpty(path))
+                    return Results.NotFound(new { error = "log file path is not available" });
+                SelectFileHelper.OpenInExplorerAndSelect(path);
+                return Results.Ok(new { opened = true, path });
             });
         }
 

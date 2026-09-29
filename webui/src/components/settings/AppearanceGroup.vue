@@ -3,9 +3,9 @@
  * 外观分组（Plan 3 Task 4，spec §4/§6）：迁移 themes 模块的主题切换 UI 为正式入口
  * （此前靠 window.__theme 调试钩子，本任务已移除）。
  * - 基底三卡（dark/light/system 跟随系统）带迷你预览；
- * - 强调色圆点（ACCENTS 7 色，与 theme.css data-accent 一一对应）；
+ * - 强调色圆点（ACCENTS 6 色，与 theme.css data-accent 一一对应；red 已删 round14）；
  * - 字号 S/M/L/XL 分段（点击即整站 font-size 生效）；
- * - 经典主题 9 预设 pills（CLASSIC_THEMES → setAppearance(themeMode+accent)）。
+ * - 经典主题 8 预设 pills（CLASSIC_THEMES → setAppearance(themeMode+accent)；Wine 随 red 删）。
  * 全部经 setAppearance：本地 reactive 即时生效 + PUT 持久化（后端不可达时静默，纯预览可用）。
  * 界面字体选择器（themeState.font）WPF 侧依赖系统字体枚举，归后续任务，此处不暴露。
  */

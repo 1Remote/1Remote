@@ -23,8 +23,9 @@
  * 解析（parseRows）：对象按 Object.keys 顺序转行（JSON 键序 = 插入序， Newtonsoft
  * 保留读取顺序），非字符串值经 String() 归一，保证任何存量值的行级往返保真。
  */
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useSaveIssues } from '../../editor/saveIssues.js'
 
 const props = defineProps({
   /** @type {FieldDescriptor} 字段描述符（type=KV_MAP；当前无 KV_MAP 专属扩展属性） */
@@ -76,6 +77,24 @@ function commit() {
   emit('update:modelValue', lastEmitted)
 }
 
+// 半填行（round11 U25）：key 空但 value 非空——序列化丢弃空 key 行（JSON 对象无空键），
+// 此前保存无提示、重开即消失。key 框常驻红框提示 + 经保存问题总线自报
+//（EditorDrawer 拦截保存并在横幅标注）；无提供方（单独使用）时自报为无操作。
+// V3（round16）：本组件唯一的落点在子表单行内（AppArgument.Selections，每行一张
+// 取值表），同一字段键会有多个实例并存——自报键追加实例号互不干扰，否则后报
+// "没问题"的那份会删掉别行"有半行"的记录（修好一行替另一行解锁保存拦截，
+// 半行被静默丢弃）。键只作存在性/计数消费（不进用户文案），后缀无展示副作用。
+const { report } = useSaveIssues()
+let issueUidSeq = 0 // 模块级实例号（组件级常量，不参与渲染）
+const issueKey = `${props.field.key}#${++issueUidSeq}`
+const rowIsHalf = (r) => String(r.key ?? '') === '' && String(r.value ?? '') !== ''
+watch(
+  () => rows.value.some(rowIsHalf),
+  (has) => report(issueKey, has),
+  { immediate: true }
+)
+onBeforeUnmount(() => report(issueKey, false))
+
 function addRow() {
   rows.value.push({ key: '', value: '' })
   // 新行不入 json（空 key 行序列化时丢弃）——commit 统一 emit 时机，值不因加空行变脏
@@ -100,6 +119,7 @@ function updateRow(i, k, v) {
           class="kvm-key"
           size="small"
           :value="row.key"
+          :status="rowIsHalf(row) ? 'error' : undefined"
           :disabled="disabled"
           :input-props="{ spellcheck: false }"
           @update:value="updateRow(i, 'key', $event)"
@@ -117,7 +137,7 @@ function updateRow(i, k, v) {
         </button>
       </div>
     </div>
-    <button class="kvm-add" type="button" :disabled="disabled" @click="addRow">+ {{ t('editor.addRow') }}</button>
+    <button class="dashed-add" type="button" :disabled="disabled" @click="addRow">+ {{ t('editor.addRow') }}</button>
   </div>
 </template>
 
@@ -130,28 +150,8 @@ function updateRow(i, k, v) {
   gap: 6px;
 }
 
-/* 行列表容器：边框容器（高 28 档、--radius-ctrl 控件档；KeyValueLines.kvl-box 同款） */
-.kvm-box {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-ctrl);
-  background: var(--bg-elevated);
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.kvm-box:focus-within {
-  border-color: var(--accent-focus);
-}
-
-.kvm-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* key / value：对半分宽（Selections 的 key/value 长度相近），min-width 防挤压 */
+/* 行列表容器/行/删除钮/等宽走 theme.css 全局并集（round14 M5 收敛，类名不变）；
+   本地只留分宽比例 */
 .kvm-key {
   flex: 1 1 50%;
   min-width: 0;
@@ -162,55 +162,5 @@ function updateRow(i, k, v) {
   min-width: 0;
 }
 
-/* 等宽字体：key/value 为技术字面量（对齐 KeyValueLines 的 kvl-name/kvl-value 口径） */
-.kvm-key :deep(input),
-.kvm-value :deep(input) {
-  font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
-}
-
-.kvm-del {
-  flex: 0 0 auto;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-4);
-  font-size: var(--fs-micro);
-  line-height: 1;
-  padding: 4px; /* 行内移除 ✕ 内距 4px 档（G22，kvl-del/sf-del 同值） */
-  cursor: pointer;
-}
-
-.kvm-del:hover:not(:disabled) {
-  background: var(--bg-hover);
-  color: var(--text-1); /* L2：移除钮 hover 中性（J9/J10 定案同款），危险性由 title 承载 */
-}
-
-.kvm-del:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
-
-/* 加行按钮：SubformList 的 sf-add / KeyValueLines 的 kvl-add 同款（虚线边框低调按钮） */
-.kvm-add {
-  align-self: flex-start;
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius-ctrl);
-  background: transparent;
-  color: var(--text-3);
-  font-size: var(--fs-body);
-  line-height: 1;
-  padding: 5px 12px;
-  cursor: pointer;
-}
-
-.kvm-add:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent-text);
-  background: var(--bg-hover);
-}
-
-.kvm-add:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
+/* 加行按钮走全局 .dashed-add（theme.css，round14 M4 收敛） */
 </style>

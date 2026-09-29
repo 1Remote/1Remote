@@ -352,8 +352,8 @@ function alternateCredentialsField() {
     subform: {
       fields: [
         // required：WPF 备用凭据弹窗 IDataErrorInfo 强制 Name 非空（AlternativeCredentialEditViewModel.cs:275）。
-        // 子表单内 UI 只标 *，非空校验由保存流/后端把关（AlternateCredentials 数组反序列化不逐行校验，
-        // 空名行会在保存时被整体拒绝或按后端行为处理——保存错误提示由抽屉承接）
+        // 子表单内 UI 标 *，非空校验由保存流拦截（round11 U7：EditorDrawer.validateRequired
+        // 逐行检查 + SubformList 保存尝试后行内标红；后端 AlternateCredentials 反序列化不逐行校验）
         // placeholder：WPF 备用凭据弹窗 5 个可继承字段同 Tag（AlternativeCredentialEditView，
         // 文件头清单）；Name 无 Tag 不加
         { key: 'Name', type: FIELD.TEXT, required: true },

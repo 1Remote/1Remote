@@ -21,9 +21,11 @@
  * + 预填来源 config（Id 防御性 delete，TreeNodes 随 json 携带 → 同文件夹，与 WPF
  * 复制一致）。保存成功后列表刷新由 SSE reload 自动完成，无需手动拉取。
  */
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, provide, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
+import { useDraftGuard } from '../../composables/useDraftGuard.js'
+import { useRequiredGuard, REQUIRED_HOT_KEY } from '../../composables/useRequiredGuard.js'
 import FormField from './FormField.vue'
 import SwitchItem from './SwitchItem.vue'
 import EditorHead from './EditorHead.vue'
@@ -32,8 +34,9 @@ import HelpLink from '../HelpLink.vue'
 import { PROTOCOLS } from '../../editor/schemas.js'
 import { FIELD } from '../../editor/fieldTypes.js'
 import { isVisible } from '../../editor/visibility.js'
-import { switchProtocol } from '../../editor/protocolSwitch.js'
+import { switchProtocolWithSnapshots } from '../../editor/protocolSwitch.js'
 import { deriveCredentialMode } from '../../editor/credentialMode.js'
+import { createSaveIssues, SAVE_ISSUES_KEY } from '../../editor/saveIssues.js'
 import { opaqueHex } from '../../utils/color.js'
 import { api } from '../../api'
 
@@ -63,6 +66,11 @@ const { t } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
 
+// 保存问题总线（round11 U7/U25）：行内组件（键值半行自报 / 子表单标红门控）经
+// provide/inject 接入——序列化输出丢半行、后端不逐行校验，父级只能靠组件自报发现
+const saveIssues = createSaveIssues()
+provide(SAVE_ISSUES_KEY, saveIssues)
+
 const isBulk = computed(() => props.mode === 'bulk')
 
 // ---- 状态 ----
@@ -73,7 +81,8 @@ const loading = ref(false)
 const loadError = ref('')
 const saving = ref(false) // 单机保存中（批量保存中在 BulkEditForm，经 bulkFormRef 同步）
 const saveErrors = ref([]) // 服务端 400 的 {errors} 列表（内联展示）
-const missingRequired = ref([]) // 客户端必填快速校验（字段文案列表）
+// round15：missingRequired（必填文案列表）随横幅删除移除——必填态由 reqGuard 假禁用/
+// 聚焦引导承载，计数经 announceSaveError；saveErrors 横幅保留
 
 // ---- 保存错误可见性三联动（toast + 按钮脉动 + 滚动到横幅）----
 // 横幅挂在滚动区顶部（长表单保存时多在视口外），仅靠横幅用户感知不到失败：
@@ -121,13 +130,22 @@ const groups = computed(() => schema.value?.groups || [])
 
 // ---- 凭据组二选一：模式初值派生 + 切换清引用 ----
 const credentialMode = ref('manual') // 'manual' | 'vault'（load/协议切换时按 json 派生）
+// V2：切往手动前备份库引用，切回凭据库且当前为空时自动恢复——对齐 WPF
+// CredentialViewModel 的 _credentialNameCache。否则来回切换后保存会把空引用落库，
+// 下次连接不再自动带凭据。备份随 load() 重置（不跨服务器/会话泄漏）。
+let lastVaultRef = ''
 function isCredentialGroup(g) {
   return g.id === 'credential' && g.fields.some((f) => f.key === 'InheritedCredentialName')
 }
 function onCredModeSwitch(mode) {
   if (mode === credentialMode.value) return
   credentialMode.value = mode
-  if (mode === 'manual') json.InheritedCredentialName = '' // 手动 = 清空库引用（有意语义）
+  if (mode === 'manual') {
+    if (json.InheritedCredentialName) lastVaultRef = json.InheritedCredentialName
+    json.InheritedCredentialName = '' // 手动 = 清空库引用（有意语义，备份已先行）
+  } else if (!json.InheritedCredentialName && lastVaultRef) {
+    json.InheritedCredentialName = lastVaultRef // 切回即恢复原引用，不重选也不再悄悄丢数据
+  }
 }
 /**
  * 组内可见字段 → 渲染块序列：visibleWhen 过滤后，连续 SWITCH 字段聚成一个 'switch-run'
@@ -185,6 +203,15 @@ function groupBlocks(g) {
   ]
 }
 
+/** 渲染块的 v-for key（round17）：块身份而非数组索引——visibleWhen 翻转/协议切换使块序列
+ * 位移时，索引 key 会让同分支（同 field.type）的 FormField 就地复用，内部瞬态（数字半输入
+ * 原文/明文态/预览态）串到相邻的异字段上。switch-run 聚合块取段首字段键保唯一。 */
+function blockKey(b) {
+  if (b.type === 'single') return b.field.key
+  if (b.type === 'switch-run') return 'run:' + b.fields[0].key
+  return b.type // cred-mode / cred-hint 伪块（每组至多一次，类型名即唯一）
+}
+
 // ---- 深拷贝（JSON 往返：与 snapshot 基准的序列化语义一致， reactive 代理脱钩）----
 function deepClone(o) {
   return JSON.parse(JSON.stringify(o ?? {}))
@@ -236,7 +263,12 @@ async function load() {
     replaceJson(raw)
     initialSnapshot = deepClone(raw)
     loadedProtocol = raw.Protocol || ''
+    protocolSnapshots = {} // 新会话：协议快照表清空（防上一台服务器的表单状态泄漏）
+    // 保存问题总线复位（U7/U25）：门控关闭 + 自报问题清零（挂载的组件会按当前值重报）
+    saveIssues.validate.value = false
+    for (const k of Object.keys(saveIssues.issues)) delete saveIssues.issues[k]
     credentialMode.value = deriveCredentialMode(raw.InheritedCredentialName) // 模式初值派生
+    lastVaultRef = raw.InheritedCredentialName || '' // V2 备份随会话重置
     if (!PROTOCOLS[loadedProtocol]) {
       // 未来版本新增协议（schema 未收录）：json 可透传但无法渲染表单，明确告知而非渲染空表单
       loadError.value = t('editor.unsupportedProtocol', { p: loadedProtocol || '?' })
@@ -258,68 +290,52 @@ function onBulkSaved(e) {
 
 // ---- 脏检测：整体 dirty = 协议切换 或 json 任一键与基准不一致 ----
 function valueChanged(cur, init) {
-  const a = cur === undefined ? undefined : JSON.stringify(cur)
-  const b = init === undefined ? undefined : JSON.stringify(init)
-  return a !== b
+  // JSON.stringify(undefined) 本就返回 undefined，无需三目特判（round17 化简）
+  return JSON.stringify(cur) !== JSON.stringify(init)
 }
 const dirty = computed(() => {
   if (isBulk.value) return !!bulkFormRef.value?.dirty // 覆盖态字段数即脏态（值变化不退出覆盖，无需更细）
   if (protocolKey.value !== loadedProtocol) return true
+  // 键值半行（round13 N4）：半行只存在行编辑器本地、不进 json——此前 json 未变即判
+  // "不脏"，Esc/遮罩直接关抽屉丢掉刚输入的半行。有自报问题时一律视为脏（走关闭确认
+  // 或遮罩提示）。saveIssues 由本组件 createSaveIssues 后 provide（同源直读）
+  if (Object.keys(saveIssues.issues).length) return true
   return Object.keys(json).some((k) => valueChanged(json[k], initialSnapshot[k]))
 })
 
 // ---- 协议切换（编辑/新建/复制均可；字段携带规则见 protocolSwitch.js）----
+// 会话级协议快照（round11 U1）：离开协议前存快照，切回时恢复原值（对齐桌面版每协议
+// 一份实例）——SSH 切到 RDP 再切回不再丢私钥路径等协议专属设置。抽屉重新加载（换目标
+// 服务器/重开）时在 load() 里整体清空，防跨服务器泄漏
+let protocolSnapshots = {}
 function onProtocolSwitch(next) {
   if (next === protocolKey.value) return
   const from = PROTOCOLS[protocolKey.value]
   const to = PROTOCOLS[next]
   if (!from || !to) return
-  replaceJson(switchProtocol(json, from, to))
-  credentialMode.value = deriveCredentialMode(json.InheritedCredentialName) // 携带后的值重派生
+  const cur = protocolKey.value
+  const r = switchProtocolWithSnapshots(json, cur, next, from, to, protocolSnapshots)
+  replaceJson(r.json)
+  credentialMode.value = deriveCredentialMode(json.InheritedCredentialName) // 携带/恢复后的值重派生
+  if (json.InheritedCredentialName) lastVaultRef = json.InheritedCredentialName // V2：协议携带的引用入备份
   saveErrors.value = []
-  missingRequired.value = []
 }
 
 // ---- 进出场过渡与关闭（脏则确认）----
 const show = ref(false)
-let closing = false // 确认弹窗打开期间忽略重复 Esc/点击，避免叠弹窗
-function requestClose() {
-  if (closing) return
-  if (!dirty.value) {
-    doClose()
-    return
-  }
-  closing = true
-  dialog.create({
-    title: t('editor.unsavedTitle'),
-    content: t('editor.unsavedText'),
-    // 删除类确认统一形态（丢弃编辑同为破坏性）：无图标 + 红 positive，
-    // 见 folderOps 文件头的对话框配色策略
-    showIcon: false,
-    positiveText: t('editor.btnDiscard'),
-    negativeText: t('editor.btnKeepEditing'),
-    positiveButtonProps: { type: 'error' },
-    autoFocus: false, // 与删除类确认同款：positive 是 destructive（丢弃），不自动聚焦——
-    // naive 默认聚焦首个可聚焦元素会让 Enter 肌肉记忆直接「丢弃并关闭」（Esc 仍可取消）
-    onPositiveClick: () => {
-      closing = false
-      doClose()
-    },
-    onNegativeClick: () => {
-      closing = false
-    },
-    onClose: () => {
-      closing = false // 点 ✕ 关闭按钮 = 继续编辑
-    },
-    // Esc / 点遮罩关闭走 Modal 的 update:show 路径，不经过上面的 onClose——naive 仅在
-    // ✕ 按钮上回调 onClose（DialogEnvironment.mjs handleCloseClick）。若不复位，closing
-    // 永真 → requestClose 永久早退，脏抽屉再也无法关闭（第三轮易用性报告 G1 死锁）。
-    // onAfterLeave 在任何关闭路径的离场动画后都触发，兜底复位（promptName 同款安全网）
-    onAfterLeave: () => {
-      closing = false
-    },
-  })
-}
+// 关闭守卫统一走 useDraftGuard（K1 收编：抽屉与设置弹窗共用一份实现）。
+// isBusy 只拦瞬态（保存中/批量保存中/加载中）——loadError 是终态，不得入忙碌判定：
+// round15 评审 B1/U28：收编时误将 loadError 塞进 isBusy，加载失败后 ✕/Esc/遮罩全部
+// 静默无响应，用户被锁死在错误页（唯一出路整页刷新）。N17 补齐：批量保存中（bulkSaving）
+// 与单机 saving 同口径忽略关闭，与已禁用的取消按钮一致
+const { onMaskClick, requestClose } = useDraftGuard({
+  isDirty: () => dirty.value,
+  isBusy: () => saving.value || bulkSaving.value || loading.value,
+  doClose,
+  dialog,
+  message,
+  t,
+})
 function doClose() {
   show.value = false
   closeTimer = setTimeout(() => emit('close'), 170) // 等滑出过渡结束再卸载
@@ -334,32 +350,80 @@ function onKey(e) {
     // 列表上方且任何按钮都已无意义（与表格 onGlobalKey 的 .n-dialog 让位同款守卫）
     if (document.querySelector('.n-dialog, .n-modal')) return
     e.preventDefault() // 抢在浏览器「保存网页」前
-    save()
+    // 与底部保存钮同入口（round14 必填守卫：未填先聚焦引导而非只横幅）
+    onSaveClick()
   } else if (e.key === 'Escape') {
     // 字段内下拉（协议切换/凭据选择等 n-select 菜单）打开时，Esc 只关下拉：naive 只标记
     // 事件不阻断冒泡（Select.mjs 的 markEventEffectPerformed），到达此处时菜单可能已被其
     // 关闭但 DOM 要到本事件结束后才卸下——存在性即「刚刚有下拉在开」，此时不消费 Esc。
     // IconPicker 弹窗的 Esc 由其自身捕获阶段拦截（见 IconPicker.vue），不会走到这里。
     if (document.querySelector('.n-base-select-menu')) return
+    // 「丢弃确认」等 naive 对话框开着时 Esc 让位（round13 N5 同款）：确认框自己消费
+    // 这一次 Esc（等价取消），否则会被 closing 守卫吞掉、按键毫无反应
+    if (document.querySelector('.n-dialog')) return
     e.preventDefault()
     requestClose()
   }
 }
 
 // ---- 保存 ----
+/** 必填/半行校验：返回未填键数组——顶层字段键可查 data-req-key 供必填守卫聚焦；
+ *  子表单行内项带 #行号（守卫按前缀回退到容器滚动定位）。round15 起不再产出展示用
+ *  文案（必填横幅已删，计数走 announceSaveError）——顺带移除了旧文案查找里对
+ *  子表单内嵌键值字段的失配回退（round13 R1/N14 的潜伏代码） */
 function validateRequired() {
   const missing = []
   for (const g of groups.value) {
     for (const f of g.fields) {
-      // 只查顶层必填（subform 行内必填如备用凭据 Name 由后端保存校验把关，schemas.js 注释同述）
+      // 子表单行内必填（round11 U7）：行内 Name 等标了必填星，但此前只查顶层、
+      // 后端 AlternateCredentials 反序列化也不逐行校验——空名行直接入库。逐行检查
+      // 并入保存拦截；行内标红由 SubformList 按 validate 门控渲染。可见性同顶层
+      // 口径（隐藏≠删值：隐藏行字段不可编辑，拦截会造成无法修复的死锁）
+      if (f.type === FIELD.SUBFORM) {
+        const rows = Array.isArray(json[f.key]) ? json[f.key] : []
+        rows.forEach((row, i) => {
+          for (const rf of f.subform?.fields || []) {
+            if (!rf.required || !isVisible(rf, row)) continue
+            const v = row?.[rf.key]
+            if (v == null || (typeof v === 'string' && v.trim() === '')) missing.push(`${f.key}#${i}`)
+          }
+        })
+        continue
+      }
       if (!f.required) continue
       const v = json[f.key]
-      if (v == null || (typeof v === 'string' && v.trim() === '')) {
-        missing.push(f.labelKey ? t(f.labelKey) : f.key)
-      }
+      if (v == null || (typeof v === 'string' && v.trim() === '')) missing.push(f.key)
     }
   }
+  // 键值半行（round11 U25）：KeyValueLines/KvMapField 序列化丢弃空名行（字符串/
+  // 对象存储无法表示半行），组件经保存问题总线自报——有半行即拦
+  for (const key of Object.keys(saveIssues.issues)) missing.push(key)
   return missing
+}
+// ---- 必填项统一守卫（round14 需求：未填禁存+提示+强点聚焦高亮，spec §表单必填项）----
+// 批量模式经 BulkEditForm 暴露的 missingKeys（覆盖态字段必填，PascalCase 键与
+// FormField 的 data-req-key 对齐）；高亮集合 provide 给 FormField 树（REQUIRED_HOT_KEY）
+const requiredMissing = computed(() => (isBulk.value ? [] : validateRequired()))
+const reqGuard = useRequiredGuard({
+  getMissing: () => (isBulk.value ? bulkFormRef.value?.missingKeys || [] : requiredMissing.value),
+})
+provide(REQUIRED_HOT_KEY, reqGuard)
+const reqBlocked = computed(() => (isBulk.value ? !!bulkFormRef.value?.missingKeys?.length : reqGuard.blocked))
+/** 保存按钮/快捷键统一入口：未填全先引导（全部高亮+聚焦第一个，错误脉冲照旧） */
+function onSaveClick() {
+  reqGuard.trySave(save, {
+    onMissing: () => {
+      saveIssues.validate.value = true // 行内标红门控（U7）：首次保存尝试后子表单空必填标红
+      if (isBulk.value) {
+        // 批量错误计数由 BulkEditForm.save() 内部校验返回（missing 早退返回错误数）
+        bulkFormRef.value?.save().then((errs) => {
+          if (errs > 0) announceSaveError(errs)
+        })
+      } else {
+        announceSaveError(requiredMissing.value.length)
+      }
+    },
+  })
 }
 function displayName() {
   return json.DisplayName || props.initialServer?.displayName || props.serverId || ''
@@ -373,9 +437,9 @@ async function save() {
     return
   }
   if (saving.value || loading.value || loadError.value) return
-  missingRequired.value = validateRequired()
-  if (missingRequired.value.length) {
-    announceSaveError(missingRequired.value.length)
+  saveIssues.validate.value = true // 行内标红门控（U7）：首次保存尝试后子表单空必填标红
+  if (requiredMissing.value.length) {
+    announceSaveError(requiredMissing.value.length)
     return
   }
   saveErrors.value = []
@@ -430,7 +494,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div ref="rootRef" class="ed-root" :class="{ open: show }">
-    <div class="ed-scrim" @click="requestClose"></div>
+    <div class="ed-scrim" @click="onMaskClick"></div>
     <section class="ed-panel" role="dialog" aria-modal="true" :aria-label="headRef?.title">
       <!-- 头部（EditorHead）：瓦片/标题/协议切换/数据源/关闭；协议切换与关闭确认的
            状态机在本组件（经 protocol-change / close 上抛执行） -->
@@ -475,9 +539,8 @@ onBeforeUnmount(() => {
           <!-- 单机模式：全部分组垂直铺开 + 分区标题（sticky），整体一个滚动区 -->
           <template v-else>
             <div class="ed-fields">
-              <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
-                {{ t('editor.missingRequired', { keys: missingRequired.join(', ') }) }}
-              </div>
+              <!-- round15：必填缺失横幅删除——统一走必填守卫（保存钮假禁用+提示，
+                   强点聚焦第一个未填并警告色高亮）；仅后端保存错误横幅保留 -->
               <div v-if="saveErrors.length" class="ed-banner">
                 <div v-for="(err, i) in saveErrors" :key="i">{{ err }}</div>
               </div>
@@ -497,8 +560,10 @@ onBeforeUnmount(() => {
                 </p>
 
                 <!-- 渲染块循环：switch-run 聚合行 / 整行字段 + 凭据组的 cred-mode /
-                     cred-hint 伪块（分段顺序见 groupBlocks） -->
-                <template v-for="(b, bi) in groupBlocks(g)" :key="bi">
+                     cred-hint 伪块（分段顺序见 groupBlocks）。key 用块身份（round17：原索引
+                     key 在 visibleWhen 翻转/协议切换使块序列位移时，会同分支的 FormField
+                     就地复用、内部瞬态（数字半输入/明文态/预览态）串到相邻异字段上） -->
+                <template v-for="b in groupBlocks(g)" :key="blockKey(b)">
                   <!-- 凭据组二选一：标签列对齐 FormField 的 148px 网格 -->
                   <div v-if="b.type === 'cred-mode'" class="ed-cred-mode">
                     <span class="ed-cred-mode-label">{{ t('editor.credMode.label') }}</span>
@@ -570,12 +635,15 @@ onBeforeUnmount(() => {
           <button class="ed-btn" type="button" :disabled="saving || bulkSaving" @click="requestClose">
             {{ t('editor.cancel') }}
           </button>
+          <!-- 必填未填：假禁用观感（req-blocked）+ 旁侧提示；强点走守卫（聚焦+高亮）。
+               真 disabled 只留给 saving/loading（此时点击无意义） -->
+          <span v-if="reqBlocked" class="req-hint">{{ t('modal.requiredHint') }}</span>
           <button
             class="ed-btn ed-primary"
-            :class="{ 'ed-pulse-error': errorPulse }"
+            :class="{ 'ed-pulse-error': errorPulse, 'req-blocked': reqBlocked }"
             type="button"
             :disabled="saving || bulkSaving || loading || !!loadError"
-            @click="save"
+            @click="onSaveClick"
             @animationend="onPulseEnd"
           >
             {{ saving || bulkSaving ? t('editor.saving') : t('editor.save') }}
@@ -674,68 +742,10 @@ onBeforeUnmount(() => {
 
 /* 字段区：唯一滚动容器，全部分组垂直铺开（批量分支的同名容器/横幅样式由
    BulkEditForm 自持一份） */
-.ed-fields {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  /* 横向 16 与 ed-head/ed-foot 共线（J17，BulkEditForm 同名拷贝同步） */
-  padding: 8px 16px 20px;
-}
-
-.ed-banner {
-  border: 1px solid var(--danger);
-  border-radius: var(--radius-ctrl);
-  background: color-mix(in srgb, var(--danger) 10%, transparent);
-  color: var(--danger);
-  font-size: var(--fs-body);
-  line-height: 1.6;
-  padding: 8px 10px;
-  word-break: break-word;
-}
-
-.ed-banner-required {
-  border-color: var(--danger);
-}
-
-/* 分组区块：分区标题 sticky 于滚动区顶部（滚动时贴顶，不遮字段） */
-.ed-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.ed-group-title {
-  position: sticky;
-  top: 0;
-  /* 相对滚动口贴顶（sticky 参照 scrollport，容器 padding 不影响偏移） */
-  z-index: 1;
-  margin: 0;
-  padding: 6px 0 5px; /* 底 5px+1px 下边框 = 6px，与顶 6px 光学等高（banner 光学微调，G22 豁免） */
-  background: var(--bg-panel);
-  /* 滚动内容从标题下穿过时不透底 */
-  border-bottom: 1px solid var(--border);
-  color: var(--text-2);
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.ed-group-desc {
-  margin: -4px 0 0;
-  color: var(--text-4);
-  font-size: var(--fs-caption);
-  line-height: 1.5;
-}
-/* 组内提示行：WPF VncFormView 的 RFB 警告行——强调色文字（WPF AccentMidBrush 同语义） */
-.ed-group-note {
-  margin: 8px 0 0;
-  color: var(--accent-text);
-  font-size: var(--fs-caption);
-  line-height: 1.5;
-}
+/* 字段区容器/错误横幅/分组区块六类（ed-fields/ed-banner/ed-group/ed-group-title/
+   ed-group-desc/ed-group-note）走 theme.css 全局定义（round14 M6 收敛，与 BulkEditForm
+   共用单点，类名不变；ed-banner-required 已随 round15 必填横幅删除、round17 清类）；
+   本文件只留抽屉骨架与凭据组专属样式 */
 
 /* 凭据组二选一：标签列对齐 FormField 的 148px 网格 */
 .ed-cred-mode {

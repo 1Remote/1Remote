@@ -6,7 +6,7 @@
  *  - 手动输入逃生口：n-select 的 filterable + tag——naive 的 tag 语义（非 multiple、非 remote）
  *    在输入无匹配项时按回车即以输入原文为值选中（Select.mjs handlePatternInput 的
  *    beingCreated 选项），不必另做「手动输入」切换态；
- *  - 清空（clearable，受 allowClear 控制）= ''：InheritedCredentialName 空串 = 手动输入凭据
+ *  - 清空（clearable）= ''：InheritedCredentialName 空串 = 手动输入凭据
  *    （与 WPF 下拉「（手动）」语义一致）；
  *  - 现值不在选项中（凭据已被删除等）：把现值补进选项呈现原文，不静默清除——
  *    用户看得见才会去改它。
@@ -21,7 +21,6 @@ const props = defineProps({
   modelValue: { type: String, default: '' },
   /** 凭据库所属数据源（选项按数据源隔离）；空串时按 Local 请求 */
   dataSourceName: { type: String, default: '' },
-  allowClear: { type: Boolean, default: true },
   disabled: { type: Boolean, default: false },
 })
 const emit = defineEmits(['update:modelValue'])
@@ -30,19 +29,24 @@ const message = useMessage()
 
 const names = ref([])
 const loading = ref(false)
+let loadSeq = 0 // 乱序完成保护（round17）：ds 快速连选时两个请求并发，慢的后到会用
+// 旧数据源的名字列表覆盖新值——序号落后者整体丢弃
 
 async function loadNames() {
+  const my = ++loadSeq
   loading.value = true
   try {
     const resp = await api.credentialNames(props.dataSourceName || 'Local')
+    if (my !== loadSeq) return
     names.value = Array.isArray(resp?.names) ? resp.names : []
   } catch (e) {
+    if (my !== loadSeq) return
     // 404=未知数据源；加载失败保持空选项（手动输入仍可用），不打断表单
     console.warn('[CredentialPicker] load names failed:', e?.message || e)
     names.value = []
     message.error(t('editor.credLoadFailed'))
   } finally {
-    loading.value = false
+    if (my === loadSeq) loading.value = false
   }
 }
 onMounted(loadNames)
@@ -72,7 +76,7 @@ function onUpdate(v) {
       :disabled="disabled"
       filterable
       tag
-      :clearable="allowClear"
+      clearable
       :placeholder="t('editor.credSelectHint')"
       @update:value="onUpdate"
     />

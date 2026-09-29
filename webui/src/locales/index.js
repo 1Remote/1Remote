@@ -35,27 +35,30 @@ const messages = {
 }
 const CODES = LANGUAGES.map((l) => l.code)
 
-// 死键清单（已无任何引用，locale JSON 中保留不删——14 语言 562 键由 convert-locales.mjs
-// 统一生成，单侧删键会破坏全语言键集一致；孤儿键随下一次成组清理时一并移除）：
+// 死键清理（round15 重构成组移除，14 语言同步删除后经 parity 校验 576 键一致）。
+// 历史死键及其成因存档（再遇到同类键，确认无引用后可直接成组删）：
 // - tree.deleteFolderConfirm：删除确认按 空文件夹/含服务器 二分（deleteFolderEmpty/HasServers）
 // - row.note：列标题统一走 col.* 族（col.note）
 // - settings.placeholder：设置占位页改用 placeholder.comingSoon + page.*
 // - editor.removeTag：标签词条的移除提示随旧标签 chips 一并移除
 // - editor.dataSource / editor.dataSourceLabel：抽屉头部数据源为只读 pill，无文案键
-// - cv.nameRequired：名称必填提示统一走 settings.r.nameRequired（凭据库空名直接禁保存不提示）
+// - cv.nameRequired：名称必填提示统一走 settings.r.nameRequired
 // - settings.d.saveFirstHint：新建数据源 改保存后测流，不再出现「先保存」提示
-// 另有两处孤儿键在产生它们的组件注释里就地说明：statusbar.langEn/langZh（语言切换
-// 改显语言自称，见 ServerListView）、cv.secretHint（见 CredentialVaultGroup）
+// - modal.dirtyHint：遮罩点击改与 ✕/Esc 同弹丢弃确认（round14），引导文案不再使用
+// - cv.revealHide / cv.revealWaiting / cv.autoHide：凭据库列表行内 reveal 已删（round14
+//   需求：明文只在编辑模态内查看），cv.reveal / cv.revealFailed 编辑模态仍在用
+// - editor.missingRequired：编辑器/批量的必填缺失横幅已删（round15：统一走必填守卫的
+//   假禁用+强点聚焦高亮），toast 侧用 editor.fixBeforeSave
+// - editor.kvIncompleteRow：半行文案拼接随必填横幅删除移除（round15 重构；半行仍有
+//   行内红框与保存拦截）
+// - statusbar.langEn/langZh：语言切换改显语言自称（round8 P13）
+// - cv.secretHint：随即时查重的长提示行移除
 
-// 语言探测：localStorage 优先 → 浏览器语言（先精确匹配文件码，再主子标签前缀
-// 匹配，如 'pt' → pt-BR、'zh' → zh-CN，取 LANGUAGES 顺序首个）→ en-US。
+// 语言探测（round14 R5：语言唯一持久化在后端配置，不再读写 localStorage）：
+// 浏览器语言（先精确匹配文件码，再主子标签前缀匹配，如 'pt' → pt-BR、'zh' → zh-CN，
+// 取 LANGUAGES 顺序首个）→ en-US。启动时 App.vue 会拉后端语言覆盖探测值（后端未起
+// 或请求失败时保持探测语言），旧版遗留的 '1r-lang' 键由 App.vue 启动清理。
 function detectLocale() {
-  try {
-    const stored = localStorage.getItem('1r-lang')
-    if (stored && CODES.includes(stored)) return stored
-  } catch {
-    /* 隐私模式等读取失败可忽略 */
-  }
   const nav = String(navigator.language || '').toLowerCase()
   if (!nav) return 'en-US'
   const exact = CODES.find((c) => c.toLowerCase() === nav)
@@ -74,13 +77,10 @@ export const i18n = createI18n({
 })
 
 // 切换语言：legacy:false 下 global.locale 是 ref，赋值即全站响应式生效
-// （无需刷新）；'1r-lang' 持久化供下次启动读取；仅接受 14 个已装载语言的码。
+// （无需刷新）；仅接受 14 个已装载语言的码。纯内存切换，不落任何本地存储（round14
+// R5 定案：语言唯一持久化在后端 1Remote.json——调用方在用户显式切换时自行 PUT
+// /api/settings/general 的 language 字段；启动同步只读不写）。
 export function setLocale(l) {
   if (!CODES.includes(l)) return
   i18n.global.locale.value = l
-  try {
-    localStorage.setItem('1r-lang', l)
-  } catch {
-    /* 隐私模式等写入失败可忽略 */
-  }
 }

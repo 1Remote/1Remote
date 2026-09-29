@@ -18,19 +18,23 @@
  *   属安全域外）。
  * - 编辑模态：密码留空 = 保持原密码（后端 PUT 语义：空串跳过赋值），placeholder 注明。
  * - sqlite 路径"浏览…"：WPF SqliteSettingView 的 Select 按钮
- *   （SqliteSettingViewModel.cs:103，filter "SqliteSource Database|*.db" 照抄）的 web
- *   平价——添加/编辑两模态的路径行均带按钮，调 /api/files/pick 弹后端原生对话框。
- *   偏差：WPF checkFileExists:false（可选不存在的库文件），端点恒 true——只能选已
- *   存在的 .db，新建库文件仍走手输（schemas.js filePick 审计同记录）。
+ *   （SqliteSettingViewModel.cs:105，filter "SqliteSource Database|*.db" 照抄）的 web
+ *   平价——添加/编辑两模态的路径行均带按钮，调 /api/files/pick 弹后端原生对话框，
+ *   checkFileExists:false 与 WPF 对齐（round14：库文件不存在可选定路径新建）。路径
+ *   本身须为 .db 文件（前端校验标红，见 sqlitePathOk）。
  * - 删除 409 {serverCount}：二段确认——首段普通确认；409 后二段显示仍有的服务器数与
  *   keepServers 语义（服务器留在库文件，重新添加即可找回），确认后带 keepServers=true 重试。
  */
 import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
+import { confirmDialog } from '../../utils/confirmDialog'
 import { api } from '../../api'
 import { dsDotClass as dotClass, makeDsDotTitle } from '../../utils/dsTitle'
 import { useServers } from '../../composables/useServers'
+import { useNow } from '../../composables/useNow'
+import { useDraftGuard } from '../../composables/useDraftGuard'
+import { useRequiredGuard } from '../../composables/useRequiredGuard'
 import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import { onFormEnter } from '../../utils/formEnter'
 import HelpLink from '../HelpLink.vue'
@@ -38,7 +42,7 @@ import HelpLink from '../HelpLink.vue'
 const { t } = useI18n()
 const message = useMessage()
 const dialog = useDialog()
-const { datasources, reload } = useServers()
+const { datasources, datasourcesFetchedAt, reload } = useServers()
 
 // 下拉展开计数 + 模态 Esc 截停（Esc 链序见 SettingsView/useSettingsEsc 文件头注释）
 const { shield, bindModalEsc } = useSettingsEsc()
@@ -46,7 +50,7 @@ const { shield, bindModalEsc } = useSettingsEsc()
 // ---- 展示辅助 ----
 // K16：卡片状态点悬停 title 走 i18n——单一实现在 utils/dsTitle.js（与树根行/状态栏共用），
 // 此前 :title="d.status" 直出英文裸枚举
-const dsDotTitle = makeDsDotTitle(t)
+const dsDotTitle = makeDsDotTitle(t, { now: useNow(), fetchedAt: datasourcesFetchedAt })
 const typeLabel = (d) => t('settings.d.type.' + (d.type || 'sqlite'))
 const configSummary = (d) => {
   const c = d.config || {}
@@ -89,14 +93,19 @@ const blankAddForm = () => ({
 const adding = ref(false)
 const addForm = reactive(blankAddForm())
 const addSaving = ref(false)
-const typeOptions = ['sqlite', 'mysql', 'pgsql'].map((v) => ({
-  value: v,
-  label: computed(() => t('settings.d.type.' + v)),
-}))
+// round17：t() 本身响应式，computed 数组直接产 label（此前 label: computed(...) 包装
+// + 模板 .map 解包绕远路）
+const typeOptions = computed(() =>
+  ['sqlite', 'mysql', 'pgsql'].map((v) => ({
+    value: v,
+    label: t('settings.d.type.' + v),
+  }))
+)
 
 function openAdd() {
   Object.assign(addForm, blankAddForm())
   addTestResult.value = null
+  addSnapshot = { ...addForm } // 草稿脏检查基准（U15）：打开即快照空白草稿
   adding.value = true
 }
 
@@ -109,15 +118,30 @@ function onAddTypeChange(v) {
 }
 
 // ---- 名称即时查重（新建/编辑共用谓词）：忽略大小写（对齐后端 CurrentCultureIgnoreCase；
-// 编辑排除自身原名）——重名即提示 + 禁用保存，后端最终守卫 POST 409 / PUT 409 ----
+// 编辑排除自身原名）——重名即提示 + 禁用保存，后端最终守卫 POST 409 / PUT 409。
+// 开态守卫（round11 用户报告，凭据库同款修复）：保存成功关模态的淡出动画期间列表已含
+// 新条目，表单残留名撞新条目会闪红字「名称已存在」——模态关闭后不参与查重 ----
 const nameExistsAmong = (n, excludeName) =>
   !!n && datasources.value.some((d) => d.name !== excludeName && d.name.trim().toLowerCase() === n.trim().toLowerCase())
-const addNameExists = computed(() => nameExistsAmong(addForm.name, null))
+const addNameExists = computed(() => (adding.value ? nameExistsAmong(addForm.name, null) : false))
 const editNameExists = computed(() => (editing.value ? nameExistsAmong(editForm.name, editing.value.name) : false))
+
+// ---- 端口校验（round11 U17）：1-65535 整数，非法即标红 + 禁用测试/保存——
+// 此前端口框是普通文本，"abc"/清空都直通，最终被 Number()||0 当成 0，失败原因
+// 迟到且不指向端口 ----
+const portValid = (p) => {
+  const n = Number(p)
+  return Number.isInteger(n) && n >= 1 && n <= 65535
+}
+
+// ---- sqlite 路径校验（round14 需求）：库文件路径必须指向 .db 文件（不存在可新建）；
+// 填其他路径标红 + 禁用测试/保存（后端 sqlite 构造器对非 .db 路径报错迟到且不直观） ----
+const sqlitePathOk = (p) => /\.db$/i.test(String(p || '').trim())
 
 const addValid = computed(() => {
   if (addNameExists.value) return false
-  if (addForm.type === 'sqlite') return !!addForm.path.trim() // name 可缺省（按 path 文件名推导）
+  if (addForm.type === 'sqlite') return sqlitePathOk(addForm.path) // name 可缺省（按 path 文件名推导）
+  if (!portValid(addForm.port)) return false // U17：端口非法禁用测试/保存
   return !!(
     addForm.name.trim() &&
     addForm.host.trim() &&
@@ -126,6 +150,27 @@ const addValid = computed(() => {
     addForm.password
   )
 })
+const addPortOk = computed(() => portValid(addForm.port))
+const addPathOk = computed(() => sqlitePathOk(addForm.path))
+
+// ---- 必填项统一守卫（round14 需求，spec §表单必填项）：未填键集（表单序）——sqlite 仅
+// 路径必填（名称按文件名推导）；在线库五项必填（密码编辑态留空=保持，见 editGuard）。
+// 端口非法/.db 路径非法/重名不属"未填"——各自行内红字 + 保存钮真 disabled ----
+const addMissingKeys = computed(() => {
+  if (addForm.type === 'sqlite') return addForm.path.trim() ? [] : ['path']
+  const keys = []
+  if (!addForm.name.trim()) keys.push('name')
+  if (!addForm.host.trim()) keys.push('host')
+  if (!addForm.databaseName.trim()) keys.push('databaseName')
+  if (!addForm.userName.trim()) keys.push('userName')
+  if (!addForm.password) keys.push('password')
+  return keys
+})
+const addReqGuard = useRequiredGuard({ getMissing: () => addMissingKeys.value })
+// 保存钮的"非必填类"真禁（在途另由 :loading 语义承担；必填未填走假禁用引导）
+const addHardBlocked = computed(
+  () => addNameExists.value || (addForm.type === 'sqlite' ? !addPathOk.value : !addPortOk.value)
+)
 
 // 表单草稿 → config 提交体（保存与测试共用）
 function draftConfig(f, type) {
@@ -151,6 +196,11 @@ async function addSave() {
   try {
     const r = await api.addDataSource(addForm.type, config, name)
     adding.value = false
+    // 保存成功即重置表单（round11 用户报告：淡出动画期间残留已存内容/重查重闪变）：
+    // 关闭动画显示的是空白表单，下次打开 openAdd 的复位语义提前到此，无中间形态
+    Object.assign(addForm, blankAddForm())
+    addSnapshot = { ...addForm }
+    addTestResult.value = null
     await reload()
     // 创建即连接失败不回滚（WPF 同款）：如实提示 + 指引到卡片测试
     // （失败档位统一 error，J12：与卡片测试按钮/模态草稿测试同档）
@@ -194,12 +244,7 @@ async function testAdd() {
 const editing = ref(null) // null | { name, type }
 const editForm = reactive({ name: '', path: '', host: '', port: 3306, databaseName: '', userName: '', password: '' })
 const editSaving = ref(false)
-const showEdit = computed({
-  get: () => !!editing.value,
-  set: (v) => {
-    if (!v) editing.value = null
-  },
-})
+const showEdit = computed(() => !!editing.value) // 编辑模态开合（关闭走 requestEditClose 脏检查，非 v-model）
 
 function openEdit(d) {
   const c = d.config || {}
@@ -213,14 +258,34 @@ function openEdit(d) {
     password: '', // 无密码回显（读接口不含密码）；空 = 保持
   })
   editTestResult.value = null
+  editSnapshot = { ...editForm } // 草稿脏检查基准（U15）
   editing.value = { name: d.name, type: d.type }
 }
 
 const editValid = computed(() => {
   if (!editing.value || editNameExists.value || !editForm.name.trim()) return false
-  if (editing.value.type === 'sqlite') return !!editForm.path.trim()
+  if (editing.value.type === 'sqlite') return sqlitePathOk(editForm.path)
+  if (!portValid(editForm.port)) return false // U17：端口非法禁用测试/保存
   return !!(editForm.host.trim() && editForm.databaseName.trim() && editForm.userName.trim())
 })
+const editPortOk = computed(() => portValid(editForm.port))
+const editPathOk = computed(() => sqlitePathOk(editForm.path))
+
+// 必填守卫（同添加模态；编辑态密码留空=保持原值，不在必填列）
+const editMissingKeys = computed(() => {
+  if (!editing.value) return []
+  if (editing.value.type === 'sqlite') return editForm.path.trim() ? [] : ['path']
+  const keys = []
+  if (!editForm.name.trim()) keys.push('name')
+  if (!editForm.host.trim()) keys.push('host')
+  if (!editForm.databaseName.trim()) keys.push('databaseName')
+  if (!editForm.userName.trim()) keys.push('userName')
+  return keys
+})
+const editReqGuard = useRequiredGuard({ getMissing: () => editMissingKeys.value })
+const editHardBlocked = computed(
+  () => editNameExists.value || (editing.value?.type === 'sqlite' ? !editPathOk.value : !editPortOk.value)
+)
 
 async function editSave() {
   if (!editValid.value || editSaving.value) return
@@ -260,14 +325,15 @@ async function testEdit() {
 // 与保存按钮同守卫——校验未过/保存中不动作）
 
 // ---- sqlite 路径"浏览…"（⑱A）：添加/编辑两模态共用（写目标由调用方传入） ----
-// filter 照抄 WPF SqliteSettingViewModel.cs:103；404=用户取消静默；
+// filter 照抄 WPF SqliteSettingViewModel.cs:105；checkFileExists:false 对齐 WPF 的
+// CmdSelectDbPath（库文件不存在时允许选定路径新建，round14 需求）；404=用户取消静默；
 // 请求寿命 = 用户开着对话框的时间（browsing 期间两模态的按钮同禁用，全局单飞）
 const sqliteBrowsing = ref(false)
 async function pickSqlitePath(form) {
   if (sqliteBrowsing.value) return
   sqliteBrowsing.value = true
   try {
-    const resp = await api.pickFile('SqliteSource Database|*.db', { path: form.path })
+    const resp = await api.pickFile('SqliteSource Database|*.db', { path: form.path, checkFileExists: false })
     if (resp?.path) form.path = resp.path
   } catch (e) {
     if (e?.status !== 404) message.error(t('settings.r.pickFailed'))
@@ -278,16 +344,14 @@ async function pickSqlitePath(form) {
 
 // ---- 删除：二段确认（409 keepServers 重试）。autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDelete(d) {
-  dialog.create({
+  confirmDialog(dialog, {
+    danger: true,
     title: t('settings.d.deleteTitle'),
     content: t('settings.d.deleteConfirm', { name: d.name }),
     // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
-    showIcon: false,
-    positiveButtonProps: { type: 'error' },
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
-    autoFocus: false,
-    onPositiveClick: async () => {
+    onPositive: async () => {
       try {
         await api.deleteDataSource(d.name)
         message.success(t('settings.d.deleted'))
@@ -307,11 +371,10 @@ function onDelete(d) {
 
 // 二段：仍有服务器 → keepServers=true 重试（服务器留在库文件中，重新添加即可找回）
 function confirmKeepServers(d, serverCount) {
-  dialog.create({
+  confirmDialog(dialog, {
+    danger: true,
     title: t('settings.d.deleteTitle'),
     // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
-    showIcon: false,
-    positiveButtonProps: { type: 'error' },
     content:
       t('settings.d.deleteConfirm', { name: d.name }) +
       ' ' +
@@ -320,8 +383,7 @@ function confirmKeepServers(d, serverCount) {
       t('settings.d.keepServersHint'),
     positiveText: t('settings.d.keepServers'),
     negativeText: t('editor.cancel'),
-    autoFocus: false, // 同 onDelete：删除流二段确认同样禁 Enter 误触
-    onPositiveClick: async () => {
+    onPositive: async () => {
       try {
         await api.deleteDataSource(d.name, true)
         message.success(t('settings.d.deleted'))
@@ -333,10 +395,38 @@ function confirmKeepServers(d, serverCount) {
   })
 }
 
-// ---- Esc 链：模态开着时捕获截停只关模态（SettingsView 返回导航让位）----
+// ---- 模态草稿守卫（round13 需求：统一关闭语义，取代 round12 U15 的遮罩无条件禁用）：
+// 干净态点遮罩直接关；有输入点遮罩不关、提示走「保存/取消/关闭」按钮；
+// ✕/取消/Esc 有输入时先确认丢弃。共享实现见 composables/useDraftGuard.js ----
+let addSnapshot = {} // 打开/保存成功时的表单快照（脏检查基准）
+let editSnapshot = {}
+const formDirty = (form, snap) => Object.keys(form).some((k) => String(form[k] ?? '') !== String(snap[k] ?? ''))
+const addGuard = useDraftGuard({
+  isDirty: () => formDirty(addForm, addSnapshot),
+  doClose: () => {
+    adding.value = false
+  },
+  isBusy: () => addSaving.value,
+  dialog,
+  message,
+  t,
+})
+const editGuard = useDraftGuard({
+  isDirty: () => formDirty(editForm, editSnapshot),
+  doClose: () => {
+    editing.value = null
+  },
+  isBusy: () => editSaving.value,
+  dialog,
+  message,
+  t,
+})
+
+// ---- Esc 链：模态开着时捕获截停只关模态（SettingsView 返回导航让位）；
+// 关闭走草稿守卫（干净即关 / 有输入确认丢弃）----
 bindModalEsc([
-  { isOpen: () => adding.value, close: () => (adding.value = false) },
-  { isOpen: () => !!editing.value, close: () => (editing.value = null) },
+  { isOpen: () => adding.value, close: () => addGuard.requestClose() },
+  { isOpen: () => !!editing.value, close: () => editGuard.requestClose() },
 ])
 </script>
 
@@ -364,23 +454,25 @@ bindModalEsc([
         </div>
         <div class="card-config" :title="configSummary(d)">{{ configSummary(d) || '—' }}</div>
         <div class="card-actions">
-          <button class="act" type="button" :disabled="testing === d.name" @click="onTest(d)">
+          <!-- U16：测试进行中整卡锁定（编辑/删除禁用）——测试跑的是发起时的旧配置，
+               期间改配置会让弹回的结果与当前配置对不上 -->
+          <button class="card-act" type="button" :disabled="testing === d.name" @click="onTest(d)">
             {{ testing === d.name ? t('settings.d.testing') : t('settings.d.test') }}
           </button>
           <!-- Local 只读：路径/删除不开放（title 说明） -->
           <button
-            class="act"
+            class="card-act"
             type="button"
-            :disabled="isLocal(d)"
+            :disabled="isLocal(d) || testing === d.name"
             :title="isLocal(d) ? t('settings.d.localHint') : t('settings.d.edit')"
             @click="openEdit(d)"
           >
             {{ t('settings.d.edit') }}
           </button>
           <button
-            class="act"
+            class="card-act"
             type="button"
-            :disabled="isLocal(d)"
+            :disabled="isLocal(d) || testing === d.name"
             :title="isLocal(d) ? t('settings.d.localHint') : t('editor.deleteYes')"
             @click="onDelete(d)"
           >
@@ -390,24 +482,28 @@ bindModalEsc([
       </div>
     </div>
 
-    <!-- 添加模态：类型三选 + 动态表单；名称即时查重；测试连接对草稿发起（见文件头） -->
+    <!-- 添加模态：类型三选 + 动态表单；名称即时查重；测试连接对草稿发起（见文件头）。
+         遮罩关闭禁用 + Esc/✕/取消走脏检查（U15：草稿防丢，见 requestAddClose） -->
     <n-modal
-      v-model:show="adding"
+      :show="adding"
       preset="card"
       :title="t('settings.d.addTitle')"
       :bordered="false"
       :style="{ width: 'min(480px, 92vw)' }"
+      :mask-closable="false"
       role="dialog"
       aria-modal="true"
+      @update:show="addGuard.requestClose"
+      @mask-click="addGuard.onMaskClick"
     >
-      <div class="form" @keydown="onFormEnter($event, addSave)">
-        <div class="f-row">
+      <div class="form" @keydown="onFormEnter($event, () => addReqGuard.trySave(addSave))">
+        <div class="s-form-row">
           <label>{{ t('settings.d.type') }}</label>
           <div class="type-wrap">
             <n-select
               size="small"
               :value="addForm.type"
-              :options="typeOptions.map((o) => ({ value: o.value, label: o.label.value }))"
+              :options="typeOptions"
               @update:show="shield"
               @update:value="onAddTypeChange"
             />
@@ -420,54 +516,97 @@ bindModalEsc([
             />
           </div>
         </div>
-        <div class="f-row">
+        <div
+          class="s-form-row"
+          :class="{ 'req-hot': addReqGuard.isHot('name') }"
+          :data-req-key="addForm.type !== 'sqlite' ? 'name' : undefined"
+        >
           <!-- K9：必填星标（与凭据库「名称 *」同语言）；sqlite 名称可缺省（按路径文件名推导） -->
           <label>{{ t('settings.d.name') }}<span v-if="addForm.type !== 'sqlite'" class="req-star">*</span></label>
           <div>
             <n-input
               size="small"
               v-model:value="addForm.name"
-              :status="addNameExists ? 'error' : undefined"
+              :status="addNameExists ? 'error' : addReqGuard.isHot('name') ? 'error' : undefined"
               :input-props="{ spellcheck: false }"
             />
             <p v-if="addNameExists" class="f-err">{{ t('settings.r.nameExists', { name: addForm.name.trim() }) }}</p>
             <p v-else-if="addForm.type === 'sqlite'" class="f-hint">{{ t('settings.d.nameHint') }}</p>
           </div>
         </div>
-        <div v-if="addForm.type === 'sqlite'" class="f-row">
+        <div
+          v-if="addForm.type === 'sqlite'"
+          class="s-form-row"
+          :class="{ 'req-hot': addReqGuard.isHot('path') }"
+          data-req-key="path"
+        >
           <label>{{ t('settings.d.f.path') }}<span class="req-star">*</span></label>
-          <!-- 路径 + "浏览…"（⑱A：WPF SqliteSettingView Select 按钮的 web 平价） -->
-          <div class="path-wrap">
-            <n-input size="small" v-model:value="addForm.path" :input-props="{ spellcheck: false }" />
-            <button class="act-btn" type="button" :disabled="sqliteBrowsing" @click="pickSqlitePath(addForm)">
-              {{ t('settings.r.f.browse') }}
-            </button>
+          <!-- 路径 + "浏览…"（⑱A：WPF SqliteSettingView Select 按钮的 web 平价）。
+               round14：非 .db 路径标红（文件不存在不算错——sqlite 可新建库文件） -->
+          <div>
+            <div class="path-wrap">
+              <n-input
+                size="small"
+                v-model:value="addForm.path"
+                :status="!addPathOk ? 'error' : addReqGuard.isHot('path') ? 'error' : undefined"
+                :input-props="{ spellcheck: false }"
+              />
+              <button class="act-btn" type="button" :disabled="sqliteBrowsing" @click="pickSqlitePath(addForm)">
+                {{ t('settings.r.f.browse') }}
+              </button>
+            </div>
+            <p v-if="!addPathOk" class="f-err">{{ t('settings.d.pathInvalid') }}</p>
           </div>
         </div>
         <template v-else>
-          <div class="f-row">
+          <div class="s-form-row" :class="{ 'req-hot': addReqGuard.isHot('host') }" data-req-key="host">
             <label>{{ t('settings.d.f.host') }}<span class="req-star">*</span></label>
-            <n-input size="small" v-model:value="addForm.host" :input-props="{ spellcheck: false }" />
+            <n-input
+              size="small"
+              v-model:value="addForm.host"
+              :status="addReqGuard.isHot('host') ? 'error' : undefined"
+              :input-props="{ spellcheck: false }"
+            />
           </div>
-          <div class="f-row">
+          <div class="s-form-row">
             <label>{{ t('settings.d.f.port') }}</label>
-            <n-input size="small" v-model:value="addForm.port" :input-props="{ spellcheck: false }" />
+            <!-- U17：端口非法即标红 + 禁用测试/保存（此前任意文本直通，被当成 0） -->
+            <div>
+              <n-input
+                size="small"
+                v-model:value="addForm.port"
+                :status="addForm.type !== 'sqlite' && !addPortOk ? 'error' : undefined"
+                :input-props="{ spellcheck: false }"
+              />
+              <p v-if="addForm.type !== 'sqlite' && !addPortOk" class="f-err">{{ t('settings.d.portInvalid') }}</p>
+            </div>
           </div>
-          <div class="f-row">
+          <div class="s-form-row" :class="{ 'req-hot': addReqGuard.isHot('databaseName') }" data-req-key="databaseName">
             <label>{{ t('settings.d.f.database') }}<span class="req-star">*</span></label>
-            <n-input size="small" v-model:value="addForm.databaseName" :input-props="{ spellcheck: false }" />
+            <n-input
+              size="small"
+              v-model:value="addForm.databaseName"
+              :status="addReqGuard.isHot('databaseName') ? 'error' : undefined"
+              :input-props="{ spellcheck: false }"
+            />
           </div>
-          <div class="f-row">
+          <div class="s-form-row" :class="{ 'req-hot': addReqGuard.isHot('userName') }" data-req-key="userName">
             <label>{{ t('settings.d.f.user') }}<span class="req-star">*</span></label>
-            <n-input size="small" v-model:value="addForm.userName" :input-props="{ spellcheck: false }" />
+            <n-input
+              size="small"
+              v-model:value="addForm.userName"
+              :status="addReqGuard.isHot('userName') ? 'error' : undefined"
+              :input-props="{ spellcheck: false }"
+            />
           </div>
-          <div class="f-row">
+          <div class="s-form-row" :class="{ 'req-hot': addReqGuard.isHot('password') }" data-req-key="password">
             <label>{{ t('settings.d.f.password') }}<span class="req-star">*</span></label>
             <n-input
               size="small"
               type="password"
               show-password-on="click"
               v-model:value="addForm.password"
+              :status="addReqGuard.isHot('password') ? 'error' : undefined"
               :input-props="{ spellcheck: false }"
             />
           </div>
@@ -487,66 +626,121 @@ bindModalEsc([
           <n-button size="small" class="test-btn" :disabled="!addValid" :loading="addTesting" @click="testAdd">
             {{ t('settings.d.test') }}
           </n-button>
-          <n-button size="small" @click="adding = false">{{ t('editor.cancel') }}</n-button>
-          <n-button size="small" type="primary" ghost :disabled="!addValid" :loading="addSaving" @click="addSave">
+          <n-button size="small" @click="addGuard.requestClose">{{ t('editor.cancel') }}</n-button>
+          <!-- round14 统一必填处理：未填=假禁用观感+旁侧提示，强点走守卫聚焦引导；
+               真 disabled 只留给在途（loading）/重名/端口与路径非法 -->
+          <span v-if="addReqGuard.blocked" class="req-hint">{{ t('modal.requiredHint') }}</span>
+          <n-button
+            size="small"
+            type="primary"
+            ghost
+            :class="{ 'req-blocked': addReqGuard.blocked }"
+            :disabled="addHardBlocked"
+            :loading="addSaving"
+            @click="addReqGuard.trySave(addSave)"
+          >
             {{ t('settings.save') }}
           </n-button>
         </div>
       </template>
     </n-modal>
 
-    <!-- 编辑模态：名称可改（即时查重）；密码留空 = 保持原密码 -->
+    <!-- 编辑模态：名称可改（即时查重）；密码留空 = 保持原密码。遮罩关闭禁用 + 脏检查（U15） -->
     <n-modal
-      v-model:show="showEdit"
+      :show="showEdit"
       preset="card"
       :title="t('settings.d.editTitle')"
       :bordered="false"
       :style="{ width: 'min(480px, 92vw)' }"
+      :mask-closable="false"
       role="dialog"
       aria-modal="true"
+      @update:show="editGuard.requestClose"
+      @mask-click="editGuard.onMaskClick"
     >
-      <div class="form" @keydown="onFormEnter($event, editSave)">
+      <div class="form" @keydown="onFormEnter($event, () => editReqGuard.trySave(editSave))">
         <!-- 名称行：WPF 弹窗 Name 编辑平价（改名走 PUT body.name）；编辑态名称恒必填 -->
-        <div class="f-row">
+        <div class="s-form-row" :class="{ 'req-hot': editReqGuard.isHot('name') }" data-req-key="name">
           <label>{{ t('settings.d.name') }}<span class="req-star">*</span></label>
           <div>
             <n-input
               size="small"
               v-model:value="editForm.name"
-              :status="editNameExists ? 'error' : undefined"
+              :status="editNameExists ? 'error' : editReqGuard.isHot('name') ? 'error' : undefined"
               :input-props="{ spellcheck: false }"
             />
             <p v-if="editNameExists" class="f-err">{{ t('settings.r.nameExists', { name: editForm.name.trim() }) }}</p>
           </div>
         </div>
-        <div v-if="editing?.type === 'sqlite'" class="f-row">
+        <div
+          v-if="editing?.type === 'sqlite'"
+          class="s-form-row"
+          :class="{ 'req-hot': editReqGuard.isHot('path') }"
+          data-req-key="path"
+        >
           <label>{{ t('settings.d.f.path') }}<span class="req-star">*</span></label>
-          <!-- 路径 + "浏览…"（⑱A，同添加模态） -->
-          <div class="path-wrap">
-            <n-input size="small" v-model:value="editForm.path" :input-props="{ spellcheck: false }" />
-            <button class="act-btn" type="button" :disabled="sqliteBrowsing" @click="pickSqlitePath(editForm)">
-              {{ t('settings.r.f.browse') }}
-            </button>
+          <!-- 路径 + "浏览…"（⑱A，同添加模态）；round14：非 .db 路径标红 -->
+          <div>
+            <div class="path-wrap">
+              <n-input
+                size="small"
+                v-model:value="editForm.path"
+                :status="!editPathOk ? 'error' : editReqGuard.isHot('path') ? 'error' : undefined"
+                :input-props="{ spellcheck: false }"
+              />
+              <button class="act-btn" type="button" :disabled="sqliteBrowsing" @click="pickSqlitePath(editForm)">
+                {{ t('settings.r.f.browse') }}
+              </button>
+            </div>
+            <p v-if="!editPathOk" class="f-err">{{ t('settings.d.pathInvalid') }}</p>
           </div>
         </div>
         <template v-else>
-          <div class="f-row">
+          <div class="s-form-row" :class="{ 'req-hot': editReqGuard.isHot('host') }" data-req-key="host">
             <label>{{ t('settings.d.f.host') }}<span class="req-star">*</span></label>
-            <n-input size="small" v-model:value="editForm.host" :input-props="{ spellcheck: false }" />
+            <n-input
+              size="small"
+              v-model:value="editForm.host"
+              :status="editReqGuard.isHot('host') ? 'error' : undefined"
+              :input-props="{ spellcheck: false }"
+            />
           </div>
-          <div class="f-row">
+          <div class="s-form-row">
             <label>{{ t('settings.d.f.port') }}</label>
-            <n-input size="small" v-model:value="editForm.port" :input-props="{ spellcheck: false }" />
+            <!-- U17：端口非法即标红 + 禁用测试/保存 -->
+            <div>
+              <n-input
+                size="small"
+                v-model:value="editForm.port"
+                :status="editing?.type !== 'sqlite' && !editPortOk ? 'error' : undefined"
+                :input-props="{ spellcheck: false }"
+              />
+              <p v-if="editing?.type !== 'sqlite' && !editPortOk" class="f-err">{{ t('settings.d.portInvalid') }}</p>
+            </div>
           </div>
-          <div class="f-row">
+          <div
+            class="s-form-row"
+            :class="{ 'req-hot': editReqGuard.isHot('databaseName') }"
+            data-req-key="databaseName"
+          >
             <label>{{ t('settings.d.f.database') }}<span class="req-star">*</span></label>
-            <n-input size="small" v-model:value="editForm.databaseName" :input-props="{ spellcheck: false }" />
+            <n-input
+              size="small"
+              v-model:value="editForm.databaseName"
+              :status="editReqGuard.isHot('databaseName') ? 'error' : undefined"
+              :input-props="{ spellcheck: false }"
+            />
           </div>
-          <div class="f-row">
+          <div class="s-form-row" :class="{ 'req-hot': editReqGuard.isHot('userName') }" data-req-key="userName">
             <label>{{ t('settings.d.f.user') }}<span class="req-star">*</span></label>
-            <n-input size="small" v-model:value="editForm.userName" :input-props="{ spellcheck: false }" />
+            <n-input
+              size="small"
+              v-model:value="editForm.userName"
+              :status="editReqGuard.isHot('userName') ? 'error' : undefined"
+              :input-props="{ spellcheck: false }"
+            />
           </div>
-          <div class="f-row">
+          <div class="s-form-row">
             <label>{{ t('settings.d.f.password') }}</label>
             <div>
               <n-input
@@ -576,8 +770,18 @@ bindModalEsc([
           <n-button size="small" class="test-btn" :disabled="!editValid" :loading="editTesting" @click="testEdit">
             {{ t('settings.d.test') }}
           </n-button>
-          <n-button size="small" @click="editing = null">{{ t('editor.cancel') }}</n-button>
-          <n-button size="small" type="primary" ghost :disabled="!editValid" :loading="editSaving" @click="editSave">
+          <n-button size="small" @click="editGuard.requestClose">{{ t('editor.cancel') }}</n-button>
+          <!-- round14 统一必填处理（同添加模态） -->
+          <span v-if="editReqGuard.blocked" class="req-hint">{{ t('modal.requiredHint') }}</span>
+          <n-button
+            size="small"
+            type="primary"
+            ghost
+            :class="{ 'req-blocked': editReqGuard.blocked }"
+            :disabled="editHardBlocked"
+            :loading="editSaving"
+            @click="editReqGuard.trySave(editSave)"
+          >
             {{ t('settings.save') }}
           </n-button>
         </div>
@@ -605,7 +809,7 @@ bindModalEsc([
   align-items: center;
   gap: 6px;
 }
-/* 添加模态类型行：下拉 + (?) 帮助并排（f-row 的控件列原为裸控件） */
+/* 添加模态类型行：下拉 + (?) 帮助并排（s-form-row 的控件列原为裸控件） */
 .type-wrap {
   min-width: 0;
   display: flex;
@@ -699,10 +903,10 @@ bindModalEsc([
   display: flex;
   gap: 6px;
 }
-.act {
-  /* 行内文字小钮族（G18）：卡片动作钮与 CredentialVaultGroup/TagManagerModal 的 .act
-     同族（此处带边框形态，行高同 24 档）；.act-btn 为上传型变体（见下）。
-     高度走 --ctrl-h-s 令牌（J22：值同 24px，字面值改令牌随档联动，与 CVG 侧同源） */
+.card-act {
+  /* 行内文字小钮族的带边框变体（G18）：无边框基型是 theme.css 全局 .act（round11 A1
+     收敛）；卡片动作钮带边框、caption 字号。.act-btn 为上传型变体（见下）。
+     高度走 --ctrl-h-s 令牌（J22：值同 24px，字面值改令牌随档联动） */
   height: var(--ctrl-h-s);
   padding: 0 10px;
   border: 1px solid var(--border);
@@ -714,12 +918,12 @@ bindModalEsc([
   cursor: pointer;
   white-space: nowrap;
 }
-.act:hover:not(:disabled) {
+.card-act:hover:not(:disabled) {
   border-color: var(--border-strong);
   background: var(--bg-hover);
   color: var(--text-1);
 }
-.act:disabled {
+.card-act:disabled {
   opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
@@ -729,16 +933,6 @@ bindModalEsc([
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-.f-row {
-  display: grid;
-  grid-template-columns: 100px minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
-}
-.f-row label {
-  font-size: var(--fs-body);
-  color: var(--text-2);
 }
 /* sqlite 路径行：输入框 + "浏览…"按钮（⑱A；RunnerCard exe 行同款形态） */
 .path-wrap {

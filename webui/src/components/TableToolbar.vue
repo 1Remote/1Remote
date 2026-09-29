@@ -11,6 +11,7 @@ import { HIDEABLE_COLS } from '../composables/useColumns'
 const props = defineProps({
   checkedCount: { type: Number, default: 0 }, // 勾选服务器数（与 folderCount 合计 ≥1 显示批量条）
   folderCount: { type: Number, default: 0 }, // 勾选的空文件夹数（批量删除通道）
+  batchBusy: { type: Boolean, default: false }, // R4（round14）：批量删除执行期——批量条按钮全部禁用
   isCustom: { type: Boolean, default: false }, // ≡ 自定义顺序模式激活（行可拖拽重排）
   colMenu: { type: Boolean, default: false }, // ▦ 列菜单展开态
   hiddenCols: { type: Object, default: () => ({}) }, // { colKey: bool }（true=隐藏）
@@ -29,6 +30,19 @@ const emit = defineEmits([
   'reset-widths',
 ])
 const { t } = useI18n()
+
+// Teleport 目标竞态修复（round16 用户报障「设置返回后切文件夹界面冻结」）：
+// #crumb-actions 容器由 ServerListView 渲染，与本组件同属一棵树——Vue 要求 Teleport
+// 目标在挂载前就存在（不能由同一次挂载的组件树渲染）。首次挂载走骨架屏分支侥幸满足
+//（ServerTable 分支后切、容器早已在 DOM）；设置往返等整树重挂载时无骨架屏间隔，容器
+// 与 Teleport 同帧挂载 → 目标查询落空（控制台 Invalid Teleport target 警告）→ 本组件
+// 整块内容不挂载、树里残留 el=null 的 vnode → 之后任何主列表更新（切文件夹）patch 到
+// 失效节点，渲染崩溃且渲染任务死亡（界面冻结）。修复：disabled 先原地渲染，挂载完成
+// 后（onMounted 同步、浏览器绘制前）拿到目标元素再传送，无视觉闪烁。
+const crumbTarget = ref(null)
+onMounted(() => {
+  crumbTarget.value = document.querySelector('#crumb-actions')
+})
 
 // 列菜单：点击工具簇外部关闭（window mousedown）。Esc 关闭经 ServerListView 全局 Esc 链
 //（closeColMenuIfOpen 分支——菜单开时 Esc 只关菜单，不清勾选/搜索/光标）
@@ -53,7 +67,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
 </script>
 
 <template>
-  <Teleport to="#crumb-actions">
+  <Teleport :to="crumbTarget" :disabled="!crumbTarget">
     <!-- 批量条：勾选 ≥1 时出现；连接/批量编辑/导出 emit 到 ServerTable 转发父级执行 -->
     <div v-if="checkedCount || folderCount" class="batch-bar">
       <span class="bb-count">{{
@@ -65,7 +79,7 @@ onBeforeUnmount(() => clearInterval(hintTimer))
       }}</span>
       <button
         class="bb-btn bb-primary"
-        :disabled="!checkedCount"
+        :disabled="batchBusy || !checkedCount"
         :title="t('batch.connectTitle')"
         @click="emit('batch-connect')"
       >
@@ -75,21 +89,32 @@ onBeforeUnmount(() => clearInterval(hintTimer))
            抽屉转单台编辑由 ServerListView.openBulkEdit 判 1 台分流，>1 台才进 bulk 模式 -->
       <button
         class="bb-btn"
-        :disabled="!checkedCount"
+        :disabled="batchBusy || !checkedCount"
         :title="checkedCount === 1 ? t('batch.editSingleTitle') : t('batch.editTitle', { n: checkedCount })"
         @click="emit('bulk-edit')"
       >
         ✎ {{ checkedCount === 1 ? t('ctx.edit') : t('batch.edit') }}
       </button>
       <!-- 导出：emit 勾选 id 数组，blob 下载（含 403 二次验证提示）由 ServerListView 执行 -->
-      <button class="bb-btn" :disabled="!checkedCount" :title="t('batch.exportTitle')" @click="emit('export')">
+      <button
+        class="bb-btn"
+        :disabled="batchBusy || !checkedCount"
+        :title="t('batch.exportTitle')"
+        @click="emit('export')"
+      >
         ⤓ {{ t('batch.export') }}
       </button>
-      <!-- 删除：danger 样式与连接主按钮相区分；确认对话框（含逐台删除进度）由 ServerListView 执行 -->
-      <button class="bb-btn bb-danger" :title="t('batch.deleteTitle')" @click="emit('batch-delete')">
+      <!-- 删除：danger 样式与连接主按钮相区分；确认对话框（含逐台删除进度）由 ServerListView 执行。
+           R4（round14）：执行期禁用（替代此前锁命中静默吞点击） -->
+      <button
+        class="bb-btn bb-danger"
+        :disabled="batchBusy"
+        :title="t('batch.deleteTitle')"
+        @click="emit('batch-delete')"
+      >
         ✕ {{ t('batch.delete') }}
       </button>
-      <button class="bb-x" :title="t('batch.clear')" @click="emit('clear-checked')">✕</button>
+      <button class="bb-x" :disabled="batchBusy" :title="t('batch.clear')" @click="emit('clear-checked')">✕</button>
     </div>
     <!-- 无勾选时的常驻轻提示（--text-4 小字，克制）：双击连接与 Ctrl/Shift 多选两条
          6s 轮换（发现位唯一化，见 script）；有勾选时让位给批量条（同位置互斥，不叠加噪音） -->
@@ -240,6 +265,12 @@ onBeforeUnmount(() => clearInterval(hintTimer))
 .bb-x:hover {
   background: var(--bg-hover);
   color: var(--text-1);
+}
+
+/* R4（round14）：执行期禁用清除勾选钮——与 .bb-btn:disabled 同款弱化 */
+.bb-x:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
 }
 
 /* 无勾选轻提示：右侧工具簇左侧同行，小字弱化（常驻但克制——不弹 toast 打扰）；

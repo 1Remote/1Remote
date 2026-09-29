@@ -176,7 +176,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
 
       <!-- 本地上传：浏览器侧 FileReader，不经服务器 -->
       <div class="ip-section">{{ t('editor.iconUpload') }}</div>
-      <label class="ip-upload">
+      <label class="dashed-add ip-upload">
         <input type="file" accept="image/*" @change="onUploadChange" />
         {{ t('editor.iconUploadBtn') }}
       </label>
@@ -313,21 +313,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onEscCapture, true))
   box-shadow: 0 0 0 2px var(--accent-focus);
 }
 .ip-upload {
+  /* 钮面走全局 .dashed-add（theme.css，round14 M4 收敛——族内 text-2 色差一并统一）；
+     本类只留布局差异：块容器中收缩包裹（非 flex 子项）+ 隐藏 file input */
   display: inline-block;
-  /* 虚线添加钮族：值拷贝自 SubformList .sf-add（G18） */
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius-ctrl);
-  background: transparent;
-  color: var(--text-2);
-  font-size: var(--fs-body);
-  line-height: 1;
-  padding: 5px 12px;
-  cursor: pointer;
-}
-.ip-upload:hover {
-  border-color: var(--accent);
-  color: var(--accent-text);
-  background: var(--bg-hover);
 }
 .ip-upload input {
   display: none;

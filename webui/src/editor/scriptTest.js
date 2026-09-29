@@ -10,6 +10,7 @@
  * dialog 内容经 h() 组装、inline style——弹窗 teleport 到 body，scoped 样式作用不到。
  */
 import { h } from 'vue'
+import { confirmDialog } from '../utils/confirmDialog'
 
 /**
  * @param {Object} deps
@@ -57,13 +58,11 @@ export function showScriptTestResult({ dialog, t, fieldKey, command, resp }) {
   //（round2 J29 清点时它走 info 预设未被数入）——改标准 create + showIcon:false，
   // 并补 autoFocus:false 对齐全库「禁回车误触」纪律（信息框仅一个确定钮，属低风险顺带）。
   // N1：确认钮补中性档（非破坏性确认应配 default 钮，同导出/批量连接确认）——此前漏设
-  // 时 naive 默认渲染 primary 实底，是 L4 统一描边后全站仅存的实底主按钮
-  dialog.create({
+  // 时 naive 默认渲染 primary 实底，是 L4 统一描边后全站仅存的实底主按钮。
+  // round11 A2：三参数收敛进 confirmDialog 辅助（danger 缺省=default 即中性档）
+  confirmDialog(dialog, {
     title: t('editor.scriptTestTitle'),
     content: () => h('div', null, rows),
-    showIcon: false,
     positiveText: t('common.ok'),
-    positiveButtonProps: { type: 'default' },
-    autoFocus: false,
   })
 }

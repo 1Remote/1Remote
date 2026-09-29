@@ -37,12 +37,13 @@ namespace _1RM.Service.WebUi
     /// </summary>
     public static partial class WebUiSettingsService
     {
-        /// <summary>读取 general 设置快照（requireSecondaryVerification 读 SecondaryVerificationHelper；appStartAutomatically 读注册表/启动文件夹实况）。</summary>
+        /// <summary>读取 general 设置快照（requireSecondaryVerification 读 SecondaryVerificationHelper；appStartAutomatically 读注册表/启动文件夹实况；logFilePath 读日志运行时实况）。</summary>
         public static async Task<GeneralSettingsDto> ReadGeneralAsync(ConfigurationService cs)
         {
             var dto = ReadGeneralConfig(cs);
             dto.RequireSecondaryVerification = await SecondaryVerificationHelper.GetEnabled();
             dto.AppStartAutomatically = SetSelfStartingHelper.IsSelfStart(Assert.APP_NAME);
+            dto.LogFilePath = SimpleLogHelper.GetFileFullName();
             return dto;
         }
 
@@ -134,6 +135,7 @@ namespace _1RM.Service.WebUi
             // 实际状态刷新缓存，回读与重启后的首读一致）
             dto.RequireSecondaryVerification = await SecondaryVerificationHelper.GetEnabled();
             dto.AppStartAutomatically = SetSelfStartingHelper.IsSelfStart(Assert.APP_NAME);
+            dto.LogFilePath = SimpleLogHelper.GetFileFullName();
             return GeneralSettingsResult.Ok(dto);
         }
 

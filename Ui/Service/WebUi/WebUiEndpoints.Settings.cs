@@ -40,7 +40,7 @@ namespace _1RM.Service.WebUi
         private static readonly HashSet<string> ValidThemeModes = new(StringComparer.OrdinalIgnoreCase)
             { "dark", "light", "system" };
         private static readonly HashSet<string> ValidAccents = new(StringComparer.OrdinalIgnoreCase)
-            { "blue", "violet", "pink", "red", "orange", "green", "slate" };
+            { "blue", "violet", "pink", "orange", "green", "slate" }; // red 已删（round14：红 accent 令输入框高亮酷似错误提示）
         private static readonly HashSet<string> ValidFontSizes = new(StringComparer.OrdinalIgnoreCase)
             { "S", "M", "L", "XL" };
 
@@ -158,7 +158,7 @@ namespace _1RM.Service.WebUi
                 if (!ValidThemeModes.Contains(themeMode))
                     return Results.BadRequest(new { error = $"invalid themeMode '{themeMode}', expected one of: dark, light, system" });
                 if (!ValidAccents.Contains(accent))
-                    return Results.BadRequest(new { error = $"invalid accent '{accent}', expected one of: blue, violet, pink, red, orange, green, slate" });
+                    return Results.BadRequest(new { error = $"invalid accent '{accent}', expected one of: blue, violet, pink, orange, green, slate" });
                 if (!ValidFontSizes.Contains(fontSize))
                     return Results.BadRequest(new { error = $"invalid fontSize '{fontSize}', expected one of: S, M, L, XL" });
 

@@ -42,6 +42,7 @@ import FormField from './FormField.vue'
 import HelpLink from '../HelpLink.vue'
 import { bulkSchemaView, camelKey, sharedValueOf, BULK_DTO_KEYS, BULK_SENSITIVE_KEYS } from '../../editor/bulkSchema.js'
 import { FIELD } from '../../editor/fieldTypes.js'
+import { useSaveIssues } from '../../editor/saveIssues.js'
 import { diffPatch } from '../../editor/patch.js'
 import { opaqueHex } from '../../utils/color.js'
 import { api } from '../../api'
@@ -57,10 +58,14 @@ const props = defineProps({
 const emit = defineEmits(['saved'])
 const { t } = useI18n()
 const message = useMessage()
+// 保存问题总线（round13 N3）：消费覆盖态键值行编辑器自报的半行问题——EditorDrawer
+// provide，本组件把 issues 并入必填校验列表（见 validateBulkRequired）
+const { issues: saveIssues, validateNow: saveIssuesValidate } = useSaveIssues()
 
 const saving = ref(false)
 const saveErrors = ref([]) // 服务端 400 的 {errors} 列表（内联展示）
-const missingRequired = ref([]) // 客户端必填快速校验（字段文案列表）
+// round15：missingRequired（必填文案列表）随横幅删除移除——必填态由抽屉的必填守卫
+// 假禁用/聚焦引导承载，计数由 save() 返回值交给抽屉提示
 
 // ---- peek 回读：选中 ≤50 台时拉取非敏感字段，>50/失败静默退化 ----
 // bulkDsMixed 的 ds 以 bulkServers 为准，与本表单保存口径一致；peek 也按单 ds 语义调用。
@@ -171,6 +176,11 @@ function buildBulkPatch() {
   }
   return diffPatch(initial, current)
 }
+/** 覆盖态字段的必填/半行校验：返回未填键数组（schema PascalCase 键，与 FormField 的
+ *  data-req-key 对齐，供抽屉的必填守卫聚焦定位）。round15 起不再产出展示用文案
+ *  （必填横幅已删，计数由 save() 返回）——顺带移除了旧文案查找里 camelCase/PascalCase
+ *  失配的潜伏代码（round13 R1/B4）。saveIssues 解构重命名后即是 issues 对象本身，
+ *  勿再套 .issues（round15 修复的覆盖按钮失效 BUG 即源于此） */
 function validateBulkRequired() {
   const missing = []
   for (const { field, key } of bulkFields.value) {
@@ -181,9 +191,13 @@ function validateBulkRequired() {
     // 必填字段照旧；int 数字与静态枚举字段的空值无法进 patch 域（后端类型门/空值 400），
     // 与必填同栏提示；runners 下拉的 '' 是真实取值（跟随全局），不在此列
     if (field.required || field.type === FIELD.NUMBER || (field.type === FIELD.SELECT && !field.optionsSource)) {
-      missing.push(field.labelKey ? t(field.labelKey) : key)
+      missing.push(field.key)
     }
   }
+  // 键值半行（round13 N3）：覆盖态的键值行编辑器只填值没填名时，序列化会丢弃该行——
+  // 单机模式经保存问题总线拦截（round12 U25），批量模式此前漏网（save 早退不消费总线）。
+  // 总线由 EditorDrawer provide，本组件 inject 后在此并入同一拦截集合
+  for (const issueKey of Object.keys(saveIssues)) missing.push(issueKey)
   return missing
 }
 
@@ -213,8 +227,9 @@ const iconTint = computed(() => {
 // 抽屉 rootRef 的 querySelector 能滚到本组件横幅）
 async function save() {
   if (saving.value) return 0
-  missingRequired.value = validateBulkRequired()
-  if (missingRequired.value.length) return missingRequired.value.length
+  saveIssuesValidate.value = true // 打开行内标红门控（与单机模式同款）
+  const missing = validateBulkRequired()
+  if (missing.length) return missing.length
   const patch = buildBulkPatch()
   if (!Object.keys(patch).length) {
     // 后端空 patch 400（"patch must contain at least one field"）——前端先行提示
@@ -246,16 +261,18 @@ async function save() {
 
 // 接缝暴露：save 供抽屉保存入口调用；saving/dirty 供抽屉按钮态与脏检测读取
 //（H13 后 dsMixed 不再暴露——跨库批量已解禁）
-defineExpose({ save, saving, dirty: bulkDirty })
+// 必填未填键（PascalCase，与 FormField data-req-key 对齐）：抽屉保存钮的假禁用态与
+// 必填守卫聚焦都消费它（round14 统一必填处理，defineExpose 供抽屉读取）
+const missingKeys = computed(() => validateBulkRequired())
+defineExpose({ save, saving, dirty: bulkDirty, missingKeys })
 </script>
 
 <template>
   <div class="ed-fields">
     <!-- 混合协议提示：交集之外的选项不显示且各自保持不变（owner 需求文案） -->
     <div v-if="schemaView.mixed" class="bulk-info-banner">{{ t('editor.bulkMixedProtocols') }}</div>
-    <div v-if="missingRequired.length" class="ed-banner ed-banner-required">
-      {{ t('editor.missingRequired', { keys: missingRequired.join(', ') }) }}
-    </div>
+    <!-- round15：必填缺失横幅删除（统一走必填守卫：假禁用+提示+强点聚焦高亮）；
+         仅后端保存错误横幅保留 -->
     <div v-if="saveErrors.length" class="ed-banner">
       <div v-for="(err, i) in saveErrors" :key="i">{{ err }}</div>
     </div>
@@ -327,33 +344,10 @@ defineExpose({ save, saving, dirty: bulkDirty })
 </template>
 
 <style scoped>
-/* 字段区容器与错误横幅：与 EditorDrawer 单机表单共用同名类（那边保留一份；本组件根节点
-   会同时携带父组件 scope id，两份规则一致不冲突）。 */
-.ed-fields {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  /* 横向 16 与 ed-head/ed-foot 共线（J17，与 EditorDrawer 同名拷贝同步） */
-  padding: 8px 16px 20px;
-}
-
-.ed-banner {
-  border: 1px solid var(--danger);
-  border-radius: var(--radius-ctrl);
-  background: color-mix(in srgb, var(--danger) 10%, transparent);
-  color: var(--danger);
-  font-size: var(--fs-body);
-  line-height: 1.6;
-  padding: 8px 10px;
-  word-break: break-word;
-}
-
-.ed-banner-required {
-  border-color: var(--danger);
-}
+/* 字段区容器/错误横幅/分组区块六类（ed-fields/ed-banner/ed-group/ed-group-title/
+   ed-group-desc/ed-group-note）走 theme.css 全局定义（round14 M6 收敛，与 EditorDrawer
+   共用单点，类名不变；ed-banner-required 已随 round15 必填横幅删除、round17 清类）；
+   本文件只留批量模式专属样式 */
 
 /* 混合协议提示：中性色（信息性提示，非错误——跨源禁存才用红色 ed-banner） */
 .bulk-info-banner {
@@ -367,40 +361,7 @@ defineExpose({ save, saving, dirty: bulkDirty })
   word-break: break-word;
 }
 
-/* 分组区块与标题：与 EditorDrawer 单机表单同款（sticky 标题在滚动区贴顶） */
-.ed-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.ed-group-title {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  margin: 0;
-  padding: 6px 0 5px; /* 底 5px+1px 下边框 = 6px，与顶 6px 光学等高（banner 光学微调，G22 豁免） */
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
-  color: var(--text-2);
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.ed-group-desc {
-  margin: -4px 0 0;
-  color: var(--text-4);
-  font-size: var(--fs-caption);
-  line-height: 1.5;
-}
-
-.ed-group-note {
-  margin: 8px 0 0;
-  color: var(--accent-text);
-  font-size: var(--fs-caption);
-  line-height: 1.5;
-}
+/* 分组区块与标题走全局 ed-group 族（theme.css，round14 M6） */
 
 /* 批量模式字段行：FormField（或占位行） + 右侧「覆盖/保持不变」切换 */
 .bulk-field {

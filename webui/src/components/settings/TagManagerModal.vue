@@ -15,6 +15,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
+import { confirmDialog } from '../../utils/confirmDialog'
 import { api } from '../../api'
 import { useBatchConnect } from '../../composables/useBatchConnect'
 import { useServers } from '../../composables/useServers'
@@ -40,12 +41,9 @@ const { batchConnect } = useBatchConnect()
 //（第三轮 G8：chips 计数是全库口径而管理器单库——之前「全部数据」下静默回落 Local，
 // 看得到其他源的标签 chip 却点不进管理器；凭据库模态同款 n-select 过滤行）
 const currentDs = ref(props.ds)
-watch(
-  () => props.ds,
-  (v) => {
-    currentDs.value = v
-  }
-)
+// round17：删除 watch(() => props.ds) 与 watch(() => props.show)——唯一挂载点是
+// ServerListView 的 v-if + :show="true"（打开即挂载、ds 打开时定死），两 watch 永不
+// 触发；打开加载由下方 onMounted 承担。若未来改为常驻 + 动态 :show，需恢复这两个 watch
 const dsOptions = computed(() => datasources.value.map((d) => ({ label: d.name, value: d.name })))
 watch(currentDs, () => {
   renaming.value = null // 切数据源时收起内联重命名（草稿属于旧 ds）
@@ -74,15 +72,6 @@ async function load() {
   }
 }
 
-watch(
-  () => props.show,
-  (open) => {
-    if (open) {
-      renaming.value = null
-      load()
-    }
-  }
-)
 onMounted(() => {
   if (props.show) load()
 })
@@ -153,16 +142,14 @@ async function confirmRename() {
 // ---- 删除：确认（计数影响警告）→ DELETE；404=列表过期静默刷新。
 // autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDelete(tg) {
-  dialog.create({
+  confirmDialog(dialog, {
+    danger: true,
     title: t('tagm.deleteTitle'),
     // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
-    showIcon: false,
-    positiveButtonProps: { type: 'error' },
     content: t('tagm.deleteConfirm', { name: tg.name, n: tg.count }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
-    autoFocus: false,
-    onPositiveClick: async () => {
+    onPositive: async () => {
       try {
         await api.deleteTag(tg.name, currentDs.value)
         if (renaming.value?.from === tg.name) renaming.value = null
@@ -293,13 +280,9 @@ function connectAll(tg) {
   font-size: var(--fs-body);
   color: var(--text-2);
 }
+/* .hint 走 theme.css 全局，本地仅覆盖间距（round17） */
 .hint {
-  font-size: var(--fs-body);
-  color: var(--text-3);
   margin: 0 0 4px;
-}
-.hint.err {
-  color: var(--danger);
 }
 .empty {
   padding: 20px 0;
@@ -370,28 +353,6 @@ function connectAll(tg) {
   flex: 0 0 auto;
   display: flex;
   gap: 4px;
-}
-.act {
-  /* 行内文字小钮族：值拷贝自 CredentialVaultGroup .act（G18），横距统一 4px（G22） */
-  min-width: 24px;
-  height: var(--ctrl-h-s);
-  padding: 0 4px;
-  border: none;
-  border-radius: var(--radius-ctrl);
-  background: transparent;
-  color: var(--text-3);
-  font-size: var(--fs-body);
-  line-height: 1;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.act:hover:not(:disabled) {
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-.act:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
 }
 .act.connect {
   font-size: var(--fs-caption);

@@ -23,16 +23,22 @@ async function request(path, { method = 'GET', body, timeout = 30_000 } = {}) {
   return handleResponse(resp, path)
 }
 
-// 非 JSON 请求共用体（multipart 上传 / blob 下载）：不预设 Content-Type——
-// multipart 由浏览器补 boundary；blob=true 时返回 {blob, filename}（下载文件），
-// filename 取 Content-Disposition（RFC 5987 filename*= 优先，兼容裸 filename=；
-// 无头回退空串由调用方给默认名），否则仍解析 JSON
+// 非 JSON 请求共用体（multipart 上传 / blob 下载 / JSON body 下载）：multipart 不预设
+// Content-Type（浏览器补 boundary）；普通对象 body 自动 JSON 序列化（round13 N7：导出
+// POST {ids} 走此路径）；blob=true 时返回 {blob, filename}（下载文件），filename 取
+// Content-Disposition（RFC 5987 filename*= 优先，兼容裸 filename=；无头回退空串由
+// 调用方给默认名），否则仍解析 JSON
 async function requestRaw(path, { method = 'GET', body, timeout = 120_000, blob = false } = {}) {
   const headers = {}
   if (token) headers.Authorization = `Bearer ${token}`
-  const resp = await fetch(path, { method, headers, body, signal: AbortSignal.timeout(timeout) })
+  let payload = body
+  if (body && typeof body === 'object' && !(body instanceof FormData) && !(body instanceof Blob)) {
+    headers['Content-Type'] = 'application/json'
+    payload = JSON.stringify(body)
+  }
+  const resp = await fetch(path, { method, headers, body: payload, signal: AbortSignal.timeout(timeout) })
   if (blob && resp.ok) {
-    const blob = await resp.blob()
+    const fileBlob = await resp.blob() // round17 改名：不再遮蔽入参 blob（布尔开关）
     const cd = resp.headers.get('Content-Disposition') || ''
     const star = /filename\*=(?:UTF-8'')?([^;]+)/i.exec(cd)
     const plain = /filename=(?:"([^"]+)"|([^;]+))/i.exec(cd)
@@ -43,13 +49,21 @@ async function requestRaw(path, { method = 'GET', body, timeout = 120_000, blob 
     } catch {
       filename = raw
     }
-    return { blob, filename }
+    return { blob: fileBlob, filename }
   }
   return handleResponse(resp, path)
 }
 
 async function handleResponse(resp, path) {
-  if (resp.status === 401) throw new Error('unauthorized')
+  if (resp.status === 401) {
+    // V14（round16）：未授权错误带结构化标记（status + unauthorized 布尔），消费方据此与
+    // 网络错误二分——发布形态下手动输网址打开（缺访问令牌）时全接口 401，此前一律被
+    // 呈现为「后端不可达」，误导排障方向（应用其实正开着）
+    const err = new Error('unauthorized')
+    err.status = 401
+    err.unauthorized = true
+    throw err
+  }
   if (!resp.ok) {
     // 错误体尽量带回：编辑器保存 400 的 {errors} 列表要在抽屉内联展示（err.status/err.body）
     let errBody = null
@@ -106,19 +120,23 @@ export const api = {
   icons: () => request('/api/icons'),
   // 通用文件选择器：后端弹 WPF OpenFileDialog，
   // filter 为 WPF SelectFileHelper 线格式（"exe|*.exe" / "script|*.bat;*.cmd;*.ps1;*.py|*|*.*"），
-  // title 可选（对话框标题），path 传当前值（后端取其目录作初始目录）。
+  // title 可选（对话框标题），path 传当前值（后端取其目录作初始目录），
+  // checkFileExists 缺省 true；sqlite 库文件浏览传 false（不存在可新建，对齐 WPF）。
   // 成功 → {path}；用户取消 → 404（err.status=404，调用方静默）。timeout 放宽到 10 分钟：
   // 请求寿命 = 用户开着对话框的时间，30s 默认会在用户浏览文件夹期间就掐断
-  pickFile: (filter, { path = '', title = '' } = {}) =>
+  pickFile: (filter, { path = '', title = '', checkFileExists = true } = {}) =>
     request('/api/files/pick', {
       method: 'POST',
-      body: { filter: filter || '', title: title || '', path: path || '' },
+      body: { filter: filter || '', title: title || '', path: path || '', checkFileExists },
       timeout: 600_000,
     }),
   // 脚本测试（编辑器脚本行 Test 按钮）：{command} = 字段当前的单行命令文本，
   // 后端复用 WPF 的 DisassembleOneLineScriptCmd 拆解 + 执行，回传
   // {file, arguments, exitCode, timedOut, output, error}（output 截断 4KB；15s 超时杀进程）
   testScript: (command) => request('/api/scripts/test', { method: 'POST', body: { command }, timeout: 30_000 }),
+  // 打开日志所在文件夹并选中日志文件（V11 round16）：WPF 常规页「浏览…」按钮的平价；
+  // 日志路径展示走 getGeneralSettings 的 logFilePath（只读，PUT 白名单不含该键）
+  openLogFolder: () => request('/api/logs/open', { method: 'POST' }),
   // Serial 编辑器可输入下拉建议：后端机器 COM 口 + 波特率表
   //（与 WPF SerialFormView 的 AutoCompleteComboBox 数据源同源，Serial.cs）
   serialOptions: () => request('/api/serial/options'),
@@ -210,8 +228,9 @@ export const api = {
   },
   // 导出 = 明文 JSON attachment（跨数据源，ids 逗号分隔）——blob 响应不能走 JSON request；
   // 二次验证未通过抛 err.status=403；成功返回 {blob, filename}（调用方 object URL + a[download] 触发保存）
-  exportServers: (ids) =>
-    requestRaw(`/api/servers/export?ids=${ids.map(encodeURIComponent).join(',')}`, { blob: true }),
+  // round13 N7：ids 走 POST body——GET 查询串拼接受服务器请求行 8KB 上限（约 300 台
+  // 全选导出即被拒 414，只见笼统"导出失败"）；body 无此限制
+  exportServers: (ids) => requestRaw('/api/servers/export', { method: 'POST', body: { ids }, blob: true }),
 }
 
 /**

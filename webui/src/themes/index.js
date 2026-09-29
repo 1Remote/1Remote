@@ -3,14 +3,15 @@ import { darkTheme, lightTheme } from 'naive-ui'
 import { api } from '../api'
 import './theme.css'
 
-export const ACCENTS = ['blue', 'violet', 'pink', 'red', 'orange', 'green', 'slate']
+// red 已删（round14 需求）：红色 accent 会令文本输入框聚焦高亮酷似错误提示。
+// 旧配置存 red 的：initTheme 白名单校验拒绝 → 回默认 blue，下次保存外观即自动迁移
+export const ACCENTS = ['blue', 'violet', 'pink', 'orange', 'green', 'slate']
 
 // 强调色 → Naive UI primaryColor 映射（与 theme.css 中 --accent 保持一致）
 export const ACCENT_HEX = {
   blue: '#2c5aff',
   violet: '#8b5cf6',
   pink: '#ec4899',
-  red: '#ef4444',
   orange: '#f97316',
   green: '#10b981',
   slate: '#64748b',
@@ -23,20 +24,18 @@ const ACCENT_HOVER_HEX = {
   blue: '#4d73ff',
   violet: '#a78bfa',
   pink: '#f472b6',
-  red: '#f87171',
   orange: '#fb923c',
   green: '#34d399',
   slate: '#7c8ba1',
 }
 
 // 实底强调变体（与 theme.css 中 --accent-solid 保持一致，双基底同值）：白字在亮 --accent
-// 上 orange/green 仅 2.80/2.54（WCAG FAIL），在 solid 上全 7 色 ≥5.18 AA。hover/pressed
+// 上 orange/green 仅 2.80/2.54（WCAG FAIL），在 solid 上全 6 色 ≥5.18 AA。hover/pressed
 // 再加深一档（白字对比只增不减）
 const ACCENT_SOLID_HEX = {
   blue: '#2c5aff',
   violet: '#6d28d9',
   pink: '#be185d',
-  red: '#b91c1c',
   orange: '#c2410c',
   green: '#047857',
   slate: '#475569',
@@ -45,7 +44,6 @@ const ACCENT_SOLID_HOVER_HEX = {
   blue: '#274fe0',
   violet: '#6023bf',
   pink: '#a71552',
-  red: '#a31919',
   orange: '#ab390b',
   green: '#046a4c',
   slate: '#3e4b5c',
@@ -54,7 +52,6 @@ const ACCENT_SOLID_PRESSED_HEX = {
   blue: '#2144bf',
   violet: '#521ea3',
   pink: '#8f1246',
-  red: '#8b1515',
   orange: '#923109',
   green: '#035a41',
   slate: '#35404f',
@@ -68,18 +65,16 @@ const ACCENT_TEXT_DARK_HEX = {
   blue: '#7c9bff',
   violet: '#b8a6f7',
   pink: '#f5a8cd',
-  red: '#f5a09a',
   orange: '#f0b25f',
   green: '#5fd38d',
   slate: '#9aa8bb',
 }
 const accentTextHex = () => (resolvedMode() === 'dark' ? ACCENT_TEXT_DARK_HEX : ACCENT_SOLID_HEX)[themeState.accent]
 
-// 旧 9 主题 → 预设组合（spec §4）
+// 旧 9 主题 → 预设组合（spec §4）。Wine（light+red）随 red accent 一并删除（round14）
 export const CLASSIC_THEMES = {
   Light: { themeMode: 'light', accent: 'blue' },
   Dark: { themeMode: 'dark', accent: 'blue' },
-  Wine: { themeMode: 'light', accent: 'red' },
   Forest: { themeMode: 'dark', accent: 'green' },
   Greystone: { themeMode: 'light', accent: 'slate' },
   Asphalt: { themeMode: 'dark', accent: 'slate' },

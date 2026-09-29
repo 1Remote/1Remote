@@ -9,12 +9,14 @@
  *   点击插入 textarea 光标位置（selectionStart 前插 + 光标移到宏尾 + 聚焦）。
  * - 主题/字体/字符集选项域来自 props.meta（后端同源 PuttyThemes.Themes /
  *   Fonts.SystemFontFamilies / PuttyRunner.CodePages），前端不硬编码。
- * - 环境变量/特殊字符以行文本 props 传入、改动 emit 回传（数组↔行文本的换算归 RunnerGroup）。
+ * - 环境变量/特殊字符为行式键值编辑（KvPairsField，WPF ListBox 行编辑对齐；
+ *   数组直接经 emit 上抛，行态/半填行/回声合并语义见 editor/kvPairs.js）。
  */
 import { computed, h, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import HelpLink from '../HelpLink.vue'
+import KvPairsField from '../editor/KvPairsField.vue'
 import {
   hasArgsPrivateKey,
   hasCharset,
@@ -29,7 +31,7 @@ import {
 const props = defineProps({
   /** runner 对象（PascalCase 直通域，父列表内元素——写值直接落原对象） */
   runner: { type: Object, required: true },
-  /** 当前协议的宏清单 [{name,description}]（启动参数宏 chips） */
+  /** 当前协议的宏清单 [{name,description}]（启动参数宏 chips + 环境变量值列候选） */
   macros: { type: Array, default: () => [] },
   /** GET 下发的选项域 meta：{ puttyThemes, fonts, codePages }（缺省=空选项，值仍可保存） */
   meta: { type: Object, default: null },
@@ -37,17 +39,13 @@ const props = defineProps({
   saving: { type: Boolean, default: false },
   /** exe 原生文件选择器在途（浏览按钮禁用，全局单飞） */
   browsing: { type: Boolean, default: false },
-  /** 环境变量行文本（'KEY=VALUE' 每行一条） */
-  envText: { type: String, default: '' },
-  /** 特殊字符行文本（同上） */
-  specialText: { type: String, default: '' },
 })
 const emit = defineEmits([
   'exe-path', // (value) ExePath 手输变化（父触发预设自动填充 + debounce 保存）
   'browse', // () 浏览按钮：父弹原生文件选择器
   'arg', // (field, value) Arguments / ArgumentsForPrivateKey 变化
-  'env-text', // (value) 环境变量行文本变化
-  'special-text', // (value) 特殊字符行文本变化
+  'env-rows', // (value) 环境变量行数组 [{Key,Value}] 变化
+  'special-rows', // (value) 特殊字符行数组变化
   'hosting', // (value) RunWithHosting 开关
   'select-field', // (key, value) 内置运行器下拉位（PuttyThemeName/PuttyFont/LineCodePage）
   'font-size', // (n) 字号（已校验为 ≥1 整数）
@@ -65,16 +63,32 @@ const themeOptions = computed(() =>
 const fontOptions = computed(() => (props.meta?.fonts || []).map((f) => ({ value: f, label: f })))
 const codePageOptions = computed(() => (props.meta?.codePages || []).map((c) => ({ value: c, label: c })))
 
+// 环境变量值列的宏候选（WPF AutoCompleteComboBox Selections=MarcoNames 对齐）
+const macroNames = computed(() => (props.macros || []).map((m) => m.name))
+
 function themeColors(name) {
   return (props.meta?.puttyThemes || []).find((x) => x.name === name)?.colors || null
 }
 
-// 主题下拉选项：色点行（bg/fg/绿/红 四点，与预览条同键位）——WPF 无对应物，web 简化预览
+// 主题下拉选项：色点行（bg/fg/绿/红 四点，与预览条同键位）——WPF 无对应物，web 简化预览。
+// round17：样式全部内联——render-label 的 h() vnode 不带本组件 scoped 的 data-v 属性，
+// 此前挂的 .theme-opt/.theme-dot scoped 规则永不命中，色点 0×0 不可见
 function renderThemeLabel(option) {
   const c = option.theme?.colors || {}
   const dots = [c.bg || '#000', c.fg || '#bbb', c.green || '#55ff55', c.red || '#ff5555']
-  return h('span', { class: 'theme-opt' }, [
-    ...dots.map((d) => h('i', { class: 'theme-dot', style: { background: d } })),
+  return h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: '6px' } }, [
+    ...dots.map((d) =>
+      h('i', {
+        style: {
+          background: d,
+          width: '10px',
+          height: '10px',
+          borderRadius: '3px',
+          border: '1px solid var(--border)',
+          flex: '0 0 auto',
+        },
+      })
+    ),
     h('span', null, option.label),
   ])
 }
@@ -141,11 +155,11 @@ function onFontSize(v) {
       <template v-if="hasInternalConfig(runner)">
         <!-- 内置运行器 ExePath 只读：路径由应用管理（随应用分发/部署），WPF 侧可改是
              便携部署的历史遗留，web 端收为只读展示（title 说明悬停可见） -->
-        <div v-if="hasExePath(runner)" class="f-row exe-readonly" :title="t('settings.r.internalExeManaged')">
+        <div v-if="hasExePath(runner)" class="s-form-row exe-readonly" :title="t('settings.r.internalExeManaged')">
           <label>{{ t('editor.f.ExePath') }}</label>
           <n-input size="small" :value="runner.ExePath" disabled :input-props="{ spellcheck: false }" />
         </div>
-        <div v-if="hasTheme(runner)" class="f-row">
+        <div v-if="hasTheme(runner)" class="s-form-row">
           <label>{{ t('settings.r.f.theme') }}</label>
           <div class="theme-wrap">
             <div class="theme-select-row">
@@ -174,7 +188,7 @@ function onFontSize(v) {
             </div>
           </div>
         </div>
-        <div v-if="hasFont(runner)" class="f-row">
+        <div v-if="hasFont(runner)" class="s-form-row">
           <label>{{ t('settings.r.f.font') }}</label>
           <n-select
             size="small"
@@ -185,7 +199,7 @@ function onFontSize(v) {
             @update:value="emit('select-field', 'PuttyFont', $event)"
           />
         </div>
-        <div v-if="hasFontSize(runner)" class="f-row">
+        <div v-if="hasFontSize(runner)" class="s-form-row">
           <label>{{ t('settings.r.f.fontSize') }}</label>
           <n-input-number
             class="num-input"
@@ -196,7 +210,7 @@ function onFontSize(v) {
             @update:value="onFontSize"
           />
         </div>
-        <div v-if="hasCharset(runner)" class="f-row">
+        <div v-if="hasCharset(runner)" class="s-form-row">
           <label>{{ t('settings.r.f.charset') }}</label>
           <div class="charset-wrap">
             <n-select
@@ -218,7 +232,7 @@ function onFontSize(v) {
 
     <!-- 外部运行器：已知字段编辑（PascalCase 直通） -->
     <template v-else>
-      <div class="f-row">
+      <div class="s-form-row">
         <label>{{ t('editor.f.ExePath') }}</label>
         <div class="exe-wrap">
           <n-input
@@ -234,7 +248,7 @@ function onFontSize(v) {
           </button>
         </div>
       </div>
-      <div class="f-row">
+      <div class="s-form-row">
         <label>
           <!-- 参数行 label：SSH 族（有 ArgumentsForPrivateKey 字段）区分
                "通过密码/通过私钥"两个参数位；其余协议（VNC/FTP 等外部运行器无私钥概念）用
@@ -272,7 +286,7 @@ function onFontSize(v) {
         </div>
       </div>
       <!-- SSH 族外部运行器：私钥登录参数（WPF ExternalSshRunnerSettings 审计补齐） -->
-      <div v-if="hasArgsPrivateKey(runner)" class="f-row">
+      <div v-if="hasArgsPrivateKey(runner)" class="s-form-row">
         <label>
           {{ t('settings.r.f.argsPrivateKey') }}
           <!-- 私钥参数行 (?)：WPF ExternalSshRunnerSettings:216 同款（url 照抄） -->
@@ -303,34 +317,24 @@ function onFontSize(v) {
           </div>
         </div>
       </div>
-      <div class="f-row">
+      <div class="s-form-row">
         <label>{{ t('settings.r.f.env') }}</label>
         <div class="env-wrap">
-          <n-input
-            size="small"
-            type="textarea"
-            :rows="2"
-            :value="envText"
-            :input-props="{ spellcheck: false }"
-            :placeholder="t('settings.r.f.envHint')"
-            @update:value="emit('env-text', $event)"
+          <!-- 行式键值编辑（WPF ListBox 行编辑对齐）；值列候选=当前协议宏
+               （WPF AutoCompleteComboBox Selections=MarcoNames 对齐） -->
+          <KvPairsField
+            :model-value="runner.EnvironmentVariables"
+            :suggestions="macroNames"
+            @update:model-value="emit('env-rows', $event)"
           />
           <p class="f-hint">{{ t('settings.r.f.envHint') }}</p>
         </div>
       </div>
-      <!-- 特殊字符（%XX 转义，WPF ExternalRunnerSettings 审计补齐） -->
-      <div class="f-row">
+      <!-- 特殊字符（%XX 转义，WPF ExternalRunnerSettings 审计补齐；WPF 值列无宏补全） -->
+      <div class="s-form-row">
         <label>{{ t('settings.r.f.special') }}</label>
         <div class="env-wrap">
-          <n-input
-            size="small"
-            type="textarea"
-            :rows="2"
-            :value="specialText"
-            :input-props="{ spellcheck: false }"
-            :placeholder="t('settings.r.f.envHint')"
-            @update:value="emit('special-text', $event)"
-          />
+          <KvPairsField :model-value="runner.SpecialCharacters" @update:model-value="emit('special-rows', $event)" />
           <p class="f-hint">
             {{ t('settings.r.f.specialHint') }}
             <!-- 特殊字符行 (?)：WPF External*RunnerSettings 转义说明旁 (?) → 运行器文档
@@ -341,7 +345,7 @@ function onFontSize(v) {
       </div>
       <!-- 集成到标签页：开关与输入框同列对齐；解释文本移植 WPF
            ExternalRunnerSettings.xaml 的 Caution 词条（14 语言），行 ToolTip=WPF 同名词条 -->
-      <div class="f-row" :title="t('settings.r.f.hostingTitle')">
+      <div class="s-form-row" :title="t('settings.r.f.hostingTitle')">
         <label>{{ t('editor.f.RunWithHosting') }}</label>
         <div class="hosting-wrap">
           <n-switch
@@ -421,16 +425,6 @@ function onFontSize(v) {
   margin: 0;
   font-size: var(--fs-caption);
   color: var(--text-4);
-}
-.f-row {
-  display: grid;
-  grid-template-columns: 100px minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
-}
-.f-row label {
-  font-size: var(--fs-body);
-  color: var(--text-2);
 }
 .f-hint {
   margin: 4px 0 0;
@@ -527,19 +521,8 @@ function onFontSize(v) {
   color: var(--text-4);
 }
 
-/* ---- 主题下拉选项色点 + 预览条 ---- */
-.theme-opt {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.theme-opt .theme-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border);
-  flex: 0 0 auto;
-}
+/* ---- 主题下拉选项色点（round17 起内联在 renderThemeLabel 的 h() 里，scoped 规则
+   对手写 vnode 不生效已删）+ 预览条 ---- */
 .theme-wrap {
   min-width: 0;
   display: flex;

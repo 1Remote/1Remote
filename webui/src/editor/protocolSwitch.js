@@ -14,6 +14,10 @@
  *    不能依赖源 json 的值）。
  *  - 纯函数纪律：不改动入参 json（浅拷贝每个携带值；行对象/数组在后续编辑时由
  *    SubformList/FormField 的不可变更新约定重建）。
+ *
+ * 会话快照层（round11 U1，switchProtocolWithSnapshots）：同一编辑会话内「用过的每个
+ * 协议」保留最后一份表单快照——切回时恢复快照（对齐桌面版每协议一份实例），只有
+ * 首次到访的协议才走上面的携带改造。
  */
 
 /**
@@ -66,4 +70,27 @@ export function switchProtocol(json, fromSchema, toSchema) {
   out.Protocol = toSchema.protocol
   out.ClassVersion = toSchema.classVersion
   return out
+}
+
+/**
+ * 协议切换（编辑会话快照版，round11 U1：切回协议恢复原值——对齐桌面版每协议一份实例）。
+ * 语义：离开当前协议前把其表单 json 存入快照表；目标协议本会话编辑过（快照存在）则
+ * 恢复快照，否则走常规携带改造（switchProtocol，首次到访协议仍取交集携带）。
+ * 桌面版对照：WPF 编辑器为每个协议保留实例，切回即还原；web 此前一次性替换导致
+ * 协议专属设置在往返后丢失。
+ * @param {Object} json 当前编辑 json（不会被改动）。
+ * @param {string} fromKey 当前协议键（快照存入键；json.Protocol）。
+ * @param {string} toKey 目标协议键。
+ * @param {object} fromSchema 源协议 schema。
+ * @param {object} toSchema 目标协议 schema。
+ * @param {Object} snapshots 会话级快照表（键=协议键，值=json；本函数写入 fromKey 项——
+ *   调用方负责会话生命周期：抽屉重新加载时整体清空，防跨服务器泄漏）。
+ * @returns {{json: Object, restored: boolean}} restored=true 表示恢复了 toKey 的会话快照。
+ */
+export function switchProtocolWithSnapshots(json, fromKey, toKey, fromSchema, toSchema, snapshots) {
+  snapshots[fromKey] = cloneValue(json)
+  if (Object.prototype.hasOwnProperty.call(snapshots, toKey)) {
+    return { json: cloneValue(snapshots[toKey]), restored: true }
+  }
+  return { json: switchProtocol(json, fromSchema, toSchema), restored: false }
 }

@@ -16,7 +16,7 @@
  * 快照执行一次性语义：开始时有层开着（或计数已卡死）→ 本键视为已消费并把计数归零（自愈），
  * 不返回；快照与计数均为 0 才返回列表。任何卡死计数至多吞一次 Esc 即恢复。
  */
-import { markRaw, onBeforeUnmount, onMounted, provide, reactive, ref } from 'vue'
+import { computed, markRaw, onBeforeUnmount, onMounted, provide, reactive, ref } from 'vue'
 import { isNavigationFailure, NavigationFailureType, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import GeneralGroup from '../components/settings/GeneralGroup.vue'
@@ -73,7 +73,8 @@ const activeId = ref('g-general')
   const g = route.query.g
   if (typeof g === 'string' && GROUPS.some((x) => x.id === g)) activeId.value = g
 }
-const activeGroup = () => GROUPS.find((x) => x.id === activeId.value) || GROUPS[0]
+// round17：函数改 computed——GROUPS 静态、返回引用稳定，模板多次调用无需重复 find
+const activeGroup = computed(() => GROUPS.find((x) => x.id === activeId.value) || GROUPS[0])
 
 function selectGroup(id) {
   activeId.value = id
@@ -158,9 +159,9 @@ onBeforeUnmount(() => {
       </nav>
     </aside>
     <section class="s-main">
-      <header class="s-header">{{ t(activeGroup().labelKey) }}</header>
+      <header class="s-header">{{ t(activeGroup.labelKey) }}</header>
       <div class="s-body">
-        <component :is="activeGroup().component" />
+        <component :is="activeGroup.component" />
       </div>
     </section>
   </div>
@@ -295,14 +296,13 @@ onBeforeUnmount(() => {
 
 /* ---- 设置分组共享的"标签列 + 控件列"行网格（GeneralGroup/LauncherGroup 的 .row）----
    :deep 穿透 scoped 边界统一定义（原先两分组各持一份同款规则）；仅此两分组的模板
-   使用 .row，其余分组的行内表单用各自的 .f-row，不受影响 */
+   使用 .row，其余分组的行内表单走全局 .s-form-row 不受影响 */
 :deep(.row) {
   display: grid;
   grid-template-columns: clamp(180px, 22%, 280px) minmax(0, 1fr);
   gap: 6px 16px;
   align-items: center;
-  min-height: 40px;
-  padding: 8px 0; /* 行纵距归偶（G22） */
+  padding: 8px 0;
 }
 /* 行悬停：全出血底色（无圆角/无水平内边距），标签列不加 nowrap——长词条自然两行折行 */
 :deep(.row:hover) {

@@ -19,16 +19,18 @@
  *    Trim 语义留给 WPF 消费端），'\n' 连接、无尾随换行；全部为空行时序列化为 ''。
  *
  * 候选（kvSuggestions，schemas.js 注入 editor/rdpProperties.js 的 103 项清单）：
- * 完整 'name:type:' 串——与 WPF 补全插入的文本一致（用户选中后只补值）。恒全量展示
- * （同 AUTOCOMPLETE 的 Serial 模式：get-show 恒 true、不按输入过滤），候选不约束
- * 取值（任意键入原样进 json，连接时由 WPF 平价的解析器校验）。
+ * 完整 'name:type:' 串——与 WPF 补全插入的文本一致（用户选中后只补值）。候选经
+ * SuggestInput 随输入过滤（round11 U21：此前恒全量铺开，长列表肉眼找项负担大），
+ * 候选不约束取值（任意键入原样进 json，连接时由 WPF 平价的解析器校验）。
  *
  * placeholder/说明文案：属性名框 placeholder 与字段下方两行说明 = WPF 的 HelpBrush
  * 提示与文本域旁说明原文移植（RdpFormView.xaml:570/601-606，WPF 为字面量英文——
  * 14 语言同显，locales 端 14 键同值；见 convert-locales.mjs 的映射策略注释）。
  */
-import { ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import SuggestInput from './SuggestInput.vue'
+import { useSaveIssues } from '../../editor/saveIssues.js'
 
 const props = defineProps({
   /** @type {FieldDescriptor} 字段描述符（type=KEY_VALUE_LINES，kvSuggestions 为候选表） */
@@ -98,6 +100,18 @@ function commit() {
   emit('update:modelValue', lastEmitted)
 }
 
+// 半填行（round11 U25）：名称空但值非空——序列化丢弃空名行（WPF 存储格式无法表示），
+// 此前保存无提示、重开即消失。名称框常驻红框提示 + 经保存问题总线自报
+//（EditorDrawer 拦截保存并在横幅标注）；无提供方（单独使用）时自报为无操作
+const { report } = useSaveIssues()
+const rowIsHalf = (r) => String(r.name ?? '').trim() === '' && String(r.value ?? '').trim() !== ''
+watch(
+  () => rows.value.some(rowIsHalf),
+  (has) => report(props.field.key, has),
+  { immediate: true }
+)
+onBeforeUnmount(() => report(props.field.key, false))
+
 function addRow() {
   rows.value.push({ name: '', value: '' })
   // 新行不入 json（空名行序列化时丢弃）——commit 仅用于同步 emit 时机统一；
@@ -113,8 +127,9 @@ function updateRow(i, key, v) {
   commit()
 }
 
-// 候选恒全量（同 Serial 的 AUTOCOMPLETE 模式）
-const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.field.kvSuggestions : [])
+// 候选清单（原样；随输入过滤与 Esc 取消候选统一在 SuggestInput，round11 U21——
+// 此前恒全量铺开，RDP 额外指令的 103 项候选肉眼找项负担大）
+const nameSuggestions = computed(() => (Array.isArray(props.field.kvSuggestions) ? props.field.kvSuggestions : []))
 </script>
 
 <template>
@@ -122,16 +137,16 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
     <!-- 行列表：装在与 n-input 同观的边框容器内（对齐 WPF 的 AvalonEdit 边框形态） -->
     <div class="kvl-box">
       <div v-for="(row, i) in rows" :key="i" class="kvl-row">
-        <!-- 属性名：可输入下拉（恒全量候选；placeholder=WPF HelpBrush 原文） -->
-        <n-auto-complete
+        <!-- 属性名：带候选输入框（SuggestInput：随输入过滤 + Esc 取消候选显示，
+             round11 U21——此前 103 项候选聚焦即全量铺开且不随输入过滤；
+             placeholder=WPF HelpBrush 原文） -->
+        <SuggestInput
           class="kvl-name"
-          size="small"
           :value="row.name"
-          :options="nameOptions()"
+          :suggestions="nameSuggestions"
           :placeholder="placeholder"
+          :invalid="rowIsHalf(row)"
           :disabled="disabled"
-          :input-props="{ spellcheck: false }"
-          :get-show="() => true"
           @update:value="updateRow(i, 'name', $event ?? '')"
         />
         <!-- 值：自由输入（:i: 型的整数校验留给后端/WPF 解析器，不在输入侧吞值）；
@@ -151,7 +166,9 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
         </button>
       </div>
     </div>
-    <button class="kvl-add" type="button" :disabled="disabled" @click="addRow">+ {{ t('editor.kvAddParam') }}</button>
+    <button class="dashed-add" type="button" :disabled="disabled" @click="addRow">
+      + {{ t('editor.kvAddParam') }}
+    </button>
     <!-- 字段下方说明（WPF 文本域旁两行说明原文移植） -->
     <p class="kvl-hint">{{ t('editor.kvHint') }}</p>
     <p class="kvl-hint kvl-note">{{ t('editor.kvPriority') }}</p>
@@ -167,28 +184,8 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
   gap: 6px;
 }
 
-/* 行列表容器：边框容器（高 28 档、--radius-ctrl 控件档；对齐 WPF 的 AvalonEdit Border + 行号区） */
-.kvl-box {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-ctrl);
-  background: var(--bg-elevated);
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.kvl-box:focus-within {
-  border-color: var(--accent-focus);
-}
-
-.kvl-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* 属性名 / 值：固定比例分宽（name 约 55%——属性名+类型后缀更长），min-width 防挤压 */
+/* 行列表容器/行/删除钮/等宽走 theme.css 全局并集（round14 M5 收敛，类名不变）；
+   本地只留分宽比例 */
 .kvl-name {
   flex: 1 1 55%;
   min-width: 0;
@@ -199,57 +196,7 @@ const nameOptions = () => (Array.isArray(props.field.kvSuggestions) ? props.fiel
   min-width: 0;
 }
 
-/* 等宽字体：属性名/值均为技术字面量（对齐 hex 输入的 ff-hf 口径） */
-.kvl-name :deep(input),
-.kvl-value :deep(input) {
-  font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
-}
-
-.kvl-del {
-  flex: 0 0 auto;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-4);
-  font-size: var(--fs-micro);
-  line-height: 1;
-  padding: 4px; /* 行内移除 ✕ 内距 4px 档（G22，kvm-del/sf-del 同值） */
-  cursor: pointer;
-}
-
-.kvl-del:hover:not(:disabled) {
-  background: var(--bg-hover);
-  color: var(--text-1); /* L2：移除钮 hover 中性（J9/J10 定案同款），危险性由 title 承载 */
-}
-
-.kvl-del:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
-
-/* 加行按钮：SubformList 的 sf-add 同款（虚线边框低调按钮） */
-.kvl-add {
-  align-self: flex-start;
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius-ctrl);
-  background: transparent;
-  color: var(--text-3);
-  font-size: var(--fs-body);
-  line-height: 1;
-  padding: 5px 12px;
-  cursor: pointer;
-}
-
-.kvl-add:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent-text);
-  background: var(--bg-hover);
-}
-
-.kvl-add:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
+/* 加行按钮走全局 .dashed-add（theme.css，round14 M4 收敛） */
 
 /* 说明文字：WPF 原文两行（第二行 Opacity 0.7 弱化） */
 .kvl-hint {

@@ -99,9 +99,23 @@ namespace _1RM.Service.WebUi
                 },
                 Writable = ds.IsWritable,
                 ReconnectInfo = ds.ReconnectInfo ?? string.Empty,
+                ReconnectEtaSeconds = ReconnectEta(ds, DateTime.Now),
                 ServerCount = CountServers(ds),
                 Config = config,
             };
+        }
+
+        /// <summary>
+        /// 重连等待剩余秒数（纯函数，DateTime 注入便于测试）：状态非 OK 且 ReconnectTime
+        /// 在未来 → 秒数；已到点 → 0（正在重连）；其余（已连接 / 未进入重连等待，如
+        /// NotConnectedYet 初值 MinValue）→ null。
+        /// </summary>
+        public static int? ReconnectEta(DataSourceBase ds, DateTime now)
+        {
+            if (ds.Status == EnumDatabaseStatus.OK) return null;
+            if (ds.ReconnectTime <= DateTime.MinValue) return null;
+            var seconds = (long)(ds.ReconnectTime - now).TotalSeconds;
+            return seconds < 0 ? 0 : (int)Math.Min(seconds, int.MaxValue);
         }
 
         /// <summary>数据源缓存的服务器计数（剔除分组头与临时会话）；DELETE 守卫等复用。</summary>

@@ -54,6 +54,7 @@ import {
 } from '../composables/tableBus'
 import { fullKey, isDirectChildOf, isDescendantPath } from '../composables/folders'
 import { naturalIpCompare } from '../utils/compare'
+import { clampMenuPos } from '../utils/contextMenu'
 
 const props = defineProps({
   servers: { type: Array, default: () => [] },
@@ -61,6 +62,8 @@ const props = defineProps({
   query: { type: String, default: '' }, // 搜索过滤词：透传给行做命中高亮
   folders: { type: Array, default: () => [] }, // 当前层级文件夹行：{name, path, dsName, count}
   opsBusy: { type: Boolean, default: false }, // 父级 folderOps 长操作进行中（nfMenu 禁用，与树右键同口径）
+  batchBusy: { type: Boolean, default: false }, // R4（round14）：批量删除执行期——转发 TableToolbar 禁用批量条按钮
+  subtreeScope: { type: Boolean, default: false }, // 父级过滤（标签，round11 U5）已按当前文件夹子树收窄——跳过直接子级显示过滤（搜索态经共享 searchedIds 自判，无需此 prop）
 })
 const emit = defineEmits([
   'connect',
@@ -83,13 +86,15 @@ const emit = defineEmits([
 ])
 const { t } = useI18n()
 const message = useMessage()
-const { datasources, searchedIds, dsWritable, servers: allServers } = useServers() // 文件夹右键菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）；allServers=未过滤整库（K1 重排基准用）
+const { searchedIds, dsWritable, servers: allServers } = useServers() // 文件夹右键菜单只读判定 + 搜索激活判定（共享模块单例，无额外请求）；allServers=未过滤整库（K1 重排基准用）
 
 // ---- 过滤 ----
 const filtered = computed(() => {
   // 搜索激活：列表已由父级收窄（applyServerFilters：搜索命中集 ∩ 当前文件夹子树，
-  // 资源管理器语义）后传入——此处不再叠加树选中过滤，子文件夹深处的命中同样可见
-  if (searchedIds.value != null) return props.servers
+  // 资源管理器语义）后传入——此处不再叠加树选中过滤，子文件夹深处的命中同样可见。
+  // 标签过滤（round11 U5）同口径：父级已按子树收窄（subtreeScope），跳过直接子级
+  // 显示过滤——此前标签过滤会漏掉子文件夹里的同标签服务器（与搜索语义分叉）
+  if (searchedIds.value != null || props.subtreeScope) return props.servers
   const sel = props.selection
   if (!sel || !sel.dataSourceName) return props.servers // 「全部数据」虚拟根 = 跨库总览（递归，无文件夹行）
   // 资源管理器模型（owner 2026-09-21 第三轮反馈定案）：进入数据源根/文件夹一律只列
@@ -102,9 +107,11 @@ const filtered = computed(() => {
   const target = sel.folderPath || ''
   return props.servers.filter((s) => s.dataSourceName === sel.dataSourceName && isDirectChildOf(s.folderPath, target))
 })
-// H9：搜索激活时强制显示文件夹列——搜索命中可来自当前子树的任意子文件夹，
+// H9：搜索/标签过滤激活时强制显示文件夹列——命中可来自当前子树的任意子文件夹，
 // 文件夹列（数据源/路径）是唯一来处标注；隐藏它会让用户把子树命中误读成当前层级命中
-const showFolder = computed(() => searchedIds.value != null || !props.selection || !props.selection.folderPath) // 仅根视图显示文件夹列（搜索态强制显示，见上）；列菜单在非根视图禁用该项（H9）
+const showFolder = computed(
+  () => searchedIds.value != null || props.subtreeScope || !props.selection || !props.selection.folderPath
+) // 仅根视图显示文件夹列（搜索/标签态强制显示，见上）；列菜单在非根视图禁用该项（H9）
 const showDs = computed(() => !props.selection || !props.selection.dataSourceName) // 「全部数据」根：文件夹列前缀数据源名
 
 // ---- 排序 ----
@@ -363,7 +370,8 @@ function onFolderDrop(f, e) {
 //   文件夹行菜单出现——那两项目标是"当前视图/选中文件夹"，行右键语境是"这个文件夹"，
 //   目标文件夹 ≠ 选中文件夹时语义会漂移，只在空白菜单提供）。
 //   新建服务器/导入交父级（openCreate 带当前 selection 的 initialFolder / 打开导入模态）；
-//   全部数据源根无确定数据源 → 新建文件夹禁用并提示先选数据源----
+//   全部数据源根无确定数据源 → 新建文件夹/新建服务器统一禁用并提示先选数据源
+//   （round11 U4：此前仅文件夹禁用、新建服务器默默存 Local，同菜单规则矛盾）----
 const nfMenu = ref(null) // { x, y, target: { dsName, parentPath, folderPath? } | null } —— folderPath 有值=来自文件夹行
 // 禁用判据并入 opsBusy（第三轮 G15：动作执行在父级 folderOps，busy 期间点击只被静默
 // return 吞掉——列表侧与树右键菜单同口径禁用，两侧行为一致）
@@ -373,10 +381,8 @@ const nfMenuTip = computed(() => {
   return dsWritable(nfMenu.value.target.dsName) ? '' : t('cv.readOnly')
 })
 function openNfMenu(target, e) {
-  const r = rootEl.value?.getBoundingClientRect()
-  const px = r ? e.clientX - r.left : e.clientX
-  const py = r ? e.clientY - r.top : e.clientY
-  nfMenu.value = { x: r ? Math.max(0, Math.min(px, r.width - 200)) : px, y: r ? Math.max(0, py) : py, target }
+  const { x, y } = clampMenuPos(e.clientX, e.clientY, rootEl.value, 200)
+  nfMenu.value = { x, y, target }
 }
 function onBlankContext(e) {
   if (e.target.closest?.('.row') || e.target.closest?.('.thead')) return // 行/表头自带处理
@@ -482,10 +488,17 @@ const {
 // 跨文件夹保留会把批量操作误用到不可见行。此前"跨层级导航勾选持续存在"的设计（useRowChecks
 // 文件头「跨层级导航勾选持续存在」）自本轮起废止；Enter/Del 键安全守卫（checked>1 禁用）
 // 仍保留，与清空规则互补。数据变化剔除（useRowChecks 的 servers watch）仍负责 SSE 重载等
-// 不换视图的数据更新，与视图切换清空互补，勿混淆
+// 不换视图的数据更新，与视图切换清空互补，勿混淆。
+// 重构（round17）：按语义键比较后再清空——父级 viewSel 在「单数据源根视图」下每次重算
+// 都返回新对象字面量，SSE 重载/30s 轮询替换 datasources 数组即引起引用变化，此前会把
+// 勾选静默清空（与上段注释声明的分工矛盾，多源模式同场景不清空，行为分叉佐证是意外）
 watch(
   () => props.selection,
-  () => clearChecked()
+  (sel, old) => {
+    const key = (s) => (s?.dataSourceName ? s.dataSourceName + '\u0000' + (s.folderPath || '') : '')
+    if (key(sel) === key(old)) return
+    clearChecked()
+  }
 )
 
 function onRowClick(server, ev, idx) {
@@ -519,14 +532,8 @@ const menu = ref(null) // { server, x, y }（x/y 相对本容器左上角）
 const rootEl = ref(null)
 function openMenu({ server, x, y }) {
   cursorId.value = server.id // 菜单锚定行 = 光标落位（Enter/菜单「连接」语义一致）
-  const r = rootEl.value?.getBoundingClientRect()
-  const px = r ? x - r.left : x
-  const py = r ? y - r.top : y
-  menu.value = {
-    server,
-    x: r ? Math.max(0, Math.min(px, r.width - 238)) : px, // 防溢出内收（菜单约 230px 宽）
-    y: r ? Math.max(0, Math.min(py, r.height - 336)) : py,
-  }
+  const pos = clampMenuPos(x, y, rootEl.value, 238, 336) // 防溢出内收（菜单约 230px 宽）
+  menu.value = { server, ...pos }
 }
 function onMenuAction(item) {
   if (!item.on || !menu.value) return
@@ -589,6 +596,15 @@ function onGlobalDown(e) {
   if (menu.value && !e.target.closest?.('.ctx-menu')) menu.value = null
   if (nfMenu.value && !e.target.closest?.('.nf-menu')) nfMenu.value = null
 }
+// V7：列表滚动即收起右键菜单（资源管理器惯例）——菜单绝对定位在表格容器上，
+// 不随行区滚动，留着会让动作目标与视觉位置脱节（菜单下方已是另一行）。
+// 键盘导航在菜单打开时整体让位（H6），不会触发程序化滚动与这里竞争。
+function onBodyScroll() {
+  if (menu.value || nfMenu.value) {
+    menu.value = null
+    nfMenu.value = null
+  }
+}
 
 // ---- 键盘导航：↑↓ 光标行、Enter 连接光标行、Ctrl+A 全选可见、
 // E 编辑 / Del 删除 / Ctrl+D 复制（keyTargetServer 取目标行）----
@@ -611,7 +627,14 @@ function moveCursor(delta) {
   const cur = list.findIndex((s) => s.id === cursorId.value)
   const next = cur < 0 ? (delta > 0 ? 0 : list.length - 1) : Math.min(list.length - 1, Math.max(0, cur + delta))
   cursorId.value = list[next].id
-  // 光标行滚入可视区：行 DOM 均已存在（仅类名切换），无需等 nextTick
+  // 光标行滚入可视区：直渲染模式行 DOM 均已存在（仅类名切换），scrollIntoView 即可；
+  // 虚拟滚动模式窗口外的行没有 DOM（round11 U3：querySelector 查不到行 → 滚动跟随
+  // 失效，光标停在看不见的行上，回车会连接看不见的服务器）——按行高换算下标直接
+  // 驱动滚动容器，复刻 block:'nearest' 语义（仅出界才滚）
+  if (useVirtual.value) {
+    virtualScrollToServer(next)
+    return
+  }
   rootEl.value?.querySelector(`[data-id="${CSS.escape(String(cursorId.value))}"]`)?.scrollIntoView({ block: 'nearest' })
 }
 function onGlobalKey(e) {
@@ -638,8 +661,10 @@ function onGlobalKey(e) {
     moveCursor(e.key === 'ArrowDown' ? 1 : -1)
   } else if (e.key === 'Enter') {
     // 多选（勾选 >1 台）时禁用 Enter：此时批量操作语境（批量条已现），Enter 连光标行
-    // 与勾选心智冲突且一键即拉起真实远程会话——owner 2026-09-21 决策，与 Del 同款禁用
-    if (checked.value.size > 1) return
+    // 与勾选心智冲突且一键即拉起真实远程会话——owner 2026-09-21 决策，与 Del 同款禁用。
+    // round13 N12：只勾了空文件夹（批量条显示「N 个空文件夹」）同属批量语境——
+    // Enter 连光标行服务器与所选不符，一并拦截
+    if (checked.value.size > 1 || (checkedFolders.value.size > 0 && checked.value.size === 0)) return
     if (cursorId.value != null) {
       e.preventDefault()
       emit('connect', cursorId.value)
@@ -659,8 +684,9 @@ function onGlobalKey(e) {
     // Del 删除（owner 2026-09-21 决策：多选（>1）时整体禁用——批量删除的误触代价是
     // 一次确认框也拦不住的数据丢失，且「已选 N 台」时 Del 的目标歧义无法自解释；
     // 批量删除走批量条按钮）。恰 1 台勾选或无勾选 = 单台（keyTargetServer），确认框
-    // 显示名字可纠错
-    if (checked.value.size > 1) return
+    // 显示名字可纠错。round13 N12：只勾了空文件夹时 Del 删的却是光标行服务器——
+    // 批量语境下目标错位，拦截（空文件夹删除走批量条）
+    if (checked.value.size > 1 || (checkedFolders.value.size > 0 && checked.value.size === 0)) return
     const s = keyTargetServer()
     if (s) emit('delete', s)
   } else if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) {
@@ -764,7 +790,9 @@ const colVars = computed(() => {
   const grow0 = (k) => (widthOf(k) ? { ['--c-' + k + '-grow']: '0' } : {})
   return {
     '--c-check': '30px',
-    '--c-status': '42px',
+    // 状态列定宽 12px = 指示器 8px + 4px（2026-09-26 owner 定案：表头不显示标题，
+    // 列宽比指示器宽 4px；表头/行单元格均已清零右内距，12px 即总宽，两层精确对齐）
+    '--c-status': '12px',
     '--c-name': px('name', showFolder.value ? '2.3' : '2.8'),
     '--c-addr': px('addr', '1.6'),
     '--c-proto': px('proto', '84px'),
@@ -828,6 +856,20 @@ const {
 // 包成同形状（{ data }），行标记只维护一份
 const rowList = computed(() => (useVirtual.value ? virtualRows.value : renderRows.value.map((data) => ({ data }))))
 
+// 虚拟模式下把第 srvIdx 台服务器滚入可视区（block:'nearest' 语义的手工复刻——
+// useVirtualList 的 scrollTo 恒置顶，逐行移动会抖动）。renderRows 前缀（.. 行 +
+// 文件夹行）不在 sorted 下标域内，换算偏移
+function virtualScrollToServer(srvIdx) {
+  const el = containerProps.ref.value
+  if (!el) return
+  const idx = (parentRow.value ? 1 : 0) + folderRows.value.length + srvIdx
+  const rowTop = idx * ROW_HEIGHT
+  const top = el.scrollTop
+  const bottom = top + el.clientHeight
+  if (rowTop < top) el.scrollTop = rowTop
+  else if (rowTop + ROW_HEIGHT > bottom) el.scrollTop = rowTop + ROW_HEIGHT - el.clientHeight
+}
+
 onMounted(() => {
   window.addEventListener('mousedown', onGlobalDown)
   window.addEventListener('keydown', onGlobalKey)
@@ -852,6 +894,7 @@ onBeforeUnmount(() => {
     <TableToolbar
       :checked-count="checked.size"
       :folder-count="checkedFolders.size"
+      :batch-busy="batchBusy"
       :is-custom="isCustom"
       :col-menu="colMenu"
       :hidden-cols="hiddenCols"
@@ -868,7 +911,12 @@ onBeforeUnmount(() => {
       @reset-widths="resetWidths"
     />
 
-    <div class="tbody" v-bind="useVirtual ? containerProps : undefined" @contextmenu="onBlankContext">
+    <div
+      class="tbody"
+      v-bind="useVirtual ? containerProps : undefined"
+      @contextmenu="onBlankContext"
+      @scroll="onBodyScroll"
+    >
       <!-- 表头放在滚动容器内首行 + sticky：经典（非 overlay）滚动条下滚动内容盒比外层窄 ~17px，
            表头作为 .tbody 兄弟节点会与尾列（协议/最近连接/操作）错位；入内 sticky 天然对齐且滚动常驻。
            可隐藏列 v-if；每列右缘 5px 拖拽调宽（col-resize），双击重置 -->
@@ -883,11 +931,14 @@ onBeforeUnmount(() => {
             @change="toggleAll"
           />
         </div>
-        <div class="hcell h-status">{{ t('col.status') }}</div>
+        <!-- 状态列表头：不显示标题（2026-09-26 owner 定案）——列仅 12px 宽放不下文字，
+             空表头保留列位与表头/行对齐；title/aria-label 保留语义（悬停与读屏可知此列是状态） -->
+        <div class="hcell h-status" :title="t('col.status')" :aria-label="t('col.status')"></div>
         <div v-if="!hiddenCols.name" class="hcell h-name sortable" @click="toggleSort('displayName')">
           {{ t('col.name') }} <span class="arrow">{{ arrow('displayName') }}</span
           ><span
             class="resizer"
+            @click.stop
             @pointerdown="onResizeStart('name', $event)"
             @pointermove="onResizeMove"
             @pointerup="onResizeEnd"
@@ -898,6 +949,7 @@ onBeforeUnmount(() => {
           {{ t('col.address') }} <span class="arrow">{{ arrow('address') }}</span
           ><span
             class="resizer"
+            @click.stop
             @pointerdown="onResizeStart('addr', $event)"
             @pointermove="onResizeMove"
             @pointerup="onResizeEnd"
@@ -908,6 +960,7 @@ onBeforeUnmount(() => {
           {{ t('col.protocol') }} <span class="arrow">{{ arrow('protocol') }}</span
           ><span
             class="resizer"
+            @click.stop
             @pointerdown="onResizeStart('proto', $event)"
             @pointermove="onResizeMove"
             @pointerup="onResizeEnd"
@@ -920,6 +973,7 @@ onBeforeUnmount(() => {
           {{ t('col.note')
           }}<span
             class="resizer"
+            @click.stop
             @pointerdown="onResizeStart('note', $event)"
             @pointermove="onResizeMove"
             @pointerup="onResizeEnd"
@@ -930,6 +984,7 @@ onBeforeUnmount(() => {
           {{ t('col.folder')
           }}<span
             class="resizer"
+            @click.stop
             @pointerdown="onResizeStart('folder', $event)"
             @pointermove="onResizeMove"
             @pointerup="onResizeEnd"
@@ -940,6 +995,7 @@ onBeforeUnmount(() => {
           {{ t('col.lastConnect') }} <span class="arrow">{{ arrow('lastConnectTime') }}</span
           ><span
             class="resizer"
+            @click.stop
             @pointerdown="onResizeStart('time', $event)"
             @pointermove="onResizeMove"
             @pointerup="onResizeEnd"
@@ -1025,9 +1081,18 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- 文件夹右键菜单：文件夹行=新建子文件夹/重命名/删除（与树右键同集）；
-         空白处=新建服务器/新建文件夹/导入服务器（前两项动作归父级） -->
+         空白处=新建服务器/新建文件夹/导入服务器（前两项动作归父级）。
+         新建服务器/新建文件夹同一禁用判据（round11 U4：「全部数据」视图无确定数据源，
+         此前新建服务器默默兜底存 Local 而新建文件夹禁用——同菜单两动作规则矛盾；
+         现统一禁用并提示先选数据源，只读/忙碌同口径） -->
     <div v-if="nfMenu" class="ctx-menu nf-menu" :style="{ left: nfMenu.x + 'px', top: nfMenu.y + 'px' }">
-      <button v-if="!nfMenu.target?.folderPath" class="ctx-item" @click="nfNewServer">
+      <button
+        v-if="!nfMenu.target?.folderPath"
+        class="ctx-item"
+        :disabled="!nfMenuOk"
+        :title="nfMenuTip"
+        @click="nfNewServer"
+      >
         <span class="ctx-label">{{ t('topbar.newServer') }}</span>
       </button>
       <button class="ctx-item" :disabled="!nfMenuOk" :title="nfMenuTip" @click="nfCreate">
@@ -1123,6 +1188,7 @@ onBeforeUnmount(() => {
 /* 单声明列宽规则单行化：flex 比例列（--c-*-grow=0 时切定宽）与定宽列各一档 */
 .h-status {
   flex: 0 0 var(--c-status);
+  padding-right: 0; /* 12px 定宽列：清零 .hcell 的 10px 右内距，与行单元格总宽一致 */
 }
 .h-name {
   flex: var(--c-name) var(--c-name-grow, 1) 0;

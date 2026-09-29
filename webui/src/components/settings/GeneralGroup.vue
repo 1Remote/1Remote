@@ -6,7 +6,8 @@
  *   成功不 toast，仅失败 toast）；
  * - language 下拉（14 语言静态清单）选择即 setLocale 让 Web 界面即时切换，同时即存
  *   （映射后端小写码 zh-CN→zh-cn），桌面端同步生效（Task 7 前 Web 仅装配 zh-CN/en-US，
- *   其余语言只同步桌面端，见 locales/languages.js）；
+ *   其余语言只同步桌面端，见 locales/languages.js）；round14 R5 定案：语言唯一持久化
+ *   在后端 1Remote.json（不存 localStorage），Web 启动时拉后端语言应用；
  * - closeButtonBehavior/logLevel 为 int 枚举（WPF 侧语义，见 WebUiSettingsService）。
  * - requireSecondaryVerification 开关例外：点击立即生效（WPF 平价
  *   GeneralSettingView.xaml.cs:31-43 同款）：翻转前先过一次 Windows 凭据/Hello 验证
@@ -22,6 +23,7 @@ import { api } from '../../api'
 import { setLocale } from '../../locales'
 import { backendToWeb, languageOptions, webToBackend } from '../../locales/languages'
 import { useAutoSave } from '../../composables/useAutoSave'
+import { saveErrorText } from '../../utils/formError'
 import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import HelpLink from '../HelpLink.vue'
 
@@ -46,6 +48,7 @@ const form = reactive({
   tabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow: false,
   copyPortWhenCopyAddress: false,
   doNotCheckNewVersion: false,
+  logFilePath: '', // V11：只读展示（WPF 常规页 LogPath 行平价），不进自动保存白名单
 })
 
 // 走自动保存的字段（requireSecondaryVerification 不在列：开关点击立即生效，见文件头）
@@ -67,6 +70,7 @@ onMounted(async () => {
     for (const k of FIELD_KEYS) form[k] = g[k]
     form.requireSecondaryVerification = g.requireSecondaryVerification
     form.appStartAutomatically = g.appStartAutomatically
+    form.logFilePath = g.logFilePath || ''
   } catch {
     loadError.value = true
   } finally {
@@ -74,16 +78,29 @@ onMounted(async () => {
   }
 })
 
+// ---- 日志文件位置（V11 round16）：只读路径展示 + 「打开所在文件夹」按钮 ----
+// WPF 平价（GeneralSettingViewModel.CmdExploreTo → OpenInExplorerAndSelect）：
+// POST /api/logs/open 由后端在桌面环境打开资源管理器并选中日志文件
+const openingLog = ref(false)
+async function onOpenLogFolder() {
+  if (openingLog.value) return
+  openingLog.value = true
+  try {
+    await api.openLogFolder()
+  } catch {
+    message.error(t('settings.openLogFailed'))
+  } finally {
+    openingLog.value = false
+  }
+}
+
 // ---- 自动保存：差量 PUT（仅含变更键），成功静默、失败 toast ----
 const {
   saving: autoSaving,
   dispose: disposeAutoSave,
   saveNow,
 } = useAutoSave((patch) => api.saveGeneralSettings(patch), {
-  onError: (e) => {
-    const detail = e?.body?.errors?.join('; ') || (e?.message ? ` (${e.message})` : '')
-    message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
-  },
+  onError: (e) => message.error(saveErrorText(t, e)), // round17：统一拼装（utils/formError）
 })
 onBeforeUnmount(disposeAutoSave)
 
@@ -101,12 +118,14 @@ function onLanguageChange(webCode) {
   saveNow({ language: webToBackend(webCode) })
 }
 
-const closeOptions = [
-  { value: 0, label: computed(() => t('settings.o.close.exit')) },
-  { value: 1, label: computed(() => t('settings.o.close.minimize')) },
-]
+// round17：t() 本身响应式，computed 数组直接产 label（此前 label: computed(...) 包装
+// + 模板 .map 解包绕远路）
+const closeOptions = computed(() => [
+  { value: 0, label: t('settings.o.close.exit') },
+  { value: 1, label: t('settings.o.close.minimize') },
+])
 // SimpleLogHelper.EnumLogLevel：0=Debug..5=Disabled（zh 术语对齐 zh-cn.xaml Info/Warning/Error 词条）
-const logOptions = [0, 1, 2, 3, 4, 5].map((v) => ({ value: v, label: computed(() => t('settings.o.log.' + v)) }))
+const logOptions = computed(() => [0, 1, 2, 3, 4, 5].map((v) => ({ value: v, label: t('settings.o.log.' + v) })))
 
 // requireSecondaryVerification 开关：点击立即生效（WPF 平价，见文件头注释）——
 // 先验证（POST /api/settings/verify；未开启验证时后端直通 200）、通过才 PUT 提交翻转，
@@ -173,7 +192,7 @@ const SWITCHES_REST = [
             <n-select
               size="small"
               :value="form.closeButtonBehavior"
-              :options="closeOptions.map((o) => ({ value: o.value, label: o.label.value }))"
+              :options="closeOptions"
               @update:show="shield"
               @update:value="setField('closeButtonBehavior', $event)"
             />
@@ -211,7 +230,7 @@ const SWITCHES_REST = [
         </div>
       </div>
 
-      <!-- 块 3：日志级别 -->
+      <!-- 块 3：日志级别 + 日志文件位置（V11：WPF 常规页同款两行，位置相邻） -->
       <div class="block">
         <div class="row">
           <label class="row-label">{{ t('settings.f.logLevel') }}</label>
@@ -219,10 +238,29 @@ const SWITCHES_REST = [
             <n-select
               size="small"
               :value="form.logLevel"
-              :options="logOptions.map((o) => ({ value: o.value, label: o.label.value }))"
+              :options="logOptions"
               @update:show="shield"
               @update:value="setField('logLevel', $event)"
             />
+          </div>
+        </div>
+
+        <!-- 日志文件位置：只读路径（悬停看全路径）+ 打开按钮；用户反馈问题时据此找到日志 -->
+        <div class="row">
+          <label class="row-label">{{ t('settings.f.logFilePath') }}</label>
+          <div class="row-control slim">
+            <div class="log-path-row">
+              <span class="log-path" :title="form.logFilePath">{{ form.logFilePath || '—' }}</span>
+              <n-button
+                class="log-open"
+                size="small"
+                :disabled="!form.logFilePath"
+                :loading="openingLog"
+                @click="onOpenLogFolder"
+              >
+                {{ t('settings.openLogFolder') }}
+              </n-button>
+            </div>
           </div>
         </div>
       </div>
@@ -235,13 +273,7 @@ const SWITCHES_REST = [
   /* 统一设置内容宽（SettingsView.s-body 的 --settings-content-w 穿透继承） */
   width: min(100%, var(--settings-content-w));
 }
-.hint {
-  font-size: var(--fs-body);
-  color: var(--text-3);
-}
-.hint.err {
-  color: var(--danger);
-}
+/* .hint/.hint.err 走 theme.css 全局（round17 收敛四份逐字拷贝） */
 /* 三块分隔（语言/关闭行为 → 7 开关 → 日志级别）：块间 24px 留白 + 分隔线 */
 .block + .block {
   margin-top: 24px;
@@ -256,5 +288,27 @@ const SWITCHES_REST = [
 /* 语言行帮助链接：跟在下拉框下方（WPF 语言行下一行同款位置） */
 .lang-help {
   margin-top: 4px;
+}
+/* 日志文件位置行（V11）：路径 ellipsis 截断（悬停 title 看全）+ 右侧打开按钮 */
+.log-path-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.log-path {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
+  font-size: var(--fs-body);
+  color: var(--text-2);
+  direction: rtl; /* 路径右对齐截断：保住文件名一端（读路径时文件名最有辨识度） */
+  text-align: left;
+}
+.log-open {
+  flex: 0 0 auto;
 }
 </style>

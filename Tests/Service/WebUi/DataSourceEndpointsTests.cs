@@ -18,6 +18,7 @@ using _1RM.Model.ProtocolRunner;
 using _1RM.Model.ProtocolRunner.Default;
 using _1RM.Service;
 using _1RM.Service.DataSource;
+using _1RM.Service.DataSource.DAO;
 using _1RM.Service.DataSource.Model;
 using _1RM.Service.WebUi;
 
@@ -88,6 +89,41 @@ namespace Tests.Service.WebUi
         private static void DeleteTempFile(string path)
         {
             try { if (File.Exists(path)) File.Delete(path); } catch (IOException) { /* 被占用则留给临时目录清理 */ }
+        }
+
+        /// <summary>
+        /// DtoMapper.ReconnectEta 纯函数（round12 用户报告：状态栏重连倒计时悬停不更新）：
+        /// OK→null；非 OK 且未进入重连等待（NotConnectedYet 初值 MinValue）→null；
+        /// 未来 ReconnectTime→剩余秒数；已到点→0。Web 端以快照 + 本地时钟逐秒倒数展示。
+        /// </summary>
+        [TestMethod]
+        public void ReconnectEta_Snapshot_Semantics()
+        {
+            var now = DateTime.Now;
+            var path = TempDbPath();
+            try
+            {
+                var ds = new SqliteSource(path);
+
+                // 初态 NotConnectedYet：未进入重连等待（ReconnectTime=MinValue）→ null
+                Assert.IsNull(DtoMapper.ReconnectEta(ds, now), "NotConnectedYet 初态应返回 null");
+
+                // LostConnection 进入重连等待：改写 ReconnectTime 为确定值验证剩余秒数换算
+                ds.Status = EnumDatabaseStatus.LostConnection;
+                ds.ReconnectTime = now.AddSeconds(175);
+                Assert.AreEqual(174, DtoMapper.ReconnectEta(ds, now.AddSeconds(1)), "快照 1 秒后应剩 174 秒");
+
+                // 已到点（重连进行中）→ 0
+                Assert.AreEqual(0, DtoMapper.ReconnectEta(ds, now.AddSeconds(200)), "到点后应为 0");
+
+                // 恢复 OK：Status setter 将 ReconnectTime 归 MinValue → null
+                ds.Status = EnumDatabaseStatus.OK;
+                Assert.IsNull(DtoMapper.ReconnectEta(ds, now), "OK 状态应返回 null");
+            }
+            finally
+            {
+                DeleteTempFile(path);
+            }
         }
 
         /// <summary>删除测试中创建的附加数据源（测试自身的清理路径，不依赖端点行为）。</summary>

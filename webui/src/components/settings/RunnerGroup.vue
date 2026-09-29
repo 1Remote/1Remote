@@ -10,27 +10,30 @@
  *   WPF ExternalRunnerSettingsViewModel.AutoArguments 前端移植）——仅当 Arguments 为空才填。
  * - 增删：PUT 是全量列表保存，前端构造新行/移除行 + 保存即持久化。添加模态
  *   （RunnerAddModal）只输入名称（WPF CmdAddRunner 的 InputBox 同款：非空 + 协议内唯一），
- *   确认后建默认值运行器并选中新卡（默认运行器下拉指向它 + 滚动入视野 + 短暂高亮——
- *   WPF 里用户在 ListBox 点选新卡后同样会写 SelectedRunnerName）；其余参数（exe 路径/
+ *   确认后建默认值运行器进列表（V4 round16 定案：不写默认运行器——WPF 添加只入列表，
+ *   默认运行器保持不变），仅滚动入视野 + 3 秒高亮定位；其余参数（exe 路径/
  *   启动参数）在卡片内继续配置。SSH/SFTP 协议族建 ExternalRunnerForSSH（WPF 同款分支），
  *   其余建 ExternalRunner。删除仅外部运行器（内置无删除钮，徽标 title 提示不可删）；
  *   确认后 splice + selectedRunnerName 回退首项（WPF CmdDeleteRunner 语义）+ 保存。
- * - 环境变量与特殊字符用独立文本域编辑（数组直编输入体验差）：载入时 数组→行文本；
- *   PUT 前 行文本→数组（空行/无 = 的行丢弃）。文本域按 `${proto}:${runner.Name}`
- *   寻址（而非下标）——增删运行器时下标会漂移，Name 在协议内唯一。
+ * - 环境变量与特殊字符为行式键值编辑（RunnerCard 内 KvPairsField）：行数组直接
+ *   写回 runner 对象（[{Key,Value}]，PascalCase 直通），无文本解析环节——旧实现
+ *   "行文本解析丢半行 + 保存回读覆盖文本域"曾造成输入中内容被清空（round11
+ *   用户报告），行编辑器从结构上移除该链路（行态/半填行/回声合并见 editor/kvPairs.js）。
  * - PUT 发送整个 protocols 对象（6 协议全量；后端全量预校验，缺失协议=保持，此处全量最稳）。
- * - 自动保存：下拉/开关立即 PUT；文本输入（ExePath/Arguments/行文本域）debounce 500ms 后 PUT；
+ * - 自动保存：下拉/开关立即 PUT；文本输入（ExePath/Arguments/键值行）debounce 500ms 后 PUT；
  *   响应回读带 hasPending 守卫——PUT 飞行中用户又输入时不回填（applyState 会整体替换
- *   protocols/envTexts，防丢字），本地态即真值。增删走 saveNow（离散操作立即保存），
+ *   protocols，防丢字），本地态即真值。增删走 saveNow（离散操作立即保存），
  *   失败 toast 外不做回滚（后端 GET/PUT 语义与 WPF 内存先行一致）。
  */
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
+import { confirmDialog } from '../../utils/confirmDialog'
 import { api } from '../../api'
 import { useAutoSave } from '../../composables/useAutoSave'
+import { saveErrorText } from '../../utils/formError'
 import { useSettingsEsc } from '../../composables/useSettingsEsc'
-import { autoArguments, isExternal } from '../../editor/runnerPresets.js'
+import { autoArguments } from '../../editor/runnerPresets.js'
 import HelpLink from '../HelpLink.vue'
 import RunnerCard from './RunnerCard.vue'
 import RunnerAddModal from './RunnerAddModal.vue'
@@ -51,34 +54,11 @@ const loadError = ref(false)
 const protocols = ref(null) // GET 状态：{ SSH: { selectedRunnerName, runners: [...], macros: [...] } }
 const meta = ref(null) // GET meta：{ puttyThemes: [{name, colors}], fonts: [...], codePages: [...] }
 const active = ref('') // 当前页签协议键
-const envTexts = reactive({}) // `${proto}:${runner.Name}` → 'KEY=VALUE\n…'（环境变量行文本）
-const specialTexts = reactive({}) // 同上（SpecialCharacters 行文本）
-
-function kvToText(arr) {
-  return (arr || []).map((kv) => `${kv.Key}=${kv.Value}`).join('\n')
-}
-
-function initTexts() {
-  for (const key of [...Object.keys(envTexts), ...Object.keys(specialTexts)]) {
-    delete envTexts[key]
-    delete specialTexts[key]
-  }
-  if (!protocols.value) return
-  for (const [p, cfg] of Object.entries(protocols.value)) {
-    for (const r of cfg.runners || []) {
-      if (isExternal(r)) {
-        envTexts[p + ':' + r.Name] = kvToText(r.EnvironmentVariables)
-        specialTexts[p + ':' + r.Name] = kvToText(r.SpecialCharacters)
-      }
-    }
-  }
-}
 
 function applyState(p) {
   protocols.value = p
   const keys = Object.keys(p || {})
   if (!active.value || !keys.includes(active.value)) active.value = keys[0] || ''
-  initTexts()
 }
 
 onMounted(async () => {
@@ -100,20 +80,7 @@ const runnerOptions = computed(() => (activeCfg.value?.runners || []).map((r) =>
 const runnerNames = computed(() => (activeCfg.value?.runners || []).map((r) => r.Name))
 const activeMacros = computed(() => activeCfg.value?.macros || [])
 
-// 行文本 → 数组（发送前同步回 runner 对象）：空行与无 = 的行丢弃；= 后可空
-function parseKvText(text) {
-  return String(text || '')
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .map((l) => {
-      const eq = l.indexOf('=')
-      return eq <= 0 ? null : { Key: l.slice(0, eq), Value: l.slice(eq + 1) }
-    })
-    .filter(Boolean)
-}
-
-// ---- 自动保存：PUT 全量 protocols（发送前同步行文本域），成功静默、失败 toast ----
+// ---- 自动保存：PUT 全量 protocols，成功静默、失败 toast ----
 const {
   saving: autoSaving,
   dispose: disposeAutoSave,
@@ -122,15 +89,6 @@ const {
   hasPending,
 } = useAutoSave(
   async () => {
-    // 行文本域 → 数组（发送前同步，仅该 runner 有本地文本态时写入，避免覆盖 winscp 自动补全等旁路写入）
-    for (const [p, cfg] of Object.entries(protocols.value)) {
-      for (const r of cfg.runners || []) {
-        if (!isExternal(r)) continue
-        const k = p + ':' + r.Name
-        if (k in envTexts) r.EnvironmentVariables = parseKvText(envTexts[k])
-        if (k in specialTexts) r.SpecialCharacters = parseKvText(specialTexts[k])
-      }
-    }
     const r = await api.saveRunners(protocols.value)
     // 回读替换本地态保证 GET→PUT→GET 稳定；飞行中又有输入则跳过（防丢字，见文件头）
     if (!hasPending()) {
@@ -139,10 +97,7 @@ const {
     }
   },
   {
-    onError: (e) => {
-      const detail = e?.body?.errors?.join('; ')
-      message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
-    },
+    onError: (e) => message.error(saveErrorText(t, e)), // round17：统一拼装（utils/formError）
   }
 )
 onBeforeUnmount(disposeAutoSave)
@@ -183,12 +138,12 @@ function setRunnerArg(r, field, v) {
   saveDebounced()
 }
 
-function onEnvText(p, r, v) {
-  envTexts[p + ':' + r.Name] = v
+function onEnvRows(r, v) {
+  r.EnvironmentVariables = v
   saveDebounced()
 }
-function onSpecialText(p, r, v) {
-  specialTexts[p + ':' + r.Name] = v
+function onSpecialRows(r, v) {
+  r.SpecialCharacters = v
   saveDebounced()
 }
 function onHosting(r, v) {
@@ -207,7 +162,7 @@ function onFontSize(r, n) {
 }
 
 // ---- 添加运行器（对齐 WPF CmdAddRunner）：模态确认名称 → 建默认值运行器进列表 →
-// 选中新卡（下拉指向 + 滚动入视野 + 短暂高亮）→ PUT 全量即存 ----
+// 滚动入视野 + 3 秒高亮 → PUT 全量即存 ----
 const adding = ref(false)
 const rootEl = ref(null) // 组件根（滚动新卡入视野的查询域）
 const justAdded = ref('') // 新建 runner 名：卡片短暂高亮（3s）
@@ -230,11 +185,10 @@ function onAddSave(name) {
   }
   if (isSshFamily) runner.ArgumentsForPrivateKey = ''
   activeCfg.value.runners.push(runner)
-  envTexts[active.value + ':' + runner.Name] = ''
-  specialTexts[active.value + ':' + runner.Name] = ''
-  // 选中新运行器：WPF 里用户在 ListBox 点选新卡后 SelectedRunner 会写回
-  // c.SelectedRunnerName——web 无卡片单选态，以默认运行器下拉指向新卡为等效"选中"
-  activeCfg.value.selectedRunnerName = runner.Name
+  // V4（round16）：不再把默认运行器下拉指向新卡——WPF 添加只入列表（列表选中仅是查看
+  // 焦点，不写 c.SelectedRunnerName），web 此前"以默认运行器指向新卡"为等效选中，会把
+  // 尚未配置 ExePath 的新运行器立即设为该协议默认并落盘，之后该协议的新连接默认走它，
+  // 可能直接报"找不到程序"。"滚动入视野 + 3 秒高亮"的定位效果保留。
   adding.value = false
   justAdded.value = runner.Name
   clearTimeout(justAddedTimer)
@@ -246,23 +200,19 @@ function onAddSave(name) {
 // ---- 删除：仅外部运行器；确认 → splice + selectedRunnerName 回退首项（WPF 同款）→ 保存。
 // autoFocus:false——删除确认禁 Enter 误触（Esc 仍可取消）----
 function onDeleteRunner(r) {
-  dialog.create({
+  confirmDialog(dialog, {
+    danger: true,
     title: t('settings.r.deleteTitle'),
     // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
-    showIcon: false,
-    positiveButtonProps: { type: 'error' },
     content: t('settings.r.deleteConfirm', { name: r.Name }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
-    autoFocus: false,
-    onPositiveClick: () => {
+    onPositive: () => {
       const cfg = activeCfg.value
       const idx = cfg.runners.indexOf(r)
       if (idx < 0) return
       cfg.runners.splice(idx, 1)
       if (cfg.selectedRunnerName === r.Name) cfg.selectedRunnerName = cfg.runners[0]?.Name || ''
-      delete envTexts[active.value + ':' + r.Name]
-      delete specialTexts[active.value + ':' + r.Name]
       saveNow()
     },
   })
@@ -325,13 +275,11 @@ onBeforeUnmount(() => {
           :meta="meta"
           :saving="autoSaving"
           :browsing="browsing"
-          :env-text="envTexts[active + ':' + r.Name] ?? ''"
-          :special-text="specialTexts[active + ':' + r.Name] ?? ''"
           @exe-path="onExePath(r, $event)"
           @browse="browseExe(r)"
           @arg="(f, v) => setRunnerArg(r, f, v)"
-          @env-text="onEnvText(active, r, $event)"
-          @special-text="onSpecialText(active, r, $event)"
+          @env-rows="onEnvRows(r, $event)"
+          @special-rows="onSpecialRows(r, $event)"
           @hosting="onHosting(r, $event)"
           @select-field="(k, v) => onSelectField(r, k, v)"
           @font-size="onFontSize(r, $event)"
@@ -339,7 +287,8 @@ onBeforeUnmount(() => {
         />
       </div>
 
-      <!-- 添加运行器模态：只输入名称（非空 + 协议内唯一），确认后建默认值运行器并选中新卡 -->
+      <!-- 添加运行器模态：只输入名称（非空 + 协议内唯一），确认后建默认值运行器进列表
+           （V4：不写默认运行器，滚动入视野 + 高亮定位） -->
       <RunnerAddModal v-model:show="adding" :existing-names="runnerNames" @save="onAddSave" />
     </template>
   </div>
@@ -350,13 +299,7 @@ onBeforeUnmount(() => {
   /* 统一设置内容宽（SettingsView.s-body 的 --settings-content-w 穿透继承）；内部网格不动 */
   width: min(100%, var(--settings-content-w));
 }
-.hint {
-  font-size: var(--fs-body);
-  color: var(--text-3);
-}
-.hint.err {
-  color: var(--danger);
-}
+/* .hint/.hint.err 走 theme.css 全局（round17 收敛四份逐字拷贝） */
 .r-tabs {
   display: flex;
   gap: 4px;

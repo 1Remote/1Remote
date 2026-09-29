@@ -28,6 +28,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import FormField from './FormField.vue'
 import { isVisible } from '../../editor/visibility.js'
+import { useSaveIssues } from '../../editor/saveIssues.js'
 
 const props = defineProps({
   /** @type {FieldDescriptor[]} 行字段描述符（subform.fields） */
@@ -45,6 +46,16 @@ const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
 
 const rows = computed(() => (Array.isArray(props.modelValue) ? props.modelValue : []))
+
+// 行内必填标红门控（round11 U7）：保存尝试后（saveIssues.validate）空必填行内字段
+// 标红——与设置模态 P5「红星预告要求、红字留给真实违规」惯例一致；EditorDrawer 的
+// validateRequired 同步拦截保存（横幅列出 列表#行号 字段）
+const { validateNow } = useSaveIssues()
+function rowFieldInvalid(row, f) {
+  if (!f.required || !isVisible(f, row)) return false
+  const v = row?.[f.key]
+  return v == null || (typeof v === 'string' && v.trim() === '')
+}
 
 /**
  * 行折叠态：默认折叠——表头只显示行名 + 展开箭头 + 删除，
@@ -135,11 +146,12 @@ function rowFieldFor(row, f) {
           :field="rowFieldFor(row, f)"
           :model-value="row[f.key]"
           :data-source-name="dataSourceName"
+          :invalid="validateNow && rowFieldInvalid(row, f)"
           @update:model-value="(v) => updateRowField(i, f.key, v)"
         />
       </div>
     </div>
-    <button class="sf-add" type="button" @click="addRow">+ {{ t('editor.addRow') }}</button>
+    <button class="dashed-add" type="button" @click="addRow">+ {{ t('editor.addRow') }}</button>
   </div>
 </template>
 
@@ -190,43 +202,12 @@ function rowFieldFor(row, f) {
   font-weight: 600; /* 行标题全站唯一字重档 */
   color: var(--text-2);
 }
-.sf-del {
-  flex: 0 0 auto;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-4);
-  font-size: var(--fs-micro);
-  line-height: 1;
-  padding: 4px; /* 行内移除 ✕ 内距 4px 档（G22，kvl-del/kvm-del 同值） */
-  cursor: pointer;
-}
-.sf-del:hover {
-  background: var(--bg-hover);
-  color: var(--text-1); /* L2：移除钮 hover 中性（J9/J10 定案同款），危险性由 title 承载 */
-}
+/* 行删除钮走 theme.css 全局并集（round14 M5 收敛，与 kvl/kvm/kvp-del 同款；类名不变） */
 .sf-row-body {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-top: 8px;
 }
-.sf-add {
-  /* 虚线添加钮族源点（G18）：KeyValueLines .kvl-add / KvMapField .kvm-add /
-     IconPicker .ip-upload 三份拷贝本参数，改动需四处同步 */
-  align-self: flex-start;
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius-ctrl);
-  background: transparent;
-  color: var(--text-3);
-  font-size: var(--fs-body);
-  line-height: 1;
-  padding: 5px 12px;
-  cursor: pointer;
-}
-.sf-add:hover {
-  border-color: var(--accent);
-  color: var(--accent-text);
-  background: var(--bg-hover);
-}
+/* 加行按钮走全局 .dashed-add（theme.css，round14 M4 收敛——五处虚线添加钮单点定义） */
 </style>

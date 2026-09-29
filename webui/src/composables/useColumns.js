@@ -63,5 +63,5 @@ export function useColumns() {
     state.value = next
     persist()
   }
-  return { colState: state, HIDEABLE_COLS, isHidden, widthOf, setHidden, setWidth, resetWidths }
+  return { HIDEABLE_COLS, isHidden, widthOf, setHidden, setWidth, resetWidths }
 }

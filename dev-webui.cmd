@@ -9,6 +9,8 @@ rem    其它进程占用只提示不强杀)
 rem   2026-09-21 修复: 原脚本先开浏览器后启动后端，页面首屏所有 /api 请求
 rem   必然命中 ECONNREFUSED(后端未监听) —— 改为: 后端先行启动，轮询 17321
 rem   端口就绪后再打开浏览器（最长等待 120s）
+rem   2026-09-22 调整: 本窗口正常执行完成后自动关闭; 出错(后端程序缺失或
+rem   等待后端超时)时保持窗口打开, 便于查看错误信息
 rem   注意: 本文件是 ANSI(GBK) 编码。请勿保存为 UTF-8 (cmd 读取乱码偏移
 rem   bug, 导致中文注释变成乱码碎片)
 rem ============================================================
@@ -46,6 +48,21 @@ for /f "tokens=5" %%p in ('netstat -ano ^| findstr LISTENING ^| findstr :17321')
     )
   )
 )
+rem 结束占用 Debug 输出目录的旧 1Remote.exe（只杀 Ui\bin\Debug 路径的实例，
+rem 正式安装版不受影响）——否则编译时文件被锁，新修复永远进不了运行的程序
+powershell -NoProfile -Command "Get-Process 1Remote -ErrorAction SilentlyContinue | Where-Object { $_.Path -like '*\Ui\bin\Debug\*' } | ForEach-Object { Write-Host ('  结束开发产物进程 1Remote.exe [PID ' + $_.Id + ']'); Stop-Process -Id $_.Id -Force }"
+
+rem [步骤0.5] 编译后端（round13：脚本此前只启动既有 Debug 产物、从不编译——
+rem 后端修复提交后用户看到的仍是旧程序，造成"修复无效"的错觉。放在端口清理
+rem 之后：旧 1Remote.exe 已被结束，输出目录无文件锁）
+echo 正在编译 Ui 项目 (Debug, 增量)...
+dotnet build "%~dp0Ui\Ui.csproj" -c Debug --nologo -v quiet
+if errorlevel 1 (
+  echo [错误] 后端编译失败，请查看上方输出排查。
+  pause
+  exit /b 1
+)
+
 echo 端口检查完成。
 
 echo 1Remote WebUI 开发环境: 前端 Vite(端口 5173) + 后端 Debug(API 端口 17321)。
@@ -82,7 +99,10 @@ goto wait_backend
 :backend_timeout
 echo [警告] 等待后端超时^(约120秒^), 仍将打开前端页面 —— 若页面提示"后端不可达",
 echo 请查看 "1Remote backend - Debug" 窗口的输出排查启动失败原因。
-goto open_browser
+echo [错误] 超时属于异常情况, 本窗口保持打开; 排查后可按任意键或直接关闭本窗口。
+start http://localhost:5173
+pause
+exit /b 1
 
 :backend_ready
 echo 后端 API 已就绪 ^(等待约 !WAITED! 秒^)。
@@ -91,5 +111,5 @@ echo 后端 API 已就绪 ^(等待约 !WAITED! 秒^)。
 rem [步骤4] 打开前端页面
 start http://localhost:5173
 echo 开发环境已启动: 前端 http://localhost:5173 / 后端 127.0.0.1:17321
-echo 本窗口可以关闭; 关闭 "webui - vite dev" 或后端窗口即停止对应服务。
-pause
+echo 关闭 "webui - vite dev" 或后端窗口即停止对应服务; 本窗口将自动关闭。
+exit /b 0

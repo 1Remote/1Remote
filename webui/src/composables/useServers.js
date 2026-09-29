@@ -10,10 +10,17 @@ export const BATCH_CONNECT_THRESHOLD = 5
 // 模块级共享状态（不引 Pinia；多组件调用 useServers() 共享同一份 refs）
 const servers = ref([])
 const datasources = ref([])
+// datasources 快照时间戳（与 datasources 同步写入）：重连倒计时等"快照 + 本地倒数"
+// 展示的基准（见 utils/dsTitle.js），30s 轮询/SSE 重载都会重置基准
+const datasourcesFetchedAt = ref(0)
 const tags = ref([])
 const loading = ref(false)
 const connected = ref(false) // 后端可达状态（最近一次拉取/轮询成功为 true）
 const everConnected = ref(false) // 后端曾经可达过（K17：断开警告仅在后端曾可达后出现——exe 冷启动后端未起时不误报）
+// V14（round16）：最近一次加载失败是否为「未授权」（401）——发布形态下手动输网址打开
+// （缺访问令牌）时全接口 401，与后端不可达二分：列表空态据此给出「会话无效，请从主程序
+// 重新打开」而非误导性的「请确认应用正在运行」
+const unauthorized = ref(false)
 let unsubscribe = null
 let pollTimer = null
 let gen = 0 // 乱序完成保护：SSE 事件风暴下多个 loadAll 并发，晚发起的批次可能先返回
@@ -25,13 +32,16 @@ async function loadAll() {
     const results = await Promise.all([api.servers(), api.datasources(), api.tags()])
     if (my !== gen) return // 落后批次整体丢弃（乱序完成保护），不覆盖新批次数据
     ;[servers.value, datasources.value, tags.value] = results
+    datasourcesFetchedAt.value = Date.now()
     connected.value = true
     everConnected.value = true
+    unauthorized.value = false
   } catch (e) {
     // 后端不可达是可预期状态（如开发时代理目标未启动）：保持旧数据、标记断连并记日志，
     // 不向上抛——初始加载与 SSE 回调都是 fire-and-forget 调用，抛出只会变成未处理 rejection
     if (my === gen) {
       connected.value = false
+      unauthorized.value = e?.unauthorized === true
       console.warn('[useServers] reload failed:', e?.message || e)
     }
   } finally {
@@ -99,6 +109,7 @@ export function useServers() {
         const ds = await api.datasources()
         if (!loading.value) {
           datasources.value = ds
+          datasourcesFetchedAt.value = Date.now()
           connected.value = true
           everConnected.value = true
           // 断连恢复：servers/tags 仍是断连前的旧值（初载失败时为空），补一次全量重载，
@@ -116,10 +127,12 @@ export function useServers() {
   return {
     servers,
     datasources,
+    datasourcesFetchedAt,
     tags,
     loading,
     connected,
     everConnected,
+    unauthorized,
     reload: loadAll,
     searchQuery,
     searchedIds,
@@ -130,32 +143,35 @@ export function useServers() {
 }
 
 /**
- * 组合应用边栏过滤：基础列表 → 标签过滤 → 搜索命中集 → 搜索范围收窄。
+ * 组合应用边栏过滤：基础列表 → 标签过滤 → 搜索命中集 → 范围收窄。
  * 纯函数（ServerListView 的 computed 与 node 断言共用；调用方负责传入响应式值以维持依赖追踪）：
  * - activeTag 非空 → 仅保留 tags 含该标签的服务器（后端标签名大小写无统一保证，按小写比较）
- * - searchedIds 非 null（搜索激活）→ 仅保留命中搜索的服务器，并按 selection 收窄到
- *   **当前文件夹及其子文件夹**（owner 2026-09-22 设计需求①，资源管理器语义）：此前
- *   "搜索=全库递归"在文件夹内搜索会命中其他文件夹/其他库，owner 判为 BUG。层级语义：
- *   文件夹=该子树；数据源根=整个数据源；「全部数据」根（selection 无数据源）=全库。
- *   搜索未激活时 selection 不参与——树选中过滤归 ServerTable 的显示语义 isDirectChildOf，
- *   「过滤域收窄」与「显示域过滤」两层职责不同，勿合并
+ * - searchedIds 非 null（搜索激活）→ 仅保留命中搜索的服务器
+ * - 任一过滤激活（标签或搜索）→ 按 selection 收窄到 **当前文件夹及其子文件夹**
+ *   （owner 2026-09-22 设计需求①，资源管理器语义）：此前"搜索=全库递归"在文件夹内搜索
+ *   会命中其他文件夹/其他库，owner 判为 BUG。round11 U5：标签过滤与搜索统一同一口径
+ *   （此前标签叠加 ServerTable 的"直接子级"显示规则，子文件夹里的同标签服务器被漏掉）。
+ *   层级语义：文件夹=该子树；数据源根=整个数据源；「全部数据」根（selection 无数据源）
+ *   =全库。两过滤都未激活时 selection 不参与——树选中过滤归 ServerTable 的显示语义
+ *   isDirectChildOf，「过滤域收窄」与「显示域过滤」两层职责不同，勿合并
  */
 export function applyServerFilters(servers, activeTag, searchedIds, selection) {
   let list = servers
+  const anyFilter = !!activeTag || searchedIds != null
   if (activeTag) {
     const t = activeTag.toLowerCase()
     list = list.filter((s) => (s.tags || []).some((tag) => tag.toLowerCase() === t))
   }
-  if (searchedIds) {
+  if (searchedIds != null) {
     list = list.filter((s) => searchedIds.has(s.id))
-    if (selection?.dataSourceName) {
-      const target = selection.folderPath || ''
-      // 数据源根（target=''）= 整源可见：isInSubtreeOf(x, '') 只会命中根级（fp==='')，
-      // 故根视图单独放行同数据源全部路径；文件夹视图走子树语义
-      list = list.filter(
-        (s) => s.dataSourceName === selection.dataSourceName && (target === '' || isInSubtreeOf(s.folderPath, target))
-      )
-    }
+  }
+  if (anyFilter && selection?.dataSourceName) {
+    const target = selection.folderPath || ''
+    // 数据源根（target=''）= 整源可见：isInSubtreeOf(x, '') 只会命中根级（fp==='')，
+    // 故根视图单独放行同数据源全部路径；文件夹视图走子树语义
+    list = list.filter(
+      (s) => s.dataSourceName === selection.dataSourceName && (target === '' || isInSubtreeOf(s.folderPath, target))
+    )
   }
   return list
 }

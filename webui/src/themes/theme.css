@@ -141,13 +141,6 @@ a:focus-visible {
   --accent-text: #f5a8cd;
   --accent-solid: #be185d;
 }
-[data-accent='red'] {
-  --accent: #ef4444;
-  --accent-hover: #f87171;
-  --accent-container: #26120f;
-  --accent-text: #f5a09a;
-  --accent-solid: #b91c1c;
-}
 [data-accent='orange'] {
   --accent: #f97316;
   --accent-hover: #fb923c;
@@ -183,10 +176,6 @@ a:focus-visible {
   --accent-container: #fce7f3;
   --accent-text: #be185d;
 }
-[data-theme='light'][data-accent='red'] {
-  --accent-container: #fee2e2;
-  --accent-text: #b91c1c;
-}
 [data-theme='light'][data-accent='orange'] {
   --accent-container: #ffedd5;
   --accent-text: #c2410c;
@@ -221,4 +210,231 @@ a:focus-visible {
 .req-star {
   margin-left: 2px;
   color: var(--danger);
+}
+
+/* 行内文字小钮全局类（round11 A1 收敛）：无边框胶囊（min-width 24 / 高 24 档 /
+   padding 0 4px / body 字号 / text-3 / hover 浅底转 text-1）。此前同参数拷贝于
+   ServerRow / FolderRow / CredentialVaultGroup / TagManagerModal 四文件靠注释同步
+   （G18 锚点），任一处单独调整即视觉分叉；图标方钮（ServerRow/FolderRow 的单字形
+   钮）与文字钮共用本类——min-width+定高对单字形渲染为同尺寸方块，视觉不变。
+   DataSourceGroup 卡片的带边框变体不属本类（独立 .card-act，见该文件） */
+/* 设置分组加载/错误提示行（round17 收敛自 General/Launcher/Runner/CredentialVault
+   四分组的逐字拷贝）。TagManagerModal 的 margin 变体与 AppearanceGroup 的弱色变体
+   为本地 scoped 覆盖（特异性更高），不受影响 */
+.hint {
+  font-size: var(--fs-body);
+  color: var(--text-3);
+}
+.hint.err {
+  color: var(--danger);
+}
+.act {
+  min-width: 24px;
+  height: var(--ctrl-h-s);
+  padding: 0 4px;
+  border: none;
+  border-radius: var(--radius-ctrl);
+  background: transparent;
+  color: var(--text-3);
+  font-size: var(--fs-body);
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.act:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.act:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* 虚线添加钮全局类（round14 M4 收敛）：SubformList .sf-add / KeyValueLines .kvl-add /
+   KvMapField .kvm-add / KvPairsField .kvp-add / IconPicker .ip-upload 五处共用——
+   此前五份拷贝靠注释手工同步（注释还把五处数成了四处），族内还有 IconPicker 的
+   text-2 色差一档，本次收敛一并统一为 text-3。局部差异留在各组件（ip-upload 的
+   display:inline-block 覆盖——它在块容器里收缩包裹，非 flex 子项时 align-self 无效） */
+.dashed-add {
+  align-self: flex-start;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-ctrl);
+  background: transparent;
+  color: var(--text-3);
+  font-size: var(--fs-body);
+  line-height: 1;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.dashed-add:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-text);
+  background: var(--bg-hover);
+}
+.dashed-add:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* 键值行编辑器族（round14 M5 收敛）：容器/行/删除钮/等宽四件套此前在
+   KeyValueLines(.kvl-*) / KvMapField(.kvm-*) / KvPairsField(.kvp-*) 三文件逐行拷贝、
+   SubformList(.sf-del) 抄删除钮，靠"同款/同值"注释互相同步——收敛为并集选择器
+   单点定义（类名不变、模板零改动）；分宽比例是唯一语义差异，留在各组件 scoped */
+.kvl-box,
+.kvm-box,
+.kvp-box {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-ctrl);
+  background: var(--bg-elevated);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kvl-box:focus-within,
+.kvm-box:focus-within,
+.kvp-box:focus-within {
+  border-color: var(--accent-focus);
+}
+.kvl-row,
+.kvm-row,
+.kvp-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.kvl-del,
+.kvm-del,
+.kvp-del,
+.sf-del {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-4);
+  font-size: var(--fs-micro);
+  line-height: 1;
+  padding: 4px; /* 行内移除 ✕ 内距 4px 档（G22） */
+  cursor: pointer;
+}
+.kvl-del:hover:not(:disabled),
+.kvm-del:hover:not(:disabled),
+.kvp-del:hover:not(:disabled),
+.sf-del:hover {
+  background: var(--bg-hover);
+  color: var(--text-1); /* L2：移除钮 hover 中性（J9/J10 定案同款），危险性由 title 承载 */
+}
+.kvl-del:disabled,
+.kvm-del:disabled,
+.kvp-del:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+/* 等宽字体：键值名/值为技术字面量（对齐 hex 输入的 ff-hf 口径） */
+.kvl-name input,
+.kvl-value input,
+.kvm-key input,
+.kvm-value input,
+.kvp-key input,
+.kvp-value input {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
+}
+
+/* 编辑器表单族（round14 M6 收敛）：滚动字段区/错误横幅/分组区块/sticky 标题/组描述/
+   组提示七个类此前在 EditorDrawer 与 BulkEditForm 两文件逐行拷贝（注释自认"那边保留
+   一份"）——上移全局单点定义，两侧类名不变、模板零改动；ed-cred-mode/ed-seg 等
+   单侧专用类仍在 EditorDrawer scoped */
+.ed-fields {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* 横向 16 与 ed-head/ed-foot 共线（J17） */
+  padding: 8px 16px 20px;
+}
+.ed-banner {
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-ctrl);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  color: var(--danger);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  padding: 8px 10px;
+  word-break: break-word;
+}
+/* .ed-banner-required 已删（round17）：round15 删除必填横幅后的遗留死类，全库零引用 */
+.ed-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ed-group-title {
+  position: sticky;
+  top: 0;
+  /* 相对滚动口贴顶（sticky 参照 scrollport，容器 padding 不影响偏移） */
+  z-index: 1;
+  margin: 0;
+  padding: 6px 0 5px; /* 底 5px+1px 下边框 = 6px，与顶 6px 光学等高（banner 光学微调，G22 豁免） */
+  background: var(--bg-panel);
+  /* 滚动内容从标题下穿过时不透底 */
+  border-bottom: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.2;
+}
+.ed-group-desc {
+  margin: -4px 0 0;
+  color: var(--text-4);
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+}
+.ed-group-note {
+  margin: 8px 0 0;
+  color: var(--accent-text);
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+}
+
+/* 必填项统一处理（round14 需求，spec §表单必填项；composables/useRequiredGuard.js）：
+   - .req-blocked：必填未填时保存按钮的假禁用观感（真 disabled 留给 saving/重名等）——
+     灰显 + not-allowed，但可点击（强点触发聚焦引导），aria-disabled 语义；
+   - .req-hint：保存按钮旁的「有必填项未填」提示（红色小字——round15 起改红：原橙色
+     警告档与橙色主题冲突）；
+   - [data-req-key].req-hot：强点后所有未填必填项的红色高亮——标签转 --danger，
+     行内直接子级 label（s-form-row/.form-field 两种字段行结构都覆盖；输入框的
+     红色边框由各控件的 :status="'error'" 承担，与行内校验错误同色同语义）。 */
+.req-blocked {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+.req-hint {
+  /* round15：flex 按钮容器（ed-foot-btns/modal-actions 均未设 align-items）里
+     默认 stretch 会顶格——自居中与按钮文字对齐 */
+  align-self: center;
+  color: var(--danger);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+[data-req-key].req-hot > label,
+[data-req-key].req-hot > .ff-label {
+  color: var(--danger);
+}
+
+/* 设置域表单行网格全局类（round11 A3+A7 收敛）：标签列 100px + 控件列弹性——
+   此前同构拷贝于 CredentialVaultGroup(110px，已漂移) / DataSourceGroup /
+   RunnerAddModal / RunnerCard 四文件靠注释同步；A3 定案标签列统一 100px。
+   ImportModal 的 .f-row 是 flex 行布局（不同物，域外不受影响），故本类用独立
+   命名 s-form-row 而非沿用 f-row */
+.s-form-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+.s-form-row > label {
+  font-size: var(--fs-body);
+  color: var(--text-2);
 }

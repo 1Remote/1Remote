@@ -20,6 +20,7 @@ import { useI18n } from 'vue-i18n'
 import { useMessage } from 'naive-ui'
 import { api } from '../../api'
 import { useAutoSave } from '../../composables/useAutoSave'
+import { saveErrorText } from '../../utils/formError'
 
 const { t } = useI18n()
 const message = useMessage()
@@ -83,7 +84,10 @@ const {
       showCredentials: form.showCredentials,
       allowSaveInfoInQuickConnect: form.allowSaveInfoInQuickConnect,
     })
-    if (!hasPending()) applyDto(l) // 归一化回显；飞行中又有变更则跳过（防回弹，见文件头）
+    if (!hasPending()) {
+      applyDto(l) // 归一化回显；飞行中又有变更则跳过（防回弹，见文件头）
+      conflict.value = false // round17：保存成功 = 热键已注册上，旧「注册冲突」提示不再滞留
+    }
   },
   {
     onError: (e) => {
@@ -92,8 +96,7 @@ const {
         conflict.value = true
         if (e.body?.settings) applyDto(e.body.settings)
       } else {
-        const detail = e?.body?.errors?.join('; ')
-        message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
+        message.error(saveErrorText(t, e)) // round17：统一拼装（utils/formError）
       }
     },
   }
@@ -132,9 +135,12 @@ function onRecordKeydown(e) {
     return
   }
   const mods = []
+  // 收集序与 modifiersToDisplay 的解析序一致（Ctrl/Shift/Alt/Win，round17：此前录制序
+  // Ctrl/Alt/Shift/Win 与回读显示序不同——录 Ctrl+Shift+Alt 保存后立即显示一种顺序，
+  // 重启回读 "ControlAltShift" 后显示另一种，同组合两种呈现）
   if (e.ctrlKey) mods.push('Ctrl')
-  if (e.altKey) mods.push('Alt')
   if (e.shiftKey) mods.push('Shift')
+  if (e.altKey) mods.push('Alt')
   if (e.metaKey) mods.push('Win')
   const name = keyToEnumName(e.key)
   if (!name) return // 修饰键本身或未支持按键：继续等待（不退出录制）
@@ -155,8 +161,29 @@ function toggleRecording() {
   recordInvalid.value = false
   if (recording.value) conflict.value = false
 }
-onMounted(() => window.addEventListener('keydown', onRecordKeydown, true))
-onBeforeUnmount(() => window.removeEventListener('keydown', onRecordKeydown, true))
+
+// round11 U19：退出通道补齐——此前只有 Esc。点击录制框外部 / 窗口失焦（切窗口、
+// 点任务栏）自动退出录制，避免"键盘失灵"错觉；录制框文案已注明 Esc 取消
+function exitRecording() {
+  recording.value = false
+  recordInvalid.value = false
+}
+function onRecordWindowBlur() {
+  if (recording.value) exitRecording()
+}
+function onGlobalDownExitRecord(e) {
+  if (recording.value && !e.target.closest?.('.hk-box')) exitRecording()
+}
+onMounted(() => {
+  window.addEventListener('keydown', onRecordKeydown, true)
+  window.addEventListener('blur', onRecordWindowBlur)
+  window.addEventListener('mousedown', onGlobalDownExitRecord)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onRecordKeydown, true)
+  window.removeEventListener('blur', onRecordWindowBlur)
+  window.removeEventListener('mousedown', onGlobalDownExitRecord)
+})
 
 // key = 标签词条后缀（settings.l.*），field = 表单/PUT 载荷字段名（后端域是
 // allowSaveInfoInQuickConnect，而词条键简写为 allowSaveInfo——两者不同，分开声明）
@@ -171,6 +198,9 @@ const SWITCHES = [
     <p v-if="loading" class="hint">{{ t('settings.loading') }}</p>
     <p v-else-if="loadError" class="hint err">{{ t('settings.loadFailed') }}</p>
     <template v-else>
+      <!-- V11（round16）：检索引擎清单说明——WPF 启动器页可勾选参与快速启动检索的引擎，
+           web 端该列表尚未迁移，顶部说明避免用户在网页版里找不到 -->
+      <p class="engine-note">{{ t('settings.l.engineNote') }}</p>
       <div class="row">
         <label class="row-label">{{ t('settings.l.enabled') }}</label>
         <div class="row-control">
@@ -218,12 +248,12 @@ const SWITCHES = [
   /* 统一设置内容宽（SettingsView.s-body 的 --settings-content-w 穿透继承） */
   width: min(100%, var(--settings-content-w));
 }
-.hint {
+/* .hint/.hint.err 走 theme.css 全局（round17 收敛四份逐字拷贝） */
+/* 检索引擎清单说明（V11）：与 hint 同款弱化文字，底部留白与首行隔开 */
+.engine-note {
   font-size: var(--fs-body);
   color: var(--text-3);
-}
-.hint.err {
-  color: var(--danger);
+  margin: 0 0 14px;
 }
 /* 行网格 .row/.row-label 与 GeneralGroup 共用，统一定义在 SettingsView（:deep 穿透），
    本文件不再各持一份 */

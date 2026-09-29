@@ -166,10 +166,10 @@ export function useRowChecks({ sorted, servers, folders }) {
     checked,
     checkedFolders,
     allChecked,
-    someChecked,
     allCb,
     rowClickSelect,
     onToggleSelect,
+    // addAllVisible 保留导出：row-checks 测试作 API 消费（round17 误删已回滚）
     addAllVisible,
     toggleAll,
     clearChecked,

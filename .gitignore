@@ -352,3 +352,4 @@ healthchecksdb
 webui/node_modules/
 webui/dist/
 
+/webui/ui-smoke-shots

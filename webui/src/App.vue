@@ -3,11 +3,14 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
 import { naiveLocaleOf } from './locales/naive.js'
+import { setLocale } from './locales'
+import { backendToWeb } from './locales/languages.js'
 import { useNaiveTheme } from './themes'
 import { useServers } from './composables/useServers'
 import { useEditorBus } from './composables/editorBus'
 import { useVersionInfo } from './composables/useVersionInfo'
 import { handoffTableFocus } from './composables/tableBus'
+import { api } from './api'
 const naive = useNaiveTheme()
 const { t, locale } = useI18n()
 const { requestNewServer, requestImport, editorOpen, uiLock } = useEditorBus()
@@ -83,6 +86,22 @@ function onGlobalKey(e) {
 }
 onMounted(() => {
   window.addEventListener('keydown', onGlobalKey)
+  // 语言与桌面端同步（round14 R5 定案：语言唯一持久化在后端配置，不存 localStorage）：
+  // 每次启动都拉后端 general.language 应用——桌面端此后改语言，网页下次启动跟随；网页
+  // 上改语言（设置页/状态栏）即时 PUT 回后端。WPF 运行中切语言不推送（网页本轮不跟随，
+  // 下次启动对齐）。失败静默（后端未起时维持浏览器探测语言）。顺带清理旧版本地键。
+  try {
+    localStorage.removeItem('1r-lang')
+  } catch {
+    /* 隐私模式等访问失败可忽略 */
+  }
+  api
+    .getGeneralSettings()
+    .then((g) => {
+      const web = backendToWeb(g.language)
+      if (web) setLocale(web)
+    })
+    .catch(() => {})
   // dev 控制台提醒（owner 原话保留）：排序/列显隐/列宽目前只落 localStorage（浏览器本地），
   // 与桌面端（WPF 侧 Sqlite/注册表）不共享——持久化策略分叉，后续统一时这里的条目要跟进。
   // 仅 DEV 构建打包（import.meta.env.DEV 生产构建常量折叠剔除）。
@@ -254,9 +273,26 @@ function onTopbarDblClick(e) {
                 <n-button quaternary size="small" :disabled="overlayActive" :title="t('topbar.addServer')">+</n-button>
               </n-dropdown>
               <span class="gear-wrap">
-                <n-button quaternary size="small" :disabled="overlayActive" @click="openSettings()">⚙</n-button>
-                <!-- 更新红点：仅 updateAvailable -->
-                <span v-if="updateInfo?.available" class="gear-dot"></span>
+                <!-- V12（round16）：⚙ 是顶栏唯一缺悬停说明的控件，且红点出现时含义无从得知——
+                     两档文案：无更新=「设置」；有更新=「有新版本 {版本号}，点击查看」 -->
+                <n-button
+                  quaternary
+                  size="small"
+                  :disabled="overlayActive"
+                  :title="
+                    updateInfo?.available
+                      ? t('topbar.settingsUpdate', { v: updateInfo.newVersion })
+                      : t('topbar.settings')
+                  "
+                  @click="openSettings()"
+                  >⚙</n-button
+                >
+                <!-- 更新红点：仅 updateAvailable；同挂两档提示（红点覆盖在齿轮角落，悬停即得解释） -->
+                <span
+                  v-if="updateInfo?.available"
+                  class="gear-dot"
+                  :title="t('topbar.settingsUpdate', { v: updateInfo.newVersion })"
+                ></span>
               </span>
             </div>
             <!-- 窗口控制（仅 WebView2 宿主）：Windows 风格 46×44，close hover 红。消息见 postToHost -->

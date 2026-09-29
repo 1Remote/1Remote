@@ -93,9 +93,14 @@ namespace Tests.Service.WebUi
             AssertIsBool(root.GetProperty("copyPortWhenCopyAddress"), "copyPortWhenCopyAddress");
             AssertIsBool(root.GetProperty("doNotCheckNewVersion"), "doNotCheckNewVersion");
             AssertIsBool(root.GetProperty("requireSecondaryVerification"), "requireSecondaryVerification（读自 SecondaryVerificationHelper）");
-            // 不暴露安全域外字段（自启/便携/DB 路径不在白名单）
-            Assert.IsFalse(root.EnumerateObject().Any(p => p.Name == "appStartAutomatically" || p.Name == "sqliteDatabasePath"),
-                "自启动/数据库路径等破坏性字段不得出现在 general 设置");
+            // V11（round16）：logFilePath 只读展示字段（SimpleLogHelper.GetFileFullName() 运行时
+            // 实况），PUT 白名单不含该键。/api/logs/open 会真实打开资源管理器（WPF 平价
+            // 副作用），不适合自动化断言——仅断言 GET 携带该字段
+            Assert.AreEqual(JsonValueKind.String, root.GetProperty("logFilePath").ValueKind, "logFilePath");
+            // round13 T2（owner 裁决 2026-09-23）：删除「自启动/数据库路径不得出现」白名单断言——
+            // appStartAutomatically 是 round7 K27 定案的网页端自启开关（读=注册表实况、写=WPF 同一
+            // 入口 SetSelfStart），暴露是有意行为；sqliteDatabasePath 至今未暴露。原断言写于接口
+            // 十字段时代，未随功能更新，属预期漂移而非泄漏
         }
 
         private static void AssertIsBool(JsonElement e, string field)

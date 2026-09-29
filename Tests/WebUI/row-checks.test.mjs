@@ -1,3 +1,10 @@
+// ────────────────────────────────────────────────────────────────────────────
+// 新人导览 · row-checks.test.mjs · L2 组件模型
+// ▸ 本文件测什么：行勾选模型（useRowChecks composable，不挂组件直测）：
+//   级联勾选、空文件夹勾选通道、表头三态、数据变化剔除、Ctrl/Shift 选行。
+// ▸ 单独运行：cd webui && node --test ../Tests/WebUI/row-checks.test.mjs
+// ▸ 全量运行与结果怎么看：Tests/WebUI/README.md §0；断言红了怎么办：README §8
+// ────────────────────────────────────────────────────────────────────────────
 // 勾选模型用例（spec §3.2 三态勾选/§3.4 批量；历史缺陷 round5-BUG2/H38）。
 // 直接驱动 webui/src/composables/useRowChecks.js（vue 响应式在 node 可运行，零组件挂载）。
 // 覆盖：级联勾选、空文件夹勾选通道、表头三态（合并语义）、数据剔除、Ctrl/Shift 选行。

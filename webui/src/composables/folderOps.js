@@ -14,6 +14,7 @@
 import { h, nextTick, ref } from 'vue'
 import { NInput, useDialog, useMessage } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
+import { confirmBool, confirmDialog } from '../utils/confirmDialog'
 import { api } from '../api'
 import { progressToast } from '../utils/progressToast'
 import {
@@ -30,6 +31,12 @@ import {
 import { useServers } from './useServers'
 import { useTreeState } from './useTreeState'
 
+// 模块级共享忙碌锁（round13 N1）：useFolderOps() 被 ServerListView 与 SideTree 各调用
+// 一次、各持一份 busy——此前两侧互斥完全失效，一侧长操作进行中另一侧仍可并发发起，
+// 两路逐台 GET→PUT 旧快照互覆 + 全量字典 PUT 后写覆盖先写（数据互相覆盖）。
+// 提升为模块级后两个实例天然互斥（useBatchConnect 的 batchRunning 同模式）
+const busy = ref(false) // 逐台 PUT / 键迁移进行中（防重入：树拖拽与列表操作互斥）
+
 export function useFolderOps() {
   const { t } = useI18n()
   const message = useMessage()
@@ -37,7 +44,13 @@ export function useFolderOps() {
   const { servers, datasources, reload, dsWritable } = useServers()
   const { folderPathsByDs, knownExpanded, setLocalKeys, persist } = useTreeState()
 
-  const busy = ref(false) // 逐台 PUT / 键迁移进行中（防重入：SideTree 拖拽与本操作互斥参考）
+  // 忙碌守卫（round11 U11 附带）：忙碌期间的新操作此前被静默吞掉——给一次轻提示，
+  // 让"点击没反应"有解释（各操作自身的进度 toast 已表明在忙，此提示兜底其余入口）
+  const busyGuard = () => {
+    if (!busy.value) return false
+    message.info(t('tree.folderBusyHint'))
+    return true
+  }
 
   // 同级既有文件夹名（新建/重命名查重；物化后的空文件夹也在树模型里，一并算重名）
   function siblingNames(dsName, parent) {
@@ -47,12 +60,14 @@ export function useFolderOps() {
 
   // ---- 对话框配色统一策略（owner 第三轮反馈：重命名弹窗红色误读 / 删除弹窗橙色惊叹号）----
   // - 命名输入（新建/重命名）：完全中性——无图标 + positive 用 default 按钮。accent 实心
-  //   positive 在红/橙系强调色主题（如 Wine）下整颗读成红色，被误读为危险操作；
+  //   positive 在橙系强调色主题（如 Soil）下整颗读成红色，被误读为危险操作；
   // - 删除类确认：无图标 + positive 用 error 红（颜色本身承载危险语义，替代 naive
   //   dialog.warning 的橙色 ⚠ 图标——图标与红色按钮双重警示反而喧哗）；
   // - 非破坏性确认（批量连接等）：无图标 + 中性按钮。
   // naive 的 dialog.create 默认带蓝色 ⓘ 图标（iconRenderMap.default = Info），须显式
   // showIcon:false；positive 默认渲染 primary 型，须经 positiveButtonProps.type 覆盖。
+  // 三档参数收敛于 utils/confirmDialog.js（danger 映射红/默认钮，round11 A2），
+  // 本文件及全站调用方不再手写这三个参数。
 
   // 名称输入对话框（naive dialog + NInput 渲染函数）：resolve(名称) | resolve(null)；
   // onPositiveClick 返回 false 保持打开（校验失败就地提示）。
@@ -97,9 +112,8 @@ export function useFolderOps() {
         if (submit()) dia?.destroy()
       }
       window.addEventListener('keydown', onWinEnter, { capture: true })
-      dia = dialog.create({
+      dia = confirmDialog(dialog, {
         title,
-        showIcon: false, // 命名输入走中性形态（见上方对话框配色策略）
         content: () =>
           h(NInput, {
             value: name.value,
@@ -114,9 +128,8 @@ export function useFolderOps() {
           }),
         positiveText: t('common.ok'),
         negativeText: t('editor.cancel'),
-        positiveButtonProps: { type: 'default' }, // 中性 OK：accent 实心在红/橙强调色下误读为危险操作
-        onPositiveClick: () => submit() || false,
-        onNegativeClick: () => settle(null),
+        onPositive: () => submit() || false,
+        onNegative: () => settle(null),
         onClose: () => settle(null),
         // 关闭动画结束的安全网（任一 hide 路径）：确保 settle 与监听移除，防泄漏悬挂
         onAfterLeave: () => settle(null),
@@ -134,6 +147,10 @@ export function useFolderOps() {
   }
 
   async function createFolder(dsName, parent) {
+    // R3（round14）：新建是忙碌锁体系里最后一个未接入的入口——长操作（逐台重写/
+    // 批量删除）进行中仍可新建，两笔全量 PUT 并发在途时后写者以旧基底覆盖，新文件夹
+    // 刷新后无声消失。与其他操作同款守卫（新建本身一笔 PUT，不占锁）
+    if (busyGuard()) return
     if (!dsWritable(dsName)) {
       message.warning(t('cv.readOnly'))
       return
@@ -220,8 +237,11 @@ export function useFolderOps() {
       const { failed } = await rewriteServerPaths(dsName, oldPath, serverTo, () => toast.step(++done))
       const persistOk = await rewriteKeys(dsName, oldPath, keysTo)
       await reload()
+      // round13 M3：部分成功统一 warning 档（与批量删除 runBatchDelete 同口径——
+      // 有一台成功即非全败，红色会让用户误读为整批失败）；全败才 error
       if (!persistOk) toast.finish('error', fail())
-      else if (failed) toast.finish('error', t('toast.treeMoveFailed', { n: failed }))
+      else if (failed === total && total > 0) toast.finish('error', t('toast.treeMoveFailed', { n: failed }))
+      else if (failed) toast.finish('warning', t('toast.treeMoveFailed', { n: failed }))
       else toast.finish('success', ok())
     } finally {
       busy.value = false
@@ -233,7 +253,7 @@ export function useFolderOps() {
       message.warning(t('cv.readOnly'))
       return
     }
-    if (busy.value) return
+    if (busyGuard()) return
     const oldName = oldPath.split('/').pop()
     const parent = parentPath(oldPath)
     const name = await promptName(t('tree.renameFolder'), oldName)
@@ -261,15 +281,13 @@ export function useFolderOps() {
     //（原先复用 deleteFolderConfirm 传 n=0，会显示"其中 0 台服务器…上移一级"的怪句）。
     // autoFocus:false——删除类确认不自动聚焦按钮，Enter 不可误触确认（Esc 仍可取消）
     if (!count) {
-      dialog.create({
+      confirmDialog(dialog, {
+        danger: true,
         title: t('tree.deleteFolder'),
         content: t('tree.deleteFolderEmpty', { name }),
-        showIcon: false, // 删除类确认统一形态：无图标 + 红 positive（见文件头配色策略）
         positiveText: t('editor.deleteYes'),
         negativeText: t('editor.cancel'),
-        positiveButtonProps: { type: 'error' },
-        autoFocus: false,
-        onPositiveClick: () => runDelete(dsName, oldPath, false),
+        onPositive: () => runDelete(dsName, oldPath, false),
       })
       return
     }
@@ -280,16 +298,14 @@ export function useFolderOps() {
     //（仅删文件夹，内容上移一级）。两个按钮都是执行动作、无取消位（第三轮 G10）——
     // Esc / 遮罩 / 右上 ✕ = 不动作退出，文案（deleteFolderHasServers）显式注明这一点，
     // 防"习惯点非红按钮求取消"的用户误执行删除
-    dialog.create({
+    confirmDialog(dialog, {
+      danger: true,
       title: t('tree.deleteFolder'),
       content: t('tree.deleteFolderHasServers', { name, n: count }),
-      showIcon: false, // 删除类确认统一形态：无图标 + 红 positive（见文件头配色策略）
       positiveText: t('tree.deleteWithServers'),
       negativeText: t('tree.deleteKeepContents'),
-      positiveButtonProps: { type: 'error' },
-      autoFocus: false, // 同上：删除确认禁键盘 Enter 触发（Esc 仍可取消）
-      onPositiveClick: () => runDelete(dsName, oldPath, true),
-      onNegativeClick: () => runDelete(dsName, oldPath, false),
+      onPositive: () => runDelete(dsName, oldPath, true),
+      onNegative: () => runDelete(dsName, oldPath, false),
     })
   }
 
@@ -297,7 +313,7 @@ export function useFolderOps() {
   // 子树的 tree-state 键（空子文件夹随文件夹消失，对齐 WPF 整节点移除）；
   // false：子项上移一级（服务器 TreeNodes 重写 + 子文件夹键上移，runPrefixRewrite）
   async function runDelete(dsName, oldPath, withServers) {
-    if (busy.value) return
+    if (busyGuard()) return
     if (!withServers) {
       // 子项上移一级：服务器重写到父路径（rewriteServerPath 对前缀子路径自动拼回），
       // 键走 null 删除语义（子文件夹键上移、文件夹自身键消失）
@@ -334,7 +350,9 @@ export function useFolderOps() {
       })
       await reload()
       if (!persistOk) toast.finish('error', t('tree.folderDeleteFailed'))
-      else if (failed) toast.finish('error', t('tree.folderDeleteServerFailed', { n: failed }))
+      // round13 M3：部分成功 warning / 全败 error 同口径
+      else if (failed === affected.length) toast.finish('error', t('tree.folderDeleteServerFailed', { n: failed }))
+      else if (failed) toast.finish('warning', t('tree.folderDeleteServerFailed', { n: failed }))
       else toast.finish('success', t('tree.folderDeleted'))
     } finally {
       busy.value = false
@@ -343,22 +361,14 @@ export function useFolderOps() {
 
   // H3：目标层同名文件夹的合并确认（resolve true=确认合并）——与 SideTree.confirmFolderMerge
   // 同款（树内拖拽/列表拖拽两条路径共用合并语义，词条共用）；WPF 语义为直接合并
-  //（ServerTreeViewModel.cs:637-646），owner 2026-09-21 决策改为先确认再合并
+  //（ServerTreeViewModel.cs:637-646），owner 2026-09-21 决策改为先确认再合并。
+  // round17：Promise+四路 resolve(false) 同构块收敛为 utils/confirmDialog.confirmBool
   function confirmFolderMerge(name) {
-    return new Promise((resolve) => {
-      dialog.create({
-        title: t('tree.mergeFolderTitle'),
-        content: t('tree.mergeFolderConfirm', { name }),
-        showIcon: false, // 非破坏性确认（合并两侧内容）：无图标 + 中性按钮（文件头配色策略）
-        positiveText: t('tree.mergeFolderYes'),
-        negativeText: t('editor.cancel'),
-        positiveButtonProps: { type: 'default' },
-        autoFocus: false,
-        onPositiveClick: () => resolve(true),
-        onNegativeClick: () => resolve(false),
-        onClose: () => resolve(false),
-        onAfterLeave: () => resolve(false),
-      })
+    return confirmBool(dialog, {
+      title: t('tree.mergeFolderTitle'),
+      content: t('tree.mergeFolderConfirm', { name }),
+      positiveText: t('tree.mergeFolderYes'),
+      negativeText: t('editor.cancel'),
     })
   }
 
@@ -368,9 +378,11 @@ export function useFolderOps() {
       message.warning(t('cv.readOnly'))
       return
     }
-    if (busy.value) return
+    if (busyGuard()) return
+    // folderPath 约定各段不含 '/'，split/join 往返恒等于原串（round17 去掉无效果规范化）；
+    // segs 保留作 TreeNodes 赋值形状
     const segs = path ? path.split('/') : []
-    const target = segs.join('/')
+    const target = path
     let moved = 0
     let failed = 0
     busy.value = true
@@ -396,7 +408,9 @@ export function useFolderOps() {
         toast.step(moved + failed)
       }
       await reload()
-      if (failed) toast.finish('error', t('toast.treeMoveFailed', { n: failed }))
+      // round13 M3：部分成功 warning / 全败 error（moved>0 且有失败 → 黄色）
+      if (failed && !moved) toast.finish('error', t('toast.treeMoveFailed', { n: failed }))
+      else if (failed) toast.finish('warning', t('toast.treeMoveFailed', { n: failed }))
       else if (moved > 0) toast.finish('success', t('toast.treeMoved', { n: moved }))
       else toast.cancel() // 全部原位置放下：无变化，撤下进度不出终态
     } finally {
@@ -417,7 +431,7 @@ export function useFolderOps() {
       message.warning(t('cv.readOnly'))
       return
     }
-    if (busy.value) return
+    if (busyGuard()) return
     const name = path.split('/').pop()
     const newPath = targetParent ? targetParent + '/' + name : name
     if (newPath === path || isDescendantPath(path, targetParent || '')) return
@@ -434,11 +448,16 @@ export function useFolderOps() {
   // 此前空文件夹复选框禁用无此通道）。确认框由调用方（ServerListView）统一弹一次；
   // 本函数只做执行：逐个「键删除」——空文件夹无服务器，rewriteServerPaths 为 0 台防御性
   // 调用，键走 null 删除语义（子键上移，空文件夹无子键则整体消失），一次 reload 收尾。
+  // round11 U11：补逐个进度 toast（体系内唯一没有进度的批量长操作），与批量删除
+  // 服务器/移动同款（原地更新 + 终态三档转换）
   async function deleteEmptyFolders(folders) {
-    if (busy.value) return
+    if (busyGuard()) return
     if (!folders?.length) return
     busy.value = true
+    const n = folders.length
+    const toast = progressToast(message, n, (done) => t('toast.batchDeleting', { ok: done, n }))
     let failed = 0
+    let done = 0
     try {
       for (const f of folders) {
         try {
@@ -449,10 +468,14 @@ export function useFolderOps() {
           console.warn('[folderOps] delete empty folder failed:', f.path, err?.message || err)
           failed++
         }
+        done++
+        toast.step(done)
       }
       await reload()
-      if (failed) message.error(t('tree.folderDeleteFailed'))
-      else message.success(t('tree.folderDeleted'))
+      // round13 M3：部分失败 warning / 全败 error 同口径
+      if (failed === n) toast.finish('error', t('tree.folderDeleteFailed'))
+      else if (failed) toast.finish('warning', t('tree.folderDeleteFailed'))
+      else toast.finish('success', t('tree.folderDeleted'))
     } finally {
       busy.value = false
     }

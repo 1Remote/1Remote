@@ -1,7 +1,7 @@
 <script setup>
 /**
  * 凭据库分组（spec §6；表单对齐凭据库模型）：
- * GET /api/credentials?ds= 表格 + 新建/编辑模态 + 删除确认（引用数警告）+ 👁 明文查看（reveal 流）。
+ * GET /api/credentials?ds= 表格 + 新建/编辑模态（模态内 👁 明文 reveal 流）+ 删除确认（引用数警告）。
  *
  * - 表单字段集 = WPF 凭据库弹窗（CredentialVaultViewModel 以 showHost:false 复用
  *   AlternativeCredentialEditView）：Name/UserName/Password/PrivateKeyPath 四项，
@@ -11,11 +11,9 @@
  * - 数据源过滤：n-select（useServers 共享态），切换即重载列表；只读数据源禁用 CRUD 按钮
  *   （后端也会前置拦截，这里只做 UI 预防）。
  * - 列表 DTO 不含密码/私钥路径的值（后端安全红线），仅含存在性布尔 hasPwd/hasKeyPath
- *   （加密不改空串性，密文非空 ⇔ 明文非空）——明文只能走 reveal：
- *   点 👁 → 行内「请在桌面端完成验证…」等待态（服务端在桌面端弹本地验证，未开启则直通）→
- *   成功后行内展开明文（默认掩码，可切换）+ 30s 倒计时自动隐藏；403 → toast 验证失败；
- *   404 → 静默刷新列表（凭据已被其它端删除/改名）。列表列与 WPF 凭据库表格对齐
- *   （名称/用户名/操作），另加 web 侧引用计数列；WPF 的密码/私钥掩码列由 reveal 行承载。
+ *   （加密不改空串性，密文非空 ⇔ 明文非空）——明文只能走编辑模态内的 reveal（round14
+ *   需求：列表操作列不再提供明文查看，只留 编辑/删除）。列表列与 WPF 凭据库表格对齐
+ *   （名称/用户名/操作），另加 web 侧引用计数列。
  * - 编辑模态的密码/私钥路径（"正常行为"对齐）：
  *   按存在性布尔预填：存在 → 掩码串 MASK（不自动 reveal——那会在打开模态时弹验证）；
  *   不存在 → 空输入框（如实显示无密码，round9.1 用户报告修复）。
@@ -34,13 +32,17 @@
  * - 模态的 Esc：捕获阶段截停（与 IconPicker 同款）——SettingsView 的 window 级 Esc 返回链
  *   不应因"关模态"误触导航；n-select 的展开计数走 settingsEscShield（与 GeneralGroup 同款）。
  */
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
+import { confirmDialog } from '../../utils/confirmDialog'
 import { api } from '../../api'
 import { useServers } from '../../composables/useServers'
+import { useDraftGuard } from '../../composables/useDraftGuard'
+import { useRequiredGuard } from '../../composables/useRequiredGuard'
 import { useSettingsEsc } from '../../composables/useSettingsEsc'
 import { onFormEnter } from '../../utils/formEnter'
+import { saveErrorText } from '../../utils/formError'
 
 const { t } = useI18n()
 const message = useMessage()
@@ -77,18 +79,14 @@ async function load() {
 }
 onMounted(load)
 watch(ds, () => {
-  clearReveal()
   load()
 })
 
 // ---- 新建/编辑模态 ----
 const editing = ref(null) // null=关 | { mode: 'create' } | { mode: 'edit', name }
-const showEdit = computed({
-  get: () => !!editing.value,
-  set: (v) => {
-    if (!v) editing.value = null
-  },
-})
+// round17：改回只读 computed——模板用 :show + @update:show="editGuard.requestClose"（非
+// v-model），可写 set 分支永不执行；关闭路径统一走 editGuard（草稿确认）而不是裸赋值
+const showEdit = computed(() => !!editing.value)
 // 编辑态未 reveal 前密码/私钥路径的掩码占位（与行级 reveal 的 8 点掩码同观感）；
 // 保存时"值仍为掩码且未 reveal"映射为 null（后端语义 null=保持原值）
 const SECRET_MASK = '••••••••'
@@ -109,11 +107,16 @@ function resetSecretUi() {
   segTouched = false
   secretsLoaded.value = false
   showPwd.value = false
+  // round17：在途态一并复位——reveal 验证在途时关模态再重开，旧请求 settle 前点 👁
+  // 会被防连点守卫静默吞掉一次；browsing 同理（pickFile 请求寿命长，重开后按钮假死）
+  revealing.value = false
+  browsing.value = false
 }
 
 function openCreate() {
   Object.assign(form, { name: '', userName: '', password: '', privateKeyPath: '' })
   resetSecretUi()
+  formSnapshot = { ...form } // 草稿守卫快照（round13：干净/有输入二分关闭语义）
   editing.value = { mode: 'create' }
 }
 
@@ -130,6 +133,7 @@ function openEdit(c) {
   resetSecretUi()
   // WPF 编辑打开的对齐规则（org.PrivateKeyPath 非空默认私钥侧）：用存在性布尔在打开时即应用
   if (!c.hasPwd && c.hasKeyPath) authMode.value = 'key'
+  formSnapshot = { ...form } // 草稿守卫快照（round13）
   editing.value = { mode: 'edit', name: c.name }
 }
 
@@ -149,6 +153,9 @@ const nameExists = computed(() => {
   if (!n) return false
   return credentials.value.some((c) => c.name !== editing.value.name && c.name.trim().toLowerCase() === n.toLowerCase())
 })
+
+// 必填项统一守卫（round14 需求）：名称未填=假禁用+提示+强点聚焦；重名/保存中走真禁用
+const reqGuard = useRequiredGuard({ getMissing: () => (form.name.trim() ? [] : ['name']) })
 
 // 👁：编辑态未加载明文时 = reveal（本地验证门，与行级 reveal 同端点同 30s 窗口）；
 // 已加载（或新建态）= 普通明文切换（仅密码行有切换，私钥路径 reveal 后即明文可编辑）
@@ -227,8 +234,7 @@ async function save() {
     editing.value = null
     load() // 引用服务器联动改名等由后端 ReloadAll+SSE 兜底，这里主动刷一次拿到最新 refCount
   } catch (e) {
-    const detail = e?.body?.errors?.join('; ')
-    message.error(t('settings.saveFailed') + (detail ? ` ${detail}` : ''))
+    message.error(saveErrorText(t, e)) // round17：统一拼装（utils/formError）
   } finally {
     saving.value = false
   }
@@ -239,23 +245,20 @@ async function save() {
 // ---- 删除（引用数警告 + 404 静默刷新）。autoFocus:false——删除确认不自动聚焦按钮，
 // Enter 不可误触确认（Esc 仍可取消；naive 默认 autoFocus 会让回车落到 positive 上）----
 function onDelete(c) {
-  dialog.create({
+  confirmDialog(dialog, {
+    danger: true,
     title: t('cv.deleteTitle'),
     // 删除类确认统一形态：无图标 + 红 positive（folderOps 文件头策略）
-    showIcon: false,
-    positiveButtonProps: { type: 'error' },
     content:
       c.refCount > 0
         ? t('cv.deleteConfirm', { name: c.name }) + ' ' + t('cv.deleteRefWarning', { n: c.refCount })
         : t('cv.deleteConfirm', { name: c.name }),
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
-    autoFocus: false,
-    onPositiveClick: async () => {
+    onPositive: async () => {
       try {
         await api.deleteCredential(c.name, ds.value)
         message.success(t('cv.deleteOk'))
-        if (revealState.value?.name === c.name) clearReveal()
         load()
       } catch (e) {
         if (e?.status === 404)
@@ -266,58 +269,23 @@ function onDelete(c) {
   })
 }
 
-// ---- reveal（明文查看）：行级状态机 waiting → shown(30s 倒计时) → 清除 ----
-const REVEAL_SECONDS = 30
-const revealState = ref(null) // { name, waiting, password, privateKeyPath, unmasked, left }
-let revealTimer = null
-
-function clearReveal() {
-  clearInterval(revealTimer)
-  revealTimer = null
-  revealState.value = null
-}
-
-function onReveal(c) {
-  if (revealState.value?.waiting) return // 已有一个验证在途：防连点重复弹本地验证
-  clearReveal()
-  revealState.value = {
-    name: c.name,
-    waiting: true,
-    password: '',
-    privateKeyPath: '',
-    unmasked: false,
-    left: REVEAL_SECONDS,
-  }
-  api
-    .revealCredential(c.name, ds.value)
-    .then((r) => {
-      if (revealState.value?.name !== c.name) return // 等待期间已切行/清理
-      revealState.value = {
-        name: c.name,
-        waiting: false,
-        password: r.password || '',
-        privateKeyPath: r.privateKeyPath || '',
-        unmasked: true,
-        left: REVEAL_SECONDS,
-      }
-      revealTimer = setInterval(() => {
-        const s = revealState.value
-        if (!s || s.waiting) return clearReveal()
-        s.left -= 1
-        if (s.left <= 0) clearReveal()
-      }, 1000)
-    })
-    .catch((e) => {
-      if (revealState.value?.name === c.name) clearReveal()
-      if (e?.status === 404 || e?.status === 400)
-        load() // 凭据/数据源已不存在：静默刷新
-      else message.error(t('cv.revealFailed')) // 403=验证失败/取消；网络异常同文案（避免明文相关细节泄漏）
-    })
-}
-onBeforeUnmount(clearReveal)
-
 // ---- Esc 链：模态开着时捕获截停（SettingsView 的返回导航让位），只关模态 ----
-bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null) }])
+// ---- 草稿守卫（round13 统一关闭语义，兼 round12 N2：凭据表单含密码/私钥等长文本，
+// 此前遮罩/Esc/取消直接丢光）。脏检查快照在 openCreate/openEdit 设置；reveal 回填
+// 真实值视为"有输入"（保守：宁可多确认，不丢内容）----
+let formSnapshot = {}
+const formDirty = () => Object.keys(form).some((k) => String(form[k] ?? '') !== String(formSnapshot[k] ?? ''))
+const editGuard = useDraftGuard({
+  isDirty: formDirty,
+  doClose: () => {
+    editing.value = null
+  },
+  isBusy: () => saving.value,
+  dialog,
+  message,
+  t,
+})
+bindModalEsc([{ isOpen: () => showEdit.value, close: () => editGuard.requestClose() }])
 </script>
 
 <template>
@@ -344,73 +312,36 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
           <span class="c-refs">{{ t('cv.col.refCount') }}</span>
           <span class="c-actions">{{ t('col.actions') }}</span>
         </div>
-        <template v-for="c in credentials" :key="c.name">
-          <div class="cv-row" :class="{ revealing: revealState?.name === c.name }">
-            <span class="c-name" :title="c.name">{{ c.name }}</span>
-            <span class="c-user" :title="c.userName">{{ c.userName || '—' }}</span>
-            <span class="c-refs" :class="{ hot: c.refCount > 0 }">{{ c.refCount }}</span>
-            <span class="c-actions">
-              <!-- 明文已展开：掩码切换 + 手动隐藏；未展开：👁 发起 reveal -->
-              <template v-if="revealState?.name === c.name && !revealState.waiting">
-                <button
-                  class="act"
-                  type="button"
-                  :title="revealState.unmasked ? t('editor.hidePassword') : t('editor.showPassword')"
-                  @click="revealState.unmasked = !revealState.unmasked"
-                >
-                  {{ revealState.unmasked ? '🙈' : '👁' }}
-                </button>
-                <button class="act" type="button" @click="clearReveal">{{ t('cv.revealHide') }}</button>
-              </template>
-              <button
-                v-else
-                class="act"
-                type="button"
-                :disabled="revealState?.waiting"
-                :title="t('cv.reveal')"
-                @click="onReveal(c)"
-              >
-                👁
-              </button>
-              <button class="act" type="button" :disabled="isReadOnly" :title="t('cv.edit')" @click="openEdit(c)">
-                ✎
-              </button>
-              <button
-                class="act"
-                type="button"
-                :disabled="isReadOnly"
-                :title="t('editor.deleteYes')"
-                @click="onDelete(c)"
-              >
-                ✕
-              </button>
-            </span>
-          </div>
-          <!-- 明文详情行（reveal 展开态）：等待桌面验证 / 密码+私钥路径（掩码可切）+ 倒计时 -->
-          <div v-if="revealState?.name === c.name" class="cv-reveal">
-            <div v-if="revealState.waiting" class="waiting">
-              <span class="spin" aria-hidden="true"></span>{{ t('cv.revealWaiting') }}
-            </div>
-            <template v-else>
-              <div class="rv-line">
-                <label>{{ t('editor.f.Password') }}</label>
-                <code>{{ revealState.unmasked ? revealState.password || '—' : '••••••••' }}</code>
-              </div>
-              <div class="rv-line">
-                <label>{{ t('editor.f.PrivateKeyPath') }}</label>
-                <code>{{ revealState.unmasked ? revealState.privateKeyPath || '—' : '••••••••' }}</code>
-              </div>
-              <span class="rv-count">{{ t('cv.autoHide', { n: revealState.left }) }}</span>
-            </template>
-          </div>
-        </template>
+        <div v-for="c in credentials" :key="c.name" class="cv-row">
+          <span class="c-name" :title="c.name">{{ c.name }}</span>
+          <span class="c-user" :title="c.userName">{{ c.userName || '—' }}</span>
+          <span class="c-refs" :class="{ hot: c.refCount > 0 }">{{ c.refCount }}</span>
+          <span class="c-actions">
+            <!-- 明文查看只在编辑弹窗内（round14 需求：列表操作列不再提供 reveal） -->
+            <button class="act" type="button" :disabled="isReadOnly" :title="t('cv.edit')" @click="openEdit(c)">
+              ✎
+            </button>
+            <button
+              class="act"
+              type="button"
+              :disabled="isReadOnly"
+              :title="t('editor.deleteYes')"
+              @click="onDelete(c)"
+            >
+              ✕
+            </button>
+          </span>
+        </div>
       </div>
     </template>
 
     <!-- 新建/编辑模态：Name 必填 + 即时查重；密码/私钥二选一（segmented，
          仅切换展示）；编辑态两字段预填掩码，👁 reveal（本地验证）回填明文；私钥行带浏览按钮 -->
     <n-modal
-      v-model:show="showEdit"
+      :show="showEdit"
+      :mask-closable="false"
+      @update:show="editGuard.requestClose"
+      @mask-click="editGuard.onMaskClick"
       preset="card"
       :title="editing?.mode === 'edit' ? t('cv.editTitle') : t('cv.newTitle')"
       :bordered="false"
@@ -418,14 +349,14 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
       role="dialog"
       aria-modal="true"
     >
-      <div class="form" @keydown="onFormEnter($event, save)">
-        <div class="f-row">
+      <div class="form" @keydown="onFormEnter($event, () => reqGuard.trySave(save))">
+        <div class="s-form-row" :class="{ 'req-hot': reqGuard.isHot('name') }" data-req-key="name">
           <label>{{ t('editor.f.Name') }}<span class="req-star">*</span></label>
           <div>
             <n-input
               size="small"
               v-model:value="form.name"
-              :status="nameExists ? 'error' : undefined"
+              :status="nameExists ? 'error' : reqGuard.isHot('name') ? 'error' : undefined"
               :input-props="{ spellcheck: false }"
             />
             <!-- 重名即时提示（secretHint 长提示行已随即时查重移除并按 P13 走管线删除；
@@ -433,13 +364,13 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
             <p v-if="nameExists" class="f-err">{{ t('settings.r.nameExists', { name: form.name.trim() }) }}</p>
           </div>
         </div>
-        <div class="f-row">
+        <div class="s-form-row">
           <label>{{ t('editor.f.UserName') }}</label>
           <n-input size="small" v-model:value="form.userName" :input-props="{ spellcheck: false }" />
         </div>
         <!-- 密码/私钥二选一：WPF 弹窗 IsUsePrivateKey 复选框的 web 形态（ed-seg 样式，
              EditorDrawer 凭据组同款）；仅切换展示，保存语义见 save() -->
-        <div class="f-row">
+        <div class="s-form-row">
           <label>{{ t('cv.authType') }}</label>
           <div class="cv-seg" role="tablist">
             <button
@@ -462,7 +393,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
             </button>
           </div>
         </div>
-        <div v-if="authMode === 'password'" class="f-row">
+        <div v-if="authMode === 'password'" class="s-form-row">
           <label>{{ t('editor.f.Password') }}</label>
           <n-input
             size="small"
@@ -490,7 +421,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
             </template>
           </n-input>
         </div>
-        <div v-else class="f-row">
+        <div v-else class="s-form-row">
           <label>{{ t('editor.f.PrivateKeyPath') }}</label>
           <n-input size="small" v-model:value="form.privateKeyPath" :input-props="{ spellcheck: false }">
             <template #suffix>
@@ -520,14 +451,17 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
       </div>
       <template #footer>
         <div class="modal-actions">
-          <n-button size="small" @click="editing = null">{{ t('editor.cancel') }}</n-button>
+          <n-button size="small" @click="editGuard.requestClose">{{ t('editor.cancel') }}</n-button>
+          <!-- round14 统一必填处理：名称未填=假禁用+旁侧提示，强点聚焦名称框；重名/保存中真禁 -->
+          <span v-if="reqGuard.blocked" class="req-hint">{{ t('modal.requiredHint') }}</span>
           <n-button
             size="small"
             type="primary"
             ghost
-            :disabled="!form.name.trim() || nameExists"
+            :class="{ 'req-blocked': reqGuard.blocked }"
+            :disabled="nameExists"
             :loading="saving"
-            @click="save"
+            @click="reqGuard.trySave(save)"
           >
             {{ t('settings.save') }}
           </n-button>
@@ -542,13 +476,7 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   /* 统一设置内容宽（SettingsView.s-body 的 --settings-content-w 穿透继承）；内部网格不动 */
   width: min(100%, var(--settings-content-w));
 }
-.hint {
-  font-size: var(--fs-body);
-  color: var(--text-3);
-}
-.hint.err {
-  color: var(--danger);
-}
+/* .hint/.hint.err 走 theme.css 全局（round17 收敛四份逐字拷贝） */
 .toolbar {
   display: flex;
   align-items: center;
@@ -604,9 +532,6 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   color: var(--text-4);
   font-size: var(--fs-caption);
 }
-.cv-row.revealing {
-  background: var(--accent-container);
-}
 .c-name {
   min-width: 0;
   overflow: hidden;
@@ -632,104 +557,12 @@ bindModalEsc([{ isOpen: () => showEdit.value, close: () => (editing.value = null
   justify-content: flex-end;
   gap: 4px;
 }
-.act {
-  /* 行内文字小钮族（G18 锚点）：DataSourceGroup/TagManagerModal 的 .act 与此同参数
-     拷贝（borderless、ctrl-h-s、中性 hover），改动需三处同步 */
-  min-width: 24px;
-  height: var(--ctrl-h-s);
-  padding: 0 4px;
-  border: none;
-  border-radius: var(--radius-ctrl);
-  background: transparent;
-  color: var(--text-3);
-  font-size: var(--fs-body);
-  line-height: 1;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.act:hover:not(:disabled) {
-  background: var(--bg-hover);
-  color: var(--text-1);
-}
-.act:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
-
-/* ---- reveal 详情行：展开在凭据行下方，含等待态与倒计时 ---- */
-.cv-reveal {
-  padding: 6px 12px 8px;
-  border-bottom: 1px solid var(--border);
-  background: var(--accent-container);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.waiting {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--fs-body);
-  color: var(--text-2);
-}
-.spin {
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--border-strong);
-  border-top-color: var(--accent-focus); /* 状态指示弧走焦点档深变体（G6，与 App .sb-spin 同源） */
-  border-radius: 50%;
-  animation: cv-spin 0.8s linear infinite;
-}
-@keyframes cv-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .spin {
-    animation: none;
-  }
-}
-.rv-line {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-}
-.rv-line label {
-  flex: 0 0 110px;
-  font-size: var(--fs-caption);
-  color: var(--text-4);
-}
-.rv-line code {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  font-size: var(--fs-body);
-  color: var(--text-1);
-}
-.rv-count {
-  align-self: flex-end;
-  font-size: var(--fs-caption);
-  color: var(--text-4);
-}
 
 /* ---- 模态表单 ---- */
 .form {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-.f-row {
-  /* 设置模态表单行族锚点（G18）：DataSourceGroup / RunnerAddModal 的 .f-row 与此
-     同构（标签列 + 控件列网格），改动需三处同步 */
-  display: grid;
-  grid-template-columns: 110px minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
-}
-.f-row label {
-  font-size: var(--fs-body);
-  color: var(--text-2);
 }
 /* 名称重名即时提示：输入框下方红字 */
 .f-err {

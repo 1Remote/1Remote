@@ -9,10 +9,11 @@
 // 内容区三态（骨架屏/空库引导/无匹配）+ 底部状态栏（数据源状态点/统计/语言切换；
 // 后端可达性的 SSE 小字指示已删——K17 定案改由 App.vue 全屏失联警告承载）
 // + <900px 自动收起边栏。
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch, watchPostEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDialog, useMessage } from 'naive-ui'
 import { useWindowSize } from '@vueuse/core'
+import { confirmDialog } from '../utils/confirmDialog'
 import SideTree from '../components/SideTree.vue'
 import ServerTable from '../components/ServerTable.vue'
 import ImportModal from '../components/ImportModal.vue'
@@ -21,6 +22,7 @@ import TagManagerModal from '../components/settings/TagManagerModal.vue'
 import { api } from '../api'
 import { progressToast } from '../utils/progressToast'
 import { applyServerFilters, useServers } from '../composables/useServers'
+import { useNow } from '../composables/useNow'
 import { buildTree, countHolderServers, holderAt, parentPath } from '../composables/folders'
 import { dsDotClass, makeDsDotTitle } from '../utils/dsTitle'
 import { useTreeState } from '../composables/useTreeState'
@@ -28,7 +30,7 @@ import { useFolderOps } from '../composables/folderOps'
 import { useBatchConnect } from '../composables/useBatchConnect'
 import { useEditorBus } from '../composables/editorBus'
 import { setLocale } from '../locales'
-import { LANGUAGES } from '../locales/languages.js'
+import { LANGUAGES, webToBackend } from '../locales/languages.js'
 
 const { t, locale } = useI18n()
 const message = useMessage()
@@ -47,8 +49,19 @@ watch(
   { immediate: true }
 )
 
-const { servers, datasources, tags, loading, connected, reload, searchQuery, searchedIds, searchFailedTick } =
-  useServers()
+const {
+  servers,
+  datasources,
+  datasourcesFetchedAt,
+  tags,
+  loading,
+  connected,
+  unauthorized,
+  reload,
+  searchQuery,
+  searchedIds,
+  searchFailedTick,
+} = useServers()
 
 // 单数据源根（owner 需求，通用化按「数据源总数 === 1」判定，不认死 Local 名）：
 // 只有一个数据源时 SideTree 不再显示「全部数据」虚拟根（深度整体上移一级），列表/面包屑
@@ -233,23 +246,56 @@ function clearNextFilter() {
   else if (activeTag.value) activeTag.value = ''
 }
 
-// ---- 状态栏（内容区底部 26px）：左=数据源状态点+名称（最多 3 个，超出 +N），
-// 右=统计 + 语言切换（SSE 可达性小字已删，K17）。状态点语义与 SideTree 根节点一致（绿=connected /
-// 红=reconnecting / 灰=其余）；title 用状态文案（i18n）而非裸枚举——重连时附后端的
+// ---- 状态栏（内容区底部 26px）：左=数据源状态点+名称
+// 右=统计 + 语言切换。状态点语义与 SideTree 根节点一致（绿=connected / 红=reconnecting / 灰=其余）；title 用状态文案（i18n）而非裸枚举——重连时附后端的
 // 重连信息（reconnectInfo）----
-const MAX_DS = 3
-const dsShown = computed(() => datasources.value.slice(0, MAX_DS))
-const dsHidden = computed(() => Math.max(0, datasources.value.length - MAX_DS))
-// 状态栏状态点 title——单一实现在 utils/dsTitle.js（与树根行/设置页卡片共用，round8 收敛）
-const dsTitle = makeDsDotTitle(t)
+// fitCount 收敛：先按上限渲染 → 点区溢出（scrollWidth > clientWidth）则逐个收进 +N
+// 至放下；容器宽度或数据源数量变化时重置回上限重新收敛（ResizeObserver 覆盖窗口
+// 缩放与侧栏收展两条宽度变化路径）
+const MAX_DS = 5
+const sbDsBar = ref(null)
+const fitCount = ref(MAX_DS)
+const dsShown = computed(() => datasources.value.slice(0, Math.min(fitCount.value, MAX_DS)))
+const dsHidden = computed(() => Math.max(0, datasources.value.length - dsShown.value.length))
+function refitDsBar() {
+  const bar = sbDsBar.value
+  if (bar && bar.scrollWidth > bar.clientWidth && fitCount.value > 1) fitCount.value--
+}
+watchPostEffect(() => {
+  void dsShown.value.length // 依赖显示集：每次收窄重渲染后重测，直到放下（≤4 轮收敛）
+  refitDsBar()
+})
+let dsBarRo = null
+onMounted(() => {
+  dsBarRo = new ResizeObserver(() => {
+    fitCount.value = MAX_DS // 宽度变化：回上限重新收敛（变宽时回升显示更多点）
+  })
+  if (sbDsBar.value) dsBarRo.observe(sbDsBar.value)
+})
+onBeforeUnmount(() => dsBarRo?.disconnect())
+watch(
+  () => datasources.value.length,
+  () => {
+    fitCount.value = MAX_DS
+  }
+)
+// 状态栏状态点 tooltip——单一实现在 utils/dsTitle.js（与树根行/设置页卡片共用，round8 收敛）。
+// live 上下文：重连倒计时本地逐秒倒数（useNow 共享时钟 + 快照时间戳），不再随 30s 轮询滞后；
+// 状态栏用 n-tooltip 承载（内容随时钟实时刷新，round13 BUG2：原生 title 打开即快照）
+const dsTitle = makeDsDotTitle(t, { now: useNow(), fetchedAt: datasourcesFetchedAt })
 function toggleLocale() {
-  setLocale(locale.value === 'en-US' ? nonEnglishLocale : 'en-US')
+  const next = locale.value === 'en-US' ? nonEnglishLocale : 'en-US'
+  setLocale(next)
+  // round14 R5：语言唯一持久化在后端（不存 localStorage）——状态栏切换同设置页一样
+  // 即时 PUT 回后端（桌面端重启后跟随）；失败提示（K15 同款：本地已切换但重启回旧值）
+  api.saveGeneralSettings({ language: webToBackend(next) }).catch(() => {
+    message.error(t('settings.saveFailed'))
+  })
 }
 // 语言切换：当前语言 ⇄ English——选了日语就按日语⇄英语切，不再硬编码
-// 中英。nonEnglishLocale 记住最近使用的非英语界面语言：locale 初值来自 localStorage/浏览器
+// 中英。nonEnglishLocale 记住最近使用的非英语界面语言：locale 初值来自后端语言/浏览器
 // 探测，且设置页选语言也会 setLocale（可能落到任一非英语码），用 watch 跟踪而非只读一次；
 // 首启即英语（从未见过非英语界面）回落 zh-CN——与旧版 en↔zh 行为一致，避免按钮空操作。
-// 不落库（与旧版一致，语言持久化由设置页负责）。
 let nonEnglishLocale = 'zh-CN'
 watch(
   locale,
@@ -297,16 +343,13 @@ async function onBatchConnect(ids) {
 // 的保存对话框标题级警告在 Web 迁移时丢了，此处平价补回（非破坏性确认：无图标+中性钮）
 function confirmExport(n) {
   return new Promise((resolve) => {
-    dialog.create({
+    confirmDialog(dialog, {
       title: t('batch.export'),
       content: t('batch.exportConfirm', { n }),
-      showIcon: false, // 非破坏性确认（folderOps 文件头三档策略）
       positiveText: t('batch.export'),
       negativeText: t('editor.cancel'),
-      positiveButtonProps: { type: 'default' },
-      autoFocus: false,
-      onPositiveClick: () => resolve(true),
-      onNegativeClick: () => resolve(false),
+      onPositive: () => resolve(true),
+      onNegative: () => resolve(false),
       onClose: () => resolve(false),
       onAfterLeave: () => resolve(false),
     })
@@ -419,16 +462,14 @@ function openDuplicate(server) {
 // SSE（已知后端行为），前端兜底 reload 刷新列表。autoFocus:false——删除确认不自动聚焦
 // positive 按钮，Enter 不可误触确认（Esc 仍可取消；naive 默认 autoFocus 会让回车落到按钮上）
 function onDelete(server) {
-  dialog.create({
+  confirmDialog(dialog, {
+    danger: true,
     title: t('editor.deleteTitle'),
     content: t('editor.deleteConfirm', { name: server.displayName }),
     // 删除类确认统一形态：无图标 + 红 positive（替代 warning 橙色惊叹号，folderOps 文件头策略）
-    showIcon: false,
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
-    positiveButtonProps: { type: 'error' },
-    autoFocus: false,
-    onPositiveClick: async () => {
+    onPositive: async () => {
       try {
         await api.deleteServer(server.id, server.dataSourceName)
         message.success(t('editor.deleteOk', { name: server.displayName }))
@@ -443,7 +484,12 @@ function onDelete(server) {
 // ---- 批量删除：批量条「✕ 删除」→ 确认（autoFocus:false 同 onDelete——回车不可误触）→
 // 逐台串行 DELETE + 进度 toast（loading 句柄原地更新 content）→ reload。
 // 删除后指向已删行的树叶选中态回退；勾选集由 useRowChecks 的数据剔除 watch 自动收敛 ----
+let batchDeleteDialogOpen = false // round11 U10：确认框开着期间连点批量条「删除」防叠框（任何关闭路径离场后复位）
+const batchDeleting = ref(false) // round13 N8 执行期锁（round14 R4 响应式化）：确认后逐台删除
+// 进行中批量条按钮全部禁用——此前锁命中只静默吞点击（"点了没反应"），改为按钮直接灰显；
+// 锁覆盖整个执行期（服务器段 + 空文件夹段），由 onPositive 的 try/finally 统一管理
 function onBatchDelete(ids, folders = []) {
+  if (batchDeleteDialogOpen || batchDeleting.value) return
   const list = (ids || []).map((id) => servers.value.find((s) => s.id === id)).filter(Boolean)
   // 确认前按「当前确实为空文件夹」复核（round8 P4/M20 的执行侧闭环；勾选剔除 watch 是
   // 显示侧）——被填入服务器的勾选文件夹或已消失的文件夹不进本批，防「承诺删空壳、
@@ -461,23 +507,38 @@ function onBatchDelete(ids, folders = []) {
       : list.length
         ? t('batchDelete.confirmText', { n: list.length })
         : t('batchDelete.confirmFolders', { m: emptyFolders.length })
-  dialog.create({
+  batchDeleteDialogOpen = true
+  confirmDialog(dialog, {
+    danger: true,
     title: t('batchDelete.confirmTitle'),
     content,
     // 删除类确认统一形态：无图标 + 红 positive（同 onDelete）
-    showIcon: false,
     positiveText: t('editor.deleteYes'),
     negativeText: t('editor.cancel'),
-    positiveButtonProps: { type: 'error' },
-    autoFocus: false,
-    onPositiveClick: () => {
-      if (list.length) runBatchDelete(list)
-      if (emptyFolders.length) folderOps.deleteEmptyFolders(emptyFolders)
+    // 确认框开着期间批量条「删除」连点不叠框（U10）；onAfterLeave 覆盖全部关闭路径
+    //（确认/取消/Esc/遮罩），离场动画后复位（EditorDrawer.requestClose 同款安全网）
+    onAfterLeave: () => {
+      batchDeleteDialogOpen = false
+    },
+    onPositive: () => {
+      // 串行排队（round13 N8）+ 全程一把执行锁（round14 R4）：混合批次的服务器删除与
+      // 空文件夹删除共用，防两路进度并行与 tree-state 字典并发写互覆；锁期间批量条按钮全禁
+      ;(async () => {
+        batchDeleting.value = true
+        try {
+          if (list.length) await runBatchDelete(list)
+          if (emptyFolders.length) await folderOps.deleteEmptyFolders(emptyFolders)
+        } finally {
+          batchDeleting.value = false
+        }
+      })()
     },
   })
 }
 
 async function runBatchDelete(list) {
+  // 锁的置/放统一在 onPositive 的 try/finally（round14 R4）——此处不再自查：确认回调
+  // 先置锁再调本函数，自查会把正常路径拦掉（round15 实测发现的批量删除失效回归）
   const n = list.length
   const toast = progressToast(message, n, (done) => t('toast.batchDeleting', { ok: done, n }))
   let ok = 0
@@ -600,21 +661,30 @@ const importModal = ref(false)
         <div id="crumb-actions" class="crumb-actions"></div>
       </div>
 
-      <!-- 首载骨架屏：6 行灰块脉动（状态点 + 图标圆 + 名称/地址两横条，行高对齐真实行），
-           数据到达后被表格原地替换（同布局高度，无跳动） -->
+      <!-- 首载骨架屏：6 行灰块脉动（图标圆 + 名称/地址两横条，行高对齐真实行），
+           数据到达后被表格原地替换（同布局高度，无跳动）。
+           状态列无占位点（2026-09-25 需求：指示器未连接时隐藏）——骨架期不知会话态，
+           留空与真实行的隐藏态一致，不预告一个可能不会出现的点 -->
       <div v-if="showSkeleton" class="skeleton-host" aria-hidden="true">
         <div v-for="i in 6" :key="i" class="sk-row" :style="{ '--d': (i - 1) * 120 + 'ms' }">
-          <span class="sk sk-dot"></span>
           <span class="sk sk-icon"></span>
           <span class="sk sk-bar sk-name"></span>
           <span class="sk sk-bar sk-addr"></span>
         </div>
       </div>
 
-      <!-- 后端不可达：居中提示，取代空库引导卡——后端未运行时引导用户新建/导入会误导 -->
+      <!-- 后端不可达：居中提示，取代空库引导卡——后端未运行时引导用户新建/导入会误导。
+           V14（round16）：未授权（401，浏览器直开缺访问令牌）二分为独立文案——此时
+           应用其实正开着，「请确认应用正在运行」会误导排障方向 -->
       <div v-else-if="showOffline" class="empty-offline">
-        <div class="eo-title">{{ t('empty.offline') }}</div>
-        <div class="eo-hint">{{ t('empty.offlineHint') }}</div>
+        <template v-if="unauthorized">
+          <div class="eo-title">{{ t('empty.unauthorized') }}</div>
+          <div class="eo-hint">{{ t('empty.unauthorizedHint') }}</div>
+        </template>
+        <template v-else>
+          <div class="eo-title">{{ t('empty.offline') }}</div>
+          <div class="eo-hint">{{ t('empty.offlineHint') }}</div>
+        </template>
       </div>
 
       <!-- 空库引导卡片：新建与导入均已接线；导入按钮下补支持格式说明 + 支持协议一览
@@ -651,10 +721,12 @@ const importModal = ref(false)
         :folders="currentFolders"
         :query="searchQuery"
         :ops-busy="folderOps.busy.value"
+        :subtree-scope="!!activeTag"
         @counted="tableCount = $event"
         @connect="onConnect"
         @batch-connect="onBatchConnect"
         @batch-delete="onBatchDelete"
+        :batch-busy="batchDeleting"
         @bulk-edit="openBulkEdit"
         @export="onExport"
         @edit="openEdit"
@@ -686,12 +758,14 @@ const importModal = ref(false)
         </template>
       </ServerTable>
 
-      <!-- 标签管理模态：置顶/重命名/删除/连接全部；关闭即销毁（v-if 收敛状态） -->
+      <!-- 标签管理模态：置顶/重命名/删除/连接全部；关闭即销毁（v-if 收敛状态）。
+           update:show 仅在关闭时 emit false（模态恒 :show=true + v-if 挂载），与 ImportModal
+           的直赋式同款 -->
       <TagManagerModal
         v-if="tagManager"
         :show="true"
         :ds="tagManager.ds"
-        @update:show="tagManager = $event ? tagManager : null"
+        @update:show="!$event && (tagManager = null)"
       />
 
       <!-- 导入模态：默认数据源/文件夹取当前树选中（文件夹内入口导入即落该文件夹）；
@@ -720,13 +794,22 @@ const importModal = ref(false)
         @saved="onSaved"
       />
 
-      <!-- 底部状态栏：数据源状态点 · 台数/标签数 · 语言切换（SSE 指示已删，失联走全屏警告） -->
+      <!-- 底部状态栏：数据源状态点 · 台数/标签数 · 语言切换（SSE 指示已删，失联走全屏警告）。
+           状态点用 n-tooltip：原生 title 是"打开即快照"，悬停期间无法刷新——重连倒计时要求至少每两秒更新一次，组件级 tooltip 内容随本地秒级时钟实时重算 -->
       <footer class="status-bar">
-        <span v-for="ds in dsShown" :key="ds.name" class="sb-ds" :title="dsTitle(ds)">
-          <span class="sb-dot" :class="dsDotClass(ds.status)"></span>
-          <span class="sb-name">{{ ds.name }}</span>
-        </span>
-        <span v-if="dsHidden" class="sb-more" :title="t('statusbar.dsMore', { n: dsHidden })">+{{ dsHidden }}</span>
+        <!-- 点区独立容器：flex 自适应宽度 + overflow 截断，fitCount 收敛决定显示几个点；+N 收在点区内随收敛出现 -->
+        <div ref="sbDsBar" class="sb-ds-bar">
+          <n-tooltip v-for="ds in dsShown" :key="ds.name" trigger="hover" :show-arrow="false" placement="top-start">
+            <template #trigger>
+              <span class="sb-ds">
+                <span class="sb-dot" :class="dsDotClass(ds.status)"></span>
+                <span class="sb-name">{{ ds.name }}</span>
+              </span>
+            </template>
+            {{ dsTitle(ds) }}
+          </n-tooltip>
+          <span v-if="dsHidden" class="sb-more" :title="t('statusbar.dsMore', { n: dsHidden })">+{{ dsHidden }}</span>
+        </div>
         <div class="sb-right">
           <!-- 计数用 vue-i18n 复数形式（en："{n} server | {n} servers"）；zh 无管道单形式同样兼容，
                {m} 需显式传命名参数 + 复数值（隐式仅绑定 n） -->
@@ -882,7 +965,8 @@ const importModal = ref(false)
   min-height: 0;
 }
 
-/* ---- 首载骨架屏：行结构对齐 ServerRow（状态点 + 图标圆 + 名称/地址横条），纯 CSS 透明度脉动；
+/* ---- 首载骨架屏：行结构对齐 ServerRow（图标圆 + 名称/地址横条；状态列留空，2026-09-25
+   需求：指示器未连接时隐藏），纯 CSS 透明度脉动；
    灰块用 --bg-hover 浮于 --bg，逐行错峰（--d 由内联注入），36px 行高 + 分隔线与真实行一致 ---- */
 .skeleton-host {
   flex: 1;
@@ -900,12 +984,6 @@ const importModal = ref(false)
   background: var(--bg-hover);
   animation: sk-pulse 1.4s ease-in-out infinite;
   animation-delay: var(--d, 0s);
-}
-.sk-dot {
-  flex: 0 0 8px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
 }
 .sk-icon {
   flex: 0 0 22px;
@@ -1127,6 +1205,16 @@ const importModal = ref(false)
   font-size: var(--fs-caption);
   white-space: nowrap;
   overflow: hidden; /* 数据源名过长时截断而非把右侧统计挤出可视区 */
+}
+.sb-ds-bar {
+  /* 点区（round14）：吃掉状态栏富余宽度，放不下由 fitCount 收敛收进 +N；
+     overflow 兜底极窄窗口（收敛下限 1 个点仍放不下时截断） */
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
 }
 .sb-ds {
   display: inline-flex;

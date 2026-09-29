@@ -12,9 +12,12 @@ import { api } from '../api'
  */
 let cache = []
 let inflight = null
+// 模块级共享 ref（round17）：此前 tags 是每实例 ref(cache) 而 inflight/then 闭包只绑定
+// 首实例的 ref——B 实例在 A 的请求在途时调 refresh() 拿到共享 promise，回调只更新 A 的
+// ref，B 的候选停留旧缓存且本轮不再更新。提升为模块级后所有实例同源（同 useServers 模式）
+const tags = ref(cache)
 
 export function useTagSuggestions() {
-  const tags = ref(cache)
   function refresh() {
     if (inflight) return inflight
     inflight = api

@@ -23,6 +23,10 @@ export function useSettingsEsc() {
     const onEscCapture = (e) => {
       if (e.key !== 'Escape') return
       if (escShield && escShield.open > 0) return
+      // naive 对话框（如「丢弃未保存修改」确认框）开着时让位（round13 N5）：确认框的
+      // Esc 关闭依赖 document 层 keydown，capture 阶段 stopPropagation 会把它堵死——
+      // 此前确认框开着时按 Esc 毫无反应（既关不掉确认框、也到不了模态关闭逻辑）
+      if (document.querySelector('.n-dialog')) return
       for (const t of targets) {
         if (t.isOpen()) {
           e.stopPropagation()
