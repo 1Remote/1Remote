@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Interop;
 using System.Timers;
 using Dragablz;
 using _1RM.Service;
@@ -46,6 +47,16 @@ namespace _1RM.View.Host
         private void ItemsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             RaisePropertyChanged(nameof(BtnCloseAllVisibility));
+            // Dragablz inter-tab drag adds items straight to the ItemsSource, bypassing AddItem();
+            // keep the host's parent window reference in sync (used for RDP fullscreen sizing etc.).
+            // Reset (Items.Clear() on Dispose) carries no NewItems.
+            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+            {
+                foreach (var item in e.NewItems.OfType<TabItemViewModel>())
+                {
+                    item.Content.SetParentWindow(View);
+                }
+            }
             if (Items.Count == 0)
             {
                 View.Hide();
@@ -149,7 +160,9 @@ namespace _1RM.View.Host
 
         private IntPtr GetCurrentTabContentWindow()
         {
-            IntPtr hWndParent = Win32Api.FindWindow(null, this.Title);
+            // Look for the visible child hwnd inside *this* window. Do NOT locate the parent by
+            // window title: after a drag-detach two TabWindowViews share the same title.
+            IntPtr hWndParent = new WindowInteropHelper(View).Handle;
             if (hWndParent == IntPtr.Zero)
             {
                 return IntPtr.Zero;
@@ -422,7 +435,12 @@ namespace _1RM.View.Host
         /// <returns></returns>
         public INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
         {
-            var v = new TabWindowView();
+            var v = new TabWindowView
+            {
+                IsCreatedByDragDetach = true,
+                // Dragablz sets Left/Top/Width/Height before Show(); Manual makes them effective.
+                WindowStartupLocation = WindowStartupLocation.Manual,
+            };
             IoC.Get<SessionControlService>().AddTab(v);
             return new NewTabHost<Window>(v, v.TabablzControl);
         }

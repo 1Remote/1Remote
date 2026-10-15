@@ -26,7 +26,7 @@
 - Modify: `Dragablz\Dragablz\Core\Native.cs`（头部 using + `ToWpf` 方法后新增重载）
 - Modify: `Dragablz\Dragablz\TabablzControl.cs:1032`、`:1042`、`:1255`、`:1347`（4 个调用点）
 
-- [ ] **Step 1: Native.cs 加 using**
+- [x] **Step 1: Native.cs 加 using**
 
 在 `using System.Windows.Interop;`（第 6 行）后加一行：
 
@@ -34,7 +34,7 @@
 using System.Windows.Media;
 ```
 
-- [ ] **Step 2: 新增 ToWpf(Visual) 重载**
+- [x] **Step 2: 新增 ToWpf(Visual) 重载**
 
 在现有 `public static Point ToWpf(this Point pixelPoint)` 方法（`:59-69`）之后新增：
 
@@ -53,7 +53,7 @@ using System.Windows.Media;
         }
 ```
 
-- [ ] **Step 3: 改 4 个调用点（TabablzControl.cs）**
+- [x] **Step 3: 改 4 个调用点（TabablzControl.cs）**
 
 1. `PreviewItemDragDelta`（约 `:1032`）：
 
@@ -91,12 +91,12 @@ using System.Windows.Media;
             var borderVector = currentWindow.PointToScreen(new Point()).ToWpf(currentWindow) - new Point(currentWindow.GetActualLeft(), currentWindow.GetActualTop());
 ```
 
-- [ ] **Step 4: 构建**
+- [x] **Step 4: 构建**
 
 Run: `dotnet build Dragablz/Dragablz/Dragablz.csproj -f net10.0-windows`
 Expected: Build succeeded, 0 errors
 
-- [ ] **Step 5: 提交（在子模块内）**
+- [x] **Step 5: 提交（在子模块内）**
 
 ```bash
 cd Dragablz
@@ -117,7 +117,7 @@ cd ..
 - Modify: `Dragablz\Dragablz\InterTabController.cs`（新增依赖属性）
 - Modify: `Dragablz\Dragablz\TabablzControl.cs:1068-1089`（`MonitorReentry` 的目标矩形构造）
 
-- [ ] **Step 1: InterTabController 新增依赖属性**
+- [x] **Step 1: InterTabController 新增依赖属性**
 
 在 `VerticalPopoutGrace` 属性块（`:23-30`，即 `MoveWindowWithSolitaryTabsProperty` 之前）新增：
 
@@ -138,7 +138,7 @@ cd ..
         }
 ```
 
-- [ ] **Step 2: MonitorReentry 构造矩形时应用 grace**
+- [x] **Step 2: MonitorReentry 构造矩形时应用 grace**
 
 `TabablzControl.cs` `MonitorReentry` 中 `.Select(tc => { ... })` lambda（约 `:1076`），
 在 `var bottomRight = ...;` 之后、`return new { tc, topLeft, bottomRight };` 之前插入：
@@ -151,12 +151,12 @@ cd ..
 
 （`tc.InterTabController` 非空已由上方 `Where` 子句保证 `tc.InterTabController != null`，`?.` 仅为防御。）
 
-- [ ] **Step 3: 构建（含 net48，验证新语法兼容）**
+- [x] **Step 3: 构建（含 net48，验证新语法兼容）**
 
 Run: `dotnet build Dragablz/Dragablz/Dragablz.csproj -f net10.0-windows && dotnet build Dragablz/Dragablz/Dragablz.csproj -f net48`
 Expected: 两次 Build succeeded
 
-- [ ] **Step 4: 提交（在子模块内）**
+- [x] **Step 4: 提交（在子模块内）**
 
 ```bash
 cd Dragablz
@@ -175,7 +175,7 @@ cd ..
 - Modify: `Ui\View\Host\TabWindowView.xaml:454-457`
 - Modify(指针): `Dragablz`（子模块）
 
-- [ ] **Step 1: InterTabController 配置**
+- [x] **Step 1: InterTabController 配置**
 
 ```xml
 <!-- 旧 -->
@@ -193,12 +193,12 @@ cd ..
 
 （删除注释掉的旧行；新属性来自 Task 1/2 的 Dragablz 改动，此任务之前子模块必须已完成 Task 1–2 提交。）
 
-- [ ] **Step 2: 构建**
+- [x] **Step 2: 构建**
 
 Run: `dotnet build Ui/Ui.csproj`
 Expected: Build succeeded（`Ui.csproj` 以 ProjectReference 引用 Dragablz，构建走的是工作树，与子模块是否已提交无关；指针是否正确以 Step 3 提交时 `git status` 中 `Dragablz` 的变更为准）
 
-- [ ] **Step 3: 提交（主仓，含子模块指针）**
+- [x] **Step 3: 提交（主仓，含子模块指针）**
 
 ```bash
 git add Ui/View/Host/TabWindowView.xaml Dragablz
@@ -217,7 +217,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - Modify: `Ui\View\Host\TabWindowView.xaml.cs:21`（属性）、`:43-46`（Loaded）、`:131-134`（WindowState 恢复）
 - Modify: `Ui\View\Host\TabWindowViewModel.cs:423-428`（`InterTabClient.GetNewHost`）
 
-- [ ] **Step 1: TabWindowView 加标记属性**
+- [x] **Step 1: TabWindowView 加标记属性**
 
 在 `public const double TITLE_BAR_HEIGHT = 30;`（`:21`）之后新增：
 
@@ -230,7 +230,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
         internal bool IsCreatedByDragDetach { get; set; }
 ```
 
-- [ ] **Step 2: Loaded 中条件执行 InitWindowSizeOnLoaded**
+- [x] **Step 2: Loaded 中条件执行 InitWindowSizeOnLoaded**
 
 ```csharp
 // 旧（:43-46）
@@ -248,7 +248,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
                 TimerInitOnLoaded();
 ```
 
-- [ ] **Step 3: WindowState 恢复同样跳过**
+- [x] **Step 3: WindowState 恢复同样跳过**
 
 ```csharp
 // 旧（:131-134）
@@ -264,7 +264,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
                 }
 ```
 
-- [ ] **Step 4: GetNewHost 置标记 + Manual 启动位置**
+- [x] **Step 4: GetNewHost 置标记 + Manual 启动位置**
 
 ```csharp
 // 旧（TabWindowViewModel.cs:423-428）
@@ -288,12 +288,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
         }
 ```
 
-- [ ] **Step 5: 构建**
+- [x] **Step 5: 构建**
 
 Run: `dotnet build Ui/Ui.csproj`
 Expected: Build succeeded
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 git add Ui/View/Host/TabWindowView.xaml.cs Ui/View/Host/TabWindowViewModel.cs
@@ -311,7 +311,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 **Files:**
 - Modify: `Ui\View\Host\TabWindowViewModel.cs:46-53`（`ItemsOnCollectionChanged`）
 
-- [ ] **Step 1: 按 Action 过滤并对新项调用 SetParentWindow**
+- [x] **Step 1: 按 Action 过滤并对新项调用 SetParentWindow**
 
 ```csharp
 // 旧
@@ -344,12 +344,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
         }
 ```
 
-- [ ] **Step 2: 构建**
+- [x] **Step 2: 构建**
 
 Run: `dotnet build Ui/Ui.csproj`
 Expected: Build succeeded
 
-- [ ] **Step 3: 提交**
+- [x] **Step 3: 提交**
 
 ```bash
 git add Ui/View/Host/TabWindowViewModel.cs
@@ -367,7 +367,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 **Files:**
 - Modify: `Ui\View\Host\TabWindowViewModel.cs:150-168`（`GetCurrentTabContentWindow`）、文件头部 using
 
-- [ ] **Step 1: 加 using**
+- [x] **Step 1: 加 using**
 
 在 `using System.Windows;`（`:6`）后加：
 
@@ -375,7 +375,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 using System.Windows.Interop;
 ```
 
-- [ ] **Step 2: 替换 FindWindow 为本窗口句柄**
+- [x] **Step 2: 替换 FindWindow 为本窗口句柄**
 
 ```csharp
 // 旧
@@ -402,12 +402,12 @@ using System.Windows.Interop;
 
 （`do/while` 枚举可见子窗口的循环体保持不变。）
 
-- [ ] **Step 3: 构建**
+- [x] **Step 3: 构建**
 
 Run: `dotnet build Ui/Ui.csproj`
 Expected: Build succeeded
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add Ui/View/Host/TabWindowViewModel.cs
@@ -422,12 +422,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ### Task 7: 全量构建 + 手动验证矩阵
 
-- [ ] **Step 1: Dragablz 全 TFM 构建**
+- [x] **Step 1: Dragablz 全 TFM 构建**
 
 Run: `dotnet build Dragablz/Dragablz/Dragablz.csproj`
 Expected: net6/8/9/10/11-windows 与 net48 全部 Build succeeded
 
-- [ ] **Step 2: 主仓构建**
+- [x] **Step 2: 主仓构建**
 
 Run: `dotnet build Ui/Ui.csproj`
 Expected: Build succeeded

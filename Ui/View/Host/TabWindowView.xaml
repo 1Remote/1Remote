@@ -452,8 +452,9 @@
                                  >
             <!-- important for docking -->
             <dragablz:TabablzControl.InterTabController>
-                <dragablz:InterTabController InterTabClient="{Binding InterTabClient}" />
-                <!--<dragablz:InterTabController />-->
+                <dragablz:InterTabController InterTabClient="{Binding InterTabClient}"
+                                             VerticalPopoutGrace="80" HorizontalPopoutGrace="40"
+                                             ReentryGrace="40" />
             </dragablz:TabablzControl.InterTabController>
         </dragablz:TabablzControl>
 

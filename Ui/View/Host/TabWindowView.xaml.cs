@@ -20,6 +20,13 @@ namespace _1RM.View.Host
     {
         public const double TITLE_BAR_HEIGHT = 30;
 
+        /// <summary>
+        /// True when this window was created by Dragablz to host a dragged-out tab.
+        /// Such windows get their position/size from the drag operation and must not
+        /// restore the remembered window placement or state in Loaded.
+        /// </summary>
+        internal bool IsCreatedByDragDetach { get; set; }
+
         protected readonly TabWindowViewModel Vm;
         public string Token => Vm.Token;
 
@@ -42,7 +49,10 @@ namespace _1RM.View.Host
             Focusable = true;
             this.Loaded += (_, _) =>
             {
-                InitWindowSizeOnLoaded();
+                if (!IsCreatedByDragDetach)
+                {
+                    InitWindowSizeOnLoaded();
+                }
                 TimerInitOnLoaded();
                 _myHandle = new WindowInteropHelper(this).Handle;
                 Keyboard.Focus(this);
@@ -128,7 +138,8 @@ namespace _1RM.View.Host
                     this.ShowInTaskbar = true;
                 };
 
-                if (IoC.Get<LocalityService>().TabWindowState != System.Windows.WindowState.Minimized)
+                if (!IsCreatedByDragDetach
+                    && IoC.Get<LocalityService>().TabWindowState != System.Windows.WindowState.Minimized)
                 {
                     this.WindowState = IoC.Get<LocalityService>().TabWindowState;
                 }
