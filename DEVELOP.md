@@ -12,8 +12,15 @@ It assumes no local tools and empty Windows 10 OS.
     - `.NET 9 / 10 / 11 SDK` (the main line builds on the latest stable, currently `.NET 10`; `ReleaseNet9` / `ReleaseNet11` configurations build the other targets)
     - Windows 10 SDK 10.0.17763.0
 
-The build task `Deps` automates entire installation locally (except OS). More details on running tasks are given bellow.
+The build task `Deps` automates entire installation locally (except OS). More details on running tasks are given below.
 
+## Submodules
+
+Several customized libraries are pinned as submodules, forked mostly under the [1Remote org](https://github.com/orgs/1Remote/repositories) (plus [VShawn/Shawn.Utils](https://github.com/VShawn/Shawn.Utils)). Their customizations live on the forks' default branches (`master`, or `main` for the bundled PuTTY), e.g. `Dragablz` adds `InterTabController.ReentryGrace` (a wider hit zone when dragging a detached tab back into a window) and multi-target .NET builds.
+
+After cloning, run `git submodule update --init --recursive` (or clone with `--recursive`), or the build will fail on missing projects.
+
+When changing a submodule, push the fork's default branch **before** bumping the pointer in the parent repo — otherwise the parent references a commit nobody else can fetch.
 
 ## Build
 
@@ -70,4 +77,4 @@ Task `BuildInSandbox` starts [Windows Sandbox] and executes `ib Deps, Build` tas
 [Invoke-Build]:     https://github.com/nightroman/Invoke-Build
 [Windows Sandbox]:  https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-overview
 [Chocolatey]:       http://chocolatey.org
-[prm.build.ps1]:    https://github.com/VShawn/PRemoteM/blob/dev/prm.build.ps1
+[prm.build.ps1]:    https://github.com/1Remote/1Remote/blob/main/prm.build.ps1

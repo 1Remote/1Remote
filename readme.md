@@ -4,7 +4,7 @@ English | [中文](https://github.com/1Remote/1Remote/wiki/Intro%E2%80%90ZhCn)
 
 [![version](https://img.shields.io/github/v/release/1Remote/1Remote?color=Green&include_prereleases)](https://github.com/1Remote/1Remote/releases)
 [![issues](https://img.shields.io/github/issues/1Remote/1Remote)](https://github.com/1Remote/1Remote/issues)
-[![license](https://img.shields.io/github/license/1Remote/1Remote?color=blue)](https://github.com/1Remote/1Remote/blob/dev/LICENSE)
+[![license](https://img.shields.io/github/license/1Remote/1Remote?color=blue)](https://github.com/1Remote/1Remote/blob/main/LICENSE)
 ![](https://github.com/1Remote/1Remote/actions/workflows/build-on-dev-push.yml/badge.svg)
 
 1Remote is a modern personal remote session manager and launcher. It is a single place to manage all your remote sessions supporting number of different protocols.
@@ -15,7 +15,7 @@ English | [中文](https://github.com/1Remote/1Remote/wiki/Intro%E2%80%90ZhCn)
 - Quick and convenient remote session launcher (Alt + M)
 - Multi-screen and HiDPI RDP connection (Test on **Win10 + 4k monitor *2** RDP TO **Win2016**)
 - Detailed connection configuration: tags, icons, colors, connection scripts etc.
-- Multiple languages, themes and tabbed interface
+- Multiple languages, themes and tabbed interface (tabs can be dragged out into separate windows and docked back)
 - [Import connections from mRemoteNG](https://1remote.github.io/usage/overview/#importing-from-mremoteng)
 - Customizable runners, in SFTP \ FTP \ VNC \ etc. protocols, you can replace the internal runner with your favourite tools.[wiki](https://1remote.github.io/usage/protocol/runner/)
 - Portable - just unpack and run
