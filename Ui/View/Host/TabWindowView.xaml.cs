@@ -30,7 +30,7 @@ namespace _1RM.View.Host
         protected readonly TabWindowViewModel Vm;
         public string Token => Vm.Token;
 
-        private IntPtr _myHandle = IntPtr.Zero;
+        private IntPtr _tabWindowHandle = IntPtr.Zero;
         private System.Windows.Interop.HwndSource? _hwndSource;
         private System.Windows.Interop.HwndSourceHook? _wndProcHook;
 
@@ -54,10 +54,11 @@ namespace _1RM.View.Host
                     InitWindowSizeOnLoaded();
                 }
                 TimerInitOnLoaded();
-                _myHandle = new WindowInteropHelper(this).Handle;
+                _tabWindowHandle = new WindowInteropHelper(this).Handle;
+                ForegroundWinEventInit();
                 Keyboard.Focus(this);
 
-                _hwndSource = System.Windows.Interop.HwndSource.FromHwnd(_myHandle);
+                _hwndSource = System.Windows.Interop.HwndSource.FromHwnd(_tabWindowHandle);
                 _wndProcHook = new System.Windows.Interop.HwndSourceHook(AdditionalWndProc);
                 _hwndSource?.AddHook(_wndProcHook);
 
@@ -114,6 +115,7 @@ namespace _1RM.View.Host
                 {
                     _hwndSource?.RemoveHook(_wndProcHook);
                     TimerDispose();
+                    ForegroundWinEventDispose();
                     try
                     {
                         var ids = Vm.Items.Select(x => x.Content.ConnectionId).ToArray();
@@ -268,26 +270,31 @@ namespace _1RM.View.Host
 
 
 
-        private void TabablzControl_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void TabablzControl_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            var t = sender.GetType();
-            SimpleLogHelper.DebugWarning(t);
-            // focus to be on the integrated exe after clicking on the WPF window.
-            RunForIntegrate();
+            // focus to be on the session content (e.g. the integrated exe) after clicking on the tab label.
+            // The tunneling PreviewMouseLeftButtonUp arrives before the button Click (raised later in the
+            // same input message), and focusing an integrated exe runs SetForegroundWindow which
+            // deactivates this window - doing that any earlier would swallow the pending click (tab
+            // switching, the close/reconnect buttons on the label, ...). Hence defer to Background
+            // priority so it runs strictly after the click has been dispatched.
+            Dispatcher.InvokeAsync(() =>
+            {
+                if (IsLoaded)
+                {
+                    FocusOnTabContent();
+                }
+            }, System.Windows.Threading.DispatcherPriority.Background);
         }
 
         public override void WinTitleBar_OnPreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var isDragging = _isDragging;
             base.WinTitleBar_OnPreviewMouseMove(sender, e);
-            if (Vm?.SelectedItem?.Content?.GetProtocolHostType() != ProtocolHostType.Integrate)
+            // When the window drag ends, focus the session content (e.g. the integrated exe)
+            if (isDragging && !_isDragging)
             {
-                // When stop dragging, focus on the integrated exe
-                if (isDragging && !_isDragging)
-                {
-                    // focus to be on the integrated exe after drag on the WPF window.
-                    RunForIntegrate();
-                }
+                FocusOnTabContent();
             }
         }
     }

@@ -37,15 +37,14 @@ namespace _1RM.View.Host
             }
         }
 
-        private IntPtr _lastActivatedWindowHandle = IntPtr.Zero;
-
+        // The timer is kept for RunForRdpV2 only (mouse-position driven RDP focus).
+        // The integrate/foreground logic formerly polled here is now event driven, see OnForegroundWinEvent.
         private void Timer4CheckForegroundWindowOnElapsed(object? sender, ElapsedEventArgs e)
         {
             _timer4CheckForegroundWindow.Stop();
             try
             {
                 RunForRdpV2();
-                RunForIntegrate();
             }
             catch (Exception ex)
             {
@@ -68,47 +67,167 @@ namespace _1RM.View.Host
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
         /// <summary>
-        /// 0. Record the current ActivatedWindowHandle every time
-        /// 1. If the current ActivatedWindowHandle is the integrated exe, move the Tab to the foreground one time (BringWindowToTop(_myHandle);, achieving that after clicking the integrated exe, the tab is brought to the front and not obscured by other programs.
-        /// 2. If isTimer is False and the current focus is on the Tab, then set the focus on the integrated exe. (To ensure that the focus is not lost after clicking on the tab label)
+        /// Focus the session content (e.g. the integrated exe) when the tab label is clicked
+        /// or a window drag ends, so that the focus is not lost after clicking on the tab label.
         /// </summary>
-        private void RunForIntegrate()
+        private void FocusOnTabContent()
         {
-            bool isIntegrate = Vm?.SelectedItem?.Content?.GetProtocolHostType() == ProtocolHostType.Integrate;
-            IntPtr hWnd = IntPtr.Zero;
-            if (isIntegrate)
+            var content = Vm?.SelectedItem?.Content;
+            if (content == null)
+                return;
+            // For an integrated exe: only focus it while its Win32 root ancestor is this window.
+            // While a tab is being detached the reparenting is not finalized yet and the exe still
+            // roots at the old window - SetForegroundWindow on it would then activate the OLD
+            // window (e.g. the source tab window takes the foreground instead of the detached one).
+            if (content.GetProtocolHostType() == ProtocolHostType.Integrate)
             {
-                try
+                var exeHandle = GetHostHwndSafe(content);
+                var root = GetAncestor(exeHandle, GaRoot);
+                if (root != _tabWindowHandle)
                 {
-                    hWnd = this.Vm.SelectedItem.Content.GetHostHwnd();
-                }
-                catch (Exception ex)
-                {
-                    SimpleLogHelper.Warning($"Failed to get host hwnd: {ex.Message}");
-                }
-            }
-
-            var nowActivatedWindowHandle = GetForegroundWindow();
-            if (hWnd != IntPtr.Zero)
-            {
-                //SimpleLogHelper.Debug($"TabWindowView: isTimer = {isTimer}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, _lastActivatedWindowHandle = {_lastActivatedWindowHandle}, _myHandle = {_myHandle}");
-                // bring Tab window to top, when the host content is Integrate.
-                if (nowActivatedWindowHandle == hWnd && _lastActivatedWindowHandle != hWnd)
-                {
-                    SimpleLogHelper.Debug($@"TabWindowView.RunForIntegrate: BringWindowToTop({_myHandle})");
-                    BringWindowToTop(_myHandle);
+                    SimpleLogHelper.Debug($"TabWindowView.FocusOnTabContent: skip focus, exe={exeHandle} still roots at {root} instead of tab={_tabWindowHandle}");
+                    return;
                 }
             }
-
-            // focus content when tab is focused when the focus is back to tab window
-            if (nowActivatedWindowHandle == _myHandle && _lastActivatedWindowHandle != _myHandle
-                                                      && !(isIntegrate && System.Windows.Forms.Control.MouseButtons == MouseButtons.Left))
-            {
-                SimpleLogHelper.Debug($@"TabWindowView.RunForIntegrate: Vm?.SelectedItem?.Content?.FocusOnMe()");
-                Vm?.SelectedItem?.Content?.FocusOnMe();
-            }
-            _lastActivatedWindowHandle = nowActivatedWindowHandle;
+            content.FocusOnMe();
         }
+
+        /// <summary>
+        /// Focus the session content once the current window activation has settled and the mouse
+        /// button is released (the user may still be holding the taskbar button or the tab label).
+        /// Moving the focus to an integrated exe runs SetForegroundWindow on its child window:
+        /// doing that from inside the foreground-change notification races with the activation
+        /// sequence still in progress and may leave the tab window behind other windows (the
+        /// taskbar highlights the tab, but the window stays obscured and the exe gets no input).
+        /// </summary>
+        private void FocusOnTabContentWhenMouseReleased()
+        {
+            Dispatcher.InvokeAsync(async () =>
+            {
+                // wait until the mouse button is released - without a timeout on purpose: while it
+                // is held (dragging a tab out, holding a taskbar button, ...) no focus move may
+                // intervene. The wait ends with the release or when the window is closed.
+                while (IsLoaded && System.Windows.Forms.Control.MouseButtons != MouseButtons.None)
+                {
+                    await System.Threading.Tasks.Task.Delay(50);
+                }
+                // do not steal the focus back if the user has already switched away meanwhile
+                if (IsLoaded && GetForegroundWindow() == _tabWindowHandle)
+                {
+                    FocusOnTabContent();
+                }
+            }, System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        #region Foreground window change notification (replaces the former polling in RunForIntegrate)
+
+        private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
+        private const uint WINEVENT_OUTOFCONTEXT = 0x0000;
+        private const uint OBJID_WINDOW = 0x0000;
+
+        private delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+        [DllImport("user32.dll")]
+        private static extern bool UnhookWinEvent(IntPtr hWinEventHook);
+
+        // MUST be kept in a field: if the delegate is garbage collected while the system still
+        // holds a pointer to it, the process crashes when the next event is dispatched.
+        private WinEventDelegate? _foregroundWinEventProc;
+        private IntPtr _hForegroundWinEventHook;
+
+        private void ForegroundWinEventInit()
+        {
+            if (_hForegroundWinEventHook != IntPtr.Zero)
+                return;
+            _foregroundWinEventProc = OnForegroundWinEvent;
+            // WINEVENT_OUTOFCONTEXT: the callback is dispatched on the thread that installs the
+            // hook while it pumps messages, i.e. the WPF UI thread here.
+            _hForegroundWinEventHook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,
+                IntPtr.Zero, _foregroundWinEventProc, 0, 0, WINEVENT_OUTOFCONTEXT);
+
+            // WinEvents are only reported from now on: mimic the first tick of the former timer,
+            // which focused the content when the tab window was already in the foreground.
+            HandleForegroundWindowChanged(GetForegroundWindow());
+        }
+
+        private void ForegroundWinEventDispose()
+        {
+            if (_hForegroundWinEventHook != IntPtr.Zero)
+            {
+                UnhookWinEvent(_hForegroundWinEventHook);
+                _hForegroundWinEventHook = IntPtr.Zero;
+            }
+            _foregroundWinEventProc = null;
+        }
+
+        /// <summary>
+        /// 1. If the integrated exe became the foreground window, bring the tab window to the top
+        ///    of the z-order once (BringWindowToTop, no activation), so a tab that was obscured by
+        ///    other windows shows up on top while the focus stays on the exe.
+        /// 2. If the tab window itself became the foreground window, move the focus into the session
+        ///    content (all protocols, like the old timer did), deferred until the activation settles
+        ///    and the mouse button is released (see FocusOnTabContentWhenMouseReleased).
+        /// </summary>
+        private void OnForegroundWinEvent(IntPtr hWinEventHook, uint eventType, IntPtr hwnd,
+            int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            if (idObject != OBJID_WINDOW || hwnd == IntPtr.Zero)
+                return;
+            HandleForegroundWindowChanged(hwnd);
+        }
+
+        private void HandleForegroundWindowChanged(IntPtr foregroundHwnd)
+        {
+            if (_tabWindowHandle == IntPtr.Zero || foregroundHwnd == IntPtr.Zero)
+                return;
+            try
+            {
+                var content = Vm?.SelectedItem?.Content;
+                if (content == null)
+                    return;
+                var isIntegrate = content.GetProtocolHostType() == ProtocolHostType.Integrate;
+                var exeHandle = GetHostHwndSafe(content);
+
+                if (isIntegrate && foregroundHwnd == exeHandle)
+                {
+                    // the integrated exe got the foreground: raise the tab window in the z-order
+                    // without activating it, so the focus remains on the exe.
+                    // Done unconditionally: BringWindowToTop is idempotent for a window already on
+                    // top, while skipping it after a GetWindow check raced with the z-order still
+                    // being updated and could leave the tab window behind other windows.
+                    SimpleLogHelper.Debug($@"TabWindowView.OnForegroundWinEvent: BringWindowToTop({_tabWindowHandle}) for the integrated exe {foregroundHwnd}");
+                    BringWindowToTop(_tabWindowHandle);
+                    return;
+                }
+
+                if (foregroundHwnd == _tabWindowHandle)
+                {
+                    // deferred: wait for the activation to settle and the mouse to be released,
+                    // otherwise SetForegroundWindow(exe) races with the activation in progress.
+                    FocusOnTabContentWhenMouseReleased();
+                }
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Warning(ex);
+            }
+        }
+
+        private static IntPtr GetHostHwndSafe(HostBase? host)
+        {
+            try
+            {
+                return host?.GetHostHwnd() ?? IntPtr.Zero;
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Warning($"Failed to get host hwnd: {ex.Message}");
+                return IntPtr.Zero;
+            }
+        }
+
+        #endregion
 
         /****
          * THE PURPOSE OF THIS FUNCTION IS TO:
@@ -213,7 +332,7 @@ namespace _1RM.View.Host
             var desktopHandle = GetDesktopWindow();
 
 #if DEBUG
-            SimpleLogHelper.Debug($"Tab focus: tabHwnd = {_myHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
+            SimpleLogHelper.Debug($"Tab focus: tabHwnd = {_tabWindowHandle}, nowActivatedWindowHandle = {nowActivatedWindowHandle}, desktopHandle = {desktopHandle}");
 #endif
 
             bool isMouseInside = IsMouseInside(this);
@@ -234,7 +353,7 @@ namespace _1RM.View.Host
                 // mouse back to tab window, then focus back to RDP
                 else if (isMouseInside)
                 {
-                    SetForegroundWindow(_myHandle);
+                    SetForegroundWindow(_tabWindowHandle);
                     _rdpStage = 1;
                 }
             }
@@ -243,7 +362,7 @@ namespace _1RM.View.Host
                 // 3 - neither RDP nor local desktop has focus, cannot rollback to RDP, do nothing
             }
 
-            if (_rdpStage != 1 && isMouseInside && _myHandle == nowActivatedWindowHandle)
+            if (_rdpStage != 1 && isMouseInside && _tabWindowHandle == nowActivatedWindowHandle)
             {
                 _rdpStage = 1;
             }
@@ -254,15 +373,10 @@ namespace _1RM.View.Host
         {
             if (Vm?.SelectedItem?.Content?.ProtocolServer.Protocol != RDP.ProtocolName)
                 return;
-            //if (Vm?.SelectedItem?.Content is not IntegrateHostForWinFrom ihfw)
-            //    return;
             if (Vm?.SelectedItem?.Content?.Status != ProtocolHosts.ProtocolHostStatus.Connected)
                 return;
-
             if (IoC.Get<ConfigurationService>().General.TabWindowSetFocusToLocalDesktopOnMouseLeaveRdpWindow)
             {
-
-
                 bool isMousePressed = System.Windows.Forms.Control.MouseButtons == MouseButtons.Left
                                       || System.Windows.Forms.Control.MouseButtons == MouseButtons.Right
                                       || System.Windows.Forms.Control.MouseButtons == MouseButtons.Middle;
@@ -270,7 +384,7 @@ namespace _1RM.View.Host
                 IntPtr rdpHandle = IntPtr.Zero;
                 if (Vm?.SelectedItem?.Content is AxMsRdpClient09Host rdpHost)
                 {
-                    rdpHandle = _myHandle;
+                    rdpHandle = _tabWindowHandle;
                 }
                 else
                 {
