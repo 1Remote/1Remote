@@ -86,7 +86,7 @@
                         <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <Image Width="30" Height="30" Margin="5 0"
+                    <Image Width="30" Height="30" Margin="5 0" RenderOptions.BitmapScalingMode="HighQuality"
                            Grid.Column="0" Grid.RowSpan="2"
                            Source="{Binding Server.IconImg}"></Image>
 
@@ -301,7 +301,7 @@
                     </Grid>
 
                     <Grid Grid.Row="0" Grid.Column="1">
-                        <Image Source="{Binding SelectedItem.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
+                        <Image RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding SelectedItem.Server.IconImg}" Width="{Binding Path=Width, RelativeSource={RelativeSource FindAncestor,AncestorType=Grid}}"></Image>
                     </Grid>
 
                     <Grid Grid.Column="3">

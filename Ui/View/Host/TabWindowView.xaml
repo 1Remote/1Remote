@@ -132,7 +132,7 @@
                                             Visibility="{Binding Content.SettingsPage.TabHeaderShowIconButton, Converter={StaticResource ConverterBool2Visible}}"
                                             >
                                         <Grid Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <Image Source="{Binding IconImg}" Stretch="Uniform"></Image>
+                                            <Image Source="{Binding IconImg}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"></Image>
                                         </Grid>
                                     </Border>
 

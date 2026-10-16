@@ -206,7 +206,7 @@
             <Image Grid.Column="2" 
                    Width="30" HorizontalAlignment="Center" Margin="5 0"
                    Source="{Binding Server.IconImg}" 
-                   RenderOptions.BitmapScalingMode="LowQuality"
+                   RenderOptions.BitmapScalingMode="HighQuality"
                    ></Image>
 
             <!--display name-->
