@@ -72,24 +72,35 @@ namespace _1RM.View.Host
         /// </summary>
         private void FocusOnTabContent()
         {
-            var content = Vm?.SelectedItem?.Content;
-            if (content == null)
-                return;
-            // For an integrated exe: only focus it while its Win32 root ancestor is this window.
-            // While a tab is being detached the reparenting is not finalized yet and the exe still
-            // roots at the old window - SetForegroundWindow on it would then activate the OLD
-            // window (e.g. the source tab window takes the foreground instead of the detached one).
-            if (content.GetProtocolHostType() == ProtocolHostType.Integrate)
+            // runs in deferred dispatcher callbacks (FocusOnTabContentWhenMouseReleased /
+            // TabablzControl_OnPreviewMouseLeftButtonUp) which carry no exception handling:
+            // FocusOnMe may throw on a disposed host (e.g. a closed RDP ActiveX), and an
+            // unhandled dispatcher exception would pop the ErrorReport window.
+            try
             {
-                var exeHandle = GetHostHwndSafe(content);
-                var root = GetAncestor(exeHandle, GaRoot);
-                if (root != _tabWindowHandle)
-                {
-                    SimpleLogHelper.Debug($"TabWindowView.FocusOnTabContent: skip focus, exe={exeHandle} still roots at {root} instead of tab={_tabWindowHandle}");
+                var content = Vm?.SelectedItem?.Content;
+                if (content == null)
                     return;
+                // For an integrated exe: only focus it while its Win32 root ancestor is this window.
+                // While a tab is being detached the reparenting is not finalized yet and the exe still
+                // roots at the old window - SetForegroundWindow on it would then activate the OLD
+                // window (e.g. the source tab window takes the foreground instead of the detached one).
+                if (content.GetProtocolHostType() == ProtocolHostType.Integrate)
+                {
+                    var exeHandle = GetHostHwndSafe(content);
+                    var root = GetAncestor(exeHandle, GaRoot);
+                    if (root != _tabWindowHandle)
+                    {
+                        SimpleLogHelper.Debug($"TabWindowView.FocusOnTabContent: skip focus, exe={exeHandle} still roots at {root} instead of tab={_tabWindowHandle}");
+                        return;
+                    }
                 }
+                content.FocusOnMe();
             }
-            content.FocusOnMe();
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Warning(ex);
+            }
         }
 
         /// <summary>
