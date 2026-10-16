@@ -14,7 +14,10 @@ namespace _1RM.Service
             // encrypt password
             if (server is ProtocolBaseWithAddressPortUserPwd s)
             {
-                s.Password = UnSafeStringEncipher.EncryptOnce(s.Password);
+                // skip empty values: EncryptOnce("") yields a non-empty cipher, which
+                // used to be assigned back and break save/load round trips (issue #1118)
+                if (!string.IsNullOrEmpty(s.Password))
+                    s.Password = UnSafeStringEncipher.EncryptOnce(s.Password);
                 foreach (var credential in s.AlternateCredentials)
                 {
                     credential.EncryptToDatabaseLevel();
@@ -49,7 +52,8 @@ namespace _1RM.Service
         {
             if (server is ProtocolBaseWithAddressPortUserPwd s)
             {
-                s.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(s.Password);
+                if (!string.IsNullOrEmpty(s.Password))
+                    s.Password = UnSafeStringEncipher.DecryptOrReturnOriginalString(s.Password);
                 foreach (var credential in s.AlternateCredentials)
                 {
                     credential.DecryptToConnectLevel();

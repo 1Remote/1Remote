@@ -46,22 +46,14 @@ namespace _1RM.Model.Protocol.Base
         public const string MACRO_PASSWORD = "%1RM_PASSWORD%";
         private string _password = "";
         [OtherName(Name = "1RM_PASSWORD")]
+        // NOTE: keep this setter side-effect free (issue #1118): data-layer code
+        // (EncryptToDatabaseLevel / json deserialization) assigns this property too,
+        // and any "clear the private key here" logic wiped saved key paths.
+        // The password/key mutual exclusion lives in CredentialViewModel.
         public string Password
         {
             get => _password;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _password, value))
-                {
-                    if (!string.IsNullOrEmpty(_password) && _password != ServerEditorDifferentOptions)
-                    {
-                        _privateKey = "";
-                        RaisePropertyChanged(nameof(PrivateKey));
-                        _usePrivateKeyForConnect = false;
-                        RaisePropertyChanged(nameof(UsePrivateKeyForConnect));
-                    }
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _password, value);
         }
 
         private bool? _usePrivateKeyForConnect;
@@ -75,22 +67,11 @@ namespace _1RM.Model.Protocol.Base
         public const string MACRO_PRIVATE_KEY_PATH = "%1RM_PRIVATE_KEY_PATH%";
         private string _privateKey = "";
         [OtherName(Name = "1RM_PRIVATE_KEY_PATH")]
+        // NOTE: keep this setter side-effect free (issue #1118), see Password above.
         public string PrivateKey
         {
             get => _privateKey;
-            set
-            {
-                if (SetAndNotifyIfChanged(ref _privateKey, value))
-                {
-                    if (!string.IsNullOrEmpty(_privateKey) && _privateKey != ServerEditorDifferentOptions)
-                    {
-                        _password = "";
-                        RaisePropertyChanged(nameof(Password));
-                        _usePrivateKeyForConnect = true;
-                        RaisePropertyChanged(nameof(UsePrivateKeyForConnect));
-                    }
-                }
-            }
+            set => SetAndNotifyIfChanged(ref _privateKey, value);
         }
 
         /// <summary>
