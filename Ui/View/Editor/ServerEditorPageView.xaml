@@ -94,7 +94,7 @@
                                                     </Style>
                                                 </Border.Style>
                                                 <Grid>
-                                                    <Image Height="64" Width="64" Source="{Binding Server.IconImg}" ></Image>
+                                                    <Image Height="64" Width="64" Source="{Binding Server.IconImg}" RenderOptions.BitmapScalingMode="HighQuality"></Image>
 
                                                     <Button Background="{DynamicResource BackgroundBrush}" Opacity="0.9"
                                                             Command="{Binding CmdSelectImage}"

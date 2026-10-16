@@ -34,7 +34,7 @@
                         CornerRadius="{StaticResource DefaultCornerRadius}" 
                         ClipToBounds="True">
                     <Grid>
-                        <Image Source="{Binding Icon, UpdateSourceTrigger=PropertyChanged}"></Image>
+                        <Image Source="{Binding Icon, UpdateSourceTrigger=PropertyChanged}" RenderOptions.BitmapScalingMode="HighQuality"></Image>
                         <Button Background="{DynamicResource BackgroundBrush}" Opacity="0.9"
                                 Command="{Binding CmdSelectImage}"
                                 BorderThickness="0"
@@ -76,7 +76,7 @@
                     </ListView.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Image Source="{Binding}" Height="30" Width="30" Margin="5" Cursor="Hand"></Image>
+                            <Image Source="{Binding}" Height="30" Width="30" Margin="5" Cursor="Hand" RenderOptions.BitmapScalingMode="HighQuality"></Image>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ListView>
