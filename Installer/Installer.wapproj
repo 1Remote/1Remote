@@ -12,6 +12,10 @@
       <Configuration>StoreRelease</Configuration>
       <Platform>AnyCPU</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="StoreReleaseNet48|AnyCPU">
+      <Configuration>StoreReleaseNet48</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="StoreRelease|x86">
       <Configuration>StoreRelease</Configuration>
       <Platform>x86</Platform>

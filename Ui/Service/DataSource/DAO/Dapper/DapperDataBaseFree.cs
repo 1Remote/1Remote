@@ -3,7 +3,6 @@ using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
 using Dapper;
 using Newtonsoft.Json;
-using Npgsql.Internal.Postgres;
 
 namespace _1RM.Service.DataSource.DAO.Dapper
 {

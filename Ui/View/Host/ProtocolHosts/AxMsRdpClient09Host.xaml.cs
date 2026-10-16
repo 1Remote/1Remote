@@ -47,7 +47,7 @@ namespace _1RM.View.Host.ProtocolHosts
             // Falsifying the response to WM_GETOBJECT to resolve issue #1053 that the RDP client to crash when using the word capture feature
             if (m.Msg == Win32Api.WM_GETOBJECT)
             {
-                m.Result = -1; // Setting it to IntPtr.Zero (or 0) did not resolve the issue.
+                m.Result = (IntPtr)(-1); // Setting it to IntPtr.Zero (or 0) did not resolve the issue.
                                // Setting it experimentally to 1 or -1 solved the problem, though I cannot explain why.
                 return;
             }

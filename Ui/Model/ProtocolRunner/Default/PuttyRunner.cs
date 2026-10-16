@@ -18,7 +18,6 @@ using Shawn.Utils;
 using Shawn.Utils.Wpf;
 using Shawn.Utils.Wpf.FileSystem;
 using System.Windows;
-using static System.Windows.Forms.Design.AxImporter;
 
 namespace _1RM.Model.ProtocolRunner.Default
 {
