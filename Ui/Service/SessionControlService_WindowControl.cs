@@ -109,7 +109,13 @@ namespace _1RM.Service
                         return;
                     }
 
-                    tab = this.GetOrCreateTabWindow(full.LastTabToken ?? "");
+                    // The recorded tab may have been closed by CloseEmptyWindows after its last
+                    // session went full-screen (its token is then gone from _token2TabWindows).
+                    // GetOrCreateTabWindow falls back to the most recently used tab only for an
+                    // empty token, so passing a stale token would spawn a new tab per restoring
+                    // session: sessions from the same dead tab would land in one tab each.
+                    var lastTabToken = full.LastTabToken ?? "";
+                    tab = this.GetOrCreateTabWindow(_token2TabWindows.ContainsKey(lastTabToken) ? lastTabToken : "");
                     if (tab.IsClosed)
                     {
                         tab = this.GetOrCreateTabWindow();
