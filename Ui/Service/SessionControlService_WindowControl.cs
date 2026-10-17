@@ -72,6 +72,14 @@ namespace _1RM.Service
             }
 
             // move to full-screen-window
+            // #1119 review hardening: never reuse a cached FullScreenWindowView that has been closed
+            // (e.g. the user closed a ghost copy shown by a reconnect race) — WindowBase silently
+            // swallows Show() on a closed window, which would leave the live session with no window.
+            // Drop the stale entry so MoveToNewFullScreenWindow can register the fresh one.
+            if (_connectionId2FullScreenWindows.TryGetValue(connectionId, out var cachedFull) && cachedFull.IsClosed)
+            {
+                _connectionId2FullScreenWindows.TryRemove(connectionId, out _);
+            }
             var full = _connectionId2FullScreenWindows.ContainsKey(connectionId) ?
                 this.MoveToExistedFullScreenWindow(host, tab) :
                 this.MoveToNewFullScreenWindow(host, tab);

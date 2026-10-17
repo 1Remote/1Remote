@@ -400,7 +400,13 @@ namespace _1RM.Service
             {
                 var key = kv.Key;
                 var full = kv.Value;
-                if (full.Host == null || _connectionId2Hosts.ContainsKey(full.Host.ConnectionId) == false)
+                // Fix #1119: a cached FullScreenWindowView with Host == null is NOT garbage — it is the
+                // reuse-cache state for a session currently sitting in a tab (MoveSessionToTabWindow
+                // detaches the host on purpose so the window can be reused). Disposing it destroys
+                // mstscax's connection bar with the window, and the control never recreates the bar,
+                // so every later fullscreen of that session shows no connection bar (Ctrl+Alt+Home
+                // can't bring it back either). Only dispose when the connection itself is gone.
+                if (_connectionId2Hosts.ContainsKey(key) == false)
                 {
                     SimpleLogHelper.Debug($@"CloseEmptyWindows: closing full(hash = {full.GetHashCode()})");
                     ++closeCount;

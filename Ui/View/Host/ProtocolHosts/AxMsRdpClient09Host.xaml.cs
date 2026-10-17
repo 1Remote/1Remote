@@ -1076,6 +1076,22 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 this.GoFullScreen();
             }
+            // INVESTIGATION #1119 (candidate fix): when the host is reparented to a tab window while the
+            // control still reports FullScreen == true, the control's fullscreen state desyncs from its
+            // container. Every later return to a fullscreen window then no-ops in GoFullScreen()
+            // (early return on FullScreen == true), mstscax never re-runs its fullscreen transition, and
+            // the connection bar stays hidden forever (issue #1119 symptom; only Ctrl+Alt+Home revives it).
+            // Forcing the flag false here mirrors what the control does when the user restores via the
+            // connection bar (OnConnectionBarRestoreWindowCall), whose early-return guard
+            // (ParentWindow is not FullScreenWindowView) makes this re-entry safe.
+            else if (value is TabWindowView && _rdpClient?.FullScreen == true)
+            {
+                Execute.OnUIThread(() =>
+                {
+                    if (_rdpClient?.FullScreen == true)
+                        _rdpClient.FullScreen = false;
+                });
+            }
         }
 
         public override void FocusOnMe()
