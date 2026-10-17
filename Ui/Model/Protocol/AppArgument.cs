@@ -176,7 +176,10 @@ public class AppArgument : NotifyPropertyChangedBase, ICloneable, IDataErrorInfo
             _selections = selections;
             if (Type == AppArgumentType.Selection)
             {
-                Value = selections.LastOrDefault().Key ?? "";
+                // Only reset when the value is invalid: Value is assigned before Selections on load.
+                // New arguments still default to the last option; a nullable blank ("") stays blank.
+                if (!selections.ContainsKey(_value))
+                    Value = selections.LastOrDefault().Key ?? "";
             }
             RaisePropertyChanged();
             RaisePropertyChanged(nameof(SelectionKeys));
