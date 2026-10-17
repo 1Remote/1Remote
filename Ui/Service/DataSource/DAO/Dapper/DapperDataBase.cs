@@ -373,6 +373,17 @@ VALUES
                             protocolBase.Id = Ulid.NewUlid(rng).ToString();
                     }
 
+                    // Re-encrypt before writing: the fingerprint loop above left everything decrypted.
+                    // Old plaintext rows stay readable on load via DecryptOrReturnOriginalString.
+                    foreach (var credential in credentialsToAdd)
+                    {
+                        credential.EncryptToDatabaseLevel();
+                    }
+                    foreach (var protocolBase in protocolBases)
+                    {
+                        protocolBase.EncryptToDatabaseLevel();
+                    }
+
                     // INSERT CREDENTIALS
                     if (credentialsToAdd.Count > 0)
                     {

@@ -128,32 +128,49 @@ namespace _1RM.Service.DataSource.Model
                 return CachedProtocols;
             }
 
+            List<ProtocolBase> protocols;
             lock (this)
             {
                 var result = Database_GetServers();
-                if (result.IsSuccess)
+                if (!result.IsSuccess)
                 {
-                    SetReadTimestamp(TableServer.TABLE_NAME);
-                    CachedProtocols = new List<ProtocolBaseViewModel>(result.Items.Count);
-                    foreach (var protocol in result.Items)
+                    return CachedProtocols;
+                }
+                SetReadTimestamp(TableServer.TABLE_NAME);
+                SetStatus(true);
+                protocols = result.Items;
+            }
+
+            // Create view models OUTSIDE lock(this): dispatching under the lock deadlocks the UI thread.
+            // One batched dispatch instead of one per server also cuts N dispatcher round-trips to 1.
+            var viewModels = new List<ProtocolBaseViewModel>(protocols.Count);
+            try
+            {
+                Execute.OnUIThreadSync(() =>
+                {
+                    foreach (var protocol in protocols)
                     {
                         try
                         {
-                            Execute.OnUIThreadSync(() =>
-                            {
-                                var vm = new ProtocolBaseViewModel(protocol);
-                                CachedProtocols.Add(vm);
-                            });
+                            viewModels.Add(new ProtocolBaseViewModel(protocol));
                         }
                         catch (Exception e)
                         {
                             SimpleLogHelper.DebugInfo(e);
                         }
                     }
-                    SetStatus(true);
-                }
-                return CachedProtocols;
+                });
             }
+            catch (Exception e)
+            {
+                // Dispatcher may already be shutting down on app exit: swallow, like the old per-item loop did.
+                SimpleLogHelper.Warning(e);
+            }
+            lock (this)
+            {
+                CachedProtocols = viewModels;
+            }
+            return viewModels;
         }
 
         public abstract IDatabase GetDataBase();

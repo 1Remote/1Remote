@@ -119,18 +119,21 @@ WHERE `{nameof(TableCredential.Id)}`= @{nameof(TableCredential.Id)};");
                         // after credential is updated, the related protocols will also be updated with the new credential information.
                         if (ret && relatedProtocols?.Count > 0)
                         {
-                            ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToTableServer())) > 0;
-                            if (ret)
+                            // Apply new state BEFORE serializing, so the db update carries it and the reload keeps it.
+                            // On write failure the memory stays ahead of the rolled-back db; the next save/reload realigns.
+                            foreach (var protocol in relatedProtocols)
                             {
-                                transaction.Commit();
-                                credential.Address = "";
-                                credential.Port = "";
-                                foreach (var protocol in relatedProtocols)
-                                {
-                                    protocol.InheritedCredentialName = tpv.Name;
-                                    protocol.SetCredential(credential, true);
-                                }
+                                protocol.InheritedCredentialName = tpv.Name;
+                                protocol.SetCredential(credential, true);
                             }
+                            ret = _dbConnection?.Execute(SqlUpdate, relatedProtocols.Select(x => x.ToTableServer())) > 0;
+                        }
+                        if (ret)
+                        {
+                            // Commit in both cases: with no related servers the edit used to be rolled back silently.
+                            transaction.Commit();
+                            credential.Address = "";
+                            credential.Port = "";
                         }
                         if (!ret)
                         {
