@@ -330,6 +330,8 @@ namespace _1RM.Service
             {
                 if (!CanSave) return;
                 CanSave = false;
+                // Early return/throw below used to leave CanSave == false for the whole session.
+                try
                 {
                     var fi = new FileInfo(AppPathHelper.Instance.ProfileJsonPath);
 
@@ -348,11 +350,13 @@ namespace _1RM.Service
                     {
                         File.WriteAllText(AppPathHelper.Instance.ProfileJsonPath, JsonConvert.SerializeObject(this._cfg, Formatting.Indented), Encoding.UTF8);
                     }, actionOnError: exception => UnifyTracing.Error(exception));
+
+                    DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);
                 }
-
-                DataSourceService.AdditionalSourcesSaveToProfile(AppPathHelper.Instance.ProfileAdditionalDataSourceJsonPath, AdditionalDataSource);
-
-                CanSave = true;
+                finally
+                {
+                    CanSave = true;
+                }
             }
         }
 
