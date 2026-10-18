@@ -17,7 +17,7 @@
                          d:DataContext="{d:DesignInstance editor:IconPopupDialogViewModel}">
     <Window.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockBase}">
-            <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
         </Style>
     </Window.Resources>
 

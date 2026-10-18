@@ -132,8 +132,8 @@
         </Style>
 
         <Style x:Key="ButtonSettingStyle" TargetType="Button" BasedOn="{StaticResource ButtonBarAccentStyle}">
-            <Setter Property="Background" Value="{StaticResource AccentMidBrush}"></Setter>
-            <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
+            <Setter Property="Background" Value="{DynamicResource AccentMidBrush}"></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
             <Setter Property="Visibility" Value="Hidden"></Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ElementName=CardRealBorder,Path=IsMouseOver}" Value="True">
@@ -141,8 +141,8 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu,Path=IsOpen}" Value="True">
                     <Setter Property="Visibility" Value="Visible"></Setter>
-                    <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
-                    <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
+                    <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                 </DataTrigger>
             </Style.Triggers>
         </Style>

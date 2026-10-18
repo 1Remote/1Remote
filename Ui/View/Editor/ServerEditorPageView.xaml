@@ -402,7 +402,7 @@
                                      IsSynchronizedWithCurrentItem="True"
                                      ItemsSource="{Binding ProtocolList}"
                                      SelectedValue="{Binding SelectedProtocol}"
-                                     Background="{StaticResource PrimaryMidBrush}"
+                                     Background="{DynamicResource PrimaryMidBrush}"
                                      Height="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType=ScrollViewer}, Path=Height}"
                                      ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
@@ -423,7 +423,7 @@
                                 <ListBox.Resources>
                                     <Style TargetType="ListBoxItem">
                                         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                                        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
+                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ListBoxItem">
@@ -443,7 +443,7 @@
                                                         <Trigger Property="Selector.IsSelected" Value="True">
                                                             <Setter Property="Opacity" TargetName="Bd" Value="1"></Setter>
                                                             <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentMidBrush}"></Setter>
-                                                            <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
+                                                            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
                                                         </Trigger>
                                                         <MultiTrigger>
                                                             <MultiTrigger.Conditions>
@@ -452,7 +452,7 @@
                                                             </MultiTrigger.Conditions>
                                                             <MultiTrigger.Setters>
                                                                 <Setter Property="Background" TargetName="Bd" Value="{DynamicResource AccentLightBrush}"></Setter>
-                                                                <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"></Setter>
+                                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"></Setter>
                                                             </MultiTrigger.Setters>
                                                         </MultiTrigger>
                                                     </ControlTemplate.Triggers>

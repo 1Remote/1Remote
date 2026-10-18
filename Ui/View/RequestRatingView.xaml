@@ -22,7 +22,7 @@
                 <Grid HorizontalAlignment="Center" Margin="5 30 5 5">
                     <Image Source="/Resources/Image/Logo/logo64.png" Width="64" HorizontalAlignment="Left"></Image>
                 </Grid>
-                <TextBlock Style="{StaticResource TextBlockBase}" FontSize="16" Foreground="{StaticResource PrimaryTextBrush}" TextWrapping="Wrap" Text="{DynamicResource 'Hi there,'}"></TextBlock>
+                <TextBlock Style="{StaticResource TextBlockBase}" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" Text="{DynamicResource 'Hi there,'}"></TextBlock>
                 <StackPanel Margin="30 0">
                     <TextBlock Style="{StaticResource TextBlockBase}" FontSize="18" Opacity="0.7" TextWrapping="Wrap" Foreground="{DynamicResource PrimaryTextBrush}" VerticalAlignment="Center"
                                Text="{DynamicResource 'I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!'}" />

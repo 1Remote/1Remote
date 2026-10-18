@@ -129,8 +129,8 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=PopupCardSettingMenu, Path=IsOpen}" Value="True">
                     <Setter Property="Visibility" Value="Visible"></Setter>
-                    <Setter Property="Background" Value="{StaticResource PrimaryMidBrush}"></Setter>
-                    <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"></Setter>
+                    <Setter Property="Background" Value="{DynamicResource PrimaryMidBrush}"></Setter>
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                     <Setter Property="Padding" Value="4"></Setter>
                 </DataTrigger>
             </Style.Triggers>
