@@ -276,43 +276,42 @@ namespace _1RM.View.ServerView
             {
                 return _cmdExportSelectedToJson ??= new RelayCommand((o) =>
                 {
-                    if (this.View is ServerListPageView view)
+                    // 导出主体对 Tree/List 两视图通用（此前整段被 is ServerListPageView 包裹，tree 视图点击导出为静默空操作）；
+                    // 类型判断只守卫 List 视图独有的 ＋下拉关闭，与 CmdAdd/GetImportParams 同款写法
+                    SecondaryVerificationHelper.VerifyAsyncUiCallBack(b =>
                     {
-                        SecondaryVerificationHelper.VerifyAsyncUiCallBack(b =>
+                        if (b != true) return;
+                        Execute.OnUIThreadSync(() =>
                         {
-                            if (b != true) return;
-                            Execute.OnUIThreadSync(() =>
+                            try
                             {
-                                try
-                                {
-                                    MaskLayerController.ShowProcessingRing(IoC.Translate("Caution: Your data will be saved unencrypted!"));
+                                MaskLayerController.ShowProcessingRing(IoC.Translate("Caution: Your data will be saved unencrypted!"));
+                                if (View is ServerListPageView view)
                                     view.CbPopForInExport.IsChecked = false;
-                                    var path = SelectFileHelper.SaveFile(
-                                        title: IoC.Translate("Caution: Your data will be saved unencrypted!"),
-                                        filter: "json|*.json",
-                                        selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
-                                    if (path == null) return;
-                                    var list = new List<ProtocolBase>();
-                                    foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
-                                    {
-                                        var serverBase = (ProtocolBase)vs.Server.Clone();
-                                        serverBase.DecryptToConnectLevel();
-                                        list.Add(serverBase);
-                                    }
-
-                                    ClearSelection();
-                                    File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
-                                    MessageBoxHelper.Info($"{IoC.Translate("Export")}: {IoC.Translate("Done")}!");
-
-                                }
-                                finally
+                                var path = SelectFileHelper.SaveFile(
+                                    title: IoC.Translate("Caution: Your data will be saved unencrypted!"),
+                                    filter: "json|*.json",
+                                    selectedFileName: DateTime.Now.ToString("yyyyMMddhhmmss") + ".json");
+                                if (path == null) return;
+                                var list = new List<ProtocolBase>();
+                                foreach (var vs in VmServerList.Where(x => (string.IsNullOrWhiteSpace(SelectedTabName) || x.Server.Tags?.Contains(SelectedTabName) == true) && x.IsSelected == true && x.IsEditable))
                                 {
-                                    MaskLayerController.HideMask();
+                                    var serverBase = (ProtocolBase)vs.Server.Clone();
+                                    serverBase.DecryptToConnectLevel();
+                                    list.Add(serverBase);
                                 }
-                            });
-                        });
-                    }
 
+                                ClearSelection();
+                                File.WriteAllText(path, JsonConvert.SerializeObject(list, Formatting.Indented), Encoding.UTF8);
+                                MessageBoxHelper.Info($"{IoC.Translate("Export")}: {IoC.Translate("Done")}!");
+
+                            }
+                            finally
+                            {
+                                MaskLayerController.HideMask();
+                            }
+                        });
+                    });
                 }, o => VmServerList.Where(x => x.IsSelected == true).All(x => x.IsEditable));
             }
         }
