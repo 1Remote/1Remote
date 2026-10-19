@@ -325,6 +325,16 @@ namespace _1RM.View.Host.ProtocolHosts
             Debug.Assert(ParentWindow != null);
 
             var tsk = new Task(Start);
+            // Observe the task: a failed Process.Start() used to leave the tab spinning on Connecting.
+            tsk.ContinueWith(t =>
+            {
+                SimpleLogHelper.Fatal(t.Exception!);
+                Execute.OnUIThread(() =>
+                {
+                    Status = ProtocolHostStatus.Disconnected;
+                    MessageBoxHelper.ErrorAlert($"Connect failed: {t.Exception!.GetBaseException().Message}");
+                });
+            }, TaskContinuationOptions.OnlyOnFaulted);
             tsk.Start();
         }
 
@@ -444,6 +454,8 @@ namespace _1RM.View.Host.ProtocolHosts
             if (Path.IsPathRooted(exeFullName)
                 && File.Exists(ExeFullName) == false)
             {
+                // Reset the status or the tab keeps spinning on Connecting forever.
+                Status = ProtocolHostStatus.Disconnected;
                 MessageBoxHelper.ErrorAlert($"Exe file '{ExeFullName}' does not existed! We can not start the connection!");
                 return;
             }
@@ -518,14 +530,23 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private void ProcessOnExited(object? sender, EventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            // Pool-thread callback: sync Dispatcher.Invoke throws once the dispatcher is shutting down.
+            try
             {
-                _timer?.Stop();
-                _timer?.Dispose();
-                _timer = null;
-                _process = null;
-                FormsHost.Visibility = Visibility.Collapsed;
-            });
+                Dispatcher.Invoke(() =>
+                {
+                    _timer?.Stop();
+                    _timer?.Dispose();
+                    _timer = null;
+                    _process = null;
+                    FormsHost.Visibility = Visibility.Collapsed;
+                });
+            }
+            catch (Exception ex)
+            {
+                // e.g. TaskCanceledException on exit: the UI updates are moot, teardown below still runs.
+                SimpleLogHelper.Warning(ex);
+            }
             _process = null;
             Close();
         }
