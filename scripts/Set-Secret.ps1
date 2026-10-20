@@ -18,6 +18,24 @@ param (
     [switch]$isRevert # true then replace $Secret with $Pattern
 )
 
+function Set-ContentAtomic {
+    param([string]$Path, [object]$Value)
+    # Write via temp file + move so a contended write never truncates the source file
+    $tmp = "$Path.tmp"
+    for ($i = 0; $i -lt 10; $i++) {
+        try {
+            Set-Content -Path $tmp -Value $Value
+            Move-Item -Force $tmp $Path
+            return $true
+        }
+        catch {
+            Start-Sleep -Milliseconds 500
+        }
+    }
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    return $false
+}
+
 if (!$Pattern) {
     Write-Host "Error: Pattern is empty."
     exit 1
@@ -86,8 +104,13 @@ if (!$matched) {
     }
 }
 
-# Replace the content of the file
-(Get-Content $filePath) -Replace $escapedTarget, $replacement | Set-Content $filePath
+# Replace the content of the file atomically (VS/MSBuild may hold it briefly)
+$content = (Get-Content $filePath) -Replace $escapedTarget, $replacement
+if (!(Set-ContentAtomic -Path $filePath -Value $content)) {
+    Write-Host "Error: can not write $filePath, file is locked by another process"
+    Set-Location $originalDirectory
+    exit 6
+}
 
 # Set the current directory back to the original location
 Set-Location $originalDirectory
