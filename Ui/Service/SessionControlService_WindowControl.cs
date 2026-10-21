@@ -154,25 +154,68 @@ namespace _1RM.Service
         /// </summary>
         /// <param name="assignTabToken"></param>
         /// <returns></returns>
-        private TabWindowView GetOrCreateTabWindow(string assignTabToken = "")
+        private static bool IsUsableTabWindow(TabWindowView tab)
+        {
+            if (tab == null || tab.IsClosed)
+                return false;
+            if (!tab.IsLoaded)
+                return true;
+
+            try
+            {
+                var hwnd = new System.Windows.Interop.WindowInteropHelper(tab).Handle;
+                if (hwnd == IntPtr.Zero)
+                    return false;
+                var screen = ScreenInfoEx.GetCurrentScreen(hwnd);
+                return screen != null && ScreenInfoEx.IsScreenUsable(screen.Screen);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void PruneStaleTabWindows()
+        {
+            foreach (var (key, tab) in _token2TabWindows.ToArray())
+            {
+                if (tab.IsClosed || !IsUsableTabWindow(tab))
+                {
+                    _token2TabWindows.TryRemove(key, out _);
+                }
+            }
+        }
+
+        private TabWindowView GetOrCreateTabWindow(string assignTabToken = "", bool preferLastOpenedDisplayWhenNew = false)
         {
             TabWindowView? ret = null;
             lock (_dictLock)
             {
-                // find existed
+                PruneStaleTabWindows();
+
                 if (_token2TabWindows.ContainsKey(assignTabToken))
                 {
                     ret = _token2TabWindows[assignTabToken];
+                    if (ret == null || ret.IsClosed || !IsUsableTabWindow(ret))
+                    {
+                        _token2TabWindows.TryRemove(assignTabToken, out _);
+                        ret = null;
+                    }
                 }
                 else if (string.IsNullOrEmpty(assignTabToken))
                 {
                     if (_token2TabWindows.ContainsKey(_lastTabToken))
                     {
-                        ret = _token2TabWindows[_lastTabToken];
+                        var last = _token2TabWindows[_lastTabToken];
+                        if (!last.IsClosed && IsUsableTabWindow(last))
+                            ret = last;
+                        else
+                            _token2TabWindows.TryRemove(_lastTabToken, out _);
                     }
-                    else if (_token2TabWindows.IsEmpty == false)
+
+                    if (ret == null && _token2TabWindows.IsEmpty == false)
                     {
-                        ret = _token2TabWindows.Last().Value;
+                        ret = _token2TabWindows.Values.FirstOrDefault(IsUsableTabWindow);
                     }
                 }
 
@@ -182,6 +225,7 @@ namespace _1RM.Service
                     Execute.OnUIThreadSync(() =>
                     {
                         ret = new TabWindowView();
+                        ret.PrepareStartupDisplay(preferLastOpenedDisplayWhenNew);
                         AddTab(ret);
                         ret.Show();
                         ret.ShowInTaskbar = true;
