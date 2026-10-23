@@ -6,6 +6,29 @@ Set-Location $PSScriptRoot
 
 cd ..
 
+function Set-ContentAtomic {
+    param([string]$Path, [object]$Value, [string]$Encoding)
+    # Write via temp file + move so a contended write never truncates the source file
+    $tmp = "$Path.tmp"
+    for ($i = 0; $i -lt 10; $i++) {
+        try {
+            if ($Encoding) {
+                Set-Content -Path $tmp -Value $Value -Encoding $Encoding
+            }
+            else {
+                Set-Content -Path $tmp -Value $Value
+            }
+            Move-Item -Force $tmp $Path
+            return $true
+        }
+        catch {
+            Start-Sleep -Milliseconds 500
+        }
+    }
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    return $false
+}
+
 
 # Check if the file Ui/AppVersion.cs exists
 if (!(Test-Path -Path "Ui/AppVersion.cs" -PathType Leaf)) {
@@ -97,7 +120,13 @@ echo $assemblyVerison
 
 
 # �� Ui.csproj �е� <AssemblyVersion>xxxxx</AssemblyVersion> �滻Ϊ <AssemblyVersion>$assemblyVerison</AssemblyVersion>
-(Get-Content Ui/Ui.csproj) -replace '<AssemblyVersion>.*</AssemblyVersion>',"<AssemblyVersion>$assemblyVerison</AssemblyVersion>" | Set-Content Ui/Ui.csproj -Encoding UTF8
+# Replace the AssemblyVersion in Ui.csproj atomically (VS watches this file)
+$content = (Get-Content Ui/Ui.csproj) -replace '<AssemblyVersion>.*</AssemblyVersion>',"<AssemblyVersion>$assemblyVerison</AssemblyVersion>"
+if (!(Set-ContentAtomic -Path "Ui/Ui.csproj" -Value $content -Encoding 'UTF8')) {
+    Write-Host "Error: can not write Ui/Ui.csproj, file is locked by another process"
+    Set-Location $originalDirectory
+    exit 6
+}
 
 # Set the current directory back to the original location
 Set-Location $originalDirectory

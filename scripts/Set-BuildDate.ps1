@@ -3,6 +3,24 @@ param (
     [switch]$isRevert # true then replace $Secret with $Pattern
 )
 
+function Set-ContentAtomic {
+    param([string]$Path, [object]$Value)
+    # Write via temp file + move so a contended write never truncates the source file
+    $tmp = "$Path.tmp"
+    for ($i = 0; $i -lt 10; $i++) {
+        try {
+            Set-Content -Path $tmp -Value $Value
+            Move-Item -Force $tmp $Path
+            return $true
+        }
+        catch {
+            Start-Sleep -Milliseconds 500
+        }
+    }
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    return $false
+}
+
 # Get the current working directory
 $originalDirectory = Get-Location
 
@@ -56,7 +74,12 @@ if (!$isRevert -and (Test-Path "Ui/Ui.csproj" -PathType Leaf)) {
         $oldRevision = [int]$oldVersionMatch.Groups[4].Value
         if(($oldVersionPrefix -eq $currentPrefix) -and ($oldRevision -gt $dateCode)){
             $newPatch = [int]$patchMatch.Groups[1].Value + 1
-            (Get-Content $filePath) -replace 'public const uint Patch = \d+;', "public const uint Patch = $newPatch;" | Set-Content $filePath
+            $content = (Get-Content $filePath) -replace 'public const uint Patch = \d+;', "public const uint Patch = $newPatch;"
+            if (!(Set-ContentAtomic -Path $filePath -Value $content)) {
+                Write-Host "Error: can not write $filePath, file is locked by another process"
+                Set-Location $originalDirectory
+                exit 6
+            }
             Write-Host "Year code wrapped: AssemblyVersion revision would go back from $oldRevision to $dateCode, auto bumped Patch to $newPatch"
         }
     }
@@ -93,8 +116,13 @@ if (!$matched) {
     }
 }
 
-# Replace the content of the file
-(Get-Content $filePath) -Replace $target, $replacement | Set-Content $filePath
+# Replace the content of the file atomically (VS/MSBuild may hold it briefly)
+$content = (Get-Content $filePath) -Replace $target, $replacement
+if (!(Set-ContentAtomic -Path $filePath -Value $content)) {
+    Write-Host "Error: can not write $filePath, file is locked by another process"
+    Set-Location $originalDirectory
+    exit 6
+}
 
 # Set the current directory back to the original location
 Set-Location $originalDirectory
