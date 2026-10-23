@@ -177,8 +177,10 @@ namespace _1RM.Service
 
         private void PruneStaleTabWindows()
         {
-            foreach (var (key, tab) in _token2TabWindows.ToArray())
+            foreach (var kv in _token2TabWindows.ToArray())
             {
+                var key = kv.Key;
+                var tab = kv.Value;
                 if (tab.IsClosed || !IsUsableTabWindow(tab))
                 {
                     _token2TabWindows.TryRemove(key, out _);
