@@ -160,11 +160,12 @@ namespace _1RM.Service
             {
                 lock (_dictLock)
                 {
-                    if (protocol.AlwaysOpenInNewTabWindow == true && string.IsNullOrEmpty(assignTabToken))
+                    var preferLastDisplayForNewWindow = protocol.AlwaysOpenInNewTabWindow == true && string.IsNullOrEmpty(assignTabToken);
+                    if (preferLastDisplayForNewWindow)
                     {
                         assignTabToken = DateTime.Now.Ticks.ToString();
                     }
-                    tab = this.GetOrCreateTabWindow(assignTabToken);
+                    tab = this.GetOrCreateTabWindow(assignTabToken, preferLastDisplayForNewWindow);
                     if (tab == null) return;
                     if (tab.IsClosing) return;
                     tab.Show();
