@@ -280,7 +280,8 @@ namespace _1RM.View.Host
             // priority so it runs strictly after the click has been dispatched.
             Dispatcher.InvokeAsync(() =>
             {
-                if (IsLoaded)
+                // do not steal the foreground back if it already moved to another window (e.g. the launcher from the + button)
+                if (IsLoaded && GetForegroundWindow() == _tabWindowHandle)
                 {
                     FocusOnTabContent();
                 }
