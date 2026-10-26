@@ -191,10 +191,10 @@ namespace _1RM.Service
 
             var width = Math.Max(tab.ActualWidth > 0 ? tab.ActualWidth : tab.Width, 1);
             var height = Math.Max(tab.ActualHeight > 0 ? tab.ActualHeight : tab.Height, 1);
-            var workingArea = targetScreen.WorkingArea;
+            var workingArea = new ScreenInfoEx(targetScreen).VirtualWorkingArea;
 
-            tab.Left = workingArea.Left + (workingArea.Width - width) / 2.0;
-            tab.Top = workingArea.Top + (workingArea.Height - height) / 2.0;
+            tab.Left = workingArea.X + Math.Max(0, (workingArea.Width - width) / 2.0);
+            tab.Top = workingArea.Y + Math.Max(0, (workingArea.Height - height) / 2.0);
             return true;
         }
 
