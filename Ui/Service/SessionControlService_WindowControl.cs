@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 using _1RM.View.Host;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
@@ -184,8 +185,30 @@ namespace _1RM.Service
                 var hwnd = new System.Windows.Interop.WindowInteropHelper(tab).Handle;
                 if (hwnd == IntPtr.Zero)
                     return false;
-                var screen = ScreenInfoEx.GetCurrentScreen(hwnd);
-                return screen != null && IsUsableScreen(screen.Screen);
+
+                var bounds = tab.WindowState == WindowState.Minimized
+                    ? tab.RestoreBounds
+                    : new Rect(tab.Left, tab.Top, tab.Width, tab.Height);
+
+                if (bounds.Width <= 0 || bounds.Height <= 0)
+                    return false;
+
+                foreach (var screen in System.Windows.Forms.Screen.AllScreens)
+                {
+                    if (!IsUsableScreen(screen))
+                        continue;
+
+                    var screenRect = new Rect(
+                        screen.Bounds.Left,
+                        screen.Bounds.Top,
+                        screen.Bounds.Width,
+                        screen.Bounds.Height);
+
+                    if (bounds.IntersectsWith(screenRect))
+                        return true;
+                }
+
+                return false;
             }
             catch
             {
