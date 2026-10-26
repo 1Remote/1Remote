@@ -173,6 +173,31 @@ namespace _1RM.Service
             }
         }
 
+        private static bool TryMoveTabWindowToVisibleScreen(TabWindowView tab)
+        {
+            var targetScreen = System.Windows.Forms.Screen.AllScreens
+                .Where(IsUsableScreen)
+                .OrderBy(screen => screen.Primary ? 0 : 1)
+                .ThenBy(screen => screen.Bounds.Left)
+                .FirstOrDefault();
+
+            if (targetScreen == null)
+                return false;
+
+            if (tab.WindowState == WindowState.Minimized)
+            {
+                tab.WindowState = WindowState.Normal;
+            }
+
+            var width = Math.Max(tab.ActualWidth > 0 ? tab.ActualWidth : tab.Width, 1);
+            var height = Math.Max(tab.ActualHeight > 0 ? tab.ActualHeight : tab.Height, 1);
+            var workingArea = targetScreen.WorkingArea;
+
+            tab.Left = workingArea.Left + (workingArea.Width - width) / 2.0;
+            tab.Top = workingArea.Top + (workingArea.Height - height) / 2.0;
+            return true;
+        }
+
         private static bool IsUsableTabWindow(TabWindowView tab)
         {
             if (tab == null || tab.IsClosed)
@@ -198,17 +223,19 @@ namespace _1RM.Service
                     if (!IsUsableScreen(screen))
                         continue;
 
-                    var screenRect = new Rect(
-                        screen.Bounds.Left,
-                        screen.Bounds.Top,
-                        screen.Bounds.Width,
-                        screen.Bounds.Height);
+                    var workingAreaRect = new Rect(
+                        screen.WorkingArea.Left,
+                        screen.WorkingArea.Top,
+                        screen.WorkingArea.Width,
+                        screen.WorkingArea.Height);
 
-                    if (bounds.IntersectsWith(screenRect))
+                    if (bounds.IntersectsWith(workingAreaRect))
                         return true;
                 }
 
-                return false;
+                // An off-screen tab may still be live and should not be discarded or lose ownership.
+                // Move it back onto the best available visible screen while keeping the session alive.
+                return TryMoveTabWindowToVisibleScreen(tab);
             }
             catch
             {
