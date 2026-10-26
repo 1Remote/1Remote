@@ -223,11 +223,12 @@ namespace _1RM.Service
                     if (!IsUsableScreen(screen))
                         continue;
 
+                    var workingArea = new ScreenInfoEx(screen).VirtualWorkingArea;
                     var workingAreaRect = new Rect(
-                        screen.WorkingArea.Left,
-                        screen.WorkingArea.Top,
-                        screen.WorkingArea.Width,
-                        screen.WorkingArea.Height);
+                        workingArea.X,
+                        workingArea.Y,
+                        workingArea.Width,
+                        workingArea.Height);
 
                     if (bounds.IntersectsWith(workingAreaRect))
                         return true;
