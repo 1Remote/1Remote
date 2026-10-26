@@ -160,11 +160,14 @@ namespace _1RM.Service
             {
                 lock (_dictLock)
                 {
-                    var preferLastDisplayForNewWindow = protocol.AlwaysOpenInNewTabWindow == true && string.IsNullOrEmpty(assignTabToken);
-                    if (preferLastDisplayForNewWindow)
+                    var shouldForceSeparateWindow = protocol.AlwaysOpenInNewTabWindow == true && string.IsNullOrEmpty(assignTabToken);
+                    var preferLastDisplayForNewWindow = string.IsNullOrEmpty(assignTabToken) || shouldForceSeparateWindow;
+                    if (shouldForceSeparateWindow)
                     {
                         assignTabToken = DateTime.Now.Ticks.ToString();
                     }
+                    // Saved-display restoration applies when a fresh tab window is being created.
+                    // Reusing an existing tab should not implicitly trigger this preference.
                     tab = this.GetOrCreateTabWindow(assignTabToken, preferLastDisplayForNewWindow);
                     if (tab == null) return;
                     if (tab.IsClosing) return;
