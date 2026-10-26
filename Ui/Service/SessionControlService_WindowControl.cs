@@ -199,7 +199,16 @@ namespace _1RM.Service
             {
                 var key = kv.Key;
                 var tab = kv.Value;
-                if (tab.IsClosed || !IsUsableTabWindow(tab))
+                if (tab.IsClosed)
+                {
+                    _token2TabWindows.TryRemove(key, out _);
+                    continue;
+                }
+
+                // Keep alive windows registered so ownership / session tracking remains intact,
+                // even if the window is no longer usable for reuse (e.g. hidden or disconnected screen).
+                // Only retire truly empty, stale tabs.
+                if (!IsUsableTabWindow(tab) && tab.GetViewModel().Items.Count == 0)
                 {
                     _token2TabWindows.TryRemove(key, out _);
                 }
@@ -216,9 +225,18 @@ namespace _1RM.Service
                 if (_token2TabWindows.ContainsKey(assignTabToken))
                 {
                     ret = _token2TabWindows[assignTabToken];
-                    if (ret == null || ret.IsClosed || !IsUsableTabWindow(ret))
+                    if (ret == null || ret.IsClosed)
                     {
                         _token2TabWindows.TryRemove(assignTabToken, out _);
+                        ret = null;
+                    }
+                    else if (!IsUsableTabWindow(ret) && ret.GetViewModel().Items.Count == 0)
+                    {
+                        _token2TabWindows.TryRemove(assignTabToken, out _);
+                        ret = null;
+                    }
+                    else if (!IsUsableTabWindow(ret))
+                    {
                         ret = null;
                     }
                 }
@@ -227,10 +245,22 @@ namespace _1RM.Service
                     if (_token2TabWindows.ContainsKey(_lastTabToken))
                     {
                         var last = _token2TabWindows[_lastTabToken];
-                        if (!last.IsClosed && IsUsableTabWindow(last))
-                            ret = last;
-                        else
+                        if (last.IsClosed)
+                        {
                             _token2TabWindows.TryRemove(_lastTabToken, out _);
+                        }
+                        else if (!IsUsableTabWindow(last) && last.GetViewModel().Items.Count == 0)
+                        {
+                            _token2TabWindows.TryRemove(_lastTabToken, out _);
+                        }
+                        else if (!IsUsableTabWindow(last))
+                        {
+                            // Keep live but unusable windows registered so owner tracking is preserved.
+                        }
+                        else
+                        {
+                            ret = last;
+                        }
                     }
 
                     if (ret == null && _token2TabWindows.IsEmpty == false)
