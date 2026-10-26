@@ -260,6 +260,12 @@ namespace _1RM.View.Host
                 _startupScreenIndexOverride = null;
             }
 
+            var primaryScreen = System.Windows.Forms.Screen.PrimaryScreen;
+            if (IsScreenUsable(primaryScreen))
+            {
+                return new ScreenInfoEx(primaryScreen);
+            }
+
             if (IoC.TryGet<MainWindowView>() is MainWindowView mainWindow && mainWindow.IsLoaded)
             {
                 var mainScreen = ScreenInfoEx.GetCurrentScreen(mainWindow);
@@ -267,12 +273,6 @@ namespace _1RM.View.Host
                 {
                     return mainScreen;
                 }
-            }
-
-            var primaryScreen = System.Windows.Forms.Screen.PrimaryScreen;
-            if (IsScreenUsable(primaryScreen))
-            {
-                return new ScreenInfoEx(primaryScreen);
             }
 
             var fallbackScreen = System.Windows.Forms.Screen.AllScreens
