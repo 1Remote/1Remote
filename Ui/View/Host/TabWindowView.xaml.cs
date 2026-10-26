@@ -181,6 +181,36 @@ namespace _1RM.View.Host
 
         private int? _startupScreenIndexOverride;
 
+        private static bool IsScreenAvailable(int screenIndex)
+        {
+            if (screenIndex < 0 || screenIndex >= System.Windows.Forms.Screen.AllScreens.Length)
+            {
+                return false;
+            }
+
+            return IsScreenUsable(System.Windows.Forms.Screen.AllScreens[screenIndex]);
+        }
+
+        private static bool IsScreenUsable(System.Windows.Forms.Screen screen)
+        {
+            if (screen == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                return screen.Bounds.Width > 0
+                    && screen.Bounds.Height > 0
+                    && screen.WorkingArea.Width > 0
+                    && screen.WorkingArea.Height > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public void PrepareStartupDisplay(bool preferLastOpenedDisplay)
         {
             _startupScreenIndexOverride = null;
@@ -203,7 +233,7 @@ namespace _1RM.View.Host
             }
 
             var index = locality.TabWindowLastScreenIndex;
-            if (!ScreenInfoEx.IsScreenAvailable(index))
+            if (!IsScreenAvailable(index))
             {
                 ClearSavedDisplaySelection(locality);
                 return;
@@ -223,7 +253,7 @@ namespace _1RM.View.Host
             if (_startupScreenIndexOverride.HasValue)
             {
                 var targetScreen = ScreenInfoEx.GetCurrentScreen(_startupScreenIndexOverride.Value);
-                if (targetScreen != null && ScreenInfoEx.IsScreenUsable(targetScreen.Screen))
+                if (targetScreen != null && IsScreenUsable(targetScreen.Screen))
                 {
                     return targetScreen;
                 }
@@ -233,20 +263,20 @@ namespace _1RM.View.Host
             if (IoC.TryGet<MainWindowView>() is MainWindowView mainWindow && mainWindow.IsLoaded)
             {
                 var mainScreen = ScreenInfoEx.GetCurrentScreen(mainWindow);
-                if (ScreenInfoEx.IsScreenUsable(mainScreen.Screen))
+                if (IsScreenUsable(mainScreen.Screen))
                 {
                     return mainScreen;
                 }
             }
 
             var primaryScreen = System.Windows.Forms.Screen.PrimaryScreen;
-            if (ScreenInfoEx.IsScreenUsable(primaryScreen))
+            if (IsScreenUsable(primaryScreen))
             {
                 return new ScreenInfoEx(primaryScreen);
             }
 
             var fallbackScreen = System.Windows.Forms.Screen.AllScreens
-                .Where(screen => ScreenInfoEx.IsScreenUsable(screen))
+                .Where(screen => IsScreenUsable(screen))
                 .OrderBy(screen => screen.Primary ? 0 : 1)
                 .ThenBy(screen => screen.Bounds.Left)
                 .FirstOrDefault();
@@ -267,7 +297,7 @@ namespace _1RM.View.Host
 
             var locality = IoC.Get<LocalityService>();
             var currentScreen = ScreenInfoEx.GetCurrentScreen(this);
-            if (!ScreenInfoEx.IsScreenUsable(currentScreen.Screen))
+            if (!IsScreenUsable(currentScreen.Screen))
             {
                 ClearSavedDisplaySelection(locality);
                 return;
@@ -280,7 +310,7 @@ namespace _1RM.View.Host
         private static string BuildScreenLayoutSignature()
         {
             var screens = System.Windows.Forms.Screen.AllScreens
-                .Where(screen => ScreenInfoEx.IsScreenUsable(screen))
+                .Where(screen => IsScreenUsable(screen))
                 .Select((screen, index) =>
                     $"{index}:{screen.DeviceName}:{screen.Bounds.X},{screen.Bounds.Y},{screen.Bounds.Width},{screen.Bounds.Height}:{screen.WorkingArea.X},{screen.WorkingArea.Y},{screen.WorkingArea.Width},{screen.WorkingArea.Height}:{screen.Primary}")
                 .ToArray();

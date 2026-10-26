@@ -154,6 +154,24 @@ namespace _1RM.Service
         /// </summary>
         /// <param name="assignTabToken"></param>
         /// <returns></returns>
+        private static bool IsUsableScreen(System.Windows.Forms.Screen screen)
+        {
+            if (screen == null)
+                return false;
+
+            try
+            {
+                return screen.Bounds.Width > 0
+                    && screen.Bounds.Height > 0
+                    && screen.WorkingArea.Width > 0
+                    && screen.WorkingArea.Height > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private static bool IsUsableTabWindow(TabWindowView tab)
         {
             if (tab == null || tab.IsClosed)
@@ -167,7 +185,7 @@ namespace _1RM.Service
                 if (hwnd == IntPtr.Zero)
                     return false;
                 var screen = ScreenInfoEx.GetCurrentScreen(hwnd);
-                return screen != null && ScreenInfoEx.IsScreenUsable(screen.Screen);
+                return screen != null && IsUsableScreen(screen.Screen);
             }
             catch
             {
