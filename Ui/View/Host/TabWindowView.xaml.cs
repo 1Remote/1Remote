@@ -303,6 +303,12 @@ namespace _1RM.View.Host
                 return;
             }
 
+            var bounds = this.RestoreBounds;
+            if (!bounds.IsEmpty)
+            {
+                locality.TabWindowTop = bounds.Top;
+                locality.TabWindowLeft = bounds.Left;
+            }
             locality.TabWindowScreenLayoutSignature = BuildScreenLayoutSignature();
             locality.TabWindowLastScreenIndex = currentScreen.Index;
         }
