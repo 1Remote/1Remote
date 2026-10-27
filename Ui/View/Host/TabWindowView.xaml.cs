@@ -308,6 +308,8 @@ namespace _1RM.View.Host
             {
                 locality.TabWindowTop = bounds.Top;
                 locality.TabWindowLeft = bounds.Left;
+                locality.TabWindowWidth = bounds.Width;
+                locality.TabWindowHeight = bounds.Height;
             }
             locality.TabWindowScreenLayoutSignature = BuildScreenLayoutSignature();
             locality.TabWindowLastScreenIndex = currentScreen.Index;
