@@ -230,7 +230,8 @@ namespace _1RM.Service
                         workingArea.Width,
                         workingArea.Height);
 
-                    if (bounds.IntersectsWith(workingAreaRect))
+                    var intersection = Rect.Intersect(bounds, workingAreaRect);
+                    if (!intersection.IsEmpty && intersection.Width > 0 && intersection.Height > 0)
                         return true;
                 }
 
