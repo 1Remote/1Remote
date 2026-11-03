@@ -42,6 +42,8 @@ namespace _1RM.Service.Locality
         public WindowState MainWindowState = WindowState.Normal;
         public double TabWindowTop = -1;
         public double TabWindowLeft = -1;
+        public int TabWindowLastScreenIndex = -1;
+        public string TabWindowScreenLayoutSignature = "";
         public double TabWindowWidth = 800;
         public double TabWindowHeight = 600;
         public WindowState TabWindowState = WindowState.Normal;
@@ -175,6 +177,32 @@ namespace _1RM.Service.Locality
                 if (Math.Abs(_localitySettings.TabWindowLeft - value) > 0.001)
                 {
                     _localitySettings.TabWindowLeft = value;
+                    Save();
+                }
+            }
+        }
+
+        public int TabWindowLastScreenIndex
+        {
+            get => _localitySettings.TabWindowLastScreenIndex;
+            set
+            {
+                if (_localitySettings.TabWindowLastScreenIndex != value)
+                {
+                    _localitySettings.TabWindowLastScreenIndex = value;
+                    Save();
+                }
+            }
+        }
+
+        public string TabWindowScreenLayoutSignature
+        {
+            get => _localitySettings.TabWindowScreenLayoutSignature;
+            set
+            {
+                if (_localitySettings.TabWindowScreenLayoutSignature != value)
+                {
+                    _localitySettings.TabWindowScreenLayoutSignature = value;
                     Save();
                 }
             }

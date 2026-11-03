@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 using _1RM.View.Host;
 using _1RM.View.Host.ProtocolHosts;
 using Shawn.Utils;
@@ -154,25 +155,169 @@ namespace _1RM.Service
         /// </summary>
         /// <param name="assignTabToken"></param>
         /// <returns></returns>
-        private TabWindowView GetOrCreateTabWindow(string assignTabToken = "")
+        private static bool IsUsableScreen(System.Windows.Forms.Screen screen)
+        {
+            if (screen == null)
+                return false;
+
+            try
+            {
+                return screen.Bounds.Width > 0
+                    && screen.Bounds.Height > 0
+                    && screen.WorkingArea.Width > 0
+                    && screen.WorkingArea.Height > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool TryMoveTabWindowToVisibleScreen(TabWindowView tab)
+        {
+            var targetScreen = System.Windows.Forms.Screen.AllScreens
+                .Where(IsUsableScreen)
+                .OrderBy(screen => screen.Primary ? 0 : 1)
+                .ThenBy(screen => screen.Bounds.Left)
+                .FirstOrDefault();
+
+            if (targetScreen == null)
+                return false;
+
+            if (tab.WindowState == WindowState.Minimized)
+            {
+                tab.WindowState = WindowState.Normal;
+            }
+
+            var width = Math.Max(tab.ActualWidth > 0 ? tab.ActualWidth : tab.Width, 1);
+            var height = Math.Max(tab.ActualHeight > 0 ? tab.ActualHeight : tab.Height, 1);
+            var workingArea = new ScreenInfoEx(targetScreen).VirtualWorkingArea;
+
+            tab.Left = workingArea.X + Math.Max(0, (workingArea.Width - width) / 2.0);
+            tab.Top = workingArea.Y + Math.Max(0, (workingArea.Height - height) / 2.0);
+            return true;
+        }
+
+        private static bool IsUsableTabWindow(TabWindowView tab)
+        {
+            if (tab == null || tab.IsClosed)
+                return false;
+            if (!tab.IsLoaded)
+                return true;
+
+            try
+            {
+                var hwnd = new System.Windows.Interop.WindowInteropHelper(tab).Handle;
+                if (hwnd == IntPtr.Zero)
+                    return false;
+
+                var bounds = tab.WindowState == WindowState.Minimized
+                    ? tab.RestoreBounds
+                    : new Rect(tab.Left, tab.Top, tab.Width, tab.Height);
+
+                if (bounds.Width <= 0 || bounds.Height <= 0)
+                    return false;
+
+                foreach (var screen in System.Windows.Forms.Screen.AllScreens)
+                {
+                    if (!IsUsableScreen(screen))
+                        continue;
+
+                    var workingArea = new ScreenInfoEx(screen).VirtualWorkingArea;
+                    var workingAreaRect = new Rect(
+                        workingArea.X,
+                        workingArea.Y,
+                        workingArea.Width,
+                        workingArea.Height);
+
+                    var intersection = Rect.Intersect(bounds, workingAreaRect);
+                    if (!intersection.IsEmpty && intersection.Width > 0 && intersection.Height > 0)
+                        return true;
+                }
+
+                // An off-screen tab may still be live and should not be discarded or lose ownership.
+                // Move it back onto the best available visible screen while keeping the session alive.
+                return TryMoveTabWindowToVisibleScreen(tab);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void PruneStaleTabWindows()
+        {
+            foreach (var kv in _token2TabWindows.ToArray())
+            {
+                var key = kv.Key;
+                var tab = kv.Value;
+                if (tab.IsClosed)
+                {
+                    _token2TabWindows.TryRemove(key, out _);
+                    continue;
+                }
+
+                // Keep alive windows registered so ownership / session tracking remains intact,
+                // even if the window is no longer usable for reuse (e.g. hidden or disconnected screen).
+                // Only retire truly empty, stale tabs.
+                if (!IsUsableTabWindow(tab) && tab.GetViewModel().Items.Count == 0)
+                {
+                    _token2TabWindows.TryRemove(key, out _);
+                }
+            }
+        }
+
+        private TabWindowView GetOrCreateTabWindow(string assignTabToken = "", bool preferLastOpenedDisplayWhenNew = false)
         {
             TabWindowView? ret = null;
             lock (_dictLock)
             {
-                // find existed
+                PruneStaleTabWindows();
+
                 if (_token2TabWindows.ContainsKey(assignTabToken))
                 {
                     ret = _token2TabWindows[assignTabToken];
+                    if (ret == null || ret.IsClosed)
+                    {
+                        _token2TabWindows.TryRemove(assignTabToken, out _);
+                        ret = null;
+                    }
+                    else if (!IsUsableTabWindow(ret) && ret.GetViewModel().Items.Count == 0)
+                    {
+                        _token2TabWindows.TryRemove(assignTabToken, out _);
+                        ret = null;
+                    }
+                    else if (!IsUsableTabWindow(ret))
+                    {
+                        ret = null;
+                    }
                 }
                 else if (string.IsNullOrEmpty(assignTabToken))
                 {
                     if (_token2TabWindows.ContainsKey(_lastTabToken))
                     {
-                        ret = _token2TabWindows[_lastTabToken];
+                        var last = _token2TabWindows[_lastTabToken];
+                        if (last.IsClosed)
+                        {
+                            _token2TabWindows.TryRemove(_lastTabToken, out _);
+                        }
+                        else if (!IsUsableTabWindow(last) && last.GetViewModel().Items.Count == 0)
+                        {
+                            _token2TabWindows.TryRemove(_lastTabToken, out _);
+                        }
+                        else if (!IsUsableTabWindow(last))
+                        {
+                            // Keep live but unusable windows registered so owner tracking is preserved.
+                        }
+                        else
+                        {
+                            ret = last;
+                        }
                     }
-                    else if (_token2TabWindows.IsEmpty == false)
+
+                    if (ret == null && _token2TabWindows.IsEmpty == false)
                     {
-                        ret = _token2TabWindows.Last().Value;
+                        ret = _token2TabWindows.Values.FirstOrDefault(IsUsableTabWindow);
                     }
                 }
 
@@ -182,6 +327,7 @@ namespace _1RM.Service
                     Execute.OnUIThreadSync(() =>
                     {
                         ret = new TabWindowView();
+                        ret.PrepareStartupDisplay(preferLastOpenedDisplayWhenNew);
                         AddTab(ret);
                         ret.Show();
                         ret.ShowInTaskbar = true;
