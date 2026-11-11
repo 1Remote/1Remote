@@ -280,7 +280,14 @@ namespace _1RM.View.Host
             // priority so it runs strictly after the click has been dispatched.
             Dispatcher.InvokeAsync(() =>
             {
-                if (IsLoaded)
+                // Only move the focus into the session content while this window still owns the
+                // foreground. The "+" button of the header bar lives inside the TabablzControl, so
+                // its click passes through here as well: the launcher popup opened by that click is
+                // a separate top level window which takes the foreground. Focusing the session
+                // content would activate this window again (SetFocus on the RDP child window
+                // activates its top level window), the popup would get WM_DEACTIVATED and close
+                // itself immediately -> the launcher would only flash for a moment.
+                if (IsLoaded && GetForegroundWindow() == _tabWindowHandle)
                 {
                     FocusOnTabContent();
                 }

@@ -225,6 +225,30 @@ namespace _1RM.View.Host
             }
         }
 
+        /// <summary>
+        /// True while the launcher popup window is visible.
+        /// The launcher is a separate top level window of this app and hides itself as soon as it
+        /// loses the activation, so no other window of this app may take the foreground while it is open.
+        /// </summary>
+        private static bool IsLauncherPopupVisible()
+        {
+            try
+            {
+                // this is called from the timer thread, so the WPF state must be read on the UI thread
+                var result = false;
+                Execute.OnUIThreadSync(() =>
+                {
+                    result = IoC.TryGet<_1RM.View.LauncherWindowView>() is { IsVisible: true };
+                });
+                return result;
+            }
+            catch (Exception ex)
+            {
+                SimpleLogHelper.Warning(ex);
+                return false;
+            }
+        }
+
         private static IntPtr GetHostHwndSafe(HostBase? host)
         {
             try
@@ -406,7 +430,10 @@ namespace _1RM.View.Host
 
                 if (IsMouseInside(this))
                 {
-                    if (nowActivatedWindowHandle != rdpHandle)
+                    // Do not steal the focus while the launcher popup is open: it is a separate top
+                    // level window of this app which closes itself as soon as it loses the activation
+                    // (see LauncherWindowViewModel.HideMe on Window.Deactivated).
+                    if (nowActivatedWindowHandle != rdpHandle && !IsLauncherPopupVisible())
                     {
                         SimpleLogHelper.Debug("TabWindowView.RunForRdpV2: SetForegroundWindow(rdpHandle)");
                         SetForegroundWindow(rdpHandle);
