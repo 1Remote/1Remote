@@ -1,0 +1,338 @@
+key;tr-tr
+language_code-ISO;tr-TR
+language_code-google;tr
+language_name;Türkçe (tr-TR)
+Warning;Uyarı
+Error;Hata
+Info;Bilgi
+OK;Tamam
+Exit;Çıkış
+Close;Kapat
+Add;Ekle
+Edit;Düzenle
+Save;Kaydet
+Save as...;Farklı kaydet...
+Back;Geri
+Delete;Sil
+Cancel;İptal
+Select;Seç
+Explore to...;Klasörde göster...
+Previous;Önceki
+Next;Sonraki
+Done;Bitti
+Reset;Sıfırla
+Import;İçe aktar
+Export;Dışa aktar
+Name;Ad
+File Name;Dosya adı
+Test;Test et
+Reconnect;Yeniden bağlan
+Dismiss;Vazgeç
+Lock;Kilitle
+Always on top;Her zaman üstte
+Close all;Tümünü kapat
+Rename;Yeniden adlandır
+Connect;Bağlan
+Connect (New window);Bağlan (Yeni pencere)
+Note;Not
+Share;Paylaş
+Copy;Kopyala
+Enabled;Etkin
+Helper;Yardımcı
+Preview;Önizleme
+Theme;Tema
+Color;Renk
+Color1;Renk 1
+Color2;Renk 2
+Background;Arka plan
+Normal;Normal
+Lighter;Daha açık
+Darker;Daha koyu
+Font;Yazı tipi
+Font size;Yazı tipi boyutu
+Themes;Temalar
+Options;Ayarlar
+About;Hakkında
+Language;Dil
+Startup;Başlangıç
+Tags;Etiketler
+Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;Etiket eklemek için Enter tuşuna basın. Etiketler sunucuları gruplamak için kullanılır. Ana sayfadaki etiketlere sağ tıklayarak belirli bir etiketi filtreleyebilir veya sabitleyebilirsiniz.
+Icon;Simge
+Hostname;Ana bilgisayar adı
+Target;Hedef
+Port;Port
+User;Kullanıcı
+Password;Parola
+Selected;Seçili
+Custom;Özel
+All;Tümü
+Protocol;Protokol
+Cameras;Kameralar
+Upload;Yükle
+filter_mainwindow;Anahtar kelime, '#' + etiket adı veya 'Tab' tuşu
+Search (Ctrl+F);Ara (Ctrl + F)
+hotkey_already_registered;Bu kısayol tuşu zaten kayıtlı
+hotkey_registered_fail;Kısayol tuşu kaydedilemedi
+string_permission_denied;İzin reddedildi
+file_transmit_host_list_header_last_update;Son güncelleme
+Type;Tür
+file_transmit_host_list_header_size;Boyut
+file_transmit_host_message_preview_over_size;Bu öğe 1 MB'tan büyük. Açmak istediğinize emin misiniz?
+file_transmit_host_message_files_download_to;Lütfen kaydedilecek klasörü seçin
+file_transmit_host_message_files_download_to_dir;Bu klasörü kullan
+file_transmit_host_message_select_files_to_upload;Lütfen yüklenecek dosyaları seçin
+file_transmit_host_command_refresh;Yenile (F5)
+Create a folder;Klasör oluştur
+file_transmit_host_command_upload;Yükle (Ctrl + V)
+file_transmit_host_command_select_files_upload;Yüklenecek dosyaları seç
+file_transmit_host_command_select_folder_upload;Yüklenecek klasörü seç
+file_transmit_host_command_delete;Sil (Del)
+file_transmit_host_command_save_to;Şuraya kaydet... (Ctrl + S)
+file_transmit_host_warning_same_names_title;Değiştir veya iptal et
+file_transmit_host_warning_same_names;Hedefte aynı ada sahip {0} dosya var. Devam etmek istiyor musunuz?
+host_reconecting_info;Yeniden bağlanılıyor...
+system_options_general_title;Genel
+Run automatically at OS startup;Windows açılışında otomatik çalıştır (simge durumunda)
+Confirm before closing;Kapatmadan önce onay iste
+Show current session icon instead of the app icon when connected;Bağlıyken uygulama simgesi yerine geçerli oturumun simgesini göster
+system_options_general_log_file_path;Günlük dosyası
+system_options_quick_match_providers;Anahtar kelime eşleştiricileri
+Launcher;Başlatıcı
+system_options_quick_launcher_enable;Başlatıcıyı etkinleştir
+system_options_quick_launcher_hotkey;Kısayol tuşu
+system_options_data_security_database;Veritabanı
+Caution: Your data will be saved unencrypted!;Dikkat: Verileriniz şifrelenmeden kaydedilecek!
+system_options_data_security_info_data_processing;Veriler işleniyor. Uygulamayı kapatmayın!
+Duplicate;Çoğalt
+server_card_operate_copy_address;Ana bilgisayar adını panoya kopyala
+server_card_operate_copy_username;Kullanıcı adını panoya kopyala
+server_card_operate_copy_password;Parolayı panoya kopyala
+confirm_to_delete;Silmek istediğinize emin misiniz?
+confirm_to_delete_selected;Seçilenlerin tümünü silmek istediğinize emin misiniz?
+import_server_dialog_title;Bir dosya seçin
+import_from_json;json içe aktar
+import_from_mremoteng_csv;mRemoteNG csv içe aktar
+import_from_rdp_file;*.rdp içe aktar
+import_from_sqlite_db;PRemoteM db içe aktar
+import_done_0_items_added;İçe aktarma başarılı, {0} öğe eklendi.
+import_failure_with_data_format_error;Veri biçimi hatalı!
+server_editor_different_options;<farklı seçenekler>
+server_editor_bulk_editing;Toplu düzenleme
+server_editor_bulk_editing_title;Toplu düzenleme yapıyorsunuz:
+server_editor_multi_selected_count;Seçili öğe sayısı:
+server_editor_group_title_common;Ortak
+Connection Info;Bağlantı bilgileri
+Connection Settings;Bağlantı
+server_editor_group_title_display;Görüntü
+server_editor_group_title_advantage;Gelişmiş ayarlar
+server_editor_group_title_gateway;RD Ağ Geçidi Sunucusu
+server_editor_tags_tag;Birden fazla girilebilir, ',' ile ayırın
+Script before connect;Bağlanmadan önce çalışacak betik
+Hide script window;Betik penceresini gizle (uzun süren betiklerde önerilmez)
+Script after disconnected;Bağlantı kesildikten sonra çalışacak betik
+Run bat before connect;Bağlanmadan önce bat çalıştır (ör. 'C:\OpenSshTunneling.bat')
+Run bat after disconnected;Bağlantı kesildikten sonra bat çalıştır (ör. 'C:\CloseSshTunneling.bat')
+Use private key;Özel anahtar kullan
+Private key;Özel anahtar
+Open SFTP when connected;Bağlanınca SFTP'yi aç
+Open SFTP;SFTP'yi aç
+server_editor_display_full_screen_flag;Tam ekran uzak masaüstü
+server_editor_display_full_screen_flag_window;Devre dışı
+server_editor_display_full_screen_flag_full_screen;Etkin (tek monitör)
+server_editor_display_full_screen_flag_all_screens;Etkin (çoklu monitör)
+Display the connection bar when use the full screen;Tam ekranda bağlantı çubuğunu göster
+Pin the connection bar by default;Bağlantı çubuğunu varsayılan olarak sabitle
+New session always use full screen;Yeni oturum her zaman tam ekran açılsın
+New session use full screen if the last session is full screen;Son oturum tam ekransa yeni oturum da tam ekran açılsın
+Resolution;Çözünürlük
+Fit to window;Pencereye sığdır (Desteklenen sunucular: Windows Server 2012 R2 ve üzeri)
+Custom resolution (stretch);Özel çözünürlük (uzat)
+Custom resolution (fixed);Özel çözünürlük (sabit)
+Full-screen resolution (stretch);Tam ekran çözünürlüğü (uzat)
+Full-screen resolution (fixed);Tam ekran çözünürlüğü (sabit)
+Scale;Ölçek
+server_editor_display_rdp_performance;Performans
+server_editor_display_rdp_performance_auto;Otomatik (bağlantı hızına göre belirlenir)
+server_editor_display_rdp_performance_high;Yüksek (32 bit renk, tüm özellikler açık)
+server_editor_display_rdp_performance_middle;Orta (16 bit renk, yalnızca yazı tipi yumuşatma ve masaüstü kompozisyonu)
+server_editor_display_rdp_performance_low;Düşük (8 bit renk, ek özellik yok)
+server_editor_advantage_admin;Sunucu yönetimi için (admin oturumu)
+server_editor_advantage_resources;Kaynaklar
+server_editor_advantage_clipboard;Pano
+server_editor_advantage_key_combinations;Tuş birleşimleri
+server_editor_advantage_disk_drives;Sürücüler
+Drives plug in later;Sonradan takılan sürücüler
+server_editor_advantage_sounds;Ses
+server_editor_advantage_sounds_disabled;Devre dışı
+server_editor_advantage_sounds_on_local;Bu bilgisayarda çal
+server_editor_advantage_sounds_on_remote;Uzak bilgisayarda çal
+server_editor_advantage_sound_quality;Ses kalitesi
+server_editor_advantage_sound_quality_dynamic;Dinamik
+server_editor_advantage_sound_quality_medium;Orta
+server_editor_advantage_sound_quality_high;Yüksek
+server_editor_advantage_audio_capture;Ses kaydı
+server_editor_advantage_ports;Bağlantı noktaları
+server_editor_advantage_printers;Yazıcılar
+server_editor_advantage_smart_cards;Akıllı kartlar
+server_editor_advantage_ssh_version;SSH sürümü
+server_editor_advantage_ssh_startup_auto_command;Otomatik komut
+server_editor_advantage_ssh_startup_auto_kitty_session_tip;KiTTY için bir oturum dosyası yolu seçerek harici yapılandırma kullanın
+server_editor_advantage_sftp_startup_path;Başlangıç yolu
+server_editor_gateway_mode;Bağlantı
+server_editor_gateway_mode_automatically_detect;RD Ağ Geçidi Sunucusu ayarlarını otomatik algıla
+server_editor_gateway_mode_use_these;Aşağıdaki RD Ağ Geçidi Sunucusu ayarlarını kullan
+server_editor_gateway_mode_do_not_use;RD Ağ Geçidi Sunucusu kullanma
+server_editor_gateway_server_host_name;Ana bilgisayar adı
+server_editor_gateway_logon_method;Oturum açma yöntemi
+server_editor_gateway_logon_method_psw;Parola
+server_editor_gateway_logon_method_smart_card;Akıllı kart
+server_editor_gateway_bypass_gateway_for_local_address;Yerel adresler için RD Ağ Geçidi Sunucusunu atla
+How to select the specified monitors;Belirli monitörler nasıl seçilir
+mstsc.exe mode;mstsc.exe modu
+In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.;Bu modda RDP oturumu, CMD'de 'mstsc.exe xxxx.rdp' çalıştırılmış gibi başlatılır. Böylece daha fazla özel parametre kullanılabilir.
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.;Not: Bilgisayarınızda ekran ölçeklemesi farklı 2 veya daha fazla monitör varsa ve tam ekran modunu seçtiyseniz bu mod otomatik olarak etkinleşir.
+Additional settings;Ek ayarlar
+Preview rdp file;rdp dosyasını önizle
+Check monitor number;Monitör numarasını kontrol et
+server_editor_remote_app_name;Uygulama adı
+server_editor_remote_app_name_tag;Uygulamanın adı (ör. hello)
+server_editor_remote_app_fullname;Uygulama yolu
+server_editor_remote_app_fullname_tag;Sunucudaki exe dosyasının tam yolu (ör. C:\Apps\hello.exe)
+about_page_how_to_use;Nasıl kullanılır
+about_page_feedback;Geri bildirim
+guidance_introduce;1Remote ile istediğiniz zaman, istediğiniz yerden uzak oturum açabilirsiniz.
+guidance_feature_launcher_key;Başlatıcıyı aç
+guidance_feature_launcher_select;Öğe seç
+guidance_feature_launcher_connect;Bağlan
+guidance_feature_launcher_menu;Menü
+guidance_feature_tab_demo;RDP, SSH, VNC, SFTP... için sürüklenebilir, ayrılabilir, yerleştirilebilir uzak oturum sekmeleri.
+guidance_feature_start_setting1;İlk kullanımdan önce lütfen birkaç ayarı onaylayın.
+guidance_feature_start_setting2;Bu ayarı daha sonra Ayarlar bölümünden değiştirebilirsiniz.
+Portable mode;Taşınabilir mod
+Profile is saved where executable is located;Profil, uygulamanın bulunduğu klasöre kaydedilir
+Install for current windows account;Geçerli Windows hesabı için yükle
+Profile is saved in your Windows AppData folder;Profil, Windows AppData klasörünüze kaydedilir
+word_oops;Hay aksi...
+error_report_unexpected_error_occurred;Beklenmeyen bir hata oluştu. Hata bilgisi aşağıdadır:
+error_report_to_clipboard;Panoya kopyala
+error_report_please_help_us_improve;Lütfen bu hatayı bildirerek 1Remote'u geliştirmemize yardımcı olun.
+error_report_how_help_us_improve;Hata mesajını kopyalayıp bir bildirim yolu seçmeniz yeterli.
+error_report_send_by_email;E-posta ile gönder
+error_report_send_by_github;GitHub ile gönder
+logo_selector_open_file_dialog_title;bir resim seçin
+Default;Varsayılan
+Exe path;Exe yolu
+Cmd parameter;CMD parametresi
+New runner name;Yeni çalıştırıcı adı
+Can not be empty!;Boş bırakılamaz!
+Hosting;Barındırma
+Hosting this exe in 1Remote tab view?;Bu exe 1Remote sekmesinde barındırılsın mı?
+Caution: some exe can not be hosted in 1Remote.;Dikkat: Bazı exe dosyaları 1Remote içinde barındırılamaz, lütfen kendiniz test edin.
+Show environment variables;Ortam değişkenlerini göster
+Add environment variables;Ortam değişkeni ekle
+write permissions alert;"`{0}` klasörüne yazma iznimiz yok!
+Lütfen şunları deneyin:
+1. yönetici olarak çalıştırın
+2. klasör veya dosya izinlerini değiştirin
+3. 1Remote'u başka bir klasöre taşıyın"
+Follow system;Sistem ölçeğini izle (Desteklenen sunucular: Windows Server 2012 R2 ve üzeri)
+tag_tooltips;Tıklama: bu etiketi filtre yap{0}Ctrl + tıklama: bu etiketi dahil edilenler listesine ekle{0}Alt + tıklama: bu etiketi hariç tutulanlar listesine ekle
+Are you sure you want to close the connection?;Bağlantıyı kapatmak istediğinize emin misiniz?
+Hi there,;Merhaba,
+I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!;Umarım bu uygulamayı faydalı bulursunuz. Çalışmalarımı desteklemek isterseniz bana bir kahve ısmarlayabilir ya da güzel bir değerlendirme yazabilirsiniz. Teşekkürler!
+Give suggestions;Öneride bulun
+Buy a coffee;Kahve ısmarla
+Give nice review;Güzel bir değerlendirme yaz
+Do not show this again in current version;Bu sürümde bir daha gösterme
+User profile;Kullanıcı profili
+Selected runner;Seçili çalıştırıcı
+Login with password;Parola ile oturum aç
+Login with ssh private key;SSH özel anahtarı ile oturum aç
+Supports the Putty-key only;Yalnızca PuTTY anahtarını destekler
+Supports the OpenSSH format key only with the internal SFTP client.;Dahili SFTP istemcisi yalnızca OpenSSH biçimindeki anahtarı destekler.
+Supports the OpenSSH format key and Putty-key with WinSCP.;WinSCP ile hem OpenSSH biçimindeki anahtar hem de PuTTY anahtarı desteklenir.
+Environment variables;Ortam değişkenleri
+Before runner start the environment variables will be set;Ortam değişkenleri, çalıştırıcı başlamadan önce ayarlanır
+Data Source name;Veri kaynağı adı
+Please select a Data Source;Lütfen bir veri kaynağı seçin
+Test connection;Bağlantıyı test et
+Show XXX button;`{0}` düğmesini göster
+Show recently used here;Son kullanılanları burada göster
+Hide recently used;Son kullanılanları gizle
+Leave blank to inherit the default value;Varsayılan değeri kullanmak için boş bırakın
+Alternative;Alternatif
+with alternative;alternatif:
+Automatic address switching;Otomatik adres değiştirme
+Availability detection;Erişilebilirlik denetimi
+Check if address is available before connect;Bağlanmadan önce adresin erişilebilir olup olmadığını denetle
+When the default host or port is unavailable the alternate addresses will be tried in sequence;Varsayılan ana bilgisayar veya port erişilemezse alternatif adresler sırayla denenir
+support multi-address multi-account;çoklu adres ve çoklu hesap desteği
+We are not able to connect to xxx;`{0}` ile bağlantı kurulamadı!
+XXX is already existed!;`{0}` zaten mevcut!
+XXX is not existed!;`{0}` mevcut değil!
+Show credentials info;Kimlik bilgilerini göster
+Sorting;Sıralama
+Sort by drag;Sürükleyerek sırala
+We can not connect database:;Veritabanına bağlanılamadı:
+We can not create tables on database:;Veritabanında tablo oluşturulamadı:
+We can not insert into database:;Veritabanına kayıt eklenemedi:
+We can not update on database:;Veritabanında güncelleme yapılamadı:
+We can not read from database:;Veritabanından okuma yapılamadı:
+We can not select from database:;Veritabanında sorgu yapılamadı:
+We can not delete from database:;Veritabanından silme yapılamadı:
+because:;nedeni:
+Pause;Duraklatıldı
+Updating;Güncelleniyor
+Reconnecting;Yeniden bağlanılıyor
+Next update check;Sonraki güncelleme denetimi
+Next auto reconnect;Sonraki otomatik yeniden bağlanma
+Pin;Sabitle
+Unpin;Sabitlemeyi kaldır
+This is your list of tags. Right click for a context menu to pin them on header.;Bu sizin etiket listenizdir. Etiketleri üst başlığa sabitlemek için sağ tıklayıp menüyü açın.
+Create desktop shortcut;Masaüstü kısayolu oluştur
+Success;Başarılı
+Failed;Başarısız
+Please complete the windows credentials verification;Lütfen Windows kimlik doğrulamasını tamamlayın
+Enter your credentials;Kimlik bilgilerinizi girin
+Before proceeding with sensitive operations, we need to make sure it is you.;Hassas işlemlere devam etmeden önce bunun siz olduğunuzdan emin olmamız gerekiyor.
+Verification failed. Please try again.;Doğrulama başarısız. Lütfen tekrar deneyin.
+Security;Güvenlik
+Windows credentials verification is required to view passwords;Parolaları görüntülemek için Windows kimlik doğrulaması gerekir
+Not existed;Mevcut değil
+Not a number;Sayı değil
+Optional;İsteğe bağlı
+Nullable;Boş bırakılabilir
+Selections;Seçenekler
+Const value;Sabit değer
+Description;Açıklama
+Prefix;Önek
+append blank after prefix;önekten sonra boşluk ekle
+append blank after value;değerden sonra boşluk ekle
+Do you want to replace the current parameter list with preset value?;Mevcut parametre listesini hazır değerlerle değiştirmek istiyor musunuz?
+One option per line;Her satıra bir seçenek
+Use vertical lines to separate descriptions;Açıklamaları dikey çizgiyle ayırın (değer|açıklama)
+Automatically focus on the content when selecting a tab;Sekme seçildiğinde içeriğe otomatik odaklan
+Copy the port along with the address when copying;Adresi kopyalarken portu da kopyala
+Place the close button on the left side to prevent accidental touches;Yanlışlıkla tıklamayı önlemek için kapat düğmesini sola yerleştir
+Ask for password when open connect;Bağlantı açılırken parola sor
+Remember the information above;Yukarıdaki bilgileri hatırla
+Quick Connect;Hızlı Bağlan
+Allow Quick Connect to save entered address information;Hızlı Bağlan'ın girilen adres bilgilerini kaydetmesine izin ver
+Yes;Evet
+No;Hayır
+Click on the icon above to change it to your own image;Kendi resminizle değiştirmek için yukarıdaki simgeye tıklayın
+Always open in new window;Her zaman yeni pencerede aç
+Set focus to local desktop when the mouse is moved out of RDP desktop;Fare RDP masaüstünden çıkınca odağı yerel masaüstüne ver
+Close button behavior;Kapat düğmesi davranışı
+Minimize to system tray;Sistem tepsisine küçült
+Credentials;Kimlik bilgileri
+Credentials Vault;Kimlik Bilgileri Kasası
+Select credentials within the same database;Aynı veritabanındaki kimlik bilgilerini seçin
+Reset main window location;Ana pencere konumunu sıfırla
+New server;Yeni sunucu
+Delete folder XXXX and move its contents to parent folder;`{0}` klasörü silinsin ve içeriği üst klasöre taşınsın mı?
+ListViewMode;Görünüm
+ListViewMode_List;Liste
+ListViewMode_Card;Kart
+ListViewMode_Tree;Ağaç
+Do not check for new version;Yeni sürümü denetleme
