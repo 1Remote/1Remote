@@ -1,0 +1,338 @@
+key;ko-kr
+language_code-ISO;ko-KR
+language_code-google;ko
+language_name;한국어 (ko-KR)
+Warning;경고
+Error;오류
+Info;알림
+OK;확인
+Exit;종료
+Close;닫기
+Add;추가
+Edit;편집
+Save;저장
+Save as...;다른 이름으로 저장...
+Back;뒤로
+Delete;삭제
+Cancel;취소
+Select;선택
+Explore to...;탐색기에서 열기...
+Previous;이전
+Next;다음
+Done;완료
+Reset;초기화
+Import;가져오기
+Export;내보내기
+Name;이름
+File Name;파일 이름
+Test;테스트
+Reconnect;다시 연결
+Dismiss;닫기
+Lock;잠금
+Always on top;항상 위에 표시
+Close all;모두 닫기
+Rename;이름 바꾸기
+Connect;연결
+Connect (New window);연결 (새 창)
+Note;메모
+Share;공유
+Copy;복사
+Enabled;사용
+Helper;도우미
+Preview;미리보기
+Theme;테마
+Color;색상
+Color1;기본 색상
+Color2;보조 색상
+Background;배경
+Normal;보통
+Lighter;밝게
+Darker;어둡게
+Font;글꼴
+Font size;글꼴 크기
+Themes;테마
+Options;설정
+About;정보
+Language;언어
+Startup;시작
+Tags;태그
+Press Enter to add a tag, which is used for grouping servers. By right-clicking on the tags on the homepage, you can filter or pin a specific tag.;태그는 서버를 그룹으로 묶는 데 사용합니다. Enter 키를 누르면 태그가 추가됩니다. 홈 화면의 태그를 마우스 오른쪽 버튼으로 클릭하면 특정 태그로 필터링하거나 고정할 수 있습니다.
+Icon;아이콘
+Hostname;호스트 이름
+Target;대상
+Port;포트
+User;사용자
+Password;비밀번호
+Selected;선택됨
+Custom;사용자 지정
+All;전체
+Protocol;프로토콜
+Cameras;카메라
+Upload;업로드
+filter_mainwindow;키워드 또는 '#' + 태그 이름, 또는 Tab 키
+Search (Ctrl+F);검색 (Ctrl + F)
+hotkey_already_registered;이미 등록된 단축키입니다
+hotkey_registered_fail;단축키 등록에 실패했습니다
+string_permission_denied;권한이 없습니다
+file_transmit_host_list_header_last_update;수정한 날짜
+Type;유형
+file_transmit_host_list_header_size;크기
+file_transmit_host_message_preview_over_size;이 항목은 1 MB를 초과합니다. 그래도 여시겠습니까?
+file_transmit_host_message_files_download_to;저장할 폴더를 선택하세요
+file_transmit_host_message_files_download_to_dir;이 폴더 사용
+file_transmit_host_message_select_files_to_upload;업로드할 파일을 선택하세요
+file_transmit_host_command_refresh;새로 고침 (F5)
+Create a folder;폴더 만들기
+file_transmit_host_command_upload;업로드 (Ctrl + V)
+file_transmit_host_command_select_files_upload;파일 선택하여 업로드
+file_transmit_host_command_select_folder_upload;폴더 선택하여 업로드
+file_transmit_host_command_delete;삭제 (Del)
+file_transmit_host_command_save_to;저장 위치... (Ctrl + S)
+file_transmit_host_warning_same_names_title;바꾸기 또는 취소
+file_transmit_host_warning_same_names;대상에 같은 이름의 파일이 {0}개 있습니다. 계속하시겠습니까?
+host_reconecting_info;다시 연결하는 중...
+system_options_general_title;일반
+Run automatically at OS startup;Windows 시작 시 자동 실행(최소화 상태)
+Confirm before closing;닫기 전에 확인
+Show current session icon instead of the app icon when connected;연결 중에는 앱 아이콘 대신 현재 세션의 아이콘 표시
+system_options_general_log_file_path;로그 파일
+system_options_quick_match_providers;키워드 매처
+Launcher;런처
+system_options_quick_launcher_enable;런처 사용
+system_options_quick_launcher_hotkey;단축키
+system_options_data_security_database;데이터베이스
+Caution: Your data will be saved unencrypted!;주의: 데이터가 암호화되지 않은 상태로 저장됩니다!
+system_options_data_security_info_data_processing;데이터를 처리하는 중입니다. 앱을 닫지 마세요!
+Duplicate;복제
+server_card_operate_copy_address;호스트 이름을 클립보드에 복사
+server_card_operate_copy_username;사용자 이름을 클립보드에 복사
+server_card_operate_copy_password;비밀번호를 클립보드에 복사
+confirm_to_delete;정말 삭제하시겠습니까?
+confirm_to_delete_selected;선택한 항목을 모두 삭제하시겠습니까?
+import_server_dialog_title;파일 선택
+import_from_json;json 가져오기
+import_from_mremoteng_csv;mRemoteNG csv 가져오기
+import_from_rdp_file;*.rdp 가져오기
+import_from_sqlite_db;PRemoteM db 가져오기
+import_done_0_items_added;가져오기 완료, {0}개 항목이 추가되었습니다.
+import_failure_with_data_format_error;데이터 형식 오류!
+server_editor_different_options;<서로 다른 값>
+server_editor_bulk_editing;일괄 편집
+server_editor_bulk_editing_title;일괄 편집 중:
+server_editor_multi_selected_count;선택한 항목 수:
+server_editor_group_title_common;일반
+Connection Info;연결 정보
+Connection Settings;연결
+server_editor_group_title_display;디스플레이
+server_editor_group_title_advantage;고급 설정
+server_editor_group_title_gateway;RD 게이트웨이 서버
+server_editor_tags_tag;여러 개 입력 가능, ','로 구분
+Script before connect;연결 전 스크립트
+Hide script window;스크립트 창 숨기기(오래 걸리는 스크립트에는 권장하지 않음)
+Script after disconnected;연결 해제 후 스크립트
+Run bat before connect;연결 전 bat 실행(예: 'C:\OpenSshTunneling.bat' 실행)
+Run bat after disconnected;연결 해제 후 bat 실행(예: 'C:\CloseSshTunneling.bat' 실행)
+Use private key;개인 키 사용
+Private key;개인 키
+Open SFTP when connected;연결 시 SFTP 함께 열기
+Open SFTP;SFTP 열기
+server_editor_display_full_screen_flag;전체 화면 원격 데스크톱
+server_editor_display_full_screen_flag_window;사용 안 함
+server_editor_display_full_screen_flag_full_screen;사용 (단일 모니터)
+server_editor_display_full_screen_flag_all_screens;사용 (다중 모니터)
+Display the connection bar when use the full screen;전체 화면에서 연결 표시줄 표시
+Pin the connection bar by default;연결 표시줄을 기본으로 고정
+New session always use full screen;새 세션은 항상 전체 화면으로 시작
+New session use full screen if the last session is full screen;마지막 세션이 전체 화면이었으면 새 세션도 전체 화면으로 시작
+Resolution;해상도
+Fit to window;창 크기에 맞춤(지원 서버: Windows Server 2012 R2 이상)
+Custom resolution (stretch);사용자 지정 해상도 (늘이기)
+Custom resolution (fixed);사용자 지정 해상도 (고정)
+Full-screen resolution (stretch);전체 화면 해상도 (늘이기)
+Full-screen resolution (fixed);전체 화면 해상도 (고정)
+Scale;배율
+server_editor_display_rdp_performance;성능
+server_editor_display_rdp_performance_auto;자동 (연결 속도에 따라 판단)
+server_editor_display_rdp_performance_high;높음 (32비트 색, 모든 기능 지원)
+server_editor_display_rdp_performance_middle;중간 (16비트 색, 글꼴 다듬기와 바탕 화면 컴포지션만)
+server_editor_display_rdp_performance_low;낮음 (8비트 색, 기능 지원 없음)
+server_editor_advantage_admin;서버 관리용으로 연결
+server_editor_advantage_resources;로컬 리소스
+server_editor_advantage_clipboard;클립보드
+server_editor_advantage_key_combinations;키 조합
+server_editor_advantage_disk_drives;드라이브
+Drives plug in later;나중에 연결하는 드라이브
+server_editor_advantage_sounds;소리
+server_editor_advantage_sounds_disabled;사용 안 함
+server_editor_advantage_sounds_on_local;로컬에서 재생
+server_editor_advantage_sounds_on_remote;원격에서 재생
+server_editor_advantage_sound_quality;음질
+server_editor_advantage_sound_quality_dynamic;동적
+server_editor_advantage_sound_quality_medium;중간
+server_editor_advantage_sound_quality_high;높음
+server_editor_advantage_audio_capture;오디오 녹음
+server_editor_advantage_ports;포트
+server_editor_advantage_printers;프린터
+server_editor_advantage_smart_cards;스마트 카드
+server_editor_advantage_ssh_version;SSH 버전
+server_editor_advantage_ssh_startup_auto_command;자동 명령
+server_editor_advantage_ssh_startup_auto_kitty_session_tip;KiTTY 세션 파일 경로를 선택하면 외부 설정을 사용합니다
+server_editor_advantage_sftp_startup_path;시작 경로
+server_editor_gateway_mode;연결
+server_editor_gateway_mode_automatically_detect;RD 게이트웨이 서버 설정 자동 검색
+server_editor_gateway_mode_use_these;다음 RD 게이트웨이 서버 설정 사용
+server_editor_gateway_mode_do_not_use;RD 게이트웨이 서버 사용 안 함
+server_editor_gateway_server_host_name;호스트 이름
+server_editor_gateway_logon_method;로그온 방법
+server_editor_gateway_logon_method_psw;비밀번호
+server_editor_gateway_logon_method_smart_card;스마트 카드
+server_editor_gateway_bypass_gateway_for_local_address;로컬 주소에는 RD 게이트웨이 서버 사용 안 함
+How to select the specified monitors;특정 모니터를 선택하는 방법
+mstsc.exe mode;mstsc.exe 모드
+In this mode RDP will start the session in the way mstsc.exe xxxx.rdp in CMD, it can offer more custom parameters.;이 모드에서는 CMD에서 'mstsc.exe xxxx.rdp'를 실행하는 방식으로 RDP 세션을 시작하므로 더 많은 사용자 지정 매개변수를 쓸 수 있습니다.
+Note: This mode will be automatically enabled if there are 2+ monitors with different display scaling on your PC and you selected the full screen mode.;참고: 디스플레이 배율이 서로 다른 모니터가 2대 이상 있고 전체 화면 모드를 선택한 경우 이 모드가 자동으로 사용됩니다.
+Additional settings;추가 설정
+Preview rdp file;rdp 파일 미리보기
+Check monitor number;모니터 번호 확인
+server_editor_remote_app_name;앱 이름
+server_editor_remote_app_name_tag;앱 이름 (예: hello)
+server_editor_remote_app_fullname;앱 경로
+server_editor_remote_app_fullname_tag;서버의 exe 전체 경로 (예: C:\Apps\hello.exe)
+about_page_how_to_use;사용 방법
+about_page_feedback;피드백
+guidance_introduce;1Remote로 언제 어디서나 원격 세션을 열 수 있습니다.
+guidance_feature_launcher_key;런처 호출
+guidance_feature_launcher_select;항목 선택
+guidance_feature_launcher_connect;연결
+guidance_feature_launcher_menu;메뉴 열기
+guidance_feature_tab_demo;RDP, SSH, VNC, sFTP 등의 원격 세션을 끌어서 분리하거나 도킹할 수 있습니다
+guidance_feature_start_setting1;처음 사용하기 전에 몇 가지 설정을 확인해 주세요.
+guidance_feature_start_setting2;이 설정은 나중에 설정 화면에서 변경할 수 있습니다.
+Portable mode;포터블 모드
+Profile is saved where executable is located;프로필을 실행 파일이 있는 폴더에 저장합니다
+Install for current windows account;현재 Windows 계정에 설치
+Profile is saved in your Windows AppData folder;프로필을 Windows AppData 폴더에 저장합니다
+word_oops;이런...
+error_report_unexpected_error_occurred;예기치 않은 오류가 발생했습니다. 오류 정보는 아래와 같습니다:
+error_report_to_clipboard;클립보드에 복사
+error_report_please_help_us_improve;이 오류를 신고하여 1Remote 개선에 도움을 주세요.
+error_report_how_help_us_improve;오류 메시지를 복사한 뒤 신고 방법을 선택하면 됩니다.
+error_report_send_by_email;이메일로 보내기
+error_report_send_by_github;GitHub으로 보내기
+logo_selector_open_file_dialog_title;그림 선택
+Default;기본값
+Exe path;Exe 경로
+Cmd parameter;CMD 매개변수
+New runner name;새 러너 이름
+Can not be empty!;비워 둘 수 없습니다!
+Hosting;탭에 통합
+Hosting this exe in 1Remote tab view?;이 exe를 1Remote 탭 창에 통합할까요?
+Caution: some exe can not be hosted in 1Remote.;주의: 일부 exe는 1Remote에 통합할 수 없습니다. 직접 테스트해 보세요.
+Show environment variables;환경 변수 표시
+Add environment variables;환경 변수 추가
+write permissions alert;"`{0}` 디렉터리에 대한 쓰기 권한이 없습니다!
+다음 방법을 시도해 보세요:
+1. 관리자 권한으로 실행
+2. 디렉터리 또는 파일 권한 변경
+3. 1Remote를 다른 폴더로 이동"
+Follow system;시스템 설정 따름(지원 서버: Windows Server 2012 R2 이상)
+tag_tooltips;클릭: 이 태그로 필터링{0}Ctrl + 클릭: 이 태그를 포함 목록에 추가{0}Alt + 클릭: 이 태그를 제외 목록에 추가
+Are you sure you want to close the connection?;연결을 닫으시겠습니까?
+Hi there,;안녕하세요,
+I hope that you find this app useful. If you would like to support my work, you can buy me a coffee or give a nice review. Thanks!;이 앱이 유용하게 쓰이길 바랍니다. 제 작업을 응원하고 싶으시다면 커피 한 잔을 사 주시거나 좋은 리뷰를 남겨 주세요. 감사합니다!
+Give suggestions;의견 보내기
+Buy a coffee;커피 사 주기
+Give nice review;좋은 리뷰 남기기
+Do not show this again in current version;현재 버전에서 다시 표시하지 않음
+User profile;사용자 프로필
+Selected runner;선택한 러너
+Login with password;비밀번호로 로그인
+Login with ssh private key;SSH 개인 키로 로그인
+Supports the Putty-key only;PuTTY 키만 지원
+Supports the OpenSSH format key only with the internal SFTP client.;내장 SFTP 클라이언트는 OpenSSH 형식 키만 지원합니다.
+Supports the OpenSSH format key and Putty-key with WinSCP.;WinSCP에서는 OpenSSH 형식 키와 PuTTY 키를 모두 지원합니다.
+Environment variables;환경 변수
+Before runner start the environment variables will be set;러너를 시작하기 전에 환경 변수가 설정됩니다
+Data Source name;데이터 원본 이름
+Please select a Data Source;데이터 원본을 선택하세요
+Test connection;연결 테스트
+Show XXX button;`{0}` 버튼 표시
+Show recently used here;최근 사용 항목을 여기에 표시
+Hide recently used;최근 사용 항목 숨기기
+Leave blank to inherit the default value;비워 두면 기본값을 상속합니다
+Alternative;대체
+with alternative;대체 자격 증명
+Automatic address switching;자동 주소 전환
+Availability detection;가용성 검사
+Check if address is available before connect;연결 전에 주소 사용 가능 여부 확인
+When the default host or port is unavailable the alternate addresses will be tried in sequence;기본 호스트나 포트를 사용할 수 없으면 대체 주소를 순서대로 시도합니다
+support multi-address multi-account;다중 주소·다중 계정 지원
+We are not able to connect to xxx;`{0}`에 연결할 수 없습니다!
+XXX is already existed!;`{0}`이(가) 이미 존재합니다!
+XXX is not existed!;`{0}`이(가) 존재하지 않습니다!
+Show credentials info;자격 증명 정보 표시
+Sorting;정렬
+Sort by drag;끌어서 정렬
+We can not connect database:;데이터베이스에 연결할 수 없습니다:
+We can not create tables on database:;데이터베이스에 테이블을 만들 수 없습니다:
+We can not insert into database:;데이터베이스에 삽입할 수 없습니다:
+We can not update on database:;데이터베이스를 업데이트할 수 없습니다:
+We can not read from database:;데이터베이스에서 읽을 수 없습니다:
+We can not select from database:;데이터베이스에서 조회할 수 없습니다:
+We can not delete from database:;데이터베이스에서 삭제할 수 없습니다:
+because:;원인:
+Pause;일시 정지
+Updating;업데이트 중
+Reconnecting;다시 연결 중
+Next update check;다음 업데이트 확인
+Next auto reconnect;다음 자동 재연결
+Pin;고정
+Unpin;고정 해제
+This is your list of tags. Right click for a context menu to pin them on header.;태그 목록입니다. 마우스 오른쪽 버튼을 클릭하면 머리글에 고정할 수 있는 메뉴가 열립니다.
+Create desktop shortcut;바탕 화면 바로 가기 만들기
+Success;성공
+Failed;실패
+Please complete the windows credentials verification;Windows 자격 증명 확인을 완료해 주세요
+Enter your credentials;자격 증명 입력
+Before proceeding with sensitive operations, we need to make sure it is you.;민감한 작업을 진행하기 전에 본인 확인이 필요합니다.
+Verification failed. Please try again.;확인에 실패했습니다. 다시 시도해 주세요.
+Security;보안
+Windows credentials verification is required to view passwords;비밀번호를 보려면 Windows 자격 증명 확인 필요
+Not existed;존재하지 않음
+Not a number;숫자가 아님
+Optional;선택 사항
+Nullable;비워 둘 수 있음
+Selections;선택 항목
+Const value;고정값
+Description;설명
+Prefix;접두사
+append blank after prefix;접두사 뒤에 공백 추가
+append blank after value;값 뒤에 공백 추가
+Do you want to replace the current parameter list with preset value?;현재 매개변수 목록을 사전 설정 값으로 바꾸시겠습니까?
+One option per line;한 줄에 옵션 하나
+Use vertical lines to separate descriptions;값과 설명은 세로 막대로 구분(값|설명)
+Automatically focus on the content when selecting a tab;탭을 선택하면 자동으로 내용에 포커스
+Copy the port along with the address when copying;주소를 복사할 때 포트도 함께 복사
+Place the close button on the left side to prevent accidental touches;실수로 누르지 않도록 닫기 버튼을 왼쪽에 배치
+Ask for password when open connect;연결할 때 비밀번호 묻기
+Remember the information above;위 정보 기억
+Quick Connect;빠른 연결
+Allow Quick Connect to save entered address information;빠른 연결에서 입력한 주소 정보 저장 허용
+Yes;예
+No;아니요
+Click on the icon above to change it to your own image;위 아이콘을 클릭하면 원하는 이미지로 바꿀 수 있습니다
+Always open in new window;항상 새 창에서 열기
+Set focus to local desktop when the mouse is moved out of RDP desktop;마우스가 RDP 화면 밖으로 나가면 로컬 데스크톱으로 포커스 이동
+Close button behavior;닫기 버튼 동작
+Minimize to system tray;시스템 트레이로 최소화
+Credentials;자격 증명
+Credentials Vault;자격 증명 저장소
+Select credentials within the same database;같은 데이터베이스 안의 자격 증명만 선택할 수 있습니다
+Reset main window location;주 창 위치 초기화
+New server;새 서버
+Delete folder XXXX and move its contents to parent folder;`{0}` 폴더를 삭제하고 내용을 상위 폴더로 옮길까요?
+ListViewMode;보기
+ListViewMode_List;목록
+ListViewMode_Card;카드
+ListViewMode_Tree;트리
+Do not check for new version;새 버전 확인 안 함

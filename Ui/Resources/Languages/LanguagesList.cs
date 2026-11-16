@@ -11,6 +11,7 @@ public static class LanguagesResources
         "gl-es.xaml",
         "it-it.xaml",
         "ja-jp.xaml",
+        "ko-kr.xaml",
         "pl-pl.xaml",
         "pt-br.xaml",
         "pt-pt.xaml",
