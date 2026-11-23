@@ -48,7 +48,7 @@ namespace _1RM.Utils
                 {
                     var keyX = GetIpV4Key(xa4, portX);
                     var keyY = GetIpV4Key(ya4, portY);
-                    return string.Compare(keyX, keyY, StringComparison.Ordinal);
+                    return ApplyOrder(string.Compare(keyX, keyY, StringComparison.Ordinal));
                 }
                 // 优先级排序：IPv4 > IPv6 > 其他
                 if (isXIpV4 && !isYIpV4) return return_1; // x 是 IPv4，y 不是
@@ -62,19 +62,22 @@ namespace _1RM.Utils
                 {
                     var xkey = GetIpV6Key(xa6, portX);
                     var ykey = GetIpV6Key(ya6, portY);
-                    return string.Compare(xkey, ykey, StringComparison.Ordinal);
+                    return ApplyOrder(string.Compare(xkey, ykey, StringComparison.Ordinal));
                 }
                 if (isXIpV6 && !isYIpV6) return return_1; // x 是 IPv6，y 不是
                 if (!isXIpV6 && isYIpV6) return return1; // y 是 IPv6，x 不是
             }
 
             // 进行字面值比较
-            var ret = string.Compare(strX, strY, StringComparison.Ordinal);
-            if (!_orderIsAsc)
-            {
-                ret = -ret;
-            }
-            return ret;
+            return ApplyOrder(string.Compare(strX, strY, StringComparison.Ordinal));
+        }
+
+        /// <summary>
+        /// Applies the requested sort direction to a comparison result.
+        /// </summary>
+        private int ApplyOrder(int compareResult)
+        {
+            return _orderIsAsc ? compareResult : -compareResult;
         }
 
         private (string, string) SplitIpAndPort(string str)
