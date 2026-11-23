@@ -127,6 +127,14 @@ namespace _1RM.View.Host.ProtocolHosts
                 Status = ProtocolHostStatus.Disconnected;
                 ParentWindowResize_StopWatch();
 
+                if (_disposeAfterDisconnect)
+                {
+                    // Dispose() asked for this disconnect: the control is idle now, release it here like the cases below
+                    SimpleLogHelper.Debug("RDP Host: OnDisconnected while disposing");
+                    Dispose();
+                    return;
+                }
+
                 // https://learn.microsoft.com/windows/win32/termserv/imstscaxevents-ondisconnected
                 const int disconnectReasonLocalNotError = 1;  // Local disconnection. This is not an error code. Note that this will also be returned if the user cancels the RdpClient's attempt to reconnect.
                 const int disconnectReasonRemoteByUser = 2;   // Remote disconnection by user (via 'Disconnect', 'Signout', 'Shutdown' and 'Reboot'). This is not an error code.

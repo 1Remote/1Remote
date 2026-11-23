@@ -89,6 +89,11 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private readonly object _rdpClientDisposeLock = new object();
 
+        // mstscax deadlocks when a connected control is torn down directly, so Dispose() disconnects first and the control is released from OnDisconnected
+        private const int DISPOSE_DISCONNECT_WAIT_MS = 3000;
+        private volatile bool _disposeAfterDisconnect = false;
+        private readonly Timer _disposeFallbackTimer = new Timer(DISPOSE_DISCONNECT_WAIT_MS) { Enabled = false, AutoReset = false };
+
 
         public static AxMsRdpClient09Host Create(RDP rdp, int width = 0, int height = 0)
         {
@@ -159,6 +164,15 @@ namespace _1RM.View.Host.ProtocolHosts
                 }
             };
 
+            // the control never reported the disconnect: release it anyway instead of leaking a connected session
+            _disposeFallbackTimer.Elapsed += (_, _) => Execute.OnUIThread(() =>
+            {
+                if (_disposeAfterDisconnect == false) return;
+                SimpleLogHelper.Debug($"RDP Host: no OnDisconnected within {DISPOSE_DISCONNECT_WAIT_MS}ms, dispose the control anyway");
+                Status = ProtocolHostStatus.Disconnected;
+                Dispose();
+            });
+
             InitRdp(width, height);
             GlobalEventHelper.OnScreenResolutionChanged += OnScreenResolutionChanged;
         }
@@ -171,6 +185,27 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public void Dispose()
         {
+            if (_rdpClient != null && (Status == ProtocolHostStatus.Connecting || Status == ProtocolHostStatus.Connected))
+            {
+                // a second Disconnect() on the disconnecting control fails, and must not end in a direct dispose either
+                if (_disposeAfterDisconnect) return;
+                try
+                {
+                    _disposeAfterDisconnect = true;
+                    _resizeEndTimer?.Stop();
+                    _loginResizeTimer?.Stop();
+                    SimpleLogHelper.Debug($"RDP Host: disconnect the live session before dispose, wait up to {DISPOSE_DISCONNECT_WAIT_MS}ms for OnDisconnected");
+                    Execute.OnUIThreadSync(() => _rdpClient?.Disconnect());
+                    _disposeFallbackTimer.Start();
+                    return;
+                }
+                catch (Exception e)
+                {
+                    // the disconnect could not be sent (no UI thread left, or the control refused it): dispose right here like before
+                    SimpleLogHelper.Error(e);
+                }
+            }
+            _disposeFallbackTimer.Stop();
             SimpleLogHelper.Debug($"Disposing {this.GetType().Name}({this.GetHashCode()})");
             _resizeEndTimer?.Dispose();
             _loginResizeTimer?.Dispose();
