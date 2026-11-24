@@ -118,7 +118,6 @@ namespace _1RM.Controls.NoteDisplay
             PopupNote.IsOpen = false;
             await Task.Yield();
             PopupNote.IsOpen = true;
-            SimpleLogHelper.Warning($"{PopupNote.Placement} {PopupNote.ActualWidth}");
             this.MouseMove -= OnMouseMove;
             this.MouseMove += OnMouseMove;
         }
