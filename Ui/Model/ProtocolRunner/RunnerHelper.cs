@@ -37,11 +37,21 @@ namespace _1RM.Model.ProtocolRunner
                 return new InternalDefaultRunner(protocolName);
             }
 
-            var r = p.Runners.FirstOrDefault(x => x.Name == assignRunnerName);
-            r ??= p.Runners.FirstOrDefault(x => x.Name == server.SelectedRunnerName);
-            r ??= p.Runners.FirstOrDefault(x => x.Name == p.SelectedRunnerName);
+            var r = FindRunnerByName(p.Runners, assignRunnerName);
+            r ??= FindRunnerByName(p.Runners, server.SelectedRunnerName);
+            r ??= FindRunnerByName(p.Runners, p.SelectedRunnerName);
             r ??= p.Runners.FirstOrDefault();
             return r ?? new InternalDefaultRunner(protocolName);
+        }
+
+        /// <summary>
+        /// find a runner by its name, "Putty" is the old name of the preset runner "PuTTY"
+        /// </summary>
+        private static Runner? FindRunnerByName(List<Runner> runners, string? name)
+        {
+            var r = runners.FirstOrDefault(x => x.Name == name);
+            r ??= name == "Putty" ? runners.FirstOrDefault(x => x.Name == "PuTTY") : null;
+            return r;
         }
 
         public static bool IsRunWithoutHosting(this Runner runner)

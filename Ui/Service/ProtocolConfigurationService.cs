@@ -90,7 +90,8 @@ namespace _1RM.Service
                 { "%PRIVATE_KEY_PATH%", "%1RM_PRIVATE_KEY_PATH%" },
             };
 
-            bool saveFlag = false;
+            // the preset runner "PuTTY" was named "Putty" before, a saved runner keeps its settings under the new name
+            bool saveFlag = RenameRunner(ProtocolConfigs[SSH.ProtocolName], "Putty", "PuTTY");
             foreach (var config in ProtocolConfigs)
             {
                 var protocolName = config.Key;
@@ -133,6 +134,22 @@ namespace _1RM.Service
             }
         }
 
+
+        private static bool RenameRunner(ProtocolSettings c, string oldName, string newName)
+        {
+            // do nothing when a runner with the new name exists already
+            if (c.Runners.Any(x => x.Name == newName))
+                return false;
+            var isRenamed = false;
+            foreach (var runner in c.Runners.Where(x => x.Name == oldName))
+            {
+                runner.Name = newName;
+                isRenamed = true;
+            }
+            if (isRenamed && c.SelectedRunnerName == oldName)
+                c.SelectedRunnerName = newName;
+            return isRenamed;
+        }
 
         public static ProtocolSettings? LoadConfig(string protocolFolderName, string protocolName)
         {
@@ -239,8 +256,9 @@ namespace _1RM.Service
                 }
                 if (SSH.ProtocolName == protocolName)
                 {
-                    if (c.Runners.All(x => x.Name != "Putty"))
-                        c.Runners.Add(new ExternalRunnerForSSH("Putty", protocolName)
+                    // "Putty" is the old name of the preset, it is renamed in Load()
+                    if (c.Runners.All(x => x.Name != "PuTTY" && x.Name != "Putty"))
+                        c.Runners.Add(new ExternalRunnerForSSH("PuTTY", protocolName)
                         {
                             ExePath = @"D:\PuTTY.exe",
                             Arguments = @"-ssh %1RM_HOSTNAME% -P %1RM_PORT% -l %1RM_USERNAME% -pw %1RM_PASSWORD% -%SSH_VERSION% -cmd ""%STARTUP_AUTO_COMMAND%""",

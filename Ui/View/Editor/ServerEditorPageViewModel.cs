@@ -697,6 +697,9 @@ namespace _1RM.View.Editor
                 {
                     Runners.Add(Server.ServerEditorDifferentOptions);
                 }
+                // "Putty" is the old name of the preset runner "PuTTY"
+                if (selectedRunner == "Putty" && Runners.Contains("PuTTY"))
+                    selectedRunner = "PuTTY";
                 Server.SelectedRunnerName = Runners.Any(x => x == selectedRunner) ? selectedRunner : Runners.First();
             }
             else
