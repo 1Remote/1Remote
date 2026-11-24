@@ -18,11 +18,11 @@ Each language has its own CSV file in the `glossary/` directory. The `*.xaml` an
 
 3. **Translate the content**: Edit the translations in the second column. You can use any text editor, but be careful not to change the encoding. Avoid using Office Excel. You can use https://edit-csv.net to edit it.
 
-4. **Generate XAML files**: Run `conver_glossary_to_xaml.py` to generate the `*.xaml` and `LanguageList.cs` files.
+4. **Generate XAML files**: Run `conver_glossary_to_xaml.bat` to generate the `*.xaml` and `LanguagesList.cs` files.
 
 ### To Edit an Existing Language
 
-Simply edit the corresponding CSV file in the `glossary/` directory and run `conver_glossary_to_xaml.py`.
+Simply edit the corresponding CSV file in the `glossary/` directory and run `conver_glossary_to_xaml.bat`.
 
 > [!TIP]
 > When editing CSV files, note the following:
@@ -35,18 +35,10 @@ Simply edit the corresponding CSV file in the `glossary/` directory and run `con
 > Terms left blank in the CSV files will be automatically filled using Google Translate if available, and cached in `glossary_translated_by_google/` directory.
 
 > [!NOTE]
-> `conver_glossary_to_xaml.py` requires Python support.
-> The first run may fail, so try it again.
+> `conver_glossary_to_xaml.bat` requires Python support, it runs `glossary_maker.py`.
+> The first run may fail (it installs the Python packages first), so try it again.
 >
-> To access Google Translate, you may need to edit `conver_glossary_to_xaml.py`.
-> For example, to remove proxy:
->
-> ```python
->  # http_proxy = SyncHTTPProxy((b'http', b'127.0.0.1', 1080, b''))
->  # proxies = {'http': http_proxy, 'https': http_proxy}
->  # translator = Translator(proxies=proxies)
->  translator = Translator()
-> ```
+> To access Google Translate through a proxy, edit `glossary_maker.py`: set `Use_proxy_for_google_translator = True` near the top of the file and put your proxy address into the `SyncHTTPProxy(...)` line of `generate_xaml_files()`.
 
 ## 如何新增或编辑语言
 
@@ -62,14 +54,14 @@ Simply edit the corresponding CSV file in the `glossary/` directory and run `con
 
 3. **翻译内容**: 编辑第二列中的翻译文本。请不要用Office Excel打开CSV，因为Excel会修改文件的编码格式。可以使用 <https://edit-csv.net> 进行编辑。
 
-4. **生成XAML文件**: 运行 `conver_glossary_to_xaml.py`，将翻译文本导入到APP源码中。
+4. **生成XAML文件**: 运行 `conver_glossary_to_xaml.bat`，将翻译文本导入到APP源码中。
 
 ### 编辑现有语言
 
-直接编辑 `glossary/` 目录下对应的CSV文件，然后运行 `conver_glossary_to_xaml.py`。
+直接编辑 `glossary/` 目录下对应的CSV文件，然后运行 `conver_glossary_to_xaml.bat`。
 
 > [!TIP]
 > CSV文件中留空的词条将通过Google翻译自动填充，并缓存在 `glossary_translated_by_google/` 目录中。
 
 > [!NOTE]
-> `conver_glossary_to_xaml.py` 需要Python环境支持。
+> `conver_glossary_to_xaml.bat` 需要Python环境支持，它运行的是 `glossary_maker.py`。
