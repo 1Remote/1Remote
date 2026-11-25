@@ -57,6 +57,7 @@ namespace _1RM.View.Editor
             Debug.Assert(server.IsTmpSession() == false);
             var s = (ProtocolBase)server.Clone();
             s.Id = "";
+            s.IsPinnedInList = false;
             return new ServerEditorPageViewModel(globalData, s, dataSource);
         }
 

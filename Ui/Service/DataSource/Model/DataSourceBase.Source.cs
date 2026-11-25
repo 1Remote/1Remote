@@ -32,6 +32,7 @@ namespace _1RM.Service.DataSource.Model
         [JsonIgnore]
         public List<Credential> CachedCredentials { get; protected set; } = new List<Credential>();
 
+        private long _lastPinRevision = -1;
         private EnumDatabaseStatus? _lastReadDataSourceStatus = null;
 
         /// <summary>
@@ -78,7 +79,10 @@ namespace _1RM.Service.DataSource.Model
             else
             {
                 // read data source update timestamp，and compare with last read timestamp. if 
-                return _lastReadTimestamp[tableName] < ret.Result;
+                if (_lastReadTimestamp[tableName] < ret.Result) return true;
+                if (tableName != TableServer.TABLE_NAME) return false;
+                var pins = dataBase.GetTableUpdateTimestamp(IDatabase.ListPinsRevision);
+                return !pins.IsSuccess || pins.Result != System.Threading.Interlocked.Read(ref _lastPinRevision);
             }
             return true;
         }
@@ -129,8 +133,12 @@ namespace _1RM.Service.DataSource.Model
             }
 
             List<ProtocolBase> protocols;
+            long pinRevision;
             lock (this)
             {
+                // Capture the revision before loading, so a concurrent pin is picked up at the next refresh.
+                var pins = GetDataBase().GetTableUpdateTimestamp(IDatabase.ListPinsRevision);
+                if (!pins.IsSuccess) return CachedProtocols;
                 var result = Database_GetServers();
                 if (!result.IsSuccess)
                 {
@@ -139,6 +147,7 @@ namespace _1RM.Service.DataSource.Model
                 SetReadTimestamp(TableServer.TABLE_NAME);
                 SetStatus(true);
                 protocols = result.Items;
+                pinRevision = pins.Result;
             }
 
             // Create view models OUTSIDE lock(this): dispatching under the lock deadlocks the UI thread.
@@ -169,6 +178,7 @@ namespace _1RM.Service.DataSource.Model
             lock (this)
             {
                 CachedProtocols = viewModels;
+                System.Threading.Interlocked.Exchange(ref _lastPinRevision, pinRevision);
             }
             return viewModels;
         }
@@ -352,6 +362,7 @@ namespace _1RM.Service.DataSource.Model
                     {
                         if (old.Server != protocolServer)
                         {
+                            protocolServer.IsPinnedInList = old.IsPinnedInList;
                             old.Server = protocolServer;
                         }
                     }

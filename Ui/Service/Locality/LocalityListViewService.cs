@@ -15,6 +15,28 @@ namespace _1RM.Service.Locality
     {
         public EnumServerOrderBy ServerOrderBy = EnumServerOrderBy.IdAsc;
         public Dictionary<string, int> ServerCustomOrder = new Dictionary<string, int>();
+        public Dictionary<string, int> ConnectionOrder = new Dictionary<string, int>();
+        public static string ConnectionKey(string source, string id) => $"{source.Length}:{source}{id}";
+
+        public int GetConnectionOrder(string source, string id)
+        {
+            if (ConnectionOrder.TryGetValue(ConnectionKey(source, id), out int order)) return order;
+            return ServerCustomOrder.GetValueOrDefault(id, int.MaxValue);
+        }
+
+        public Dictionary<string, int> MergeVisibleOrder(IEnumerable<string> loadedKeys, IReadOnlyList<string> visibleKeys)
+        {
+            // Preserve offline and filtered entries. Only replace the slots occupied by visible rows.
+            var full = ConnectionOrder.OrderBy(pair => pair.Value).Select(pair => pair.Key)
+                .Concat(loadedKeys).Distinct(StringComparer.Ordinal);
+            var visible = new HashSet<string>(visibleKeys, StringComparer.Ordinal);
+            var result = new Dictionary<string, int>(StringComparer.Ordinal);
+            int next = 0;
+            foreach (var key in full)
+                result.Add(visible.Contains(key) ? visibleKeys[next++] : key, result.Count);
+            return result;
+        }
+
         public Dictionary<string, int> GroupedOrder = new Dictionary<string, int>();
         public Dictionary<string, bool> GroupedIsExpanded = new Dictionary<string, bool>();
         public double ServerListNameWidth = 300;
@@ -57,8 +79,23 @@ namespace _1RM.Service.Locality
 
         public static void Save()
         {
+            RetryHelper.Try(WriteSettings, actionOnError: exception => UnifyTracing.Error(exception));
+        }
+
+        private static void WriteSettings()
+        {
             AppPathHelper.CreateDirIfNotExist(AppPathHelper.Instance.LocalityDirPath, false);
-            RetryHelper.Try(() => { File.WriteAllText(JsonPath, JsonConvert.SerializeObject(Settings, Formatting.Indented), Encoding.UTF8); }, actionOnError: exception => UnifyTracing.Error(exception));
+            var temp = JsonPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                File.WriteAllText(temp, JsonConvert.SerializeObject(Settings, Formatting.Indented), Encoding.UTF8);
+                if (File.Exists(JsonPath)) File.Replace(temp, JsonPath, null);
+                else File.Move(temp, JsonPath);
+            }
+            finally
+            {
+                if (File.Exists(temp)) File.Delete(temp);
+            }
         }
 
         public static void ServerOrderBySet(EnumServerOrderBy value)
@@ -71,21 +108,23 @@ namespace _1RM.Service.Locality
 
 
 
-        public static void ServerCustomOrderSave(IEnumerable<ProtocolBaseViewModel> servers)
+        public static void ServerCustomOrderSave(IEnumerable<ProtocolBaseViewModel> rows, IReadOnlyList<string> visible)
         {
-            int i = 0;
-            Settings.ServerCustomOrder.Clear();
-            foreach (var server in servers)
+            var all = rows.Where(row => row is not ProtocolBaseViewModelDummy)
+                .OrderBy(row => row.CustomOrder).ThenBy(row => row.OrderKey, StringComparer.Ordinal).ToList();
+            var before = Settings.ConnectionOrder;
+            var previousMode = Settings.ServerOrderBy;
+            Settings.ConnectionOrder = Settings.MergeVisibleOrder(all.Select(row => row.OrderKey), visible);
+            Settings.ServerOrderBy = EnumServerOrderBy.Custom;
+            try { WriteSettings(); }
+            catch
             {
-                Settings.ServerCustomOrder.Add(server.Id, i);
-                server.CustomOrder = i;
-                ++i;
+                Settings.ConnectionOrder = before;
+                Settings.ServerOrderBy = previousMode;
+                throw;
             }
-            Save();
+            foreach (var row in all) row.CustomOrder = Settings.ConnectionOrder[row.OrderKey];
         }
-
-
-
 
         public static int GroupedOrderGet(string dataSourceName)
         {

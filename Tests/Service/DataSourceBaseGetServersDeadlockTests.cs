@@ -52,6 +52,7 @@ namespace Tests.Service
             public override Result UpdateServer(ProtocolBase server) => Unused();
             public override Result UpdateServer(IEnumerable<ProtocolBase> servers) => Unused();
             public override Result DeleteServer(IEnumerable<string> ids) => Unused();
+            public override Result SetServerPins(IEnumerable<string> ids, bool pinned) => Unused();
             public override Result AddCredential(ref Credential credential) => Unused();
             public override Result UpdateCredential(Credential credential, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null) => Unused();
             public override Result DeleteCredential(IEnumerable<string> names, List<ProtocolBaseWithAddressPortUserPwd>? relatedProtocols = null) => Unused();

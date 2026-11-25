@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using _1RM.View.Utils;
 using System.Windows.Data;
 using _1RM.Model;
 using _1RM.Model.Protocol.Base;
@@ -81,6 +83,8 @@ namespace _1RM.View.ServerView
                 RaisePropertyChanged(nameof(SelectedCount));
             };
         }
+
+        public List<DataSourceBase> ListSources => SourceService.AllSources;
 
         public double NameWidth
         {
@@ -209,6 +213,7 @@ namespace _1RM.View.ServerView
                     }
 
                     // Prepare new list with proper ordering
+                    RaisePropertyChanged(nameof(ListSources));
                     var newList = list.OrderBy(x => x.CustomOrder).ThenBy(x => x.Id).ToList();
                     
                     // Clear and repopulate the existing collection instead of replacing it
@@ -313,37 +318,24 @@ namespace _1RM.View.ServerView
                             break;
                     }
 
-                    bool needRefresh = true;
-                    if (cvs.SortDescriptions.Count == 2 && cvs.SortDescriptions[1] is var sd)
-                    {
-                        needRefresh = sd.PropertyName != propertyName || sd.Direction != direction;
-                    }
-
-                    if (needRefresh)
+                    bool groupBySource = orderBy != EnumServerOrderBy.Custom && SourceService.AdditionalSources.Count > 0;
+                    using (cvs.DeferRefresh())
                     {
                         cvs.SortDescriptions.Clear();
+                        cvs.CustomSort = null;
                         if (propertyName == nameof(ProtocolBaseViewModel.SubTitle))
-                        {
                             cvs.CustomSort = new SubTitleSortByNaturalIp(direction == ListSortDirection.Ascending);
-                        }
                         else
                         {
-                            cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.GroupedOrder), ListSortDirection.Ascending));
+                            cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.IsPinnedInList), ListSortDirection.Descending));
+                            if (groupBySource)
+                                cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.ListGroupOrder), ListSortDirection.Ascending));
                             cvs.SortDescriptions.Add(new SortDescription(propertyName, direction));
+                            cvs.SortDescriptions.Add(new SortDescription(nameof(ProtocolBaseViewModel.OrderKey), ListSortDirection.Ascending));
                         }
-                    }
-                    //cvs.Refresh();
-
-
-                    if (cvs.GroupDescriptions.Count == 0 && SourceService.AdditionalSources.Count > 0)
-                    {
-                        cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBase.DataSource)));
-                        SimpleLogHelper.Debug("GroupDescriptions = ProtocolBase.DataSource");
-                    }
-                    if (cvs.GroupDescriptions.Count > 0 && SourceService.AdditionalSources.Count == 0)
-                    {
-                        cvs.GroupDescriptions.Clear();
-                        SimpleLogHelper.Debug("GroupDescriptions = null");
+                        if (groupBySource && cvs.GroupDescriptions.Count == 0)
+                            cvs.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ProtocolBaseViewModel.ListGroup)));
+                        if (!groupBySource) cvs.GroupDescriptions.Clear();
                     }
                 });
             }
@@ -388,6 +380,44 @@ namespace _1RM.View.ServerView
 
 
 
+
+        private RelayCommand? _cmdSetPins;
+        public RelayCommand CmdSetPins => _cmdSetPins ??= new RelayCommand(async o =>
+            await SetPinsAsync(VmServerList.Where(row => row.IsSelected), o is "pin"));
+
+        public async Task SetPinsAsync(IEnumerable<ProtocolBaseViewModel> rows, bool pinned)
+        {
+            var changes = rows.Where(row => row.DataSource != null && row is not ProtocolBaseViewModelDummy)
+                .GroupBy(row => row.DataSource!)
+                .Select(group => (Source: group.Key, Ids: group.Select(row => row.Id).ToArray())).ToList();
+            if (changes.Count == 0) return;
+            var errors = new List<string>();
+            MaskLayerController.ShowProcessingRing();
+            try
+            {
+                await Task.Run(() =>
+                {
+                    foreach (var (source, ids) in changes)
+                    {
+                        if (!source.IsWritable || source.Status != EnumDatabaseStatus.OK)
+                        {
+                            errors.Add(source.DataSourceName + ": " + source.StatusInfo);
+                            continue;
+                        }
+                        var result = source.GetDataBase().SetServerPins(ids, pinned);
+                        if (!result.IsSuccess) errors.Add(source.DataSourceName + ": " + result.ErrorInfo);
+                    }
+                    AppData.ReloadAll();
+                });
+            }
+            catch (Exception ex)
+            {
+                errors.Add(ex.Message);
+                UnifyTracing.Error(ex);
+            }
+            finally { MaskLayerController.HideMask(); }
+            if (errors.Count > 0) MessageBoxHelper.ErrorAlert(string.Join(Environment.NewLine, errors));
+        }
 
         private DateTime _lastCmdReOrder = DateTime.MinValue;
         private RelayCommand? _cmdReOrder;

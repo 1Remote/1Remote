@@ -251,9 +251,13 @@ CREATE TABLE IF NOT EXISTS `{TableServer.TABLE_NAME}` (
                 if (!result.IsSuccess) return ResultSelects<ProtocolBase>.Fail(result.ErrorInfo);
                 try
                 {
+                    var pins = new HashSet<string>(_dbConnection.Query<string>(NormalizedSql(
+                        $"SELECT `Value` FROM `{TableConfig.TABLE_NAME}` WHERE `Key` LIKE 'ListPin:%'")), StringComparer.Ordinal);
                     var ps = _dbConnection.Query<TableServer>(NormalizedSql($"SELECT * FROM `{TableServer.TABLE_NAME}`"))
                                                             .Select(x => x?.ToProtocolServerBase())
                                                             .Where(x => x != null).ToList();
+                    foreach (var server in ps)
+                        server!.IsPinnedInList = pins.Contains(server.Id);
                     return ResultSelects<ProtocolBase>.Success((ps as List<ProtocolBase>)!);
                 }
                 catch (Exception e)
@@ -486,24 +490,81 @@ WHERE `{nameof(TableServer.Id)}`= @{nameof(TableServer.Id)};");
                 if (!result.IsSuccess) return result;
                 try
                 {
-                    // special case: dapper does not support IN operator for postgresql
-                    var sql = DatabaseType == DatabaseType.PostgreSQL
-                        ? $@"DELETE FROM `{TableServer.TABLE_NAME}` WHERE `{nameof(TableServer.Id)}` = ANY(@{nameof(TableServer.Id)});"
-                        : $@"DELETE FROM `{TableServer.TABLE_NAME}` WHERE `{nameof(TableServer.Id)}` IN @{nameof(TableServer.Id)};";
-                    var ret = _dbConnection?.Execute(NormalizedSql(sql), new { Id = ids }) > 0;
-                    if (ret)
-                    {
-                        SetTableUpdateTimestamp(TableServer.TABLE_NAME);
-                        return Result.Success();
-                    }
-                    else
-                    {
-                        return Result.Fail(info, DatabaseName, "Delete failed, no rows affected.");
-                    }
+                    var serverIds = ids.Distinct().OrderBy(id => id, StringComparer.Ordinal).ToArray();
+                    using var tx = _dbConnection!.BeginTransaction();
+                    AdvancePinRevision(tx);
+                    var predicate = DatabaseType == DatabaseType.PostgreSQL ? "= ANY(@Ids)" : "IN @Ids";
+                    int count = _dbConnection.Execute(NormalizedSql($"DELETE FROM `{TableServer.TABLE_NAME}` WHERE `Id` {predicate}"),
+                        new { Ids = serverIds }, tx);
+                    if (count == 0) return Result.Fail(info, DatabaseName, "Delete failed, no rows affected.");
+                    _dbConnection.Execute(SqlDeleteConfig, serverIds.Select(id => new { Key = PinKey(id) }), tx);
+                    UpsertConfig("UpdateTimestamp_" + TableServer.TABLE_NAME, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(), tx);
+                    tx.Commit();
+                    return Result.Success();
                 }
                 catch (Exception e)
                 {
                     return Result.Fail(info, DatabaseName, e.Message);
+                }
+            }
+        }
+
+        private static string PinKey(string id)
+        {
+            // Config keys are limited to 64 characters; legacy connection IDs can themselves be 64.
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            var hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(id));
+            return "ListPin:" + BitConverter.ToString(hash, 0, 28).Replace("-", "");
+        }
+
+        private void UpsertConfig(string key, string value, IDbTransaction tx)
+        {
+            string onConflict = DatabaseType == DatabaseType.MySql
+                ? " ON DUPLICATE KEY UPDATE `Value` = @Value"
+                : " ON CONFLICT (`Key`) DO UPDATE SET `Value` = @Value";
+            _dbConnection.Execute(SqlInsertConfig + NormalizedSql(onConflict), new { Key = key, Value = value }, tx);
+        }
+
+        private void AdvancePinRevision(IDbTransaction tx)
+        {
+            // Serialize pin writers in this source. A revision also works across clients with different clocks.
+            string onConflict = DatabaseType == DatabaseType.MySql
+                ? " ON DUPLICATE KEY UPDATE `Value` = CAST(`Value` AS UNSIGNED) + 1"
+                : $" ON CONFLICT (`Key`) DO UPDATE SET `Value` = CAST(CAST(`{TableConfig.TABLE_NAME}`.`Value` AS BIGINT) + 1 AS TEXT)";
+            _dbConnection.Execute(SqlInsertConfig + NormalizedSql(onConflict),
+                new { Key = "UpdateTimestamp_" + ListPinsRevision, Value = "1" }, tx);
+        }
+
+        public override Result SetServerPins(IEnumerable<string> ids, bool pinned)
+        {
+            lock (this)
+            {
+                var open = OpenConnection();
+                if (!open.IsSuccess) return open;
+                try
+                {
+                    using var tx = _dbConnection!.BeginTransaction();
+                    AdvancePinRevision(tx);
+                    foreach (string id in ids.Distinct().OrderBy(id => id, StringComparer.Ordinal))
+                    {
+                        if (pinned)
+                        {
+                            int exists = _dbConnection.ExecuteScalar<int>(NormalizedSql(
+                                $"SELECT COUNT(*) FROM `{TableServer.TABLE_NAME}` WHERE `Id` = @Id"), new { Id = id }, tx);
+                            if (exists == 0) return Result.Fail("Connection no longer exists: " + id);
+                            UpsertConfig(PinKey(id), id, tx);
+                        }
+                        else
+                        {
+                            _dbConnection.Execute(SqlDeleteConfig, new { Key = PinKey(id) }, tx);
+                        }
+                    }
+                    tx.Commit();
+                    return Result.Success();
+                }
+                catch (Exception e)
+                {
+                    return Result.Fail(IoC.Translate("We can not update on database:"), DatabaseName, e.Message);
                 }
             }
         }

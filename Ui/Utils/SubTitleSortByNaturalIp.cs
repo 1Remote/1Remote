@@ -33,6 +33,8 @@ namespace _1RM.Utils
                 throw new ArgumentNullException("Neither x nor y can be null");
             }
 
+            int pinOrder = py.IsPinnedInList.CompareTo(px.IsPinnedInList);
+            if (pinOrder != 0) return pinOrder;
             string strX = px.SubTitle;
             string strY = py.SubTitle;
 
@@ -48,7 +50,7 @@ namespace _1RM.Utils
                 {
                     var keyX = GetIpV4Key(xa4, portX);
                     var keyY = GetIpV4Key(ya4, portY);
-                    return string.Compare(keyX, keyY, StringComparison.Ordinal);
+                    return return1 * string.CompareOrdinal(keyX, keyY);
                 }
                 // 优先级排序：IPv4 > IPv6 > 其他
                 if (isXIpV4 && !isYIpV4) return return_1; // x 是 IPv4，y 不是
@@ -62,7 +64,7 @@ namespace _1RM.Utils
                 {
                     var xkey = GetIpV6Key(xa6, portX);
                     var ykey = GetIpV6Key(ya6, portY);
-                    return string.Compare(xkey, ykey, StringComparison.Ordinal);
+                    return return1 * string.CompareOrdinal(xkey, ykey);
                 }
                 if (isXIpV6 && !isYIpV6) return return_1; // x 是 IPv6，y 不是
                 if (!isXIpV6 && isYIpV6) return return1; // y 是 IPv6，x 不是

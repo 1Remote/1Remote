@@ -63,6 +63,7 @@
                 <Setter Property="AllowDrop" Value="true"/>
                 <EventSetter Event="MouseMove" Handler="ServerList_PreviewMouseMoveEvent"/>
                 <EventSetter Event="Drop" Handler="ServerList_OnDrop"/>
+                <EventSetter Event="DragOver" Handler="ServerList_OnDragOver"/>
                 <!--drop end event-->
             </Style>
 
@@ -92,6 +93,10 @@
                                              ></controls:ServerLineItem>
                 </Grid>
                 <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                        <Setter Property="BorderBrush" TargetName="GridContainer" Value="{DynamicResource PrimaryMidBrush}"/>
+                        <Setter Property="BorderThickness" TargetName="GridContainer" Value="3,0,0,0"/>
+                    </DataTrigger>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="Background" TargetName="GridContainer" Value="{DynamicResource PrimaryTextBrush}"></Setter>
                         <Setter Property="Opacity" Value="0.2" TargetName="GridContainer" />
@@ -663,6 +668,17 @@
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Name}" Value="{x:Static view:ProtocolBaseViewModel.PinnedGroup}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="GroupItem">
+                                                        <StackPanel><ItemsPresenter /></StackPanel>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
                                 </Style>
                             </GroupStyle.ContainerStyle>
                         </GroupStyle>
@@ -692,6 +708,7 @@
                                 <Setter Property="Margin" Value="0 0 5 0"></Setter>
                             </Style>
                         </StackPanel.Resources>
+                        <TextBlock Text="{Binding SelectedServerViewModel.DataSourceName}"/>
                         <TextBlock Text="{Binding SelectedServerViewModel.Server.DisplayName}" Style="{StaticResource TextBlockBase}" Margin="5 0"></TextBlock>
                         <TextBlock Text="{Binding SelectedServerViewModel.Server.SubTitle}" Style="{StaticResource TextBlockBase}"></TextBlock>
                     </StackPanel>
@@ -743,54 +760,23 @@
 
 
 
-            <!-- popup when any item is selected-->
-            <Grid Grid.Row="2" Background="{DynamicResource PrimaryMidBrush}" Height="40">
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Visible"></Setter>
-                        <Setter Property="Margin" Value="0 0 0 -50"></Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsAnySelected}" Value="True">
-                                <Setter Property="Visibility" Value="Visible"></Setter>
-                                <DataTrigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin" AccelerationRatio="0.9">
-                                                <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,-50" />
-                                                <SplineThicknessKeyFrame KeyTime="0:0:0.400" Value="0,0,0,0" />
-                                            </ThicknessAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </DataTrigger.EnterActions>
-                                <DataTrigger.ExitActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ThicknessAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Margin">
-                                                <SplineThicknessKeyFrame KeyTime="0:0:0.0" Value="0,0,0,0" />
-                                                <SplineThicknessKeyFrame KeyTime="0:0:0.200" Value="0,0,0,-50" />
-                                            </ThicknessAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </DataTrigger.ExitActions>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource Cancel}" Command="{Binding CmdCancelSelected}"></Button>
-                    <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource server_editor_multi_selected_count}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
-                    <TextBlock Style="{StaticResource TextBlockBase}" Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0 0 0"></TextBlock>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Border Grid.Row="2" Background="{DynamicResource PrimaryMidBrush}" Padding="0,5"
+                    Visibility="{Binding IsAnySelected, Converter={StaticResource ConverterBool2Visible}}">
+                <WrapPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource Cancel}" Command="{Binding CmdCancelSelected}"></Button>
+                        <TextBlock Style="{StaticResource TextBlockBase}" Text="{DynamicResource server_editor_multi_selected_count}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"></TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockBase}" Text="{Binding SelectedCount}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="5 0 0 0"></TextBlock>
+                    </StackPanel>
+                    <Button Height="30" Padding="5 0" Margin="5 0 0 0" Content="{DynamicResource Pin}" Command="{Binding CmdSetPins}" CommandParameter="pin"/>
+                    <Button Height="30" Padding="5 0" Margin="5 0 0 0" Content="{DynamicResource Unpin}" Command="{Binding CmdSetPins}" CommandParameter="unpin"/>
                     <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Connect}" Command="{Binding CmdConnectSelected}"></Button>
                     <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Edit}" Command="{Binding CmdMultiEditSelected}"></Button>
                     <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource 'Create desktop shortcut'}" Command="{Binding CmdCreateDesktopShortcut}"></Button>
                     <Button Height="30" MinWidth="80" Margin="5 0 0 0" Content="{DynamicResource Delete}" Command="{Binding CmdDeleteSelected}"></Button>
                     <Button Height="30" MinWidth="80" Margin="5 0" Content="{DynamicResource Export}" Command="{Binding CmdExportSelectedToJson}"></Button>
-                </StackPanel>
-            </Grid>
+                </WrapPanel>
+            </Border>
         </Grid>
 
 
@@ -1083,6 +1069,15 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator Style="{StaticResource SeparatorBaseStyle}"/>
+                                <MenuItem Header="{DynamicResource Reconnect}" ItemsSource="{Binding ListSources}">
+                                    <MenuItem.ItemContainerStyle>
+                                        <Style TargetType="MenuItem">
+                                            <Setter Property="Header" Value="{Binding DataSourceName}"/>
+                                            <Setter Property="ToolTip" Value="{Binding StatusInfo}"/>
+                                            <EventSetter Event="Click" Handler="RefreshSource_OnClick"/>
+                                        </Style>
+                                    </MenuItem.ItemContainerStyle>
+                                </MenuItem>
                                 <MenuItem Header="{DynamicResource import_from_json}" Command="{Binding CmdImportFromJson}">
                                     <MenuItem.Icon>
                                         <Path UseLayoutRounding="True" Data="{StaticResource GeometryCopy}" Fill="{DynamicResource PrimaryTextBrush}" Stretch="Uniform"/>
