@@ -361,10 +361,7 @@ namespace _1RM.Model.Protocol.Base
 
                     if (isTestRun)
                     {
-                        if (string.IsNullOrEmpty(tuple.Item2) == false)
-                            MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
-                        else
-                            MessageBoxHelper.Info($"We will run: '{CommandBeforeConnected}'");
+                        MessageBoxHelper.Info(GetScriptTestRunNotice(isBeforeConnect: true));
                     }
 
                     exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: false,
@@ -398,10 +395,7 @@ namespace _1RM.Model.Protocol.Base
 
                     if (isTestRun)
                     {
-                        if (string.IsNullOrEmpty(tuple.Item2) == false)
-                            MessageBoxHelper.Info($"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'");
-                        else
-                            MessageBoxHelper.Info($"We will run: '{CommandBeforeConnected}'");
+                        MessageBoxHelper.Info(GetScriptTestRunNotice(isBeforeConnect: false));
                     }
 
                     var exitCode = WinCmdRunner.RunFile(tuple.Item1, arguments: tuple.Item2, isAsync: true,
@@ -421,6 +415,16 @@ namespace _1RM.Model.Protocol.Base
                 SimpleLogHelper.Error(e);
                 MessageBoxHelper.ErrorAlert("We encountered a problem while running the script: " + e.Message, IoC.Translate("Script after disconnected"));
             }
+        }
+
+        // build the notice of the test button, it must name the script under test
+        private string GetScriptTestRunNotice(bool isBeforeConnect)
+        {
+            var command = isBeforeConnect ? CommandBeforeConnected : CommandAfterDisconnected;
+            var tuple = WinCmdRunner.DisassembleOneLineScriptCmd(command);
+            if (string.IsNullOrEmpty(tuple.Item2) == false)
+                return $"We will run: '{tuple.Item1}' with parameters '{tuple.Item2}'";
+            return $"We will run: '{command}'";
         }
         
         public static List<ProtocolBase> GetAllSubInstance()
