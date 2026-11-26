@@ -485,7 +485,7 @@
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type GroupItem}">
                                                 <Grid>
-                                                    <Expander IsExpanded="{Binding Items[0].GroupedIsExpanded, FallbackValue=False, TargetNullValue=False}"
+                                                    <Expander IsExpanded="{Binding Items[0].GroupedIsExpanded, FallbackValue=False}"
                                                               Background="{DynamicResource BackgroundBrush}" 
                                                               Foreground="{DynamicResource BackgroundTextBrush}" 
                                                               Style="{StaticResource ExpanderWithAnEye}"
