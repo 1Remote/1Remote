@@ -25,12 +25,12 @@ task Deps {
         #choco install -y visualstudio2019-workload-universal
         #choco install -y windows-sdk-10-version-1809-all
 
-        choco install -y visualstudio2022community
+        choco install -y visualstudio2026community
         choco install -y dotnet-9.0-sdk
         choco install -y dotnet-10.0-sdk
-        # .NET 11 SDK: RC until 2026-11-10 GA, install from https://dotnet.microsoft.com/download/dotnet/11.0
-        choco install -y visualstudio2022-workload-manageddesktop
-        choco install -y visualstudio2022-workload-universal
+        choco install -y dotnet-11.0-sdk
+        choco install -y visualstudio2026-workload-manageddesktop
+        choco install -y visualstudio2026-workload-universal
 
         # optional
         # choco install -y git
@@ -39,10 +39,8 @@ task Deps {
 
 # Synopsis: Build the application
 task Build {
-    if (($f = [System.IO.Directory]::GetFiles($pwd, '*.sln')).Length -eq 1) {
-        $SolutionPath = $f[0]
-    }
-    exec { MSBuild $SolutionPath /t:Build /ignoreprojectextensions:.csproj /property:Configuration=$aReleaseType }
+    # Ui only: solution Release builds also include Installer, which needs the signing certificate
+    exec { MSBuild .\Ui\Ui.csproj /restore /t:Build /property:Configuration=$aReleaseType }
 }
 
 # Synopsis: Build in Windows Sandbox
@@ -57,10 +55,8 @@ task BuildInSandbox {
 
 # Synopsis: Clean generated data
 task Clean {
-    if (($f = [System.IO.Directory]::GetFiles($pwd, '*.sln')).Length -eq 1) {
-        $SolutionPath = $f[0]
-    }
-    exec { MSBuild $SolutionPath /t:Clean /property:Configuration=$aReleaseType  }
+    # Ui only, like Build: the solution's Release configuration also cleans Installer
+    exec { MSBuild .\Ui\Ui.csproj /t:Clean /property:Configuration=$aReleaseType }
 }
 
 

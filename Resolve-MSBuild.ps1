@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.6.1
+.VERSION 1.7.2
 .AUTHOR Roman Kuzmin
 .COPYRIGHT (c) Roman Kuzmin
 .TAGS Invoke-Build, MSBuild
@@ -14,7 +14,7 @@
 
 .Description
 	The script finds the path to the specified or latest version of MSBuild.
-	It is designed for MSBuild 17.0, 16.0, 15.0, 14.0, 12.0, 4.0, 3.5, 2.0.
+	Designed for MSBuild 18.0, 17.0, 16.0, 15.0, 14.0, 12.0, 4.0, 3.5, 2.0.
 
 	For MSBuild 15+ the command uses the module VSSetup, see PSGallery.
 	If VSSetup is not installed then the default locations are used.
@@ -27,12 +27,14 @@
 
 .Parameter Version
 		Specifies the required MSBuild major version. If it is omitted, empty,
-		or *, then the command finds and returns the latest installed version
-		path. The optional suffix x86 tells to use 32-bit MSBuild.
-		Known versions: 17.0, 16.0, 15.0, 14.0, 12.0, 4.0, 3.5, 2.0
+		or *, then the command finds and returns the latest installed version.
+		The optional suffix x86 tells to use 32-bit MSBuild.
+		Versions: 18.0, 17.0, 16.0, 15.0, 14.0, 12.0, 4.0, 3.5, 2.0.
+
 .Parameter MinimumVersion
-		Specifies the required minimum MSBuild version. If the resolved MSBuild
-		version is less than the minimum version then an error is thrown.
+		Specifies the required minimum MSBuild version. If the resolved version
+		is less than the minimum then the commands terminates with an error.
+
 .Parameter Latest
 		Tells to select the latest minor version if there are 2+ products with
 		the same major version. Note that major versions have higher precedence
@@ -42,18 +44,16 @@
 	The full path to MSBuild.exe
 
 .Example
-	Resolve-MSBuild 16.0x86
-	Gets the location of 32-bit MSBuild of Visual Studio 2019.
-
-.Example
-	Resolve-MSBuild x86 15.0 -Latest
-	Gets the location of the latest 32-bit MSBuild, and asserts that its
-	version is at least 15.0.
+	Resolve-MSBuild 17.0x86
+	Gets the location of 32-bit MSBuild of Visual Studio 2022.
 
 .Example
 	Resolve-MSBuild -MinimumVersion 16.3.1 -Latest
-	Gets the location of the latest MSBuild, and asserts that its version is at
-	least 16.3.1.
+	Gets the location of the latest MSBuild, and asserts its version is 16.3.1+.
+
+.Example
+	Resolve-MSBuild x86 -MinimumVersion 15.0 -Latest
+	Gets the location of the latest 32-bit MSBuild, and asserts its version is 15.0+.
 
 .Link
 	https://www.powershellgallery.com/packages/VSSetup
@@ -62,8 +62,10 @@
 [OutputType([string])]
 [CmdletBinding()]
 param(
-	[string]$Version,
-	[Version]$MinimumVersion,
+	[string]$Version
+	,
+	[Version]$MinimumVersion
+	,
 	[switch]$Latest
 )
 
@@ -96,6 +98,7 @@ function Get-MSBuild15VSSetup {
 
 	$items = @(
 		$v = switch($Version) {
+			'18.0' {'[18.0,19.0)'}
 			'17.0' {'[17.0,18.0)'}
 			'16.0' {'[16.0,17.0)'}
 			'15.0' {'[15.0,16.0)'}
@@ -152,10 +155,20 @@ function Get-MSBuild15Guess {
 			"$Program86\Microsoft Visual Studio\Preview"
 		}
 		elseif ($Version -eq '*') {
+			"$Program64\Microsoft Visual Studio\2026"
+			"$Program86\Microsoft Visual Studio\2026"
+			"$Program64\Microsoft Visual Studio\18"
+			"$Program86\Microsoft Visual Studio\18"
 			"$Program64\Microsoft Visual Studio\2022"
 			"$Program86\Microsoft Visual Studio\2022"
 			"$Program86\Microsoft Visual Studio\2019"
 			"$Program86\Microsoft Visual Studio\2017"
+		}
+		elseif ($Version -eq '18.0') {
+			"$Program64\Microsoft Visual Studio\2026"
+			"$Program86\Microsoft Visual Studio\2026"
+			"$Program64\Microsoft Visual Studio\18"
+			"$Program86\Microsoft Visual Studio\18"
 		}
 		elseif ($Version -eq '17.0') {
 			"$Program64\Microsoft Visual Studio\2022"
@@ -259,48 +272,58 @@ function Get-MSBuildAny {
 	}
 }
 
-$ErrorActionPreference = 1
-try {
-	if ($Version -match '^(.*?)x86\s*$') {
-		$Version = $matches[1]
-		$Bitness = 'x86'
-	}
-	else {
-		$Bitness = ''
-	}
-	$Version = $Version.Trim()
+$ErrorActionPreference=1
 
-	$v17 = [Version]'17.0'
-	$v16 = [Version]'16.0'
-	$v15 = [Version]'15.0'
-	$vMax = [Version]'9999.0'
-	if (!$Version) {$Version = '*'}
-	$vRequired = if ($Version -eq '*') {$vMax} else {[Version]$Version}
-
-	$path = ''
-	if ($vRequired -eq $v17 -or $vRequired -eq $v16 -or $vRequired -eq $v15) {
-		$path = Get-MSBuild15 $Version $Bitness -Latest:$Latest
-	}
-	elseif ($vRequired -lt $v15) {
-		$path = Get-MSBuildOldVersion $Version $Bitness
-	}
-	elseif ($vRequired -eq $vMax) {
-		$path = Get-MSBuildAny $Bitness -Latest:$Latest
-	}
-
-	if (!$path) {
-		throw 'The specified version is not found.'
-	}
-
-	if ($MinimumVersion) {
-		$vResolved = [Version](& $path -version -nologo)
-		if ($vResolved -lt $MinimumVersion) {
-			throw "MSBuild resolved version $vResolved is less than required minimum $MinimumVersion."
-		}
-	}
-
-	$path
+if ($Version -match '^(.*?)x86\s*$') {
+	$Version = $Matches[1]
+	$Bitness = 'x86'
 }
-catch {
-	Write-Error "Cannot resolve MSBuild $Version : $_"
+else {
+	$Bitness = ''
 }
+$Version = $Version.Trim()
+if (!$Version) {
+	$Version = '*'
+}
+
+$v18 = [Version]'18.0'
+$v17 = [Version]'17.0'
+$v16 = [Version]'16.0'
+$v15 = [Version]'15.0'
+$vMax = [Version]'9999.0'
+
+if ($Version -eq '*') {
+	$vRequired = $vMax
+}
+else {
+	try {
+		$vRequired = [Version]$Version
+	}
+	catch {
+		Write-Error "Invalid MSBuild version format: $Version."
+	}
+}
+
+$path = ''
+if ($vRequired -eq $v18 -or $vRequired -eq $v17 -or $vRequired -eq $v16 -or $vRequired -eq $v15) {
+	$path = Get-MSBuild15 $Version $Bitness -Latest:$Latest
+}
+elseif ($vRequired -lt $v15) {
+	$path = Get-MSBuildOldVersion $Version $Bitness
+}
+elseif ($vRequired -eq $vMax) {
+	$path = Get-MSBuildAny $Bitness -Latest:$Latest
+}
+
+if (!$path) {
+	Write-Error "Cannot find MSBuild version: $Version."
+}
+
+if ($MinimumVersion) {
+	$vResolved = [Version](& $path -version -nologo)
+	if ($vResolved -lt $MinimumVersion) {
+		Write-Error "MSBuild resolved version $vResolved is less than required minimum $MinimumVersion."
+	}
+}
+
+$path
