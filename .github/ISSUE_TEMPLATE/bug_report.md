@@ -24,7 +24,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. Win10 Pro 2004]
- - PRemoteM Version [e.g. 0.4.6.20071234]
+ - 1Remote Version [e.g. 1.3.1]
 
 **Additional context**
 Add any other context about the problem here.
