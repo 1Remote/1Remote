@@ -90,6 +90,15 @@ namespace _1RM.Service.DataSource.DAO.Dapper
 
 
         /// <inheritdoc />
+        public override Result SetServerPins(IEnumerable<string> ids, bool pinned)
+        {
+            lock (this)
+            {
+                try { return base.SetServerPins(ids, pinned); }
+                finally { CloseConnection(); }
+            }
+        }
+
         public override Result DeleteServer(IEnumerable<string> ids)
         {
             lock (this)

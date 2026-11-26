@@ -31,6 +31,9 @@ namespace _1RM.Model.Protocol.Base
 
         public abstract bool IsOnlyOneInstance();
 
+        // Shared list metadata is stored separately from the editable connection JSON.
+        [JsonIgnore] public bool IsPinnedInList { get; internal set; }
+
         private string _id = string.Empty;
 
         /// <summary>

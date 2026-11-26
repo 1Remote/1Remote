@@ -41,7 +41,7 @@ namespace _1RM.View.ServerView
         {
             get
             {
-                var items = VmServerList.Where(x => x.IsVisible);
+                var items = VmServerList.Where(x => x.IsVisible && x is not ProtocolBaseViewModelDummy);
                 if (items.All(x => x.IsSelected))
                     return true;
                 if (items.Any(x => x.IsSelected))
@@ -61,7 +61,7 @@ namespace _1RM.View.ServerView
                 {
                     foreach (var protocolBaseViewModel in VmServerList)
                     {
-                        protocolBaseViewModel.IsSelected = protocolBaseViewModel.IsVisible;
+                        protocolBaseViewModel.IsSelected = protocolBaseViewModel.IsVisible && protocolBaseViewModel is not ProtocolBaseViewModelDummy;
                     }
                 }
                 RaisePropertyChanged();

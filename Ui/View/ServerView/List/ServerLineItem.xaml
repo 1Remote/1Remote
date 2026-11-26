@@ -209,6 +209,9 @@
                    RenderOptions.BitmapScalingMode="HighQuality"
                    ></Image>
 
+            <TextBlock Grid.Column="2" Text="📌" IsHitTestVisible="False" HorizontalAlignment="Right" VerticalAlignment="Top"
+                       ToolTip="{DynamicResource Pin}" Visibility="{Binding IsPinnedInList, Converter={StaticResource ConverterBool2Visible}}"/>
+
             <!--display name-->
             <TextBlock Grid.Column="3" ToolTip="{Binding DisplayName}" Background="Transparent" 
                        Style="{StaticResource TextBlockBase}"

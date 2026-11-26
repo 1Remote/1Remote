@@ -204,6 +204,8 @@
             </Grid>
 
             <Grid Grid.Row="0" Grid.RowSpan="3">
+                <TextBlock Text="📌" HorizontalAlignment="Right" VerticalAlignment="Top" IsHitTestVisible="False"
+                           Visibility="{Binding IsPinnedInList, Converter={StaticResource ConverterBool2Visible}}"/>
                 <TextBlock Name="TbServerType" 
                            FontWeight="Bold" Text="{Binding Server.ProtocolDisplayName, Mode=OneWay}" 
                            Width="40"

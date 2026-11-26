@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -25,6 +26,7 @@ namespace _1RM.View.ServerView
         public ServerListPageView()
         {
             InitializeComponent();
+            AddHandler(Mouse.PreviewMouseUpEvent, new MouseButtonEventHandler((_, _) => _dragRow = null), true);
             // hide GridBottom when hover.
             MouseMove += (sender, args) =>
             {
@@ -94,7 +96,7 @@ namespace _1RM.View.ServerView
                 var group = (CollectionViewGroup)checkBox.DataContext;
                 foreach (var obj in group.Items)
                 {
-                    if (obj is ProtocolBaseViewModel item)
+                    if (obj is ProtocolBaseViewModel item && item is not ProtocolBaseViewModelDummy)
                         item.IsSelected = checkBox.IsChecked == true;
                 }
             }
@@ -144,54 +146,77 @@ namespace _1RM.View.ServerView
             });
         }
 
-        private ProtocolBaseViewModel? _shiftSelectStartItem = null;
+        private ProtocolBaseViewModel? _shiftSelectStartItem;
+        private ProtocolBaseViewModel? _dragRow;
+        private Point _dragStart;
+
+        private List<ProtocolBaseViewModel> VisibleRows()
+        {
+            IEnumerable<ProtocolBaseViewModel> rows;
+            if (LvServerCards.Items.Groups is { Count: > 0 } groups)
+            {
+                rows = groups.OfType<CollectionViewGroup>()
+                    .Where(group => group.Name is not DataSourceBase source ||
+                                    LocalityListViewService.GroupedIsExpandedGet(source.DataSourceName))
+                    .SelectMany(group => group.Items.OfType<ProtocolBaseViewModel>());
+            }
+            else rows = LvServerCards.Items.OfType<ProtocolBaseViewModel>();
+            return rows.Where(row => row is not ProtocolBaseViewModelDummy).ToList();
+        }
+
         private void ServerList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 1 && sender is DependencyObject obj)
+            _dragRow = null;
+            if (e.ChangedButton != MouseButton.Left || e.ClickCount != 1 ||
+                sender is not FrameworkElement { DataContext: ProtocolBaseViewModel row } ||
+                row is ProtocolBaseViewModelDummy || e.OriginalSource is not DependencyObject hit) return;
+
+            // Let checkboxes, menus and the note editor handle their own clicks.
+            if (hit is CheckBox || MyVisualTreeHelper.VisualUpwardSearch<CheckBox>(hit) != null)
+                _shiftSelectStartItem = row;
+            if (hit is ButtonBase or TextBoxBase or NoteDisplayAndEditor ||
+                MyVisualTreeHelper.VisualUpwardSearch<ButtonBase>(hit) != null ||
+                MyVisualTreeHelper.VisualUpwardSearch<TextBoxBase>(hit) != null ||
+                MyVisualTreeHelper.VisualUpwardSearch<NoteDisplayAndEditor>(hit) != null) return;
+
+            var items = (Keyboard.Modifiers & ModifierKeys.Shift) != 0 ? VisibleRows() : null;
+            int start = _shiftSelectStartItem == null ? -1 : items?.IndexOf(_shiftSelectStartItem) ?? -1;
+            if (items != null && start >= 0)
             {
-                // shift or ctrl + mouse button down to select item
-                if (MyVisualTreeHelper.VisualUpwardSearch<ListBoxItem>(obj) is { DataContext: ProtocolBaseViewModel vm } listBoxItem)
-                {
-                    if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
-                    {
-                        vm.IsSelected = !vm.IsSelected;
-                        // 阻止 GroupItem 中 expander header 中的移动按钮响应 expander header 点击展开/隐藏事件
-                    }
-                    else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                    {
-                        if (_shiftSelectStartItem != null)
-                        {
-                            // shift select from _shiftSelectStartItem to listBoxItem
-                            var items = LvServerCards.Items.Cast<ProtocolBaseViewModel>().ToList();
-                            int startIdx = items.IndexOf(_shiftSelectStartItem);
-                            int endIdx = items.IndexOf(vm);
-                            if (startIdx < 0 || endIdx < 0)
-                            {
-                                _shiftSelectStartItem = null;
-                            }
-                            if (startIdx > endIdx)
-                                (startIdx, endIdx) = (endIdx, startIdx);
-                            for (int i = 0; i < items.Count; i++)
-                            {
-                                if (i >= startIdx && i <= endIdx)
-                                {
-                                    items[i].IsSelected = true;
-                                }
-                                else
-                                {
-                                    items[i].IsSelected = false;
-                                }
-                            }
-                            e.Handled = true;
-                        }
-                    }
-                    else
-                    {
-                        _shiftSelectStartItem = vm;
-                    }
-                }
+                int end = items.IndexOf(row);
+                for (int i = 0; i < items.Count; i++)
+                    items[i].IsSelected = i >= Math.Min(start, end) && i <= Math.Max(start, end);
             }
+            else
+            {
+                if ((Keyboard.Modifiers & ModifierKeys.Control) != 0) row.IsSelected = !row.IsSelected;
+                else
+                {
+                    foreach (var item in ((ServerListPageViewModel)DataContext).VmServerList)
+                        item.IsSelected = ReferenceEquals(item, row);
+                    _dragRow = row;
+                    _dragStart = e.GetPosition(LvServerCards);
+                }
+                _shiftSelectStartItem = row;
+            }
+            RefreshHeaderCheckBox();
         }
+
+        private void ServerList_OnDragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData("ListConnection") is not ProtocolBaseViewModel source) return;
+            e.Effects = sender is ListBoxItem { DataContext: ProtocolBaseViewModel target } &&
+                        target is not ProtocolBaseViewModelDummy && target.IsPinnedInList == source.IsPinnedInList
+                ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void RefreshSource_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem { DataContext: DataSourceBase source } && DataContext is ServerListPageViewModel vm)
+                vm.CmdRefreshDataSource.Execute(source);
+        }
+
         private void ServerListExpanderIcon_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is DependencyObject obj)
@@ -213,14 +238,16 @@ namespace _1RM.View.ServerView
                 try
                 {
                     // drag ListBoxItem
-                    if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel protocol } listBoxItem
-                        && LocalityListViewService.Settings.ServerOrderBy == EnumServerOrderBy.Custom
-                        && protocol.HoverNoteDisplayControl?.PopupNoteContent.Content == null)
+                    if (sender is ListBoxItem listBoxItem)
                     {
-                        var dataObj = new DataObject();
-                        dataObj.SetData("DragSource", listBoxItem);
-                        DragDrop.DoDragDrop(listBoxItem, dataObj, DragDropEffects.Move);
-                        listBoxItem.IsSelected = true;
+                        if (_dragRow == null) return;
+                        var delta = e.GetPosition(LvServerCards) - _dragStart;
+                        if (Math.Abs(delta.X) < SystemParameters.MinimumHorizontalDragDistance &&
+                            Math.Abs(delta.Y) < SystemParameters.MinimumVerticalDragDistance) return;
+                        var row = _dragRow;
+                        _dragRow = null;
+                        DragDrop.DoDragDrop(listBoxItem, new DataObject("ListConnection", row), DragDropEffects.Move);
+                        e.Handled = true;
                     }
                     // drag GroupItem
                     else if (sender is DependencyObject obj)
@@ -274,50 +301,33 @@ namespace _1RM.View.ServerView
                 }
 
                 // item move
-                if (LocalityListViewService.Settings.ServerOrderBy == EnumServerOrderBy.Custom
-                    && e.Data.GetData("DragSource") is ListBoxItem { DataContext: ProtocolBaseViewModel toBeMovedProtocol } listBoxItem
-                    && sender is ListBoxItem { DataContext: ProtocolBaseViewModel target } targetListBoxItem
-                    && toBeMovedProtocol != target)
+                if (e.Data.GetData("ListConnection") is ProtocolBaseViewModel source)
                 {
-                    var items = LvServerCards.Items.Cast<ProtocolBaseViewModel>().ToList();
-                    int removedIdx = items.IndexOf(toBeMovedProtocol);
-                    int targetIdx = items.IndexOf(target);
-#if DEBUG
-                    SimpleLogHelper.Debug($"Before Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
-                    SimpleLogHelper.Debug($"Drop: {toBeMovedProtocol.Server.DisplayName}({removedIdx}) -> {target.Server.DisplayName}({targetIdx})");
-#endif
-                    bool isNextDoor = Math.Abs(removedIdx - targetIdx) == 1; // 是否相邻
+                    e.Handled = true;
+                    e.Effects = DragDropEffects.None;
+                    if (sender is not ListBoxItem { DataContext: ProtocolBaseViewModel target } ||
+                        target is ProtocolBaseViewModelDummy || source.IsPinnedInList != target.IsPinnedInList ||
+                        ReferenceEquals(source, target)) return;
 
-                    int append = 0; // 0: 前面，1: 后面
-                    if (isNextDoor && removedIdx < targetIdx) // 如果被移动的item在目标之前且相邻，则插入到目标后面，即 targetIdx += 1;
+                    var items = VisibleRows();
+                    int from = items.IndexOf(source);
+                    int to = items.IndexOf(target);
+                    if (from < 0 || to < 0) return;
+                    items.RemoveAt(from);
+                    items.Insert(to, source);
+                    var vm = (ServerListPageViewModel)DataContext;
+                    try
                     {
-                        append = 1;
+                        LocalityListViewService.ServerCustomOrderSave(vm.VmServerList, items.Select(row => row.OrderKey).ToList());
                     }
-                    else if (isNextDoor == false && e.GetPosition(targetListBoxItem).Y > targetListBoxItem.ActualHeight / 2) // 如果二者不相邻，则根据位置判断插入到目标前面还是后面
+                    catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
                     {
-                        append = 1;
+                        MessageBoxHelper.ErrorAlert(ex.Message);
+                        return;
                     }
-
-                    if (removedIdx >= 0
-                        && targetIdx >= 0
-                        && removedIdx != targetIdx)
-                    {
-                        items.RemoveAt(removedIdx);
-                        targetIdx = items.IndexOf(target) + append;  // re-calc targetIdx since collection changed
-                        if (targetIdx > items.Count)
-                        {
-                            items.Add(toBeMovedProtocol);
-                        }
-                        else
-                        {
-                            items.Insert(targetIdx, toBeMovedProtocol);
-                        }
-                        LocalityListViewService.ServerCustomOrderSave(items);
-                        IoC.Get<ServerListPageViewModel>().CalcServerVisibleAndRefresh();
-#if DEBUG
-                        SimpleLogHelper.Debug($"After Drop:" + string.Join(", ", items.Select(x => x.Server.DisplayName)));
-#endif
-                    }
+                    IoC.Get<MainWindowViewModel>().ServerOrderBy = EnumServerOrderBy.Custom;
+                    vm.ApplySort();
+                    e.Effects = DragDropEffects.Move;
                 }
                 // group move
                 else if (LvServerCards.IsGrouping == true
@@ -327,7 +337,7 @@ namespace _1RM.View.ServerView
                 {
                     DataSourceBase? targetGroup = null;
                     // GroupItem drop to ListBoxItem
-                    if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel { DataSource: { } } protocol })
+                    if (sender is ListBoxItem { DataContext: ProtocolBaseViewModel { IsPinnedInList: false, DataSource: { } } protocol })
                     {
                         targetGroup = protocol.DataSource;
                     }
@@ -343,7 +353,7 @@ namespace _1RM.View.ServerView
 
                     if (targetGroup != null && targetGroup != toBeMovedDataSource)
                     {
-                        var groups = LvServerCards.Items.Groups.Cast<CollectionViewGroup>().ToList();
+                        var groups = LvServerCards.Items.Groups.OfType<CollectionViewGroup>().Where(group => group.Name is DataSourceBase).ToList();
                         var targetGroupItem = groups.FirstOrDefault(x => x.Name == targetGroup);
                         if (targetGroupItem != null)
                         {

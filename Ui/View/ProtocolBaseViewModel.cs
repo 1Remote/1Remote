@@ -75,6 +75,11 @@ namespace _1RM.View
         public bool IsViewable { get; private set; } = false;
 
         public string Id => Server.Id;
+        public string OrderKey => LocalityListViewSettings.ConnectionKey(DataSourceName, Id);
+        public bool IsPinnedInList => Server.IsPinnedInList;
+        public string ListGroupOrder => IsPinnedInList ? string.Empty : GroupedOrder;
+        public const string PinnedGroup = "PinnedConnections";
+        public object? ListGroup => IsPinnedInList ? PinnedGroup : (object?)DataSource;
 
         public string DisplayName => Server.DisplayName;
         public string SubTitle => Server.SubTitle;
@@ -116,6 +121,8 @@ namespace _1RM.View
                     RaisePropertyChanged(nameof(TagString));
                     ReLoadTags();
                     RaisePropertyChanged(nameof(Id));
+                    RaisePropertyChanged(nameof(IsPinnedInList));
+                    RaisePropertyChanged(nameof(ListGroup));
                     RaisePropertyChanged(nameof(DisplayName));
                     RaisePropertyChanged(nameof(SubTitle));
                     RaisePropertyChanged(nameof(ProtocolDisplayNameInShort));
@@ -136,7 +143,7 @@ namespace _1RM.View
             _server = psb;
             
             // 初始化 CustomOrder
-            CustomOrder = LocalityListViewService.Settings.ServerCustomOrder.GetValueOrDefault(psb.Id, 0);
+            CustomOrder = LocalityListViewService.Settings.GetConnectionOrder(DataSourceName, Id);
 
             if (ConverterNoteToVisibility.IsVisible(Server.Note))
             {
@@ -213,7 +220,14 @@ namespace _1RM.View
         }
         public void BuildActions()
         {
-            Actions = this.GetActions();
+            var actions = this.GetActions();
+            if (DataSource?.IsWritable == true)
+            {
+                bool pin = !IsPinnedInList;
+                actions.Insert(0, new ProtocolAction(IoC.Translate(pin ? "Pin" : "Unpin"),
+                    async () => await IoC.Get<ServerView.ServerListPageViewModel>().SetPinsAsync(new[] { this }, pin)));
+            }
+            Actions = actions;
         }
 
 

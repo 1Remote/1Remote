@@ -175,6 +175,9 @@ namespace _1RM.Service.DataSource.DAO
 
         public abstract Result DeleteServer(IEnumerable<string> ids);
 
+        public const string ListPinsRevision = "ListPins";
+        public abstract Result SetServerPins(IEnumerable<string> ids, bool pinned);
+
         #region TableCredential
 
         public abstract ResultSelects<Credential> GetCredentials(bool closeInEnd = true);
