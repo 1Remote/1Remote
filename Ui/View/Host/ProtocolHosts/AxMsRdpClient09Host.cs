@@ -19,6 +19,34 @@ namespace _1RM.View.Host.ProtocolHosts
 {
     public partial class AxMsRdpClient09Host : HostBase, IDisposable
     {
+        private enum ReconnectDecision
+        {
+            Retry,
+            Close,
+            ProbeThenClose,
+        }
+
+        // what to do when the control reports reason 1, the other reasons keep their own path
+        private static ReconnectDecision DecideAfterDisconnect(int discReason, bool controlAutoReconnectInProgress, bool hasEverConnected, bool canSwitchAddress)
+        {
+            const int disconnectReasonLocalNotError = 1;
+            // reason 1 while the control reconnects itself means the user cancelled its screen
+            var userCancelled = discReason == disconnectReasonLocalNotError && controlAutoReconnectInProgress;
+            if (userCancelled == false || hasEverConnected == false)
+                return ReconnectDecision.Retry;
+            return canSwitchAddress ? ReconnectDecision.ProbeThenClose : ReconnectDecision.Close;
+        }
+
+        private static bool HasSwitchableAddress(RDP settings)
+        {
+            // the address can change only when auto switching is on
+            // and an alternate credential has its own host or port
+            return settings.IsAutoAlternateAddressSwitching == true
+                   && settings.AlternateCredentials.Any(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port));
+        }
+
+        private bool CanSwitchAddress => HasSwitchableAddress(_rdpSettings);
+
         private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
         {
             this.Dispose();
@@ -42,6 +70,8 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 SimpleLogHelper.Warning($"RDP Host: Call ReConn");
             }
+            // a reconnect that was asked for is not a cancel of the reconnect screen of the control
+            _controlAutoReconnectInProgress = false;
             Status = ProtocolHostStatus.WaitingForReconnect;
             Execute.OnUIThreadSync(() =>
             {
@@ -54,10 +84,7 @@ namespace _1RM.View.Host.ProtocolHosts
             var t = Task.Factory.StartNew(async () =>
             {
                 // check if it needs to auto switch address
-                var isAutoAlternateAddressSwitching = _rdpSettings.IsAutoAlternateAddressSwitching == true
-                                                      // if none of the alternate credential has host or port，then disabled `AutoAlternateAddressSwitching`
-                                                      && _rdpSettings.AlternateCredentials.Any(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port));
-                if (isAutoAlternateAddressSwitching)
+                if (CanSwitchAddress)
                 {
                     var c = await SessionControlService.GetCredential(_rdpSettings);
                     if (c != null)
@@ -65,7 +92,14 @@ namespace _1RM.View.Host.ProtocolHosts
                         _rdpSettings.SetCredential(c, true);
                         _rdpSettings.DisplayName = c.Name;
                     }
+                    else if (_stopIfNoAddressFound)
+                    {
+                        // nobody answers after the user cancelled, so close instead of retrying
+                        await Execute.OnUIThreadAsync(CloseSessionAfterUserCancelled);
+                        return;
+                    }
                 }
+                _stopIfNoAddressFound = false;
 
                 Status = ProtocolHostStatus.NotInit;
 
@@ -140,6 +174,10 @@ namespace _1RM.View.Host.ProtocolHosts
                 const int disconnectReasonRemoteByUser = 2;   // Remote disconnection by user (via 'Disconnect', 'Signout', 'Shutdown' and 'Reboot'). This is not an error code.
                 const int disconnectReasonByServer = 3;       // Remote disconnection by server. This will be returned when switching to another connection. This is not an error code.
 
+                // the flag is read by the switch below and must not outlive this disconnect
+                var controlAutoReconnectInProgress = _controlAutoReconnectInProgress;
+                _controlAutoReconnectInProgress = false;
+
                 string reason = _rdpClient.GetErrorDescription((uint)e.discReason, (uint)_rdpClient.ExtendedDisconnectReason) ?? "";
                 ExtendedDisconnectReasonCode excode = _rdpClient.ExtendedDisconnectReason;
                 SimpleLogHelper.Debug($"RDP({_rdpSettings.DisplayName}) Disconnected with code {e.discReason}({reason}) ex:{excode}");
@@ -183,8 +221,24 @@ namespace _1RM.View.Host.ProtocolHosts
                         }
 
                     case disconnectReasonLocalNotError:
-                        // Maybe the user has cancelled the RdpClient's attempt to reconnect.
-                        // In this case, we will attempt to reconnect in order to switch to an alternate host.
+                        {
+                            // a cancel of the control's screen lands here too
+                            // retry only for an alternate host, never for the same one again
+                            var decision = DecideAfterDisconnect(e.discReason, controlAutoReconnectInProgress, _flagHasEverConnected, CanSwitchAddress);
+                            if (decision == ReconnectDecision.Close)
+                            {
+                                // the user gave up, so end the session instead of retrying again
+                                RdpClientDispose();
+                                CloseSessionAfterUserCancelled();
+                                break;
+                            }
+                            if (decision == ReconnectDecision.ProbeThenClose)
+                            {
+                                // another address may answer, so probe once and stop if none does
+                                _stopIfNoAddressFound = true;
+                            }
+                            goto default;
+                        }
                     default:
                         // A communication breakdown occurred by unplugging, invalidating, going to sleep or crashing, etc.
                         SimpleLogHelper.Warning($"RDP({_rdpSettings.DisplayName}) exit with error code {e.discReason}({reason}) ex:{excode}");
@@ -206,6 +260,8 @@ namespace _1RM.View.Host.ProtocolHosts
                         {
                             // The number of retries has reached its limit. Display an error.
                             _retryCount = 0;  // Reset for next time.
+                            // no reconnect follows, so the pending stop must not carry over
+                            _stopIfNoAddressFound = false;
                             TbMessageTitle.Visibility = Visibility.Collapsed;
                             BtnReconn.Visibility = Visibility.Visible;
                             TbMessage.Text = reason;
@@ -215,6 +271,28 @@ namespace _1RM.View.Host.ProtocolHosts
                         break;
                 }
             }
+        }
+
+        private void OnRdpClientAutoReconnecting(object sender, IMsTscAxEvents_OnAutoReconnectingEvent e)
+        {
+            _controlAutoReconnectInProgress = true;
+            SimpleLogHelper.Debug($"RDP Host: the control is reconnecting by itself, reason = {e.disconnectReason}, attempt = {e.attemptCount}");
+        }
+
+        private void OnRdpClientAutoReconnected(object? sender, EventArgs e)
+        {
+            _controlAutoReconnectInProgress = false;
+            SimpleLogHelper.Debug("RDP Host: the control reconnected by itself");
+        }
+
+        private void CloseSessionAfterUserCancelled()
+        {
+            SimpleLogHelper.Debug("RDP Host: close the session, the user cancelled the reconnect");
+            // a host waiting for a reconnect cannot reconnect or be closed, so leave that state
+            Status = ProtocolHostStatus.Disconnected;
+            // the stop happened, so nothing stays pending on a host that is being closed
+            _stopIfNoAddressFound = false;
+            base.OnClosed?.Invoke(base.ConnectionId);
         }
 
         private void OnRdpClientConnected(object? sender, EventArgs e)

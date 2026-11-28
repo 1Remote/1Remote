@@ -83,6 +83,10 @@ namespace _1RM.View.Host.ProtocolHosts
         /// </summary>
         private bool _flagHasEverConnected = false;
 
+        // set while the control is busy with its own auto reconnect (its "Reconnecting" screen)
+        private volatile bool _controlAutoReconnectInProgress = false;
+        // set when the user cancelled that screen: stop unless another address answers
+        private volatile bool _stopIfNoAddressFound = false;
 
         private readonly System.Timers.Timer _loginResizeTimer; // timer for login resize, to fix the issue that the rdp client size is not correct when login
         private DateTime _lastLoginTime = DateTime.MinValue;
@@ -291,6 +295,7 @@ namespace _1RM.View.Host.ProtocolHosts
         {
             lock (_rdpClientDisposeLock)
             {
+                _controlAutoReconnectInProgress = false;
                 _rdpClient = new AxMsRdpClient9NotSafeForScriptingEx();
 
                 SimpleLogHelper.Debug("RDP Host: init new AxMsRdpClient9NotSafeForScriptingEx()");
@@ -327,6 +332,10 @@ namespace _1RM.View.Host.ProtocolHosts
                 };
                 _rdpClient.OnConnected += OnRdpClientConnected;
                 _rdpClient.OnLoginComplete += OnRdpClientLoginComplete;
+                // the control reconnects by itself and shows its own screen
+                // reason 1 afterwards means the user cancelled that screen
+                _rdpClient.OnAutoReconnecting += OnRdpClientAutoReconnecting;
+                _rdpClient.OnAutoReconnected += OnRdpClientAutoReconnected;
                 ((System.ComponentModel.ISupportInitialize)(_rdpClient)).EndInit();
                 RdpHost.Child = _rdpClient;
 
