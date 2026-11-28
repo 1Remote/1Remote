@@ -87,6 +87,8 @@ namespace _1RM.View.Host.ProtocolHosts
         private volatile bool _controlAutoReconnectInProgress = false;
         // set when the user cancelled that screen: stop unless another address answers
         private volatile bool _stopIfNoAddressFound = false;
+        // set by Dispose(): no reconnect may start afterwards
+        private volatile bool _isDisposed = false;
 
         private readonly System.Timers.Timer _loginResizeTimer; // timer for login resize, to fix the issue that the rdp client size is not correct when login
         private DateTime _lastLoginTime = DateTime.MinValue;
@@ -189,6 +191,8 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public void Dispose()
         {
+            // only reconnects are blocked here, this method still releases the control
+            _isDisposed = true;
             if (_rdpClient != null && (Status == ProtocolHostStatus.Connecting || Status == ProtocolHostStatus.Connected))
             {
                 // a second Disconnect() on the disconnecting control fails, and must not end in a direct dispose either
@@ -803,7 +807,7 @@ namespace _1RM.View.Host.ProtocolHosts
             {
                 GridMessageBox.Visibility = Visibility.Visible;
                 TbMessageTitle.Visibility = Visibility.Collapsed;
-                TbMessage.Text = e.Message;
+                ShowMessage(e.Message);
 
                 Status = ProtocolHostStatus.NotInit;
             }
@@ -832,7 +836,7 @@ namespace _1RM.View.Host.ProtocolHosts
                 {
                     GridMessageBox.Visibility = Visibility.Visible;
                     TbMessageTitle.Visibility = Visibility.Collapsed;
-                    TbMessage.Text = e.Message;
+                    ShowMessage(e.Message);
                     Status = ProtocolHostStatus.Disconnected;
                 }
             });

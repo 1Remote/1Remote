@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.ExceptionServices;
-using System.Threading;
 using _1RM;
 using _1RM.Model.Protocol;
 using _1RM.Model.Protocol.Base;
@@ -43,28 +41,6 @@ namespace Tests.View.Host
             }
         }
 
-        // a session host is a WPF control, so it can only be created on an STA thread
-        private static void RunOnStaThread(Action action)
-        {
-            Exception? failure = null;
-            var thread = new Thread(() =>
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception e)
-                {
-                    failure = e;
-                }
-            });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-            thread.Join();
-            if (failure != null)
-                ExceptionDispatchInfo.Capture(failure).Throw();
-        }
-
         private static TestHost NewHost(ProtocolBase protocol)
         {
             // HostBase reads the settings view model from the container in its constructor
@@ -88,7 +64,7 @@ namespace Tests.View.Host
         [Fact]
         public void ConnectionId_ContainsTheAddressOfTheMomentOfCreation()
         {
-            RunOnStaThread(() =>
+            StaThread.Run(() =>
             {
                 var host = NewHost(NewServer("10.0.0.1"));
 
@@ -99,7 +75,7 @@ namespace Tests.View.Host
         [Fact]
         public void ConnectionId_StaysTheSame_WhenTheAddressChangesAfterwards()
         {
-            RunOnStaThread(() =>
+            StaThread.Run(() =>
             {
                 var rdp = NewServer("10.0.0.1");
                 var host = NewHost(rdp);

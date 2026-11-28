@@ -39,8 +39,7 @@ namespace _1RM.View.Host.ProtocolHosts
 
         private static bool HasSwitchableAddress(RDP settings)
         {
-            // the address can change only when auto switching is on
-            // and an alternate credential has its own host or port
+            // the address changes only if auto switching is on and an alternate has a host or port
             return settings.IsAutoAlternateAddressSwitching == true
                    && settings.AlternateCredentials.Any(x => !string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Port));
         }
@@ -59,6 +58,8 @@ namespace _1RM.View.Host.ProtocolHosts
 
         public override void ReConn()
         {
+            // a disposed host is no longer shown, so it must not reconnect
+            if (_isDisposed) return;
             Debug.Assert(_rdpClient != null);
             if (Status != ProtocolHostStatus.Connected
                 && Status != ProtocolHostStatus.Disconnected)
@@ -95,16 +96,25 @@ namespace _1RM.View.Host.ProtocolHosts
                     else if (_stopIfNoAddressFound)
                     {
                         // nobody answers after the user cancelled, so close instead of retrying
-                        await Execute.OnUIThreadAsync(CloseSessionAfterUserCancelled);
+                        await Execute.OnUIThreadAsync(() =>
+                        {
+                            // a disposed host must not close anything
+                            if (_isDisposed) return;
+                            CloseSessionAfterUserCancelled();
+                        });
                         return;
                     }
                 }
                 _stopIfNoAddressFound = false;
 
+                // the tab may have been closed while the addresses were probed
+                if (_isDisposed) return;
                 Status = ProtocolHostStatus.NotInit;
 
                 await Execute.OnUIThreadAsync(() =>
                 {
+                    // the tab may have been closed in the meantime
+                    if (_isDisposed) return;
                     int w = 0;
                     int h = 0;
                     if (ParentWindow is TabWindowView tab)
@@ -114,6 +124,8 @@ namespace _1RM.View.Host.ProtocolHosts
                         h = (int)size.Height;
                     }
                     InitRdp(w, h, true);
+                    // the tab may have been closed while the control was built
+                    if (_isDisposed) return;
                     Conn();
                 });
             });
@@ -214,7 +226,7 @@ namespace _1RM.View.Host.ProtocolHosts
                             GridMessageBox.Visibility = Visibility.Visible;
                             TbMessageTitle.Visibility = Visibility.Collapsed;
                             BtnReconn.Visibility = Visibility.Visible;
-                            TbMessage.Text = reason;
+                            ShowMessage(reason);
                             ParentWindowSetToWindow();
                             this.ParentWindow?.FlashIfNotActive();
                             break;
@@ -264,7 +276,7 @@ namespace _1RM.View.Host.ProtocolHosts
                             _stopIfNoAddressFound = false;
                             TbMessageTitle.Visibility = Visibility.Collapsed;
                             BtnReconn.Visibility = Visibility.Visible;
-                            TbMessage.Text = reason;
+                            ShowMessage(reason);
                             ParentWindowSetToWindow();
                         }
                         this.ParentWindow?.FlashIfNotActive();
@@ -293,6 +305,13 @@ namespace _1RM.View.Host.ProtocolHosts
             // the stop happened, so nothing stays pending on a host that is being closed
             _stopIfNoAddressFound = false;
             base.OnClosed?.Invoke(base.ConnectionId);
+        }
+
+        // the retry loop hides the text block, so every text must make it visible again
+        private void ShowMessage(string text)
+        {
+            TbMessage.Text = text;
+            TbMessage.Visibility = Visibility.Visible;
         }
 
         private void OnRdpClientConnected(object? sender, EventArgs e)
