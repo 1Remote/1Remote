@@ -80,6 +80,9 @@ namespace _1RM.View.Host.ProtocolHosts
         protected HostBase(ProtocolBase protocolServer, bool canFullScreen = false)
         {
             ProtocolServer = protocolServer;
+            ConnectionId = protocolServer.IsOnlyOneInstance()
+                ? protocolServer.BuildConnectionId()
+                : protocolServer.BuildConnectionId() + "_" + GetHashCode();
             CanFullScreen = canFullScreen;
 
             // Add right click menu
@@ -196,20 +199,8 @@ namespace _1RM.View.Host.ProtocolHosts
             }
         }
 
-        public string ConnectionId
-        {
-            get
-            {
-                if (ProtocolServer.IsOnlyOneInstance())
-                {
-                    return ProtocolServer.BuildConnectionId();
-                }
-                else
-                {
-                    return ProtocolServer.BuildConnectionId() + "_" + this.GetHashCode();
-                }
-            }
-        }
+        // fixed at creation: a reconnect may change the address, lookups must keep working
+        public string ConnectionId { get; }
 
         public SettingsPageViewModel SettingsPage => IoC.Get<SettingsPageViewModel>();
 
